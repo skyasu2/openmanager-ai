@@ -433,7 +433,7 @@ describe('supervisor degraded single fallback', () => {
     }
   });
 
-  it('appends off-domain warning after LLM response for realtime queries', async () => {
+  it('blocks realtime off-domain queries without calling the LLM', async () => {
     mockSelectExecutionMode.mockReturnValue('single');
 
     const result = await executeSupervisor({
@@ -444,11 +444,58 @@ describe('supervisor degraded single fallback', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      // Warning is appended after the LLM response (GPT/Gemini style)
-      expect(result.response).toContain('서버 모니터링');
-      // LLM is called (no longer short-circuited)
-      expect(mockGenerateText).toHaveBeenCalled();
+      expect(result.response).toContain('실시간 외부 조회');
+      expect(result.response).toContain('확인할 수 없습니다');
+      expect(result.metadata.provider).toBe('deterministic');
     }
+    expect(mockGenerateText).not.toHaveBeenCalled();
+  });
+
+  it('appends off-domain warning after LLM response for best-effort technical queries', async () => {
+    mockSelectExecutionMode.mockReturnValue('single');
+
+    const result = await executeSupervisor({
+      mode: 'auto',
+      messages: [{ role: 'user', content: '파이썬 피보나치 코드 짜줘' }],
+      sessionId: 'session-direct-off-domain-warn',
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.response).toContain('single fallback response');
+      expect(result.response).toContain('서버 모니터링');
+    }
+    expect(mockGenerateText).toHaveBeenCalled();
+  });
+
+  it('stream-blocks realtime off-domain queries without opening model streams', async () => {
+    mockSelectExecutionMode.mockReturnValue('single');
+
+    const events = [];
+    for await (const event of executeSupervisorStream({
+      mode: 'auto',
+      messages: [{ role: 'user', content: '오늘 서울 날씨 알려줘' }],
+      sessionId: 'session-stream-off-domain-block',
+    })) {
+      events.push(event);
+    }
+
+    const text = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+    expect(text).toContain('실시간 외부 조회');
+    expect(events.at(-1)).toMatchObject({
+      type: 'done',
+      data: {
+        success: true,
+        metadata: {
+          provider: 'deterministic',
+          offDomainAction: 'block',
+        },
+      },
+    });
+    expect(mockStreamText).not.toHaveBeenCalled();
   });
 
   it('falls back to single-agent when multi-agent returns MODEL_UNAVAILABLE and degraded single is allowed', async () => {

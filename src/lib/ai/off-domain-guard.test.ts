@@ -13,6 +13,7 @@ describe('getOffDomainGuardrail', () => {
 
     expect(result).toMatchObject({
       category,
+      action: 'block',
       shouldShortCircuit: true,
     });
     expect(result?.response).toContain('실시간');
@@ -23,15 +24,15 @@ describe('getOffDomainGuardrail', () => {
     '내일 오후 3시에 팀 회의 일정 잡아줘',
     '오늘 저녁 7시 식당 예약해줘',
     '행사 안내를 팀에 메일로 보내줘',
-  ])('blocks external action claim query "%s"', (query) => {
+  ])('warns external action claim query "%s"', (query) => {
     const result = getOffDomainGuardrail(query);
 
     expect(result).toMatchObject({
       category: 'external_action',
-      shouldShortCircuit: true,
+      action: 'warn',
     });
-    expect(result?.response).toContain('직접 실행할 수 없습니다');
-    expect(result?.response).toContain('초안');
+    expect(result?.warning).toContain('정확도');
+    expect(result?.response).toBeUndefined();
   });
 
   it('limits local recommendations instead of inventing current venue facts', () => {
@@ -39,6 +40,7 @@ describe('getOffDomainGuardrail', () => {
 
     expect(result).toMatchObject({
       category: 'local_recommendation',
+      action: 'block',
       shouldShortCircuit: true,
     });
     expect(result?.response).toContain('최신 영업 여부');
@@ -53,6 +55,7 @@ describe('getOffDomainGuardrail', () => {
 
     expect(result).toMatchObject({
       category: 'personal_general',
+      action: 'block',
       shouldShortCircuit: true,
     });
     expect(result?.response).toContain('서버 운영');
@@ -74,15 +77,15 @@ describe('getOffDomainGuardrail', () => {
   it.each([
     '파이썬 피보나치 코드 짜줘',
     'leetcode two sum 풀어줘',
-  ])('blocks general coding query "%s"', (query) => {
+  ])('warns general coding query "%s"', (query) => {
     const result = getOffDomainGuardrail(query);
 
     expect(result).toMatchObject({
       category: 'general_coding',
-      shouldShortCircuit: true,
+      action: 'warn',
     });
-    expect(result?.response).toContain('일반 알고리즘');
-    expect(result?.response).toContain('운영 점검 스크립트');
+    expect(result?.warning).toContain('정확도');
+    expect(result?.response).toBeUndefined();
   });
 
   it.each([

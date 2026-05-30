@@ -1,68 +1,75 @@
 import { describe, expect, it } from 'vitest';
 import { getOffDomainGuardrail } from './off-domain-guard';
 
-// T6: off-domain → 경고 + LLM, 운영 컨텍스트 → 경고 없음
+// Off-domain policy: block live/current fact categories, warn for best-effort technical categories.
 
 describe('getOffDomainGuardrail', () => {
-  describe('T6-1: off-domain queries return warning (not block)', () => {
-    it('날씨 질문 → offDomainWarning 반환, shouldShortCircuit 없음', () => {
+  describe('block categories', () => {
+    it('날씨 질문 → block response 반환', () => {
       const result = getOffDomainGuardrail('오늘 날씨 어때?');
       expect(result).not.toBeNull();
-      expect(result?.offDomainWarning).toBeTruthy();
+      expect(result?.action).toBe('block');
       expect(result?.category).toBe('live_fact');
-      // shouldShortCircuit 필드가 없어야 함
-      expect(result).not.toHaveProperty('shouldShortCircuit');
-      // response 필드가 없어야 함
+      expect(result?.response).toContain('실시간 외부 조회');
+      expect(result?.offDomainWarning).toBeTruthy();
+    });
+
+    it('주식 가격 질문 → block response 반환', () => {
+      const result = getOffDomainGuardrail('삼성전자 주가 알려줘');
+      expect(result).not.toBeNull();
+      expect(result?.action).toBe('block');
+      expect(result?.category).toBe('live_fact');
+    });
+
+    it('운세 질문 → block response 반환', () => {
+      const result = getOffDomainGuardrail('오늘 운세 알려줘');
+      expect(result).not.toBeNull();
+      expect(result?.action).toBe('block');
+      expect(result?.category).toBe('personal_general');
+    });
+
+    it('점심 메뉴 질문 → block response 반환', () => {
+      const result = getOffDomainGuardrail('점심 뭐 먹을까?');
+      expect(result).not.toBeNull();
+      expect(result?.action).toBe('block');
+      expect(result?.category).toBe('personal_general');
+    });
+
+    it('맛집 추천 → block response 반환', () => {
+      const result = getOffDomainGuardrail('강남 맛집 추천해줘');
+      expect(result).not.toBeNull();
+      expect(result?.action).toBe('block');
+      expect(result?.category).toBe('local_recommendation');
+    });
+  });
+
+  describe('warn categories', () => {
+    it('캘린더 등록 → warning 반환, LLM 위임 가능', () => {
+      const result = getOffDomainGuardrail('내일 오후 2시 회의 캘린더에 잡아줘');
+      expect(result).not.toBeNull();
+      expect(result?.action).toBe('warn');
+      expect(result?.category).toBe('external_action');
       expect(result).not.toHaveProperty('response');
     });
 
-    it('주식 가격 질문 → offDomainWarning 반환', () => {
-      const result = getOffDomainGuardrail('삼성전자 주가 알려줘');
-      expect(result).not.toBeNull();
-      expect(result?.offDomainWarning).toBeTruthy();
-      expect(result?.category).toBe('live_fact');
-    });
-
-    it('운세 질문 → offDomainWarning 반환', () => {
-      const result = getOffDomainGuardrail('오늘 운세 알려줘');
-      expect(result).not.toBeNull();
-      expect(result?.offDomainWarning).toBeTruthy();
-      expect(result?.category).toBe('personal_general');
-    });
-
-    it('점심 메뉴 질문 → offDomainWarning 반환', () => {
-      const result = getOffDomainGuardrail('점심 뭐 먹을까?');
-      expect(result).not.toBeNull();
-      expect(result?.category).toBe('personal_general');
-    });
-
-    it('맛집 추천 → offDomainWarning 반환', () => {
-      const result = getOffDomainGuardrail('강남 맛집 추천해줘');
-      expect(result).not.toBeNull();
-      expect(result?.category).toBe('local_recommendation');
-    });
-
-    it('캘린더 등록 → offDomainWarning 반환', () => {
-      const result = getOffDomainGuardrail('내일 오후 2시 회의 캘린더에 잡아줘');
-      expect(result).not.toBeNull();
-      expect(result?.category).toBe('external_action');
-    });
-
-    it('메일 발송 → offDomainWarning 반환', () => {
+    it('메일 발송 → warning 반환, LLM 위임 가능', () => {
       const result = getOffDomainGuardrail('팀장님한테 이메일 보내줘');
       expect(result).not.toBeNull();
+      expect(result?.action).toBe('warn');
       expect(result?.category).toBe('external_action');
     });
 
-    it('일반 알고리즘 코딩 문제 → offDomainWarning 반환', () => {
+    it('일반 알고리즘 코딩 문제 → warning 반환, LLM 위임 가능', () => {
       const result = getOffDomainGuardrail('파이썬으로 피보나치 수열 구현해줘');
       expect(result).not.toBeNull();
+      expect(result?.action).toBe('warn');
       expect(result?.category).toBe('general_coding');
     });
 
-    it('비트코인 가격 → offDomainWarning 반환', () => {
+    it('비트코인 가격 → block response 반환', () => {
       const result = getOffDomainGuardrail('비트코인 현재 가격이 얼마야?');
       expect(result).not.toBeNull();
+      expect(result?.action).toBe('block');
       expect(result?.category).toBe('live_fact');
     });
   });
