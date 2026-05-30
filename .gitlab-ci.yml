@@ -164,24 +164,27 @@ stages:
   - deploy_ai
   - smoke
 
+variables:
+  # Make npm invoked by nested tools such as `vercel build` reuse the GitLab
+  # project-local HTTP cache instead of the runner user's default cache.
+  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.npm"
+
 # ─── 공통 캐시 ────────────────────────────────────────────────────────────────
 # .npm/ 만 캐시 (node_modules/ 제외)
 # 이유: node_modules/는 500MB~1GB로 캐시 upload/download가 npm ci보다 느릴 수 있음
-#       .npm/ 은 npm HTTP 캐시 (~50~200MB). --cache .npm 으로 npm ci 속도 2~4배 향상
+#       .npm/ 은 npm HTTP 캐시 (~50~200MB). npm ci 속도 2~4배 향상
+#       release commit은 package-lock version만 바뀌어도 lockfile content key가
+#       매번 무효화되므로, HTTP cache는 고정 키를 쓴다.
 .npm_cache: &npm_cache
   cache:
-    key:
-      files:
-        - package-lock.json
+    key: npm-root-http-v1
     paths:
       - .npm/
     policy: pull-push   # validate가 작성 → deploy가 재사용
 
 .npm_cache_readonly: &npm_cache_readonly
   cache:
-    key:
-      files:
-        - package-lock.json
+    key: npm-root-http-v1
     paths:
       - .npm/
     policy: pull        # deploy: 읽기 전용 재사용
@@ -317,9 +320,7 @@ stages:
 
 .ai_engine_npm_cache: &ai_engine_npm_cache
   cache:
-    key:
-      files:
-        - cloud-run/ai-engine/package-lock.json
+    key: npm-ai-engine-http-v1
     paths:
       - cloud-run/ai-engine/.npm/
     policy: pull-push
