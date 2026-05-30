@@ -2,7 +2,7 @@
 
 **작성일**: 2026-05-29  
 **Owner**: project  
-**상태**: Phase 1~3 완료 (Phase 4 보류)  
+**상태**: Approved (Phase 4A 계약 확정, Phase 4B/C 보류)  
 **우선순위**: Medium  
 
 ---
@@ -74,12 +74,81 @@ query-routing-signals.ts  (55줄)   # re-export facade (하위 호환 유지)
 
 ---
 
+## 착수 단계
+
+### Phase 4A — post-decision artifact bridge
+
+**목표:**
+- Cloud Run/BFF 응답의 `routeDecision`/`assistantPlan`/`assistantResult`에 포함된 `artifactKind`를 프론트에서 사후 수신한다.
+- 사후 수신한 `artifactKind`가 `client-artifact` 실행 경로일 때만 기존 `startChatArtifactGeneration()`으로 연결한다.
+- 기존 프론트 pre-send 분류는 fallback으로 유지한다. Phase 4A에서는 `chat-artifact-intent.ts` 삭제나 패턴 제거를 하지 않는다.
+
+#### 계약 (Contract)
+
+**변경 대상 파일**
+- `src/hooks/ai/core/asyncQuerySSE.ts` 또는 SSE result 소비 계층
+- `src/hooks/ai/core/chat-artifact-guidance.ts`
+- `src/hooks/ai/core/chat-artifact-execution.ts`
+- `src/hooks/ai/useAIChatCore.ts`
+- 관련 테스트 파일
+
+**입력 후보 우선순위**
+
+| 후보 | 조건 | 결과 |
+|------|------|------|
+| `assistantResult.artifactKind` | `executionPath === 'client-artifact'` | `ChatArtifactIntent` 변환 |
+| `assistantPlan.artifactKind` | `executionPath === 'client-artifact'` | `ChatArtifactIntent` 변환 |
+| `assistantPlan.routeDecision.artifactKind` | `executionPath === 'client-artifact'` | `ChatArtifactIntent` 변환 |
+| `routeDecision.artifactKind` | `executionPath === 'client-artifact'` | `ChatArtifactIntent` 변환 |
+
+**출력 계약**
+
+| 함수/경로 | 입력 | 출력 | 예외/무시 조건 |
+|----------|------|------|----------------|
+| post-decision intent resolver | async job result metadata + 원본 query | `ChatArtifactIntent \| null` | `artifactKind` 없음, 미지원 kind, `executionPath !== 'client-artifact'` |
+| post-result handler | resolver 결과 + 현재 artifact 상태 | `startChatArtifactGeneration()` 0~1회 호출 | 이미 artifact 생성 중/완료, pre-send 처리 완료, unsupported kind |
+
+**지원 kind**
+- `incident-report`
+- `monitoring-analysis`
+- `server-monitoring-analysis`
+- `server-snapshot`
+- `ops-procedure`
+
+**중복 실행 방지**
+- 같은 사용자 query에서 pre-send artifact generation이 이미 실행됐으면 post-decision handler는 실행하지 않는다.
+- post-decision metadata 후보가 여러 개 있어도 한 번만 실행한다.
+
+#### 테스트 시나리오 (구현 전 확정)
+
+- [ ] `assistantPlan.routeDecision.artifactKind=server-snapshot` + `executionPath=client-artifact` → `server-snapshot` intent로 변환한다.
+- [ ] `routeDecision.artifactKind=server-monitoring-analysis`가 `client-artifact` 경로로 들어오면 query에서 serverId를 재해석해 intent에 포함한다.
+- [ ] `executionPath=job` 또는 `artifactKind` 없는 일반 응답은 artifact generation을 호출하지 않는다.
+- [ ] pre-send 분류로 이미 artifact generation을 시작한 경우 post-decision handler가 중복 호출하지 않는다.
+- [ ] async job SSE metadata가 `assistantPlan`/`routeDecision.artifactKind`를 클라이언트 결과까지 보존한다.
+
+#### Task 목록
+
+- [ ] Task 0 — failing test 커밋: 위 테스트 시나리오를 계약 테스트로 추가
+- [ ] Task 1 — post-decision resolver 추가
+- [ ] Task 2 — async result 수신 후 `startChatArtifactGeneration()` 연결
+- [ ] Task 3 — targeted test/type-check 실행
+
+#### Phase 4A 완료 기준
+
+- [ ] 테스트 시나리오 전체 통과
+- [ ] `npm run type-check` 통과
+- [ ] `npm run test:quick` 또는 관련 targeted test 통과
+- [ ] 프론트 pre-send 분류 fallback 유지 확인
+
+---
+
 ## 보류 단계
 
-### Phase 4 — artifact intent BFF 이관 (중장기)
+### Phase 4B/C — artifact intent BFF 완전 이관
 
 **선행 조건:**
-1. stream handler에 `artifactKind` 수신 → `startChatArtifactGeneration` 트리거 로직 추가
+1. Phase 4A 완료: stream/job result post-decision 메커니즘 추가
 2. Phase 3 나머지 3종 제거 검증 (아티팩트 패널 회귀 테스트)
 3. `MISTRAL_SCALE_PLAN_CONFIRMED` 환경변수 설정 또는 Mistral 대체 결정
 4. `/api/ai/artifact-intent` latency 측정 (목표: p95 < 300ms)
@@ -90,7 +159,7 @@ query-routing-signals.ts  (55줄)   # re-export facade (하위 호환 유지)
 - 새 artifact 종류 추가 시 BFF 1곳만 수정
 
 **체크리스트:**
-- [ ] stream response handler에 `artifactKind` 처리 추가
+- [ ] Phase 4A post-decision bridge 완료
 - [ ] `server-monitoring-analysis` 프론트 분류 제거 + 회귀 테스트
 - [ ] `server-snapshot` 프론트 분류 제거 + 회귀 테스트
 - [ ] `ops-procedure` 프론트 분류 제거 + 회귀 테스트

@@ -1047,6 +1047,97 @@ describe('useAIChatCore', () => {
     ).toBe(4);
   });
 
+  it('starts artifact generation from post-decision async job metadata', async () => {
+    mocks.generateServerSnapshotArtifact.mockResolvedValue({
+      kind: 'server-snapshot',
+      generatedAt: '2026-05-02T22:00:00.000Z',
+      title: '현재 서버 상태 스냅샷',
+      summary: '4대 서버 중 위험 1대입니다.',
+      source: 'otel-static',
+      totals: {
+        total: 4,
+        online: 3,
+        warning: 0,
+        critical: 1,
+        offline: 0,
+      },
+      averages: {
+        cpu: 60,
+        memory: 67.8,
+        disk: 56.8,
+        network: 35,
+      },
+      topServers: [],
+      alerts: [],
+    });
+
+    const { result } = renderHook(() => useAIChatCore());
+
+    await act(async () => {
+      result.current.setInput('현재 상태를 보기 좋게 정리해줘');
+    });
+
+    await act(async () => {
+      result.current.handleSendInput();
+    });
+
+    expect(mocks.sendQuery).toHaveBeenCalledWith(
+      '현재 상태를 보기 좋게 정리해줘',
+      undefined
+    );
+
+    const onJobResult = mocks.getLatestHybridOptions()?.onJobResult as
+      | ((jobResult: {
+          success: boolean;
+          response?: string;
+          assistantPlan?: unknown;
+        }) => void)
+      | undefined;
+    expect(typeof onJobResult).toBe('function');
+
+    await act(async () => {
+      onJobResult?.({
+        success: true,
+        response: '서버 상태 스냅샷을 준비합니다.',
+        assistantPlan: {
+          kind: 'chat',
+          planVersion: '2026-05-03-v1',
+          routeDecision: {
+            intent: 'artifact',
+            executionPath: 'client-artifact',
+            artifactKind: 'server-snapshot',
+            reasonCodes: ['artifact_shadow_candidate'],
+            ruleVersion: '2026-05-03-v1',
+            decidedBy: 'cloud-run',
+          },
+          executionPath: 'client-artifact',
+          stream: false,
+          job: false,
+          artifactKind: 'server-snapshot',
+          reasonCodes: ['artifact_shadow_candidate'],
+          decidedBy: 'cloud-run',
+        },
+      });
+    });
+
+    await waitFor(() => {
+      expect(mocks.generateServerSnapshotArtifact).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: '현재 상태를 보기 좋게 정리해줘',
+          sessionId: 'session-test',
+        })
+      );
+    });
+    await waitFor(() => {
+      expect(
+        result.current.messages[1]?.metadata?.serverSnapshotArtifact
+      ).toBeDefined();
+    });
+    expect(result.current.messages[1]?.metadata?.artifactIntentReason).toBe(
+      'llm_artifact_classification'
+    );
+  });
+
   it('answers ambiguous artifact feature questions locally without API calls', async () => {
     const { result } = renderHook(() => useAIChatCore());
 
