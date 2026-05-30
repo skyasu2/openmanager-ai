@@ -5,14 +5,13 @@ export type OffDomainGuardCategory =
   | 'personal_general'
   | 'general_coding';
 
-export type OffDomainGuardAction = 'block' | 'warn';
-
 export interface OffDomainGuardrailResult {
   category: OffDomainGuardCategory;
-  action: OffDomainGuardAction;
-  /** Warning message to append after the LLM response for warn, and expose in metadata for block. */
+  /** Action decision: 'block' to reject immediately, 'warn' to append warning suffix */
+  action: 'block' | 'warn';
+  /** Warning message (compatibility for existing tests) */
   offDomainWarning: string;
-  /** Deterministic response for block actions. */
+  /** Rejection text for 'block' actions */
   response?: string;
 }
 
@@ -75,9 +74,8 @@ function buildBlockResponse(category: OffDomainGuardCategory): string {
         '저는 서버 운영·모니터링 중심 AI라 이 질문은 지원 범위 밖입니다.',
         '운영 범위 안에서는 서버 상태, 장애 징후, 로그, 리소스 사용률, 조치 명령어를 근거와 함께 분석할 수 있습니다.',
       ].join('\n');
-    case 'external_action':
-    case 'general_coding':
-      return '';
+    default:
+      return '죄송합니다. 제공해 주신 질문은 인프라 및 서버 모니터링 범위를 벗어나 답변을 드릴 수 없습니다.';
   }
 }
 
