@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-30 | **현재 버전 스냅샷**: v8.12.85
+**상태 스냅샷 기준일**: 2026-05-30 | **현재 버전 스냅샷**: v8.12.86
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.86** (2026-05-30) — Bug Fixes: deploy: use cached cloud build config for ai engine
 - **v8.12.85** (2026-05-30) — Bug Fixes: ai: split off-domain block and warn paths; Tests: spec: add off-domain block warn policy specs; Tests: spec: add post-decision artifact bridge specs
 - **v8.12.84** (2026-05-30) — Bug Fixes: ai-engine: hide analyst prefetch internals
 - **v8.12.83** (2026-05-30) — Features: ai-engine: prefetch analyst anomaly evidence; Tests: spec: add analyst evidence prefetch contracts; Bug Fixes: ai-engine: enforce CommonMark output formatting in agent prompts
 - **v8.12.82** (2026-05-30) — Bug Fixes: ai-chat: split trailing horizontal rule glued to line end
-- **v8.12.81** (2026-05-30) — Bug Fixes: ai-chat: normalize loose bold/hr markdown from AI Engine
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
