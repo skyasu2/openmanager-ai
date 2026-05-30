@@ -26,6 +26,8 @@ set -euo pipefail
 QUIET="${1:-}"
 RUNNER_OK=true
 DOCKER_OK=true
+RUNNER_MAX_BUILDS="unknown"
+RELEASE_PARALLELISM="unknown"
 
 # gitlab-runner 서비스/프로세스 확인 (exit code 기준)
 if command -v systemctl >/dev/null 2>&1; then
@@ -47,8 +49,26 @@ if ! docker info &>/dev/null 2>&1; then
   DOCKER_OK=false
 fi
 
+if command -v journalctl >/dev/null 2>&1; then
+  latest_max_builds="$(
+    journalctl -u gitlab-runner -n 200 --no-pager 2>/dev/null \
+      | sed -n 's/.*max_builds=\([0-9][0-9]*\).*/\1/p' \
+      | tail -n 1 \
+      || true
+  )"
+
+  if [[ -n "$latest_max_builds" ]]; then
+    RUNNER_MAX_BUILDS="$latest_max_builds"
+    if [[ "$RUNNER_MAX_BUILDS" -le 1 ]]; then
+      RELEASE_PARALLELISM="runner_capacity_limited"
+    else
+      RELEASE_PARALLELISM="runner_capacity_available"
+    fi
+  fi
+fi
+
 if [[ "$QUIET" != "--quiet" ]]; then
-  echo "runner=${RUNNER_OK} docker=${DOCKER_OK} scope=local"
+  echo "runner=${RUNNER_OK} docker=${DOCKER_OK} scope=local runner_max_builds=${RUNNER_MAX_BUILDS} release_parallelism=${RELEASE_PARALLELISM}"
 fi
 
 # exit code 는 runner 상태만으로 결정 (Docker 무관)
