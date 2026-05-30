@@ -3,13 +3,13 @@
 #
 # Features:
 # - Artifact Registry (gcr.io deprecated)
-# - Optional BuildKit inline cache metadata for manual config-based builds
+# - BuildKit inline cache metadata for config-based builds
 # - Docker layer cache hints for faster rebuilds
-# - Parallel steps where possible
-# - cpu-boost enabled for faster cold start
+# - Parallel image pushes where possible
 #
 # Usage:
-#   gcloud builds submit --config cloudbuild.yaml .
+#   gcloud builds submit --config cloudbuild.yaml \
+#     --substitutions=_IMAGE_TAG=<tag>,_APP_VERSION=<version>,_BUILD_DATE=<iso>,_GIT_SHA=<sha> .
 #
 # Prerequisites:
 #   gcloud artifacts repositories create cloud-run \
@@ -42,9 +42,21 @@ substitutions:
   _REGION: 'asia-northeast1'
   _REPOSITORY: 'cloud-run'
   _IMAGE_TAG: 'latest'
+  _APP_VERSION: '0.0.0'
+  _BUILD_DATE: '1970-01-01T00:00:00Z'
+  _GIT_SHA: 'manual'
 
 steps:
-  # Step 1: Build Docker image with optional BuildKit inline cache metadata
+  # Step 0: Pull the latest image so --cache-from can reuse prior layers.
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'pull-cache'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        docker pull "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:latest" || true
+
+  # Step 1: Build Docker image with BuildKit inline cache metadata
   - name: 'gcr.io/cloud-builders/docker'
     id: 'build'
     args:
@@ -52,27 +64,29 @@ steps:
       - '--build-arg'
       - 'BUILDKIT_INLINE_CACHE=1'
       - '--build-arg'
-      - 'APP_VERSION=${TAG_NAME:-8.3.3}'
+      - 'APP_VERSION=${_APP_VERSION}'
       - '--build-arg'
       - 'BUILD_DATE=${_BUILD_DATE}'
       - '--build-arg'
-      - 'GIT_SHA=${SHORT_SHA}'
+      - 'GIT_SHA=${_GIT_SHA}'
       - '--cache-from'
       - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:latest'
       - '-t'
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:${_IMAGE_TAG}'
       - '-t'
       - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:latest'
       - '.'
     env:
       - 'DOCKER_BUILDKIT=1'
+    waitFor:
+      - 'pull-cache'
 
   # Step 2: Push images (parallel)
   - name: 'gcr.io/cloud-builders/docker'
     id: 'push-sha'
     args:
       - 'push'
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:${_IMAGE_TAG}'
     waitFor:
       - 'build'
 
@@ -83,51 +97,9 @@ steps:
       - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:latest'
     waitFor:
       - 'build'
-
-  # Step 3: Deploy to Cloud Run
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: 'deploy'
-    entrypoint: 'gcloud'
-    args:
-      - 'run'
-      - 'deploy'
-      - '${_SERVICE_NAME}'
-      - '--image'
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
-      - '--platform'
-      - 'managed'
-      - '--region'
-      - '${_REGION}'
-      - '--execution-environment'
-      - 'gen2'
-      - '--allow-unauthenticated'
-      - '--min-instances'
-      - '0'
-      - '--max-instances'
-      - '1'
-      - '--concurrency'
-      - '16'
-      - '--cpu'
-      - '1'
-      - '--memory'
-      - '512Mi'
-      - '--timeout'
-      - '300'
-      - '--cpu-boost'
-      - '--cpu-throttling'
-      - '--no-session-affinity'
-      - '--set-env-vars'
-      - 'NODE_ENV=production,BUILD_SHA=${SHORT_SHA},DEFAULT_ORIGIN=https://openmanager-ai.vercel.app,ALLOWED_ORIGINS=https://openmanager-ai.vercel.app,CEREBRAS_MODEL_ID=gpt-oss-120b,CEREBRAS_FALLBACK_MODEL_IDS=,CEREBRAS_TOOL_CALLING_ENABLED=true,CEREBRAS_LONG_CONTEXT_ENABLED=true'
-      - '--set-secrets'
-      - 'SUPABASE_CONFIG=supabase-config:latest,AI_PROVIDERS_CONFIG=ai-providers-config:latest,KV_CONFIG=kv-config:latest,CLOUD_RUN_API_SECRET=cloud-run-api-secret:latest,LANGFUSE_CONFIG=langfuse-config:latest'
-      - '--update-labels'
-      - 'version=${SHORT_SHA},framework=ai-sdk-v6,registry=artifact'
-    waitFor:
-      - 'push-sha'
-
 # Images to be pushed
 images:
-  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:${_IMAGE_TAG}'
   - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:latest'
 
 # Build timeout

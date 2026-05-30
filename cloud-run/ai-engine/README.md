@@ -24,7 +24,7 @@ npm run test
 npm run test:all
 
 # Deploy to Cloud Run
-# 권장: 운영 배포 스크립트(Cloud Build 원격 빌드 + Free Tier 가드레일)
+# 권장: 운영 배포 스크립트(Cloud Build 원격 빌드/cache + Free Tier 가드레일)
 bash deploy.sh
 
 # Artifact Registry cleanup 재점검
@@ -294,6 +294,7 @@ npm run prompt:redteam
 ```bash
 # Recommended deployment
 # - includes free-tier guard
+# - builds with cloudbuild.yaml so Artifact Registry latest can seed Docker layer cache
 # - runs local Docker preflight in build-only mode by default
 bash deploy.sh
 
@@ -319,7 +320,7 @@ SKIP_RUN=true npm run docker:preflight
 
 Notes:
 - In WSL environments, the preflight script automatically falls back to `cmd.exe /c docker ...` when `/var/run/docker.sock` is unavailable.
-- `bash deploy.sh` now uses build-only preflight by default; set `LOCAL_DOCKER_PREFLIGHT_SKIP_RUN=false` when you want the local container `/health` check too.
+- `bash deploy.sh` now uses build-only preflight by default and submits `cloudbuild.yaml` for the remote cached image build; set `LOCAL_DOCKER_PREFLIGHT_SKIP_RUN=false` when you want the local container `/health` check too.
 - If build fails due to lock mismatch, sync dependencies in `cloud-run/ai-engine` and retry.
 
 ## Version

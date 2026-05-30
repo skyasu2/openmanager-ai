@@ -3,6 +3,9 @@
 # ==============================================================================
 # Cloud Run Deployment Script (AI Engine)
 #
+# v7.5 - 2026-05-30 (Cached Cloud Build Config Path)
+#   - Use cloudbuild.yaml instead of --tag mode so Docker layer cache can be reused
+#   - Keep Cloud Run deploy in deploy.sh to preserve GitLab service-account permissions
 # v7.4 - 2026-03-15 (Docker Preflight Default Restore)
 #   - Restored local Docker preflight as default now that build flow is stable again
 #   - Uses build-only mode by default to catch Docker regressions without mandatory local run
@@ -336,60 +339,6 @@ assert_no_forbidden_args() {
   done
 }
 
-extract_cloudbuild_flag_value() {
-  local flag="$1"
-  awk -v target="$flag" '
-    BEGIN { found = 0 }
-    {
-      line = $0
-      gsub(/\r$/, "", line)
-    }
-    found == 0 {
-      if (line ~ /^[[:space:]]*-[[:space:]]*'\''[^'\'']+'\''[[:space:]]*$/) {
-        candidate = line
-        sub(/^[[:space:]]*-[[:space:]]*'\''/, "", candidate)
-        sub(/'\''[[:space:]]*$/, "", candidate)
-        if (candidate == target) {
-          found = 1
-        }
-      }
-      next
-    }
-    found == 1 {
-      if (line ~ /^[[:space:]]*$/) next
-      if (line ~ /^[[:space:]]*#/) next
-      if (line ~ /^[[:space:]]*-[[:space:]]*'\''[^'\'']+'\''[[:space:]]*$/) {
-        value = line
-        sub(/^[[:space:]]*-[[:space:]]*'\''/, "", value)
-        sub(/'\''[[:space:]]*$/, "", value)
-        print value
-        exit
-      }
-      if (line ~ /^[[:space:]]*-[[:space:]]*[^[:space:]]+[[:space:]]*$/) {
-        value = line
-        sub(/^[[:space:]]*-[[:space:]]*/, "", value)
-        sub(/[[:space:]]*$/, "", value)
-        print value
-        exit
-      }
-      exit
-    }
-  ' "$SCRIPT_DIR/cloudbuild.yaml"
-}
-
-assert_cloudbuild_flag_value() {
-  local flag="$1"
-  local expected="$2"
-  local actual
-  actual=$(extract_cloudbuild_flag_value "$flag")
-  if [ -z "$actual" ]; then
-    fail_free_tier_guard "cloudbuild.yaml missing $flag"
-  fi
-  if [ "$actual" != "$expected" ]; then
-    fail_free_tier_guard "cloudbuild.yaml $flag must be $expected (current: $actual)"
-  fi
-}
-
 enforce_free_tier_guards() {
   echo ""
   echo "🛡️ Enforcing free-tier guardrails..."
@@ -411,13 +360,6 @@ enforce_free_tier_guards() {
     fail_free_tier_guard "cloudbuild.yaml contains forbidden machine-type/highcpu settings"
   fi
 
-  assert_cloudbuild_flag_value "--min-instances" "$FREE_TIER_MIN_INSTANCES"
-  assert_cloudbuild_flag_value "--max-instances" "$FREE_TIER_MAX_INSTANCES"
-  assert_cloudbuild_flag_value "--concurrency" "$FREE_TIER_CONCURRENCY"
-  assert_cloudbuild_flag_value "--cpu" "$FREE_TIER_CPU"
-  assert_cloudbuild_flag_value "--memory" "$FREE_TIER_MEMORY"
-  assert_cloudbuild_flag_value "--timeout" "$FREE_TIER_TIMEOUT"
-
   echo "   ✅ Free-tier guardrails passed"
 }
 
@@ -426,7 +368,13 @@ enforce_cloud_build_dockerfile_compatibility() {
   echo "🧱 Enforcing Cloud Build Dockerfile compatibility..."
 
   if grep -Ev '^[[:space:]]*#' "$SCRIPT_DIR/Dockerfile" | grep -Eq '^[[:space:]]*RUN[[:space:]]+--mount='; then
-    fail_free_tier_guard "Dockerfile uses BuildKit-only RUN --mount while deploy.sh uses gcloud builds submit --tag"
+    if ! grep -Ev '^[[:space:]]*#' "$SCRIPT_DIR/cloudbuild.yaml" | grep -q 'DOCKER_BUILDKIT=1'; then
+      fail_free_tier_guard "Dockerfile uses BuildKit RUN --mount but cloudbuild.yaml does not enable BuildKit"
+    fi
+  fi
+
+  if ! grep -Ev '^[[:space:]]*#' "$SCRIPT_DIR/cloudbuild.yaml" | grep -q -- '--cache-from'; then
+    fail_free_tier_guard "cloudbuild.yaml must keep --cache-from for cached deploy builds"
   fi
 
   echo "   ✅ Cloud Build Dockerfile compatibility passed"
@@ -480,17 +428,26 @@ fi
 # 1. Build Container Image (Cloud Build)
 echo ""
 echo "📦 Building Container Image..."
-echo "   Using Cloud Build default Docker builder..."
+echo "   Using Cloud Build config with Artifact Registry layer cache..."
 echo "   Target: Artifact Registry"
 
 # Use Cloud Build's default builder path used by GitLab CI release deploys.
 # ⚠️ FREE TIER: Do NOT add --machine-type (default pool free tier: e2-standard-2 2,500 build-min/month)
 #    e2-highcpu-8 등 커스텀 머신은 무료 대상 아님!
-# Note: --tag mode uses Dockerfile ARG defaults for APP_VERSION/BUILD_DATE/GIT_SHA.
-# For dynamic version passing, use: gcloud builds submit --config cloudbuild.yaml --substitutions=TAG_NAME=$APP_VERSION
+CLOUDBUILD_SUBSTITUTIONS=(
+  "_SERVICE_NAME=${SERVICE_NAME}"
+  "_REGION=${REGION}"
+  "_REPOSITORY=${REPOSITORY}"
+  "_IMAGE_TAG=${TAG}"
+  "_APP_VERSION=${APP_VERSION}"
+  "_BUILD_DATE=${BUILD_DATE}"
+  "_GIT_SHA=${SHORT_SHA}"
+)
+CLOUDBUILD_SUBSTITUTIONS_CSV="$(IFS=,; printf '%s' "${CLOUDBUILD_SUBSTITUTIONS[*]}")"
 BUILD_CMD=(
   gcloud builds submit
-  --tag "$IMAGE_URI"
+  --config cloudbuild.yaml
+  --substitutions "$CLOUDBUILD_SUBSTITUTIONS_CSV"
   --timeout=600s
   .
 )

@@ -22,7 +22,7 @@ cd ai-engine
 ```
 
 현재 레포 공식 배포 경로는 `./deploy.sh`입니다.
-- `deploy.sh`는 `gcloud builds submit`로 Cloud Build에서 Docker를 원격 빌드합니다.
+- `deploy.sh`는 `cloudbuild.yaml` 기반 `gcloud builds submit --config`로 Cloud Build에서 Docker 이미지를 원격 빌드하고, `latest` 이미지를 cache source로 재사용합니다.
 - 수동 실행 기본값은 `scripts/docker-preflight.sh`의 로컬 Docker build-only 사전 점검을 먼저 수행합니다.
 - GitLab CI `deploy_ai_engine`는 중복 로컬 빌드를 피하기 위해 `LOCAL_DOCKER_PREFLIGHT=false`로 실행하고, Cloud Build를 운영 이미지 빌드 권위로 둡니다.
 - 실 배포는 `gcloud run deploy --image ...`로 진행되며, 로컬 Docker 결과물을 바로 사용하지 않습니다.

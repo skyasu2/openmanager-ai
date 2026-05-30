@@ -49,7 +49,7 @@ RUN npm install -g npm@${NPM_VERSION} && npm cache clean --force
 COPY package.json package-lock.json ./
 
 # Install dependencies with npm ci for reproducibility. Keep this compatible
-# with Cloud Build's default Docker builder used by deploy.sh.
+# with deploy.sh's cloudbuild.yaml config path.
 RUN npm ci --ignore-scripts && npm cache clean --force
 
 # ============================================================================

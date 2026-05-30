@@ -170,6 +170,9 @@ deploy_ai_engine:
         'cloud-run/ai-engine/deploy.sh missing BUILD_CMD forbidden-arg guard',
         'cloud-run/ai-engine/deploy.sh missing DEPLOY_CMD forbidden-arg guard',
         'cloud-run/ai-engine/deploy.sh missing free-tier guard enforcement',
+        'cloud-run/ai-engine/deploy.sh missing Cloud Build config mode (--config cloudbuild.yaml)',
+        'cloud-run/ai-engine/cloudbuild.yaml missing BuildKit inline cache metadata',
+        'cloud-run/ai-engine/cloudbuild.yaml missing --cache-from layer cache hint',
       ],
     });
     expect(exitSpy).not.toHaveBeenCalled();
@@ -181,7 +184,16 @@ deploy_ai_engine:
       (filePath: fs.PathOrFileDescriptor) => {
         const normalized = String(filePath).replace(/\\/g, '/');
         if (normalized.endsWith('/cloud-run/ai-engine/cloudbuild.yaml')) {
-          return '# machineType: E2_HIGHCPU_8\nsteps:\n  - name: gcr.io/cloud-builders/docker\n';
+          return [
+            '# machineType: E2_HIGHCPU_8',
+            'steps:',
+            '  - name: gcr.io/cloud-builders/docker',
+            '    args:',
+            "      - '--build-arg'",
+            "      - 'BUILDKIT_INLINE_CACHE=1'",
+            "      - '--cache-from'",
+            "      - 'asia-northeast1-docker.pkg.dev/project/cloud-run/ai-engine:latest'",
+          ].join('\n');
         }
         if (normalized.endsWith('/cloud-run/ai-engine/Dockerfile')) {
           return 'FROM node:24-alpine3.21\n# RUN --mount=commented\nRUN npm ci --ignore-scripts\n';
@@ -192,6 +204,11 @@ deploy_ai_engine:
             'assert_no_forbidden_args "$' + '{BUILD_CMD[@]}"',
             'assert_no_forbidden_args "$' + '{DEPLOY_CMD[@]}"',
             'enforce_free_tier_guards',
+            'BUILD_CMD=(',
+            '  gcloud builds submit',
+            '  --config cloudbuild.yaml',
+            '  .',
+            ')',
           ].join('\n');
         }
         throw new Error(`Unexpected readFileSync path: ${normalized}`);
@@ -265,6 +282,10 @@ deploy_ai_engine:
       ok: false,
       reason: 'cloud-build-free-tier-guard',
       failures: [
+        'cloud-run/ai-engine/deploy.sh uses gcloud builds submit --tag; use --config cloudbuild.yaml for cached builds',
+        'cloud-run/ai-engine/deploy.sh missing Cloud Build config mode (--config cloudbuild.yaml)',
+        'cloud-run/ai-engine/cloudbuild.yaml missing BuildKit inline cache metadata',
+        'cloud-run/ai-engine/cloudbuild.yaml missing --cache-from layer cache hint',
         'cloud-run/ai-engine/Dockerfile contains BuildKit-only RUN --mount while deploy.sh uses gcloud builds submit --tag',
       ],
     });

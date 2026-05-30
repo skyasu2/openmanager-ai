@@ -99,6 +99,13 @@ function deployUsesDefaultCloudBuildTagMode(deployBody) {
   );
 }
 
+function deployUsesCloudBuildConfigMode(deployBody) {
+  return (
+    /\bgcloud\s+builds\s+submit\b/.test(deployBody) &&
+    /(^|\n)\s*--config\s+cloudbuild\.yaml\b/.test(deployBody)
+  );
+}
+
 function dockerfileUsesBuildKitRunMount(dockerfileBody) {
   return dockerfileBody
     .split('\n')
@@ -247,6 +254,26 @@ function checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD
 
   if (!deployRaw.includes('enforce_free_tier_guards')) {
     failures.push('cloud-run/ai-engine/deploy.sh missing free-tier guard enforcement');
+  }
+
+  if (deployUsesDefaultCloudBuildTagMode(deployBody)) {
+    failures.push(
+      'cloud-run/ai-engine/deploy.sh uses gcloud builds submit --tag; use --config cloudbuild.yaml for cached builds'
+    );
+  }
+
+  if (!deployUsesCloudBuildConfigMode(deployBody)) {
+    failures.push(
+      'cloud-run/ai-engine/deploy.sh missing Cloud Build config mode (--config cloudbuild.yaml)'
+    );
+  }
+
+  if (!/BUILDKIT_INLINE_CACHE=1/.test(cloudbuildBody)) {
+    failures.push('cloud-run/ai-engine/cloudbuild.yaml missing BuildKit inline cache metadata');
+  }
+
+  if (!/(^|\n)\s*-\s*'--cache-from'/.test(cloudbuildBody)) {
+    failures.push('cloud-run/ai-engine/cloudbuild.yaml missing --cache-from layer cache hint');
   }
 
   if (
