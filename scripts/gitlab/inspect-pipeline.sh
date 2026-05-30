@@ -128,7 +128,7 @@ gitlab_request() {
 }
 
 print_pipeline() {
-  jq -r '"pipeline id=\(.id) status=\(.status) ref=\(.ref) sha=\(.sha) source=\(.source) updated_at=\(.updated_at) url=\(.web_url)"'
+  jq -r '"pipeline id=\(.id) status=\(.status) ref=\(.ref) sha=\(.sha) source=\(.source) duration=\((.duration // "none")) updated_at=\(.updated_at) url=\(.web_url)"'
 }
 
 load_dotenv_if_needed
@@ -191,7 +191,62 @@ jq -r --argjson resourceQueue "$resource_queue_json" '
   def resource_group_for($jobId):
     ($resourceQueue[]? | select(.id == $jobId) | .resource_group_key) // "none";
   .[]
-  | "job id=\(.id) name=\(.name) stage=\(.stage) status=\(.status) resource_group=\(resource_group_for(.id)) runner=\((.runner.description // .runner.id // "none")) queued_duration=\((.queued_duration // "none")) url=\(.web_url)"
+  | "job id=\(.id) name=\(.name) stage=\(.stage) status=\(.status) resource_group=\(resource_group_for(.id)) runner=\((.runner.description // .runner.id // "none")) queued_duration=\((.queued_duration // "none")) duration=\((.duration // "none")) started_at=\((.started_at // "none")) finished_at=\((.finished_at // "none")) url=\(.web_url)"
+' <<<"$jobs_json"
+
+printf '\nTiming Summary\n'
+jq -r '
+  def to_epoch:
+    if . == null then
+      null
+    else
+      (sub("\\.[0-9]+Z$"; "Z") | fromdateiso8601)
+    end;
+  def fmt_seconds($value):
+    if $value == null then
+      "none"
+    else
+      (((($value * 100) | round) / 100 | tostring) + "s")
+    end;
+  def abs:
+    if . < 0 then -. else . end;
+  def started_jobs:
+    [
+      .[]
+      | select(.started_at != null)
+      | {
+          name,
+          stage,
+          start: (.started_at | to_epoch),
+          finish: (if .finished_at == null then null else (.finished_at | to_epoch) end),
+          duration: (.duration // null)
+        }
+    ];
+
+  started_jobs as $jobs
+  | if ($jobs | length) == 0 then
+      "- no_started_jobs"
+    else
+      (
+        $jobs
+        | group_by(.stage)[]
+        | sort_by(.start) as $stageJobs
+        | ($stageJobs | map(select(.finish != null))) as $finished
+        | "stage_timing stage=\($stageJobs[0].stage) jobs=\($stageJobs | length) wall=\(fmt_seconds(if ($finished | length) == 0 then null else (($finished | max_by(.finish) | .finish) - ($stageJobs | min_by(.start) | .start)) end)) duration_sum=\(fmt_seconds($stageJobs | map(.duration // 0) | add))"
+      ),
+      (
+        ($jobs | map(select(.name == "deploy" or .name == "deploy_ai_engine")) | sort_by(.name)) as $deployJobs
+        | if ($deployJobs | length) == 2 and ($deployJobs[0].finish != null) and ($deployJobs[1].finish != null) then
+            ($deployJobs[0]) as $a
+            | ($deployJobs[1]) as $b
+            | ([0, ([ $a.finish, $b.finish ] | min) - ([ $a.start, $b.start ] | max)] | max) as $overlap
+            | (($a.start - $b.start) | abs) as $startDelta
+            | "deploy_parallelism jobs=2 start_delta=\(fmt_seconds($startDelta)) overlap=\(fmt_seconds($overlap)) note=\(if $overlap > 0 then "overlap_detected" else "no_overlap_detected" end)"
+          else
+            "deploy_parallelism jobs=\($deployJobs | length) note=deploy_pair_not_observable"
+          end
+      )
+    end
 ' <<<"$jobs_json"
 
 printf '\nResource Queues\n'
