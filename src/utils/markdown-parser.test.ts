@@ -1,56 +1,24 @@
 import { isValidElement, type ReactElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import {
   hasExecutableCode,
+  normalizeAssistantMarkdown,
   parseMarkdownContent,
   parseMarkdownLinks,
   RenderMarkdownContent,
 } from '@/utils/markdown-parser';
 
-type RenderNode = ReactElement | string | number | null | undefined | boolean;
-
-const hasAnchorNode = (node: RenderNode): boolean => {
-  if (!node) return false;
-
-  if (isValidElement(node)) {
-    if (node.type === 'a') {
-      return true;
-    }
-
-    const children = node.props?.children;
-    if (!children) return false;
-    const list = Array.isArray(children) ? children : [children];
-
-    return list.some((child: RenderNode) => hasAnchorNode(child));
+/**
+ * RenderMarkdownContent 는 react-markdown 으로 렌더 시점에 마크다운을 파싱하므로,
+ * 반환된 element 트리를 정적으로 순회하는 대신 HTML 로 렌더해서 검증합니다.
+ */
+const renderMarkdownHtml = (content: string): string => {
+  const element = RenderMarkdownContent({ content });
+  if (!isValidElement(element)) {
+    throw new Error('Expected RenderMarkdownContent to return an element');
   }
-
-  if (Array.isArray(node)) {
-    return node.some((child) => hasAnchorNode(child));
-  }
-
-  return false;
-};
-
-const hasElementType = (node: RenderNode, type: string): boolean => {
-  if (!node) return false;
-
-  if (isValidElement(node)) {
-    if (node.type === type) {
-      return true;
-    }
-
-    const children = node.props?.children;
-    if (!children) return false;
-    const list = Array.isArray(children) ? children : [children];
-
-    return list.some((child: RenderNode) => hasElementType(child, type));
-  }
-
-  if (Array.isArray(node)) {
-    return node.some((child) => hasElementType(child, type));
-  }
-
-  return false;
+  return renderToStaticMarkup(element as ReactElement);
 };
 
 describe('parseMarkdownLinks', () => {
@@ -97,7 +65,7 @@ describe('parseMarkdownLinks', () => {
   });
 });
 
-describe('markdown parser legacy paths', () => {
+describe('markdown parser pure utilities', () => {
   const targetVariable = '$' + '{target}';
 
   it('preserves code block parsing behavior', () => {
@@ -142,29 +110,53 @@ describe('markdown parser legacy paths', () => {
     expect(hasExecutableCode('```python\nprint(1)\n```')).toBe(true);
     expect(hasExecutableCode('```js\nconsole.log(1)\n```')).toBe(false);
   });
+});
 
-  it('renders markdown links inside RenderMarkdownContent', () => {
-    const rendered = RenderMarkdownContent({
-      content: '[OpenManager](https://openmanager.ai)',
-    });
+describe('normalizeAssistantMarkdown', () => {
+  it('splits an inline horizontal rule onto its own line', () => {
+    const normalized = normalizeAssistantMarkdown('분석 --- ### 현황 요약');
+    expect(normalized).toContain('\n---\n');
+    expect(normalized).toMatch(/\n### 현황 요약/);
+  });
 
-    if (!isValidElement(rendered)) {
-      throw new Error('Expected RenderMarkdownContent to return an element');
-    }
+  it('adds a space after a glued compact heading', () => {
+    const normalized = normalizeAssistantMarkdown(
+      '##정상서버목록\n###CPU사용률80%미만'
+    );
+    expect(normalized).toContain('## 정상서버목록');
+    expect(normalized).toContain('### CPU사용률80%미만');
+  });
 
-    expect(hasAnchorNode(rendered)).toBe(true);
+  it('leaves GFM table separators untouched', () => {
+    const table = '| a | b |\n|---|---|\n| 1 | 2 |';
+    expect(normalizeAssistantMarkdown(table)).toBe(table);
+  });
+});
+
+describe('RenderMarkdownContent', () => {
+  it('renders markdown links as anchors', () => {
+    const html = renderMarkdownHtml('[OpenManager](https://openmanager.ai)');
+    expect(html).toContain('<a ');
+    expect(html).toContain('href="https://openmanager.ai"');
   });
 
   it('renders compact heading markers without leaking raw hash prefixes', () => {
-    const rendered = RenderMarkdownContent({
-      content: '##정상서버목록\n###CPU사용률80%미만\n1. **api-was-dc1-01**',
-    });
+    const html = renderMarkdownHtml(
+      '##정상서버목록\n###CPU사용률80%미만\n1. **api-was-dc1-01**'
+    );
 
-    if (!isValidElement(rendered)) {
-      throw new Error('Expected RenderMarkdownContent to return an element');
-    }
+    expect(html).toContain('<h2');
+    expect(html).toContain('<h3');
+    expect(html).not.toContain('##정상서버목록');
+  });
 
-    expect(hasElementType(rendered, 'h2')).toBe(true);
-    expect(hasElementType(rendered, 'h3')).toBe(true);
+  it('renders an inline horizontal rule + heading flattened by the AI Engine', () => {
+    const html = renderMarkdownHtml('분석 --- ### 현황 요약');
+
+    expect(html).toContain('<hr');
+    expect(html).toContain('<h3');
+    expect(html).toContain('현황 요약');
+    // 평탄화된 마크다운 토큰이 literal 로 노출되지 않아야 한다.
+    expect(html).not.toContain('--- ###');
   });
 });

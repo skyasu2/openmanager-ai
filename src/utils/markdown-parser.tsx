@@ -1,6 +1,8 @@
 'use client';
 
-import React from 'react';
+import type React from 'react';
+import ReactMarkdown, { type Components } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { CodeExecutionBlock } from '@/components/ai/CodeExecutionBlock';
 
 export interface ContentBlock {
@@ -11,6 +13,9 @@ export interface ContentBlock {
 
 /**
  * Parse markdown content into text and code blocks
+ *
+ * 순수 유틸리티입니다. 코드 블록 텍스트/언어 추출이 필요한 호출부에서 재사용할 수 있도록
+ * 유지합니다. UI 렌더링은 `RenderMarkdownContent`(react-markdown)를 사용하세요.
  */
 export function parseMarkdownContent(content: string): ContentBlock[] {
   const blocks: ContentBlock[] = [];
@@ -74,52 +79,6 @@ export function hasExecutableCode(content: string): boolean {
   return pythonCodeRegex.test(content);
 }
 
-export interface RenderMarkdownContentProps {
-  content: string;
-  className?: string;
-}
-
-/**
- * Render markdown content with executable code blocks
- */
-export function RenderMarkdownContent({
-  content,
-  className = '',
-}: RenderMarkdownContentProps): React.ReactNode {
-  const blocks = parseMarkdownContent(content);
-
-  return (
-    <div className={className}>
-      {blocks.map((block, index) => {
-        if (block.type === 'code') {
-          const isPython =
-            block.language?.toLowerCase() === 'python' ||
-            block.language?.toLowerCase() === 'py';
-
-          return (
-            <CodeExecutionBlock
-              key={index}
-              code={block.content}
-              language={block.language || 'text'}
-              showRunButton={isPython}
-            />
-          );
-        }
-
-        // Render text content with basic formatting
-        return (
-          <div
-            key={index}
-            className="whitespace-pre-wrap break-words text-chat leading-relaxed"
-          >
-            {renderFormattedText(block.content)}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 const SAFE_LINK_PROTOCOLS = ['http:', 'https:', 'mailto:'];
 
 function isSafeMarkdownLink(url: string): boolean {
@@ -152,6 +111,8 @@ function isSafeMarkdownLink(url: string): boolean {
 /**
  * 간단한 마크다운 링크 패턴을 파싱하여 React 요소로 변환합니다.
  * 형식: [텍스트](URL) -> <a href="URL">텍스트</a>
+ *
+ * 순수 유틸리티입니다. 인라인 링크만 필요한 호출부에서 재사용할 수 있도록 유지합니다.
  */
 export function parseMarkdownLinks(text: string): React.ReactNode[] {
   const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
@@ -196,177 +157,153 @@ export function parseMarkdownLinks(text: string): React.ReactNode[] {
 }
 
 /**
- * Render inline content: bold, inline code, links
+ * AI Engine 응답의 평탄화된(블록 토큰을 한 줄에 몰아쓴) 마크다운을 CommonMark 가
+ * 인식할 수 있는 형태로 정규화합니다.
+ *
+ * AI Engine 의 합성/스트리밍 경로가 종종 `... 분석 --- ### 현황 요약` 처럼
+ * 수평선(`---`)과 헤딩(`###`)을 줄바꿈 없이 인라인으로 내보내면, CommonMark 규칙상
+ * 라인 중간의 `---`/`###` 는 블록 요소가 아니라 일반 텍스트로 렌더되어 마크업이
+ * 그대로 노출됩니다. 아래 보정으로 해당 토큰을 독립 라인으로 분리합니다.
+ *
+ * 테이블 구분자(`|---|`)·이미 줄바꿈된 수평선은 건드리지 않도록 공백으로 둘러싸인
+ * 경우만 처리합니다.
  */
-function renderInlineContent(text: string, keyPrefix: string): React.ReactNode {
-  const parts = text.split(/(`[^`]+`)/g);
+export function normalizeAssistantMarkdown(content: string): string {
+  if (typeof content !== 'string' || content.length === 0) {
+    return '';
+  }
 
-  const renderBoldItalicText = (value: string, kp: string) => {
-    // Split on **bold** and *italic* patterns (bold first to avoid conflict)
-    const parts = value.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
-    if (parts.length === 1) return <span key={kp}>{value}</span>;
-    return (
-      <span key={kp}>
-        {parts.map((p, i) => {
-          if (p.startsWith('**') && p.endsWith('**') && p.length > 4) {
-            return (
-              <strong key={`${kp}-b-${i}`} className="font-semibold">
-                {p.slice(2, -2)}
-              </strong>
-            );
-          }
-          if (p.startsWith('*') && p.endsWith('*') && p.length > 2) {
-            return (
-              <em key={`${kp}-i-${i}`} className="italic">
-                {p.slice(1, -1)}
-              </em>
-            );
-          }
-          return <span key={`${kp}-t-${i}`}>{p}</span>;
-        })}
-      </span>
-    );
-  };
-
-  const renderTextWithLinks = (value: string, kp: string) => {
-    const linkParts = parseMarkdownLinks(value);
-    return linkParts.map((linkPart, i) => {
-      if (typeof linkPart === 'string') {
-        return renderBoldItalicText(linkPart, `${kp}-text-${i}`);
-      }
-      return (
-        <React.Fragment key={`${kp}-link-${i}`}>{linkPart}</React.Fragment>
-      );
-    });
-  };
-
-  return parts.map((part, index) => {
-    if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
-      return (
-        <code
-          key={`${keyPrefix}-code-${index}`}
-          className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-sm text-pink-600 dark:bg-gray-800 dark:text-pink-400"
-        >
-          {part.slice(1, -1)}
-        </code>
-      );
-    }
-    return (
-      <React.Fragment key={`${keyPrefix}-${index}`}>
-        {renderTextWithLinks(part, `${keyPrefix}-${index}`)}
-      </React.Fragment>
-    );
-  });
+  return (
+    content
+      // 1) 인라인 수평선: "텍스트 --- 텍스트" → 독립 블록으로 분리
+      .replace(/([^\n|`-])[ \t]+(-{3,})[ \t]+(?=\S)/g, '$1\n\n$2\n\n')
+      // 2) 공백 없이 붙은 compact 헤딩 앞 줄바꿈: "텍스트##제목"
+      .replace(/([^#\n\s])(#{2,6})(?=[^\s#])/g, '$1\n\n$2')
+      // 3) 줄 중간에 공백을 둔 헤딩 앞 줄바꿈: "텍스트 ## 제목"
+      .replace(/([^\n])[ \t]+(#{2,6}[ \t])/g, '$1\n\n$2')
+      // 4) 라인 시작 compact 헤딩 공백 보정: "##제목" → "## 제목"
+      .replace(/(^|\n)(#{1,6})([^\s#])/g, '$1$2 $3')
+  );
 }
 
-const HEADING_REGEX = /^(#{1,3})\s+(.+)$/;
-const COMPACT_HEADING_REGEX = /^(#{2,3})([^\s#].+)$/;
-const ORDERED_LIST_REGEX = /^(\d+)\.\s+(.+)$/;
-const UNORDERED_LIST_REGEX = /^[-*]\s+(.+)$/;
-const HR_REGEX = /^---+$/;
-
-function normalizeCompactHeadingMarkdown(text: string): string {
-  return text
-    .replace(/([^#\n])(?=#{2,3}[^\s#\n])/g, '$1\n')
-    .replace(/(^|\n)(#{2,3})([^\s#\n])/g, '$1$2 $3');
+export interface RenderMarkdownContentProps {
+  content: string;
+  className?: string;
 }
 
 /**
- * Render text with full block-level markdown support:
- * headings (###/##/#), ordered/unordered lists, horizontal rules,
- * and inline formatting (bold, code, links).
+ * react-markdown 컴포넌트 매핑.
+ * - 코드 블록은 `CodeExecutionBlock` 으로 위임하여 Python 실행 기능을 유지합니다.
+ * - 헤딩/리스트/수평선 등은 AI 사이드바 라이트 테마에 맞춘 스타일을 적용합니다.
  */
-function renderFormattedText(text: string): React.ReactNode {
-  const lines = normalizeCompactHeadingMarkdown(text).split('\n');
-  const nodes: React.ReactNode[] = [];
-  let listBuffer: { ordered: boolean; items: string[] } | null = null;
+const markdownComponents: Components = {
+  // CodeExecutionBlock 이 자체 컨테이너를 포함하므로 <pre> 중첩을 제거합니다.
+  pre: ({ children }) => <>{children}</>,
+  code: ({ className, children, node }) => {
+    const isInline =
+      !node?.position || node.position.start.line === node.position.end.line;
 
-  const flushList = (key: string) => {
-    if (!listBuffer) return;
-    const { ordered, items } = listBuffer;
-    const Tag = ordered ? 'ol' : 'ul';
-    const listClass = ordered
-      ? 'my-1 ml-4 list-decimal space-y-0.5'
-      : 'my-1 ml-4 list-disc space-y-0.5';
-    nodes.push(
-      <Tag key={key} className={listClass}>
-        {items.map((item, i) => (
-          <li key={i} className="text-chat leading-relaxed">
-            {renderInlineContent(item, `${key}-li-${i}`)}
-          </li>
-        ))}
-      </Tag>
-    );
-    listBuffer = null;
-  };
-
-  lines.forEach((line, i) => {
-    const key = `line-${i}`;
-
-    // Horizontal rule
-    if (HR_REGEX.test(line.trim())) {
-      flushList(`list-before-hr-${i}`);
-      nodes.push(<hr key={key} className="my-2 border-slate-200" />);
-      return;
-    }
-
-    // Headings
-    const headingMatch =
-      line.match(HEADING_REGEX) ?? line.match(COMPACT_HEADING_REGEX);
-    if (headingMatch) {
-      flushList(`list-before-h-${i}`);
-      const level = (headingMatch[1] ?? '').length;
-      const headingText = headingMatch[2] ?? '';
-      const headingClasses: Record<number, string> = {
-        1: 'mt-3 mb-1 text-base font-bold text-slate-800',
-        2: 'mt-2 mb-1 text-sm font-bold text-slate-700',
-        3: 'mt-1.5 mb-0.5 text-sm font-semibold text-slate-600',
-      };
-      const cls = headingClasses[level] ?? headingClasses[3];
-      const Tag = `h${level}` as 'h1' | 'h2' | 'h3';
-      nodes.push(
-        <Tag key={key} className={cls}>
-          {renderInlineContent(headingText, key)}
-        </Tag>
+    if (isInline) {
+      return (
+        <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-sm text-pink-600 dark:bg-gray-800 dark:text-pink-400">
+          {children}
+        </code>
       );
-      return;
     }
 
-    // Ordered list item
-    const orderedMatch = line.match(ORDERED_LIST_REGEX);
-    if (orderedMatch) {
-      if (listBuffer && !listBuffer.ordered) flushList(`list-switch-${i}`);
-      if (!listBuffer) listBuffer = { ordered: true, items: [] };
-      listBuffer.items.push(orderedMatch[2] ?? '');
-      return;
-    }
+    const match = /language-(\w+)/.exec(className || '');
+    const language = match?.[1] || 'text';
+    const codeText = String(children).replace(/\n$/, '');
+    const isPython =
+      language.toLowerCase() === 'python' || language.toLowerCase() === 'py';
 
-    // Unordered list item
-    const unorderedMatch = line.match(UNORDERED_LIST_REGEX);
-    if (unorderedMatch) {
-      if (listBuffer?.ordered) flushList(`list-switch-${i}`);
-      if (!listBuffer) listBuffer = { ordered: false, items: [] };
-      listBuffer.items.push(unorderedMatch[1] ?? '');
-      return;
-    }
-
-    // Empty line — flush pending list, add spacing
-    if (line.trim() === '') {
-      flushList(`list-before-empty-${i}`);
-      nodes.push(<br key={key} />);
-      return;
-    }
-
-    // Regular text line
-    flushList(`list-before-text-${i}`);
-    nodes.push(
-      <span key={key} className="block leading-relaxed">
-        {renderInlineContent(line, key)}
-      </span>
+    return (
+      <CodeExecutionBlock
+        code={codeText}
+        language={language}
+        showRunButton={isPython}
+      />
     );
-  });
+  },
+  a: ({ href, children }) => (
+    <a
+      href={href ?? '#'}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="font-medium text-blue-400 hover:text-blue-300 underline decoration-blue-500/30 hover:decoration-blue-400 underline-offset-2 transition-colors"
+    >
+      {children}
+    </a>
+  ),
+  h1: ({ children }) => (
+    <h1 className="mt-3 mb-1 text-base font-bold text-slate-800">{children}</h1>
+  ),
+  h2: ({ children }) => (
+    <h2 className="mt-2 mb-1 text-sm font-bold text-slate-700">{children}</h2>
+  ),
+  h3: ({ children }) => (
+    <h3 className="mt-1.5 mb-0.5 text-sm font-semibold text-slate-600">
+      {children}
+    </h3>
+  ),
+  ul: ({ children }) => (
+    <ul className="my-1 ml-4 list-disc space-y-0.5">{children}</ul>
+  ),
+  ol: ({ children }) => (
+    <ol className="my-1 ml-4 list-decimal space-y-0.5">{children}</ol>
+  ),
+  li: ({ children }) => (
+    <li className="text-chat leading-relaxed">{children}</li>
+  ),
+  hr: () => <hr className="my-2 border-slate-200" />,
+  p: ({ children }) => (
+    <p className="my-1 text-chat leading-relaxed break-words">{children}</p>
+  ),
+  strong: ({ children }) => (
+    <strong className="font-semibold">{children}</strong>
+  ),
+  em: ({ children }) => <em className="italic">{children}</em>,
+  blockquote: ({ children }) => (
+    <blockquote className="my-2 border-l-2 border-slate-300 pl-3 text-slate-600 italic">
+      {children}
+    </blockquote>
+  ),
+  table: ({ children }) => (
+    <div className="my-2 overflow-x-auto">
+      <table className="min-w-full border-collapse text-sm">{children}</table>
+    </div>
+  ),
+  th: ({ children }) => (
+    <th className="border border-slate-200 px-2 py-1 text-left font-semibold">
+      {children}
+    </th>
+  ),
+  td: ({ children }) => (
+    <td className="border border-slate-200 px-2 py-1">{children}</td>
+  ),
+};
 
-  flushList('list-final');
+/**
+ * Render markdown content with full CommonMark + GFM support.
+ *
+ * 기존 라인 단위 커스텀 렌더러를 react-markdown 으로 교체했습니다.
+ * AI Engine 의 평탄화된 마크다운은 `normalizeAssistantMarkdown` 으로 보정한 뒤
+ * 렌더링하여 수평선/헤딩/코드펜스가 일관되게 표시됩니다.
+ */
+export function RenderMarkdownContent({
+  content,
+  className = '',
+}: RenderMarkdownContentProps): React.ReactNode {
+  const normalized = normalizeAssistantMarkdown(content);
 
-  return <>{nodes}</>;
+  return (
+    <div className={`text-chat leading-relaxed wrap-break-word ${className}`}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={markdownComponents}
+      >
+        {normalized}
+      </ReactMarkdown>
+    </div>
+  );
 }
