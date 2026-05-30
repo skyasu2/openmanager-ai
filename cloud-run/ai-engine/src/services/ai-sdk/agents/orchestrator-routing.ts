@@ -57,6 +57,7 @@ import {
 } from './orchestrator-routing-telemetry';
 import { collectForcedRoutingToolObservations } from './orchestrator-routing-telemetry-helpers';
 import { enrichResponseWithToolResults } from '../supervisor-response-enrichment';
+import { maybeBuildAnalystEvidencePrefetchPrompt } from './analyst-evidence-prefetch';
 export { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 export { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 export {
@@ -196,8 +197,14 @@ export async function executeForcedRouting(
       ? `\n\n[첨부 컨텍스트]\n- images: ${images?.length ?? 0}\n- files: ${files?.length ?? 0}`
       : '';
   const executionPrompt = buildContextAwarePrompt(`${query}${attachmentHint}`, contextSummary);
+  const analystEvidencePrefetchPrompt =
+    await maybeBuildAnalystEvidencePrefetchPrompt({
+      agentName: suggestedAgentName,
+      existingPrompt: domainEvidencePrompt,
+    });
   const systemContent = [
     getAgentInstructions(agentConfig, query),
+    analystEvidencePrefetchPrompt,
     domainEvidencePrompt,
   ]
     .filter((part): part is string => Boolean(part))

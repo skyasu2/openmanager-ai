@@ -29,6 +29,7 @@ vi.mock('ai', () => ({
   generateText: vi.fn(),
   hasToolCall: vi.fn(() => () => false),
   stepCountIs: mockStepCountIs,
+  tool: vi.fn((definition: unknown) => definition),
 }));
 
 vi.mock('../../resilience/retry-with-fallback', () => ({

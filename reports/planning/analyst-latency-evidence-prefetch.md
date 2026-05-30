@@ -1,10 +1,10 @@
 > Owner: project
-> Status: Approved
+> Status: In Progress
 > Last reviewed: 2026-05-30
 
 # Analyst Latency Evidence Prefetch Plan
 
-- 상태: Approved
+- 상태: In Progress
 - 작성일: 2026-05-30
 - TODO.md 연결: Active Tasks > Analyst evidence prefetch로 RCA 첫 LLM step 단축
 
@@ -58,12 +58,12 @@ Analyst Agent의 전체/불특정 RCA 질의에서 첫 LLM step이 `detectAnomal
 
 ## Task 목록
 
-- [ ] Task 0 — failing test 커밋: 위 테스트 시나리오를 구현 전 계약으로 추가
-- [ ] Task 1 — shared scan 추출: tool execute가 `runAllServerAnomalyScan`을 재사용
-- [ ] Task 2 — evidence prompt builder 추가: 압축 마크다운과 게이트/실패 격리 구현
-- [ ] Task 3 — routing 주입: non-streaming/streaming Analyst 경로에 prefetch evidence 합류
-- [ ] Task 4 — instructions 갱신: 사전 evidence가 있으면 전체 스캔 재호출 금지
-- [ ] Task 5 — 검증/커밋: targeted tests, ai-engine type/test, root smoke/contract 필요 범위 실행
+- [x] Task 0 — failing test 커밋: 위 테스트 시나리오를 구현 전 계약으로 추가
+- [x] Task 1 — shared scan 추출: tool execute가 `runAllServerAnomalyScan`을 재사용
+- [x] Task 2 — evidence prompt builder 추가: 압축 마크다운과 게이트/실패 격리 구현
+- [x] Task 3 — routing 주입: non-streaming/streaming Analyst 경로에 prefetch evidence 합류
+- [x] Task 4 — instructions 갱신: 사전 evidence가 있으면 전체 스캔 재호출 금지
+- [x] Task 5 — 검증/커밋: targeted tests, ai-engine type/test, root smoke/contract 필요 범위 실행
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -75,10 +75,24 @@ Analyst Agent의 전체/불특정 RCA 질의에서 첫 LLM step이 `detectAnomal
 
 ## 완료 기준
 
-- [ ] 테스트 시나리오 전체 통과
-- [ ] `cd cloud-run/ai-engine && npm run type-check` 통과
-- [ ] `cd cloud-run/ai-engine && npm run test` 통과
-- [ ] root `npm run test:contract` 통과
-- [ ] root `npm run type-check`, `npm run lint`, `npm run test:quick` 또는 `npm run ci:local` 결과 보고
+- [x] 테스트 시나리오 전체 통과
+- [x] `cd cloud-run/ai-engine && npm run type-check` 통과
+- [x] `cd cloud-run/ai-engine && npm run test` 통과
+- [x] root `npm run test:contract` 통과
+- [x] root `npm run type-check`, `npm run lint`, `npm run test:quick` 또는 `npm run ci:local` 결과 보고
 - [ ] GitLab push 시 pipeline id/status/url 보고
 - [ ] QA 지연 before/after는 실제 배포 후 별도 QA record로 누적
+
+## 검증 기록
+
+- 2026-05-30: `npm test -- analyst-evidence-prefetch.test.ts analyst-tools.test.ts orchestrator-routing.test.ts orchestrator-agent-stream.test.ts` 통과
+- 2026-05-30: `npm test -- analyst-evidence-prefetch.test.ts analyst-tools.test.ts orchestrator-routing.test.ts orchestrator-agent-stream.test.ts orchestrator-decomposition.test.ts orchestrator.test.ts` 통과
+- 2026-05-30: `cd cloud-run/ai-engine && npm run type-check` 통과
+- 2026-05-30: `cd cloud-run/ai-engine && npm test` 통과 (`148 files / 1626 tests`)
+- 2026-05-30: root `npm run type-check`, `npm run lint`, `npm run test:quick`, `npm run test:contract`, `git diff --check` 통과
+- 2026-05-30: `npm run ci:local` 통과 (GitLab validate job 동등)
+
+## 남은 운영 항목
+
+- GitLab push/pipeline 확인은 implementation commit 이후 수행 여부를 결정한다.
+- production 배포와 지연 before/after QA는 GitLab CI release/tag pipeline 또는 별도 승인된 운영 절차에서 수행한다.

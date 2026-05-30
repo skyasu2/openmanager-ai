@@ -43,6 +43,7 @@ vi.mock('ai', () => ({
   streamText: mockStreamText,
   hasToolCall: vi.fn(() => () => false),
   stepCountIs: mockStepCountIs,
+  tool: vi.fn((definition: unknown) => definition),
 }));
 
 vi.mock('../../../lib/ai-sdk-utils', () => ({

@@ -59,6 +59,7 @@ import {
   createAgentDataSourceContext,
   resolveDomainSnapshot,
 } from './domain-data-source';
+import { maybeBuildAnalystEvidencePrefetchPrompt } from './analyst-evidence-prefetch';
 
 const RAW_TOOL_CALL_JSON_FALLBACK_TEXT =
   'AI 엔진이 도구 호출 정보를 응답 본문으로 반환해 표시를 차단했습니다. 같은 질문을 다시 시도해 주세요.';
@@ -146,6 +147,11 @@ export async function* executeAgentStream(
     rawProviderOrder: getAgentProviderOrder(agentName),
   });
   const providerAttemptTelemetry: ProviderAttemptTelemetry[] = [];
+  const analystEvidencePrefetchPrompt =
+    await maybeBuildAnalystEvidencePrefetchPrompt({
+      agentName,
+      existingPrompt: domainEvidencePrompt,
+    });
 
   providerLoop:
   for (let attemptIndex = 0; attemptIndex < providerAttempts.length; attemptIndex++) {
@@ -188,6 +194,7 @@ export async function* executeAgentStream(
         isVisionAgent && ((images?.length ?? 0) > 0 || (files?.length ?? 0) > 0);
       const systemContent = [
         getAgentInstructions(agentConfig, query),
+        analystEvidencePrefetchPrompt,
         domainEvidencePrompt,
       ]
         .filter((part): part is string => Boolean(part))
