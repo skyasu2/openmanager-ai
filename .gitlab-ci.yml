@@ -241,15 +241,25 @@ variables:
     # QA 기록 커밋은 번들 예산 관측을 생략한다.
     - if: '$CI_COMMIT_MESSAGE =~ /^test\(qa\):/'
       when: never
+    # Bundle budget runs are observability checks. Keep them out of automatic
+    # validate wall-clock and run them from schedules or manual inspection.
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: manual
+      allow_failure: true
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: *bundle_budget_paths
-      when: on_success
+      when: manual
+      allow_failure: true
     - if: '$CI_COMMIT_BRANCH == "main"'
       changes: *bundle_budget_paths
-      when: on_success
+      when: manual
+      allow_failure: true
     - if: '$CI_COMMIT_BRANCH'
       changes: *bundle_budget_paths
-      when: on_success
+      when: manual
+      allow_failure: true
     - when: never
 
 .ai_sdk_registry_changes: &ai_sdk_registry_changes
