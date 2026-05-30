@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-05-30 | **현재 버전 스냅샷**: v8.12.82
+**상태 스냅샷 기준일**: 2026-05-30 | **현재 버전 스냅샷**: v8.12.83
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.83** (2026-05-30) — Features: ai-engine: prefetch analyst anomaly evidence; Tests: spec: add analyst evidence prefetch contracts; Bug Fixes: ai-engine: enforce CommonMark output formatting in agent prompts
 - **v8.12.82** (2026-05-30) — Bug Fixes: ai-chat: split trailing horizontal rule glued to line end
 - **v8.12.81** (2026-05-30) — Bug Fixes: ai-chat: normalize loose bold/hr markdown from AI Engine
 - **v8.12.80** (2026-05-30) — Bug Fixes: ai-chat: replace custom markdown renderer with react-markdown; Bug Fixes: landing: generalize OTel dataset copy; Tests: qa: record v8.12.79 new-question evaluation (QA-20260530-0645)
 - **v8.12.79** (2026-05-30) — Bug Fixes: ai-engine: route all-scope average metric queries; Tests: qa: record v8.12.78 release smoke
-- **v8.12.78** (2026-05-30) — Tests: qa: close superseded Q5 metadata item; Tests: ai-engine: align stream routing history expectations; Tests: qa: record Q5 contextual follow-up QA + label-clarity fix verification
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
