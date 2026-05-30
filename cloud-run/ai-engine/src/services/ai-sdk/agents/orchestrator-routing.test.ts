@@ -48,7 +48,7 @@ vi.mock('../../../lib/ai-sdk-utils', async (importOriginal) => ({
 }));
 
 vi.mock('./config', () => ({
-  AGENT_NAMES: ['Metrics Query Agent', 'Advisor Agent'],
+  AGENT_NAMES: ['Metrics Query Agent', 'Advisor Agent', 'Analyst Agent'],
   AGENT_CONFIGS: {
     'Metrics Query Agent': {
       name: 'Metrics Query Agent',
@@ -65,6 +65,16 @@ vi.mock('./config', () => ({
       tools: {
         searchKnowledgeBase: { execute: mockSearchKnowledgeBaseExecute },
         recommendCommands: { execute: vi.fn() },
+        finalAnswer: { execute: vi.fn() },
+      },
+      getModel: vi.fn(() => ({ provider: 'cerebras' })),
+    },
+    'Analyst Agent': {
+      name: 'Analyst Agent',
+      instructions: 'Analyst instructions',
+      tools: {
+        detectAnomaliesAllServers: { execute: vi.fn() },
+        detectAnomalies: { execute: vi.fn() },
         finalAnswer: { execute: vi.fn() },
       },
       getModel: vi.fn(() => ({ provider: 'cerebras' })),
@@ -107,17 +117,28 @@ vi.mock('./config', () => ({
           },
           getModel: vi.fn(() => ({ provider: 'cerebras' })),
         }
-      : name === 'Advisor Agent'
-        ? {
-            name: 'Advisor Agent',
+        : name === 'Advisor Agent'
+          ? {
+              name: 'Advisor Agent',
             instructions: 'Advisor instructions',
             tools: {
               searchKnowledgeBase: { execute: mockSearchKnowledgeBaseExecute },
               recommendCommands: { execute: vi.fn() },
               finalAnswer: { execute: vi.fn() },
-            },
-            getModel: vi.fn(() => ({ provider: 'cerebras' })),
-          }
+              },
+              getModel: vi.fn(() => ({ provider: 'cerebras' })),
+            }
+          : name === 'Analyst Agent'
+            ? {
+                name: 'Analyst Agent',
+                instructions: 'Analyst instructions',
+                tools: {
+                  detectAnomaliesAllServers: { execute: vi.fn() },
+                  detectAnomalies: { execute: vi.fn() },
+                  finalAnswer: { execute: vi.fn() },
+                },
+                getModel: vi.fn(() => ({ provider: 'cerebras' })),
+              }
         : undefined,
 }));
 
@@ -276,6 +297,33 @@ describe('executeForcedRouting', () => {
     expect(getAgentMaxSteps('Vision Agent')).toBe(2);
     expect(getAgentMaxSteps('Analyst Agent')).toBe(5);
     expect(getAgentMaxSteps('Reporter Agent')).toBe(5);
+  });
+
+  it('injects Analyst anomaly prefetch evidence into forced-routing system prompt', async () => {
+    mockGenerateTextWithRetry.mockResolvedValueOnce(
+      createRetryResult({
+        text: '사전 수집된 근거로 분석했습니다.',
+        steps: [],
+      })
+    );
+
+    const result = await executeForcedRouting(
+      '전체 장애 원인을 분석해줘',
+      'Analyst Agent',
+      Date.now()
+    );
+
+    expect(result?.success).toBe(true);
+    const firstCall = mockGenerateTextWithRetry.mock.calls[0]?.[0] as {
+      messages?: Array<{ role: string; content: string }>;
+    };
+
+    expect(firstCall.messages?.[0]?.content).toContain(
+      'Analyst precomputed anomaly evidence'
+    );
+    expect(firstCall.messages?.[0]?.content).toContain(
+      'Do not call detectAnomaliesAllServers again'
+    );
   });
 
   it('uses deterministic fallback for empty Metrics Query summary responses without a second retry call', async () => {

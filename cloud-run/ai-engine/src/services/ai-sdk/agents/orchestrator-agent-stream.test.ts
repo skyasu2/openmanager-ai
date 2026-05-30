@@ -285,6 +285,54 @@ describe('executeAgentStream', () => {
     );
   });
 
+  it('injects Analyst anomaly prefetch evidence into stream system prompt', async () => {
+    mockStreamText.mockReturnValue(
+      createStreamResult({
+        chunks: ['사전 수집된 근거로 분석했습니다.'],
+        steps: [
+          {
+            toolCalls: [{ toolName: 'finalAnswer' }],
+            toolResults: [
+              {
+                toolName: 'finalAnswer',
+                result: { answer: '사전 수집된 근거로 분석했습니다.' },
+              },
+            ],
+          },
+        ],
+      })
+    );
+
+    const events: Array<{ type: string; data: unknown }> = [];
+    for await (const event of executeAgentStream(
+      '전체 장애 원인을 분석해줘',
+      'Analyst Agent',
+      Date.now(),
+      'analyst-session',
+      true,
+      true,
+      undefined,
+      undefined,
+      undefined,
+      createTestDataSource(),
+      'openmanager-monitoring'
+    )) {
+      events.push(event);
+    }
+
+    const firstCall = mockStreamText.mock.calls[0]?.[0] as {
+      messages?: Array<{ role: string; content: string }>;
+    };
+
+    expect(firstCall.messages?.[0]?.content).toContain(
+      'Analyst precomputed anomaly evidence'
+    );
+    expect(firstCall.messages?.[0]?.content).toContain(
+      'Do not call detectAnomaliesAllServers again'
+    );
+    expect(events.some((event) => event.type === 'done')).toBe(true);
+  });
+
   it('uses native multimodal prompting without tool loop for Vision image attachments', async () => {
     mockStreamText.mockReturnValue(
       createStreamResult({

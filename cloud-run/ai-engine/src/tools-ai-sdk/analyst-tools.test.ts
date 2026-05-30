@@ -166,6 +166,7 @@ vi.mock('../lib/ai/monitoring/TrendPredictor', () => ({
 }));
 
 import { detectAnomalies, detectAnomaliesAllServers, predictTrends } from './analyst-tools';
+import { runAllServerAnomalyScan } from './analyst-tools-detect-all';
 
 // ============================================================================
 // detectAnomaliesAllServers Tests
@@ -180,6 +181,29 @@ describe('detectAnomaliesAllServers', () => {
   });
 
   describe('Basic Functionality', () => {
+    it('should keep shared all-server scan output equivalent to the tool execute output', async () => {
+      const sharedResult = await runAllServerAnomalyScan({ metricType: 'all' });
+      const toolResult = await detectAnomaliesAllServers.execute({ metricType: 'all' }, {} as never);
+
+      expect(sharedResult.success).toBe(true);
+      expect(toolResult.success).toBe(true);
+      if (sharedResult.success && toolResult.success) {
+        expect(sharedResult).toMatchObject({
+          totalServers: toolResult.totalServers,
+          anomalies: toolResult.anomalies,
+          affectedServers: toolResult.affectedServers,
+          summary: toolResult.summary,
+          hasAnomalies: toolResult.hasAnomalies,
+          anomalyCount: toolResult.anomalyCount,
+          algorithmVersion: toolResult.algorithmVersion,
+          decisionSource: toolResult.decisionSource,
+          analysisBasis: toolResult.analysisBasis,
+          evidenceContract: toolResult.evidenceContract,
+          risingTrendScan: toolResult.risingTrendScan,
+        });
+      }
+    });
+
     it('should return all servers summary with "all" metric type', async () => {
       const result = await detectAnomaliesAllServers.execute({ metricType: 'all' }, {} as never);
 

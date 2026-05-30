@@ -15,7 +15,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| _None_ | - | 현재 진행 중인 작업 없음. |
+| Analyst evidence prefetch로 RCA 첫 LLM step 단축 | High | Analyst 라우팅 확정 후 전체 서버 anomaly scan을 사전 evidence로 주입. 계획서: [`analyst-latency-evidence-prefetch.md`](analyst-latency-evidence-prefetch.md). |
 
 ---
 
