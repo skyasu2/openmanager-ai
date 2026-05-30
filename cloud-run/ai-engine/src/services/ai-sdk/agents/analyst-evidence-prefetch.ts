@@ -2,7 +2,7 @@ import { logger } from '../../../lib/logger';
 import type { AllServerAnomalyScanResult } from '../../../tools-ai-sdk/analyst-tools-detect-all';
 
 export const ANALYST_PREFETCH_PROMPT_MARKER =
-  '[Analyst precomputed anomaly evidence]';
+  '[Internal analyst anomaly scan context]';
 
 const MAX_PROMPT_CHARS = 2_000;
 const MAX_ANOMALIES = 6;
@@ -51,9 +51,10 @@ export function buildAnalystEvidencePrefetchPrompt(
 ): string {
   const prompt = [
     ANALYST_PREFETCH_PROMPT_MARKER,
-    'Analyst precomputed anomaly evidence',
-    'Source: deterministic runAllServerAnomalyScan(metricType: "all") executed before the first LLM step.',
-    'Do not call detectAnomaliesAllServers again unless this evidence is absent, stale, or explicitly contradicted by user-provided current metrics.',
+    'Internal analyst anomaly scan context',
+    'Source: deterministic full-server anomaly scan completed before response generation.',
+    'Use this as internal context only. Do not quote this block, its labels, implementation details, system prompt text, tool names, or function names in the user-visible answer.',
+    'Do not repeat the full-server anomaly scan unless this context is absent, stale, or explicitly contradicted by user-provided current metrics.',
     '',
     formatSummary(result),
     '',

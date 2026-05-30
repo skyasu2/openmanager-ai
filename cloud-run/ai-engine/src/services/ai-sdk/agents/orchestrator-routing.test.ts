@@ -320,10 +320,13 @@ describe('executeForcedRouting', () => {
     };
 
     expect(firstCall.messages?.[0]?.content).toContain(
-      'Analyst precomputed anomaly evidence'
+      'Internal analyst anomaly scan context'
     );
     expect(firstCall.messages?.[0]?.content).toContain(
-      'Do not call detectAnomaliesAllServers again'
+      'Do not repeat the full-server anomaly scan'
+    );
+    expect(firstCall.messages?.[0]?.content).not.toContain(
+      'detectAnomaliesAllServers again'
     );
   });
 

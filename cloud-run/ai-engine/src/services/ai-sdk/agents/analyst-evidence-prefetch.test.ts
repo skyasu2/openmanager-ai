@@ -91,10 +91,13 @@ describe('Analyst evidence prefetch prompt', () => {
     const prompt = buildAnalystEvidencePrefetchPrompt(createScanResult());
 
     expect(prompt).toContain(ANALYST_PREFETCH_PROMPT_MARKER);
-    expect(prompt).toContain('Analyst precomputed anomaly evidence');
+    expect(prompt).toContain('Internal analyst anomaly scan context');
     expect(prompt).toContain('anomalyCount: 2');
     expect(prompt).toContain('risingTrendScan');
-    expect(prompt).toContain('Do not call detectAnomaliesAllServers again');
+    expect(prompt).toContain('Do not repeat the full-server anomaly scan');
+    expect(prompt).not.toMatch(
+      /detectAnomaliesAllServers|runAllServerAnomalyScan|precomputed anomaly evidence|Precomputed Evidence/
+    );
     expect(prompt).toContain('db-mysql-dc1-01');
     expect(prompt.length).toBeLessThan(2_000);
   });
@@ -118,7 +121,7 @@ describe('Analyst evidence prefetch prompt', () => {
         agentName: 'Analyst Agent',
         existingPrompt: '[untrusted user-provided log excerpt]\n...',
       })
-    ).resolves.toContain('Analyst precomputed anomaly evidence');
+    ).resolves.toContain('Internal analyst anomaly scan context');
 
     expect(mockRunAllServerAnomalyScan).toHaveBeenCalledTimes(1);
     expect(mockRunAllServerAnomalyScan).toHaveBeenCalledWith({
