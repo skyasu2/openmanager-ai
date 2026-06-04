@@ -1,0 +1,161 @@
+{
+  "runId": "QA-20260605-0649",
+  "recordedAt": "2026-06-04T15:08:53.658Z",
+  "recordedAtKst": "2026-06-05 00:08:53 KST",
+  "runTitle": "Cloud Run Production Targeted QA - v8.12.89 Off-Domain Warn Metadata",
+  "owner": "codex",
+  "source": "cloud-run-direct+vercel-cli+gitlab-ci",
+  "environment": {
+    "target": "vercel-production+cloud-run-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_5Af3pqTpnHXXXPUxqQWfRLWBR2r7",
+    "deploymentUrl": "https://openmanager-4ifk1pedm-skyasus-projects.vercel.app",
+    "commitSha": "9ae1f6057b8dfa4f20ba1687a1f48aa83a08b88f"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "security-pack",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Local AI Engine targeted tests passed for off-domain guard and supervisor warn metadata: 2 files, 40 tests",
+    "Local AI Engine full test passed: 148 files, 1629 tests",
+    "Root contract tests passed: 3 files, 24 tests",
+    "Vercel production /api/version returned v8.12.89, release tag v8.12.89, commit 9ae1f6057b8dfa4f20ba1687a1f48aa83a08b88f, and GitLab pipeline 2576980796",
+    "Vercel production deployment dpl_5Af3pqTpnHXXXPUxqQWfRLWBR2r7 was Ready for alias https://openmanager-ai.vercel.app",
+    "Cloud Run /health returned status ok, version 8.12.89, routesReady true, and provider/API config enabled",
+    "Cloud Run revision ai-engine-00592-47p is serving 100% traffic with cpu=1 and memory=512Mi",
+    "Cloud Run /api/ai/supervisor general coding query '파이썬 피보나치 코드 짜줘' returned LLM response with warning text plus metadata offDomainAction warn and offDomainCategory general_coding",
+    "Cloud Run /api/ai/supervisor live fact query '오늘 서울 날씨 알려줘' still returned deterministic off-domain block with usage 0 and metadata offDomainAction block/offDomainCategory live_fact",
+    "Vercel usage check passed with billed 0.0000 USD for the current billing period"
+  ],
+  "skippedSurfaces": [
+    "Broad browser route matrix was not rerun because this was a targeted metadata observability fix for the AI Engine off-domain warn path",
+    "Standard five-question conversational AI QA was not rerun because answer content, routing policy, tool schema, and provider policy did not change",
+    "Vision real-image QA was not in scope because Vision routing/provider behavior did not change",
+    "Cloud Run admin /monitoring and /monitoring/traces were not queried because this run verified request guard metadata rather than trace sampling or admin observability"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Cloud Run direct supervisor general coding warn metadata",
+      "agent": "Supervisor",
+      "provider": "groq",
+      "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "route": "/api/ai/supervisor",
+      "source": "response metadata durationMs",
+      "latencyMs": 1451,
+      "processingTimeMs": 1451
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The changed metadata contract was covered by targeted local tests, full AI Engine tests, root contract tests, and production warn/block probes.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The live/current fact path remains deterministic with zero token usage, while the best-effort coding warn path now exposes structured metadata without changing user-facing guardrail text.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The previously noted non-blocking observability gap is closed in production: warn-path metadata now includes offDomainAction=warn and offDomainCategory=general_coding.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Frontend and Cloud Run production both reached v8.12.89, Cloud Run serves 100% traffic on ai-engine-00592-47p, and runtime limits remain within free-tier policy.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-05T00:01:36+09:00",
+      "summary": "Current Vercel billing period reviewed after v8.12.89 off-domain warn metadata production QA; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.12.89 off-domain warn metadata targeted production evidence",
+      "path": "reports/qa/evidence/qa-20260605-v81289-off-domain-warn-metadata.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "off-domain-warn-metadata-v81289-production-qa",
+      "title": "v8.12.89 off-domain warn metadata exposed and verified on Cloud Run production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production v8.12.89 returned offDomainAction=warn/offDomainCategory=general_coding for the general coding warn path, while the live fact block path still returned deterministic usage 0.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production frontend and Cloud Run AI Engine are both serving v8.12.89.",
+    "GitLab pipeline API lookup returned 401 locally; pipeline id 2576980796 was verified via production /api/version after deploy.",
+    "The first Cloud Run direct metadata calls hit transient DNS EAI_AGAIN in the sandbox and passed after an approved external retry.",
+    "The previous non-blocking observability gap for warn-path metadata is closed in production."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run service URL",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+    },
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline v8.12.89",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2576980796"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-4ifk1pedm-skyasus-projects.vercel.app/"
+    }
+  ]
+}

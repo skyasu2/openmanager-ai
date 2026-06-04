@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-04 23:12:58 KST
+> Generated at: 2026-06-05 00:08:53 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 646 |
-| Total Runs (Counted) | 505 |
+| Total Recorded Runs | 647 |
+| Total Runs (Counted) | 506 |
 | Non-counted Runs | 141 |
-| Total Checks | 4437 |
-| Passed | 4236 |
+| Total Checks | 4447 |
+| Passed | 4246 |
 | Failed | 159 |
-| Completed Items | 742 |
+| Completed Items | 743 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260604-0648 (2026-06-04T14:12:58.111Z) |
-| Latest Recorded Run | QA-20260604-0648 (2026-06-04T14:12:58.111Z) |
+| Last Counted Run | QA-20260605-0649 (2026-06-04T15:08:53.658Z) |
+| Latest Recorded Run | QA-20260605-0649 (2026-06-04T15:08:53.658Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,34 +34,35 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260604-0648 (2026-06-04T14:12:58.111Z)
+Latest run: QA-20260605-0649 (2026-06-04T15:08:53.658Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
 | AI Security & Reliability Architect | appropriate | no | - |
-| IT Monitoring & Observability SME | partially-appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.12.88 off-domain guardrail targeted production QA; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827. |
+| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.12.89 off-domain warn metadata production QA; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-03T14:12:58.111Z -> 2026-06-04T14:12:58.111Z (24h)
-- Runs with observations: 1 recorded / 1 counted
-- Samples: 2
+- Window: 2026-06-03T15:08:53.658Z -> 2026-06-04T15:08:53.658Z (24h)
+- Runs with observations: 2 recorded / 2 counted
+- Samples: 3
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Advisor Agent | mistral | 1 | 8205ms | 8205ms | - | - | 8205ms | 8205ms | QA-20260604-0648 |
-| Supervisor | groq | 1 | 1025ms | 1025ms | - | - | 1025ms | 1025ms | QA-20260604-0648 |
+| Supervisor | groq | 2 | 1238ms | 1451ms | - | - | 1238ms | 1451ms | QA-20260605-0649 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-03T14:12:58.111Z -> 2026-06-04T14:12:58.111Z (24h)
+- Window: 2026-06-03T15:08:53.658Z -> 2026-06-04T15:08:53.658Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -75,25 +76,25 @@ Latest run: QA-20260604-0648 (2026-06-04T14:12:58.111Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_4ouyrzWwdYJ3FcedNZcrp2pesDN3 / SHA 3b91b069
+- Deployment: dpl_5Af3pqTpnHXXXPUxqQWfRLWBR2r7 / SHA 9ae1f605
 - Coverage Packs: ai-core, security-pack, observability-pack
-- Covered Surfaces: Vercel production /api/version returned v8.12.88, release tag v8.12.88, commit 3b91b069d547cf226c58bce153c94bcafdf714ef, and GitLab pipeline 2564039473, Cloud Run /health returned status ok, version 8.12.88, routesReady true, and provider/API config enabled, Cloud Run /api/ai/supervisor live fact query '오늘 서울 날씨 알려줘' returned deterministic off-domain block with usage 0, offDomainAction block, offDomainCategory live_fact, Cloud Run /api/ai/supervisor general coding query '파이썬 피보나치 코드 짜줘' delegated to LLM and appended the off-domain warning suffix, Cloud Run /api/ai/supervisor operational-context query 'nginx 로그 파싱 스크립트 만들어줘' routed to Advisor command guidance without off-domain warning, Vercel usage check passed with billed 0.0000 USD for the current billing period
-- Skipped Surfaces: Broad browser route matrix was not rerun because this was a targeted AI Engine guardrail verification for v8.12.88, Standard five-question conversational AI QA was not rerun because the changed behavior is off-domain boundary handling and the targeted prompts covered block, warn, and operational-context exception branches, Vision real-image QA was not in scope because Vision routing/provider behavior did not change, Cloud Run admin /monitoring and /monitoring/traces were not queried because this run verified request guard behavior rather than trace sampling or admin observability
+- Covered Surfaces: Local AI Engine targeted tests passed for off-domain guard and supervisor warn metadata: 2 files, 40 tests, Local AI Engine full test passed: 148 files, 1629 tests, Root contract tests passed: 3 files, 24 tests, Vercel production /api/version returned v8.12.89, release tag v8.12.89, commit 9ae1f6057b8dfa4f20ba1687a1f48aa83a08b88f, and GitLab pipeline 2576980796, Vercel production deployment dpl_5Af3pqTpnHXXXPUxqQWfRLWBR2r7 was Ready for alias https://openmanager-ai.vercel.app, Cloud Run /health returned status ok, version 8.12.89, routesReady true, and provider/API config enabled, Cloud Run revision ai-engine-00592-47p is serving 100% traffic with cpu=1 and memory=512Mi, Cloud Run /api/ai/supervisor general coding query '파이썬 피보나치 코드 짜줘' returned LLM response with warning text plus metadata offDomainAction warn and offDomainCategory general_coding, Cloud Run /api/ai/supervisor live fact query '오늘 서울 날씨 알려줘' still returned deterministic off-domain block with usage 0 and metadata offDomainAction block/offDomainCategory live_fact, Vercel usage check passed with billed 0.0000 USD for the current billing period
+- Skipped Surfaces: Broad browser route matrix was not rerun because this was a targeted metadata observability fix for the AI Engine off-domain warn path, Standard five-question conversational AI QA was not rerun because answer content, routing policy, tool schema, and provider policy did not change, Vision real-image QA was not in scope because Vision routing/provider behavior did not change, Cloud Run admin /monitoring and /monitoring/traces were not queried because this run verified request guard metadata rather than trace sampling or admin observability
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Cloud Run service URL | [Cloud Run service URL](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
-| general | GitLab tag pipeline v8.12.88 | [GitLab tag pipeline v8.12.88](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2564039473) | - |
+| general | GitLab tag pipeline v8.12.89 | [GitLab tag pipeline v8.12.89](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2576980796) | - |
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-rl93ky6vm-skyasus-projects.vercel.app/) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-4ifk1pedm-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.12.88 off-domain guardrail targeted production evidence | `reports/qa/evidence/qa-20260604-v81288-off-domain-guardrail.md` | - |
+| playwright-report | v8.12.89 off-domain warn metadata targeted production evidence | `reports/qa/evidence/qa-20260605-v81289-off-domain-warn-metadata.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -188,18 +189,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 742 items completed (full list in qa-tracker.json)
+- Total: 743 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - off-domain-warn-metadata-v81289-production-qa: v8.12.89 off-domain warn metadata exposed and verified on Cloud Run production (last QA-20260605-0649)
   - off-domain-block-warn-v81288-production-qa: v8.12.88 off-domain block/warn guardrail verified on Cloud Run production (last QA-20260604-0648)
   - release-parallel-deploy-v81287-production-smoke: v8.12.87 release deployed with frontend and AI Engine deploy overlap (last QA-20260530-0647)
   - analyst-latency-evidence-prefetch: Analyst RCA first-step latency reduction via deterministic all-server anomaly evidence prefetch (last QA-20260530-0646)
   - analyst-prefetch-internal-name-redaction: Analyst prefetch prompt no longer leaks internal tool/function names into user-visible RCA answers (last QA-20260530-0646)
-  - ai-disk-threshold-conditional-count: 디스크 임계값 조건부 카운트 질의 정확 처리 (신규 강점) (last QA-20260530-0645)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260605-0649 | 2026-06-04T15:08:53.658Z | targeted | yes | yes | Cloud Run Production Targeted QA - v8.12.89 Off-Domain Warn Metadata | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260604-0648 | 2026-06-04T14:12:58.111Z | targeted | yes | yes | Cloud Run Production Targeted QA - v8.12.88 Off-Domain Guardrail | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260530-0647 | 2026-05-30T13:45:31.747Z | targeted | yes | yes | Vercel Release Smoke - v8.12.87 Parallel Deploy Verification | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260530-0646 | 2026-05-30T08:57:48.785Z | targeted | yes | yes | Vercel production Analyst prefetch QA - v8.12.84 internal prompt redaction | 5 | 2 | 0 | 0 | 0 | 0 |
@@ -219,4 +221,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260528-0632 | 2026-05-28T07:05:27.882Z | smoke | yes | no | GitLab production release smoke - v8.12.70 P23 metric ranking fix | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260528-0631 | 2026-05-28T06:15:13.877Z | smoke | yes | no | GitLab production release smoke - v8.12.69 AI routing fixes | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260528-0630 | 2026-05-28T04:37:16.133Z | targeted | yes | yes | Vercel Playwright MCP targeted recheck - v8.12.68 dashboard alert-feed focus | 9 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260528-0629 | 2026-05-28T01:16:50.267Z | targeted | yes | yes | Vercel Playwright MCP targeted recheck - v8.12.67 P20 trend-rate ranking | 8 | 2 | 0 | 0 | 0 | 0 |
