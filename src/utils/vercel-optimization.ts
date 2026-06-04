@@ -146,7 +146,9 @@ export async function preloadCriticalResources(): Promise<void> {
     }
 
     // 2. 중요 API 엔드포인트 사전 로딩 (HEAD 요청)
-    const criticalEndpoints = ['/api/system'];
+    // /api/system is auth-protected; pre-auth landing warmup must stay public
+    // to avoid surfacing an expected 401 as a browser console error.
+    const criticalEndpoints = ['/api/health?service=ai&soft=true'];
 
     await Promise.allSettled(
       criticalEndpoints.map(async (endpoint) => {

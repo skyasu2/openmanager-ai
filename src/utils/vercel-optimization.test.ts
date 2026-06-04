@@ -19,7 +19,10 @@ vi.mock('@/lib/logging', () => ({
   },
 }));
 
-import { VercelPerformanceTracker } from './vercel-optimization';
+import {
+  preloadCriticalResources,
+  VercelPerformanceTracker,
+} from './vercel-optimization';
 
 // Store original env
 const originalEnv = { ...process.env };
@@ -85,6 +88,29 @@ describe('Vercel Optimization Utilities', () => {
       const metrics = tracker.getMetrics();
 
       expect(Object.keys(metrics)).toHaveLength(0);
+    });
+  });
+
+  describe('preloadCriticalResources', () => {
+    it('uses a public health endpoint instead of auth-protected /api/system', async () => {
+      process.env.VERCEL = '1';
+      const fetchMock = vi
+        .spyOn(globalThis, 'fetch')
+        .mockResolvedValue(new Response(null, { status: 204 }));
+
+      await preloadCriticalResources();
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/health?service=ai&soft=true',
+        { method: 'HEAD' }
+      );
+      expect(
+        fetchMock.mock.calls.some(([url]) =>
+          String(url).includes('/api/system')
+        )
+      ).toBe(false);
+
+      fetchMock.mockRestore();
     });
   });
 });
