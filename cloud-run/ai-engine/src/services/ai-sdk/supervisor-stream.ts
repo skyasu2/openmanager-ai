@@ -32,7 +32,10 @@ import {
 } from './supervisor-log-context';
 import { streamSingleAgent } from './supervisor-single-agent-stream';
 import type { StreamEvent, SupervisorRequest } from './supervisor-types';
-import { getOffDomainGuardrail } from '../../lib/off-domain-guard';
+import {
+  buildOffDomainGuardrailMetadata,
+  getOffDomainGuardrail,
+} from '../../lib/off-domain-guard';
 import {
   filterToolsByRAG,
   filterToolsByWebSearch,
@@ -43,11 +46,37 @@ import { streamDirectKnowledgeSearchIfMatched } from './supervisor-direct-knowle
 
 async function* appendSuffixBeforeDone(
   source: AsyncIterable<StreamEvent>,
-  suffix: string
+  suffix: string,
+  metadataPatch: Record<string, unknown> = {}
 ): AsyncGenerator<StreamEvent> {
+  const hasMetadataPatch = Object.keys(metadataPatch).length > 0;
+
   for await (const event of source) {
-    if (suffix && event.type === 'done') {
-      yield { type: 'text_delta', data: suffix };
+    if (event.type === 'done') {
+      if (suffix) {
+        yield { type: 'text_delta', data: suffix };
+      }
+      if (hasMetadataPatch) {
+        const doneData =
+          typeof event.data === 'object' && event.data !== null
+            ? (event.data as Record<string, unknown>)
+            : {};
+        const existingMetadata =
+          typeof doneData.metadata === 'object' && doneData.metadata !== null
+            ? (doneData.metadata as Record<string, unknown>)
+            : {};
+        yield {
+          ...event,
+          data: {
+            ...doneData,
+            metadata: {
+              ...existingMetadata,
+              ...metadataPatch,
+            },
+          },
+        };
+        continue;
+      }
     }
     yield event;
   }
@@ -299,6 +328,10 @@ export async function* executeSupervisorStream(
   const warningSuffix = warningSuffixParts.length > 0
     ? '\n\n---\n*' + [...new Set(warningSuffixParts)].join(' ') + '*'
     : '';
+  const offDomainWarningMetadata =
+    offDomainResult?.action === 'warn'
+      ? buildOffDomainGuardrailMetadata(offDomainResult)
+      : {};
 
   if (mode === 'multi') {
     try {
@@ -348,7 +381,8 @@ export async function* executeSupervisorStream(
             };
             yield* appendSuffixBeforeDone(
               streamSingleAgent(runtimeRequest, startTime, runtimeTools, { degradedFromMode: 'multi', degradedReason }, modeDecision, runtimeMetadata, domainEvidence),
-              warningSuffix
+              warningSuffix,
+              offDomainWarningMetadata
             );
             return;
           }
@@ -384,6 +418,7 @@ export async function* executeSupervisorStream(
                     errorCode: 'SUPERVISOR_STREAM_FAILED',
                   }),
                 }),
+                ...offDomainWarningMetadata,
                 ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null
                   ? { semanticQueryTrace }
                   : {}),
@@ -412,7 +447,8 @@ export async function* executeSupervisorStream(
         };
         yield* appendSuffixBeforeDone(
           streamSingleAgent(runtimeRequest, startTime, runtimeTools, { degradedFromMode: 'multi', degradedReason: 'multi_agent_runtime_error' }, modeDecision, runtimeMetadata, domainEvidence),
-          warningSuffix
+          warningSuffix,
+          offDomainWarningMetadata
         );
         return;
       }
@@ -431,6 +467,7 @@ export async function* executeSupervisorStream(
 
   yield* appendSuffixBeforeDone(
     streamSingleAgent(runtimeRequest, startTime, runtimeTools, undefined, modeDecision, runtimeMetadata, domainEvidence),
-    warningSuffix
+    warningSuffix,
+    offDomainWarningMetadata
   );
 }

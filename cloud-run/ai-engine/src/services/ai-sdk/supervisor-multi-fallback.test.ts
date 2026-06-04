@@ -464,6 +464,8 @@ describe('supervisor degraded single fallback', () => {
     if (result.success) {
       expect(result.response).toContain('single fallback response');
       expect(result.response).toContain('서버 모니터링');
+      expect(result.metadata.offDomainAction).toBe('warn');
+      expect(result.metadata.offDomainCategory).toBe('general_coding');
     }
     expect(mockGenerateText).toHaveBeenCalled();
   });
@@ -496,6 +498,38 @@ describe('supervisor degraded single fallback', () => {
       },
     });
     expect(mockStreamText).not.toHaveBeenCalled();
+  });
+
+  it('stream-appends off-domain warning metadata for best-effort technical queries', async () => {
+    mockSelectExecutionMode.mockReturnValue('single');
+
+    const events = [];
+    for await (const event of executeSupervisorStream({
+      mode: 'auto',
+      messages: [{ role: 'user', content: '파이썬 피보나치 코드 짜줘' }],
+      sessionId: 'session-stream-off-domain-warn',
+    })) {
+      events.push(event);
+    }
+
+    const text = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+    expect(text).toContain('single fallback stream');
+    expect(text).toContain('서버 모니터링');
+    expect(events.at(-1)).toMatchObject({
+      type: 'done',
+      data: {
+        success: true,
+        metadata: {
+          provider: 'groq',
+          offDomainAction: 'warn',
+          offDomainCategory: 'general_coding',
+        },
+      },
+    });
+    expect(mockStreamText).toHaveBeenCalled();
   });
 
   it('falls back to single-agent when multi-agent returns MODEL_UNAVAILABLE and degraded single is allowed', async () => {

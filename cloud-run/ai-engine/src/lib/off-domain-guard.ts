@@ -15,6 +15,18 @@ export interface OffDomainGuardrailResult {
   response?: string;
 }
 
+export function buildOffDomainGuardrailMetadata(
+  result: OffDomainGuardrailResult
+): {
+  offDomainAction: OffDomainGuardrailResult['action'];
+  offDomainCategory: OffDomainGuardCategory;
+} {
+  return {
+    offDomainAction: result.action,
+    offDomainCategory: result.category,
+  };
+}
+
 const OFF_DOMAIN_WARNING =
   '서버 모니터링 외 질문으로 답변 정확도가 낮을 수 있습니다.';
 

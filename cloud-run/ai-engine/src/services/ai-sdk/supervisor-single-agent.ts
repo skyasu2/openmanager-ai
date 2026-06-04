@@ -38,7 +38,10 @@ import {
 import { getCircuitBreaker, CircuitOpenError } from '../resilience/circuit-breaker';
 import { extractToolResultOutput, extractRagSources, type RagSource } from '../../lib/ai-sdk-utils';
 import { getPublicErrorMessage, getPublicErrorResponse } from '../../lib/error-handler';
-import { getOffDomainGuardrail } from '../../lib/off-domain-guard';
+import {
+  buildOffDomainGuardrailMetadata,
+  getOffDomainGuardrail,
+} from '../../lib/off-domain-guard';
 import { sanitizeUserFacingResponse } from '../../lib/text-sanitizer';
 
 import {
@@ -250,7 +253,18 @@ export async function executeSupervisor(
     'response' in llmResult &&
     typeof llmResult.response === 'string'
   ) {
-    return { ...llmResult, response: `${llmResult.response}\n\n---\n*${warningPrefix}*` };
+    const offDomainMetadata =
+      offDomainGuardrail?.action === 'warn'
+        ? buildOffDomainGuardrailMetadata(offDomainGuardrail)
+        : {};
+    return {
+      ...llmResult,
+      response: `${llmResult.response}\n\n---\n*${warningPrefix}*`,
+      metadata: {
+        ...llmResult.metadata,
+        ...offDomainMetadata,
+      },
+    };
   }
 
   return llmResult;
