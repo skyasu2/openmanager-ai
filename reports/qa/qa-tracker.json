@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-04T15:37:32.012Z"
+    "updatedAt": "2026-06-04T16:20:31.104Z"
   },
   "sequence": {
-    "nextRunNumber": 651
+    "nextRunNumber": 652
   },
   "summary": {
-    "totalRecordedRuns": 648,
-    "totalRuns": 507,
+    "totalRecordedRuns": 649,
+    "totalRuns": 508,
     "excludedRuns": 141,
-    "totalChecks": 4459,
-    "totalPassed": 4258,
+    "totalChecks": 4470,
+    "totalPassed": 4269,
     "totalFailed": 159,
     "completionRate": 100,
-    "completedItems": 745,
+    "completedItems": 747,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 31,
+    "wontFixItems": 30,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260605-0650",
-    "lastRecordedAt": "2026-06-04T15:37:32.012Z",
-    "latestRecordedRunId": "QA-20260605-0650",
-    "latestRecordedAt": "2026-06-04T15:37:32.012Z"
+    "lastRunId": "QA-20260605-0651",
+    "lastRecordedAt": "2026-06-04T16:20:31.104Z",
+    "latestRecordedRunId": "QA-20260605-0651",
+    "latestRecordedAt": "2026-06-04T16:20:31.104Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6313,25 +6313,25 @@
       "id": "landing-console-api-system-unauthorized",
       "title": "랜딩 비로그인 상태에서 /api/system 401 콘솔 에러 제거 또는 graceful handling",
       "priority": "P1",
-      "status": "wont-fix",
+      "status": "completed",
       "firstSeenRunId": "QA-20260330-0195",
       "firstSeenAt": "2026-03-30T04:14:36.238Z",
-      "lastSeenRunId": "QA-20260605-0650",
-      "lastSeenAt": "2026-06-04T15:37:32.012Z",
-      "seenCount": 2,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260605-0651",
+      "lastSeenAt": "2026-06-04T16:20:31.104Z",
+      "seenCount": 3,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 2,
       "aliases": [],
-      "owner": "project",
-      "lastEvidence": "Playwright MCP observed one pre-auth HEAD /api/system 401 console resource error; authenticated /api/system calls returned 200 and dashboard operation was unaffected.",
-      "lastNote": "Known non-blocking console cleanliness issue; kept as WONT-FIX under portfolio operation priority policy.",
-      "isBlocking": false,
+      "owner": "codex",
+      "lastEvidence": "v8.12.90 production Playwright MCP pre-auth landing check observed 0 console messages, 0 /api/system requests, and the new HEAD /api/health?service=ai&soft=true preload path.",
+      "lastNote": "Previously WONT-FIX portfolio debt; fixed because the root cause was a small public-health preloader swap with no auth weakening and no free-tier cost increase.",
+      "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
-      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastStatusChangeAt": "2026-06-04T15:37:32.012Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-04T16:20:31.104Z"
     },
     "landing-vibe-content-deployment-drift": {
       "id": "landing-vibe-content-deployment-drift",
@@ -18356,6 +18356,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-06-04T15:37:32.012Z"
+    },
+    "v81290-preauth-system-preload-production-deploy": {
+      "id": "v81290-preauth-system-preload-production-deploy",
+      "title": "v8.12.90 frontend release deployed the pre-auth system preload fix",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260605-0651",
+      "firstSeenAt": "2026-06-04T16:20:31.104Z",
+      "lastSeenRunId": "QA-20260605-0651",
+      "lastSeenAt": "2026-06-04T16:20:31.104Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production /api/version returned v8.12.90 and commit 36b29a5ca3d7e2505312cee873c6c7653c00e9c6; Vercel deployment dpl_J1PEim6zfHjgGUoB9NcYqgEH2hVj is Ready.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-04T16:20:31.104Z"
     }
   },
   "runs": [
@@ -38355,6 +38379,141 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260605-0651",
+      "recordedAt": "2026-06-04T16:20:31.104Z",
+      "recordedAtKst": "2026-06-05 01:20:31 KST",
+      "title": "Vercel Production Targeted QA - v8.12.90 Pre-Auth System Preload Fix",
+      "owner": "codex",
+      "source": "gitlab-ci+vercel-cli+playwright-mcp+usage-check",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260605-0651.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_J1PEim6zfHjgGUoB9NcYqgEH2hVj",
+        "deploymentUrl": "https://openmanager-5dlwvbbv4-skyasus-projects.vercel.app",
+        "commitSha": "36b29a5ca3d7e2505312cee873c6c7653c00e9c6"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "v8.12.90 release commit and tag were pushed to GitLab canonical main",
+        "Vercel production deployment dpl_J1PEim6zfHjgGUoB9NcYqgEH2hVj was Ready for alias https://openmanager-ai.vercel.app",
+        "Production /api/version returned v8.12.90, release tag v8.12.90, commit 36b29a5ca3d7e2505312cee873c6c7653c00e9c6, and GitLab pipeline 2577188591",
+        "Production smoke passed for GET /, GET /login, and GET /api/version with expected v8.12.90 commit metadata",
+        "Playwright MCP pre-auth landing check cleared cookies/storage before navigation and rendered the logged-out landing state",
+        "Playwright MCP pre-auth landing console messages were 0",
+        "Playwright MCP pre-auth landing observed no /api/system requests",
+        "Playwright MCP observed the new public HEAD /api/health?service=ai&soft=true preload path instead of the auth-protected /api/system path",
+        "Direct HEAD /api/health?service=ai&soft=true returned HTTP 200",
+        "Vercel usage check passed with effective 1.9358 USD and billed 0.0000 USD",
+        "Cloud Run ai-engine was unchanged on ai-engine-00592-47p with cpu=1, memory=512Mi, maxScale=1, and 100% traffic"
+      ],
+      "skippedSurfaces": [
+        "Full broad route matrix was not rerun because the release fixed a targeted pre-auth landing preload path",
+        "Guest login and AI chat were not repeated because v8.12.90 did not change auth login, dashboard telemetry, AI routing, or AI Engine behavior",
+        "AI Engine post-deploy QA was not repeated because deploy_ai_engine was skipped for no cloud-run/ai-engine changes and /api/health confirmed the existing ai-engine version remained healthy"
+      ],
+      "checks": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The GitLab tag deploy reached Vercel production, version metadata matches the release commit, Vercel usage remains billed 0, and Cloud Run limits remained unchanged.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The targeted regression was verified with unit coverage, production smoke, and Playwright MCP pre-auth console/network inspection.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The pre-auth landing now exposes no console messages, no /api/system request, and the observable preload path is the public soft health endpoint.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-05T01:18:37+09:00",
+          "summary": "Current Vercel billing period reviewed after v8.12.90 production deploy; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "gcp-cloud-run",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-05T01:18:37+09:00",
+          "summary": "Cloud Run ai-engine remained unchanged on ai-engine-00592-47p with cpu=1, memory=512Mi, maxScale=1, concurrency=16, and 100% traffic.",
+          "evidence": "gcloud run services describe ai-engine --region=asia-northeast1 --format=json",
+          "url": "https://console.cloud.google.com/run"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.12.90 pre-auth system preload production evidence",
+          "path": "reports/qa/evidence/qa-20260605-v81290-preauth-system-preload.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run service URL",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+        },
+        {
+          "type": "general",
+          "label": "GitLab tag pipeline v8.12.90",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2577188591"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-5dlwvbbv4-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -38380,16 +38539,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 153,
-      "appropriateCount": 119,
+      "seenCount": 154,
+      "appropriateCount": 120,
       "partialCount": 34,
       "inappropriateCount": 0,
       "improvementNeededCount": 34,
-      "lastRunId": "QA-20260605-0650",
-      "lastSeenAt": "2026-06-04T15:37:32.012Z",
+      "lastRunId": "QA-20260605-0651",
+      "lastSeenAt": "2026-06-04T16:20:31.104Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Dashboard telemetry, monitoring report API, and AI response basis aligned on the same simulated OTel state.",
+      "lastRationale": "The pre-auth landing now exposes no console messages, no /api/system request, and the observable preload path is the public soft health endpoint.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -38414,16 +38573,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 244,
-      "appropriateCount": 223,
+      "seenCount": 245,
+      "appropriateCount": 224,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260605-0650",
-      "lastSeenAt": "2026-06-04T15:37:32.012Z",
+      "lastRunId": "QA-20260605-0651",
+      "lastSeenAt": "2026-06-04T16:20:31.104Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production deployment is Ready, Vercel and Cloud Run health checks passed, and Cloud Run runtime limits remain within the free-tier guardrail.",
+      "lastRationale": "The GitLab tag deploy reached Vercel production, version metadata matches the release commit, Vercel usage remains billed 0, and Cloud Run limits remained unchanged.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -38431,16 +38590,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 272,
-      "appropriateCount": 245,
+      "seenCount": 273,
+      "appropriateCount": 246,
       "partialCount": 27,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260605-0650",
-      "lastSeenAt": "2026-06-04T15:37:32.012Z",
+      "lastRunId": "QA-20260605-0651",
+      "lastSeenAt": "2026-06-04T16:20:31.104Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The Playwright MCP scenario covered landing, guest login, system start, dashboard render, console/network inspection, and a representative AI stream.",
+      "lastRationale": "The targeted regression was verified with unit coverage, production smoke, and Playwright MCP pre-auth console/network inspection.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

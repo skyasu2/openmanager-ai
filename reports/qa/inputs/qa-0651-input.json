@@ -1,0 +1,154 @@
+{
+  "runTitle": "Vercel Production Targeted QA - v8.12.90 Pre-Auth System Preload Fix",
+  "owner": "codex",
+  "source": "gitlab-ci+vercel-cli+playwright-mcp+usage-check",
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "v8.12.90 release commit and tag were pushed to GitLab canonical main",
+    "Vercel production deployment dpl_J1PEim6zfHjgGUoB9NcYqgEH2hVj was Ready for alias https://openmanager-ai.vercel.app",
+    "Production /api/version returned v8.12.90, release tag v8.12.90, commit 36b29a5ca3d7e2505312cee873c6c7653c00e9c6, and GitLab pipeline 2577188591",
+    "Production smoke passed for GET /, GET /login, and GET /api/version with expected v8.12.90 commit metadata",
+    "Playwright MCP pre-auth landing check cleared cookies/storage before navigation and rendered the logged-out landing state",
+    "Playwright MCP pre-auth landing console messages were 0",
+    "Playwright MCP pre-auth landing observed no /api/system requests",
+    "Playwright MCP observed the new public HEAD /api/health?service=ai&soft=true preload path instead of the auth-protected /api/system path",
+    "Direct HEAD /api/health?service=ai&soft=true returned HTTP 200",
+    "Vercel usage check passed with effective 1.9358 USD and billed 0.0000 USD",
+    "Cloud Run ai-engine was unchanged on ai-engine-00592-47p with cpu=1, memory=512Mi, maxScale=1, and 100% traffic"
+  ],
+  "skippedSurfaces": [
+    "Full broad route matrix was not rerun because the release fixed a targeted pre-auth landing preload path",
+    "Guest login and AI chat were not repeated because v8.12.90 did not change auth login, dashboard telemetry, AI routing, or AI Engine behavior",
+    "AI Engine post-deploy QA was not repeated because deploy_ai_engine was skipped for no cloud-run/ai-engine changes and /api/health confirmed the existing ai-engine version remained healthy"
+  ],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_J1PEim6zfHjgGUoB9NcYqgEH2hVj",
+    "deploymentUrl": "https://openmanager-5dlwvbbv4-skyasus-projects.vercel.app",
+    "commitSha": "36b29a5ca3d7e2505312cee873c6c7653c00e9c6"
+  },
+  "checks": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-05T01:18:37+09:00",
+      "summary": "Current Vercel billing period reviewed after v8.12.90 production deploy; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "gcp-cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-05T01:18:37+09:00",
+      "summary": "Cloud Run ai-engine remained unchanged on ai-engine-00592-47p with cpu=1, memory=512Mi, maxScale=1, concurrency=16, and 100% traffic.",
+      "evidence": "gcloud run services describe ai-engine --region=asia-northeast1 --format=json",
+      "url": "https://console.cloud.google.com/run"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.12.90 pre-auth system preload production evidence",
+      "path": "reports/qa/evidence/qa-20260605-v81290-preauth-system-preload.md"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The GitLab tag deploy reached Vercel production, version metadata matches the release commit, Vercel usage remains billed 0, and Cloud Run limits remained unchanged.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The targeted regression was verified with unit coverage, production smoke, and Playwright MCP pre-auth console/network inspection.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The pre-auth landing now exposes no console messages, no /api/system request, and the observable preload path is the public soft health endpoint.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "landing-console-api-system-unauthorized",
+      "title": "랜딩 비로그인 상태에서 /api/system 401 콘솔 에러 제거 또는 graceful handling",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "evidence": "v8.12.90 production Playwright MCP pre-auth landing check observed 0 console messages, 0 /api/system requests, and the new HEAD /api/health?service=ai&soft=true preload path.",
+      "note": "Previously WONT-FIX portfolio debt; fixed because the root cause was a small public-health preloader swap with no auth weakening and no free-tier cost increase.",
+      "owner": "codex",
+      "status": "completed"
+    },
+    {
+      "id": "v81290-preauth-system-preload-production-deploy",
+      "title": "v8.12.90 frontend release deployed the pre-auth system preload fix",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "evidence": "Production /api/version returned v8.12.90 and commit 36b29a5ca3d7e2505312cee873c6c7653c00e9c6; Vercel deployment dpl_J1PEim6zfHjgGUoB9NcYqgEH2hVj is Ready.",
+      "owner": "codex",
+      "status": "completed"
+    }
+  ],
+  "pendingImprovements": [],
+  "notes": [
+    "The local GitLab pipeline API still returns 401 because the workstation token is expired; production /api/version exposed pipeline 2577188591 after deploy.",
+    "An earlier local smoke polling process used an incorrect expected commit SHA and was stopped; rerun with the correct release SHA passed immediately.",
+    "This release is frontend-only. AI Engine stayed at v8.12.89 because no cloud-run/ai-engine files changed."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-5dlwvbbv4-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline v8.12.90",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2577188591"
+    },
+    {
+      "type": "general",
+      "label": "Cloud Run service URL",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+    }
+  ]
+}
