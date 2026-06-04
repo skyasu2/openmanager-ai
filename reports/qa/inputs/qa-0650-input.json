@@ -1,0 +1,186 @@
+{
+  "runTitle": "Vercel Production Targeted QA - Free Tier and Two-Week Direction Review",
+  "owner": "codex",
+  "source": "playwright-mcp+vercel-cli+cloud-run-health+usage-check",
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Vercel production deployment dpl_5Af3pqTpnHXXXPUxqQWfRLWBR2r7 was Ready for alias https://openmanager-ai.vercel.app",
+    "Vercel production /api/version returned v8.12.89 and commit 9ae1f6057b8dfa4f20ba1687a1f48aa83a08b88f",
+    "Vercel usage check passed with effective 1.9358 USD and billed 0.0000 USD for the current billing period",
+    "Cloud Run ai-engine serves 100% traffic on ai-engine-00592-47p with cpu=1, memory=512Mi, maxScale=1, and concurrency=16",
+    "Recent Cloud Build history since 2026-05-22 did not expose a paid options.machineType",
+    "Production /api/health reported database, cache, and AI connected",
+    "Playwright MCP guest login completed through the PIN modal and POST /api/auth/guest-login returned 200",
+    "Playwright MCP system start navigated to /dashboard and authenticated /api/system requests returned 200",
+    "Dashboard rendered 18 total servers, 17 online, 1 warning, 0 critical, and 0 offline",
+    "Dashboard rendered resource summary CPU 29%, memory 46%, and disk 37%",
+    "AI assistant opened and rendered AI Chat, report, and anomaly tabs with recommendation buttons",
+    "AI prompt '현재 서버 전체 상태를 요약해줘' returned a grounded answer matching dashboard numbers and exposing monitoring-server-health as analysis basis"
+  ],
+  "skippedSurfaces": [
+    "Full broad route matrix was not rerun because this was a cost-controlled production direction review, not a release-gate sweep",
+    "Mobile viewport regression was not rerun; desktop production behavior was the representative target for this check",
+    "OAuth provider login was not exercised because guest login is the cost-controlled production demo path",
+    "Server detail modal, topology route, and full alerts/logs matrix were not exhaustively rerun",
+    "Standard five-question conversational AI QA and Vision real-image QA were not rerun to avoid unnecessary live provider cost"
+  ],
+  "environment": {
+    "target": "vercel-production+cloud-run-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_5Af3pqTpnHXXXPUxqQWfRLWBR2r7",
+    "deploymentUrl": "https://openmanager-4ifk1pedm-skyasus-projects.vercel.app",
+    "commitSha": "9ae1f6057b8dfa4f20ba1687a1f48aa83a08b88f"
+  },
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar server-status summary",
+      "agent": "Supervisor",
+      "provider": "unknown",
+      "model": "unknown",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "PerformanceResourceTiming duration from Playwright MCP browser context",
+      "latencyMs": 1213
+    }
+  ],
+  "plannerShadowObservations": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-05T00:30:49+09:00",
+      "summary": "Current Vercel billing period reviewed during production direction QA; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "gcp-cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-05T00:30:49+09:00",
+      "summary": "Cloud Run ai-engine remained at cpu=1, memory=512Mi, maxScale=1, concurrency=16, and 100% traffic on ai-engine-00592-47p. Recent Cloud Build history since 2026-05-22 did not expose a paid options.machineType.",
+      "evidence": "gcloud run services describe ai-engine; gcloud builds list --filter=createTime>=2026-05-22 AND options.machineType:*",
+      "url": "https://console.cloud.google.com/run"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "Free-tier and two-week direction Playwright MCP evidence",
+      "path": "reports/qa/evidence/qa-20260605-free-tier-two-week-direction-playwright.md"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production deployment is Ready, Vercel and Cloud Run health checks passed, and Cloud Run runtime limits remain within the free-tier guardrail.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The representative live AI prompt returned a grounded status summary matching dashboard telemetry and exposed monitoring-server-health as analysis basis.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard telemetry, monitoring report API, and AI response basis aligned on the same simulated OTel state.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The Playwright MCP scenario covered landing, guest login, system start, dashboard render, console/network inspection, and a representative AI stream.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "free-tier-production-baseline-v81289-ok",
+      "title": "v8.12.89 production free-tier baseline remains healthy",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "evidence": "Vercel billed 0.0000 USD, Cloud Run cpu=1/memory=512Mi/maxScale=1/concurrency=16, Cloud Run /health ok, and recent Cloud Build history since 2026-05-22 did not expose paid machineType.",
+      "owner": "codex",
+      "status": "completed"
+    },
+    {
+      "id": "two-week-direction-playwright-grounded-ai-v81289-ok",
+      "title": "Recent two-week dashboard and AI grounding direction verified on Vercel production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "evidence": "Playwright MCP verified guest login, dashboard telemetry, AI sidebar, and a live grounded AI response matching dashboard counts and monitoring-server-health basis.",
+      "owner": "codex",
+      "status": "completed"
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "landing-console-api-system-unauthorized",
+      "title": "랜딩 비로그인 상태에서 /api/system 401 콘솔 에러 제거 또는 graceful handling",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "evidence": "Playwright MCP observed one pre-auth HEAD /api/system 401 console resource error; authenticated /api/system calls returned 200 and dashboard operation was unaffected.",
+      "note": "Known non-blocking console cleanliness issue; kept as WONT-FIX under portfolio operation priority policy.",
+      "owner": "project"
+    }
+  ],
+  "notes": [
+    "This run is intentionally targeted. It validates the user-requested free-tier state and recent direction without repeating the full broad QA matrix.",
+    "Recent two-week work is directionally coherent: AI grounding/routing hardening, dashboard UX polish, CI/release/free-tier operations, and QA evidence integrity.",
+    "The remaining practical improvement is periodic broad Playwright coverage after major UI route changes; no immediate blocker was found in this run."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-4ifk1pedm-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline v8.12.89",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2576980796"
+    },
+    {
+      "type": "general",
+      "label": "Cloud Run service URL",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+    }
+  ]
+}
