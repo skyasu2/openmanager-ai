@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-30 22:45:32 KST
+> Generated at: 2026-06-04 23:12:58 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 645 |
-| Total Runs (Counted) | 504 |
+| Total Recorded Runs | 646 |
+| Total Runs (Counted) | 505 |
 | Non-counted Runs | 141 |
-| Total Checks | 4431 |
-| Passed | 4230 |
+| Total Checks | 4437 |
+| Passed | 4236 |
 | Failed | 159 |
-| Completed Items | 741 |
+| Completed Items | 742 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 31 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260530-0647 (2026-05-30T13:45:31.747Z) |
-| Latest Recorded Run | QA-20260530-0647 (2026-05-30T13:45:31.747Z) |
+| Last Counted Run | QA-20260604-0648 (2026-06-04T14:12:58.111Z) |
+| Latest Recorded Run | QA-20260604-0648 (2026-06-04T14:12:58.111Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,32 +34,34 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260530-0647 (2026-05-30T13:45:31.747Z)
+Latest run: QA-20260604-0648 (2026-06-04T14:12:58.111Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
+| IT Monitoring & Observability SME | partially-appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.12.87 production release smoke; effective 19.8825 USD, billed 0.0000 USD, chargeCount 17661. |
+| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.12.88 off-domain guardrail targeted production QA; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-29T13:45:31.747Z -> 2026-05-30T13:45:31.747Z (24h)
+- Window: 2026-06-03T14:12:58.111Z -> 2026-06-04T14:12:58.111Z (24h)
 - Runs with observations: 1 recorded / 1 counted
-- Samples: 1
+- Samples: 2
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Analyst Agent | cloud run ai | 1 | 11376ms | 11376ms | - | - | 11376ms | 11376ms | QA-20260530-0646 |
+| Advisor Agent | mistral | 1 | 8205ms | 8205ms | - | - | 8205ms | 8205ms | QA-20260604-0648 |
+| Supervisor | groq | 1 | 1025ms | 1025ms | - | - | 1025ms | 1025ms | QA-20260604-0648 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-29T13:45:31.747Z -> 2026-05-30T13:45:31.747Z (24h)
+- Window: 2026-06-03T14:12:58.111Z -> 2026-06-04T14:12:58.111Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -73,25 +75,25 @@ Latest run: QA-20260530-0647 (2026-05-30T13:45:31.747Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_JD28Eo72pCqgfRMP6qPEJ6M8pBzf / SHA ed19d759
-- Coverage Packs: core-routes-smoke, observability-pack
-- Covered Surfaces: GitLab tag pipeline v8.12.87 completed successfully with frontend deploy, AI Engine deploy, frontend post-deploy smoke, and AI Engine post-deploy smoke, GitLab release deploy jobs ran with overlap_detected after runner concurrent/request_concurrency was raised to 2, Production release script smoke verified GET /, GET /login, and GET /api/version for version 8.12.87, Production /api/version returned release tag v8.12.87 and commit ed19d759578fb5cc4ca0afeed65068f1b5dcf80c, Vercel production deployment dpl_JD28Eo72pCqgfRMP6qPEJ6M8pBzf was Ready for alias https://openmanager-ai.vercel.app, Cloud Run /health returned status ok and version 8.12.87, Cloud Run monitoring endpoint returned 403 without auth as expected, Cloud Run revision ai-engine-00590-s2t is serving 100% traffic, Cloud Run runtime limits remain cpu=1 and memory=512Mi, Vercel usage check passed with billed 0.0000 USD
-- Skipped Surfaces: Broad browser matrix was not rerun because this was a release deployment smoke focused on CI topology, version propagation, health, and smoke closure, Production conversational AI QA was not rerun because this release did not change AI prompt routing, stream contracts, model/provider policy, tool schemas, response formatting, or Vision routing, Vision real-image QA was not in scope because this release did not change Vision routing or provider behavior
+- Deployment: dpl_4ouyrzWwdYJ3FcedNZcrp2pesDN3 / SHA 3b91b069
+- Coverage Packs: ai-core, security-pack, observability-pack
+- Covered Surfaces: Vercel production /api/version returned v8.12.88, release tag v8.12.88, commit 3b91b069d547cf226c58bce153c94bcafdf714ef, and GitLab pipeline 2564039473, Cloud Run /health returned status ok, version 8.12.88, routesReady true, and provider/API config enabled, Cloud Run /api/ai/supervisor live fact query '오늘 서울 날씨 알려줘' returned deterministic off-domain block with usage 0, offDomainAction block, offDomainCategory live_fact, Cloud Run /api/ai/supervisor general coding query '파이썬 피보나치 코드 짜줘' delegated to LLM and appended the off-domain warning suffix, Cloud Run /api/ai/supervisor operational-context query 'nginx 로그 파싱 스크립트 만들어줘' routed to Advisor command guidance without off-domain warning, Vercel usage check passed with billed 0.0000 USD for the current billing period
+- Skipped Surfaces: Broad browser route matrix was not rerun because this was a targeted AI Engine guardrail verification for v8.12.88, Standard five-question conversational AI QA was not rerun because the changed behavior is off-domain boundary handling and the targeted prompts covered block, warn, and operational-context exception branches, Vision real-image QA was not in scope because Vision routing/provider behavior did not change, Cloud Run admin /monitoring and /monitoring/traces were not queried because this run verified request guard behavior rather than trace sampling or admin observability
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Cloud Run service URL | [Cloud Run service URL](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
-| general | GitLab tag pipeline v8.12.87 | [GitLab tag pipeline v8.12.87](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2563996427) | - |
+| general | GitLab tag pipeline v8.12.88 | [GitLab tag pipeline v8.12.88](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2564039473) | - |
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-4hgyfqlcr-skyasus-projects.vercel.app/) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-rl93ky6vm-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.12.87 release parallel deploy smoke evidence | `reports/qa/evidence/qa-20260530-v81287-release-parallel-smoke.md` | - |
+| playwright-report | v8.12.88 off-domain guardrail targeted production evidence | `reports/qa/evidence/qa-20260604-v81288-off-domain-guardrail.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -186,18 +188,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 741 items completed (full list in qa-tracker.json)
+- Total: 742 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - off-domain-block-warn-v81288-production-qa: v8.12.88 off-domain block/warn guardrail verified on Cloud Run production (last QA-20260604-0648)
   - release-parallel-deploy-v81287-production-smoke: v8.12.87 release deployed with frontend and AI Engine deploy overlap (last QA-20260530-0647)
   - analyst-latency-evidence-prefetch: Analyst RCA first-step latency reduction via deterministic all-server anomaly evidence prefetch (last QA-20260530-0646)
   - analyst-prefetch-internal-name-redaction: Analyst prefetch prompt no longer leaks internal tool/function names into user-visible RCA answers (last QA-20260530-0646)
   - ai-disk-threshold-conditional-count: 디스크 임계값 조건부 카운트 질의 정확 처리 (신규 강점) (last QA-20260530-0645)
-  - p24-all-scope-average-memory-variant-verify: all-scope 평균 라우팅 메모리 변형 production 검증 (last QA-20260530-0645)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260604-0648 | 2026-06-04T14:12:58.111Z | targeted | yes | yes | Cloud Run Production Targeted QA - v8.12.88 Off-Domain Guardrail | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260530-0647 | 2026-05-30T13:45:31.747Z | targeted | yes | yes | Vercel Release Smoke - v8.12.87 Parallel Deploy Verification | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260530-0646 | 2026-05-30T08:57:48.785Z | targeted | yes | yes | Vercel production Analyst prefetch QA - v8.12.84 internal prompt redaction | 5 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260530-0645 | 2026-05-30T00:20:52.444Z | targeted | no | yes | Vercel Playwright MCP 신규 질문 평가 - v8.12.79 (all-scope 평균/조건부 카운트/가정형 영향분석) | 3 | 2 | 0 | 0 | 1 | 1 |
@@ -217,4 +220,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260528-0631 | 2026-05-28T06:15:13.877Z | smoke | yes | no | GitLab production release smoke - v8.12.69 AI routing fixes | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260528-0630 | 2026-05-28T04:37:16.133Z | targeted | yes | yes | Vercel Playwright MCP targeted recheck - v8.12.68 dashboard alert-feed focus | 9 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260528-0629 | 2026-05-28T01:16:50.267Z | targeted | yes | yes | Vercel Playwright MCP targeted recheck - v8.12.67 P20 trend-rate ranking | 8 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260528-0628 | 2026-05-27T23:33:40.324Z | targeted | yes | yes | Chrome DevTools MCP 18차 신규 질문 평가 — v8.12.65 P17/P18/P19a/stable ranking/group compare | 7 | 0 | 0 | 0 | 0 | 0 |

@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-16
+> Last reviewed: 2026-06-04
 > Canonical: docs/architecture/02-runtime-architecture.md
 > Tags: architecture,ai,runtime,supervisor,provider,nlq,preprocessing
 
@@ -25,7 +25,7 @@ AI Runtime은 “deterministic/single 기본 + 조건부 routing-based multi-age
 | QueryGuard | `/api/ai/nlq/extract-entities` — 공격 패턴 차단, log_paste 감지, oversized truncate | ✅ 완료 (N2) |
 | NLQ entity extraction | Groq `llama-4-scout-17b` → `SemanticIntentFrame` + `executionMode` 슬롯 | ✅ 완료 (N1) |
 | intentFrame 신뢰 경로 | Cloud Run `selectExecutionMode()` — confidence ≥ 0.8이면 LLM executionMode 우선 | ✅ 완료 (N1) |
-| Cloud Run request guard | `guardInput()` high 차단, medium/low 경고 통과, off-domain 경고 후 LLM 위임 | ✅ 완료 |
+| Cloud Run request guard | `guardInput()` high 차단, medium/low 경고 통과, off-domain category별 block/warn 분리 | ✅ 완료 |
 | streaming output filter | `/api/ai/supervisor/stream/v2` — XSS 패턴 제거, 시스템프롬프트 유출 차단 | ✅ 완료 (N4) |
 | logExtract Cloud Run 계약 | `inputType/logExtract` → Cloud Run multi 분석 경로 연결 | ✅ 완료 (N3) |
 
@@ -39,7 +39,7 @@ AI Runtime은 “deterministic/single 기본 + 조건부 routing-based multi-age
 - incident report와 monitoring analysis artifact는 Next.js BFF API route를 통해 실행되며, `/api/ai/artifact-intent`, `/api/ai/incident-report`, `/api/ai/intelligent-monitoring` POST는 auth와 `aiAnalysis` rate-limit를 적용합니다. Server snapshot과 ops procedure artifact는 브라우저에서 Cloud Run을 직접 우회하지 않고 로컬 deterministic generator와 OTel snapshot을 사용합니다.
 - artifact가 아닌 metric/peak 계열 질의는 session-scoped `extractEntitiesCached()`가 `SemanticIntentFrame`을 만들 수 있으며, `confidence >= 80`, high ambiguity 아님, 현재는 `monitoring.metric_peak`일 때만 `intentFrame` metadata로 Cloud Run에 전달됩니다. Cloud Run `selectExecutionMode()`는 이 frame의 `executionMode`를 primary signal로 신뢰하고, confidence < 0.8이거나 frame이 없을 때만 regex 4개 fallback을 사용합니다.
 - Direct Router는 `preFilterQuery()`와 `resolveDirectRoutingTarget()`으로 specialist agent를 직접 선택합니다. 기본 request path에서 Orchestrator LLM routing과 `decomposeTask()` LLM decomposition은 호출하지 않습니다.
-- Cloud Run request guard는 prompt injection `high`만 HTTP 400으로 차단하고, `medium`/`low` 또는 off-domain 질의는 경고 문구를 prepend한 뒤 LLM 경로로 위임합니다.
+- Cloud Run request guard는 prompt injection `high`를 HTTP 400으로 차단하고, `medium`/`low`는 경고 후 LLM 경로로 위임합니다. off-domain은 `live_fact`/`local_recommendation`/`personal_general`을 deterministic block으로 처리하고, `external_action`/`general_coding`은 경고 suffix 후 LLM 경로로 위임합니다.
 - 단순 메트릭 조회, ranking, server snapshot은 deterministic/single 경로에 남기고, RCA/report/advisor/vision 요청에서 역할별 Tool-loop specialist agent로 escalation합니다.
 - Cloud Run domain evidence는 metadata intent frame을 우선 사용하고 domain parser fallback을 보조로 사용합니다. `metric_peak` evidence는 prompt/fallback/semantic trace를 제공하며, `responsePolicy=deterministic_read_only_advice`인 경우에만 Cloud Run 내부 LLM 호출 없이 바로 응답합니다. 이때 frontend artifact classifier나 entity extractor LLM이 선행됐을 수 있으므로 zero-token은 Cloud Run 실행 구간 기준입니다.
 - formatting-only rewrite, top-N metric ranking, empty stream recovery는 deterministic guard/fallback으로 보강되어 있습니다.
@@ -79,7 +79,7 @@ flowchart TB
     Jobs --> Tasks["Cloud Tasks"]
     Tasks --> Worker["Cloud Run /api/jobs/process"]
 
-    StreamRoute --> RequestGuard["Cloud Run Request Guard\nprompt high -> 400\nmedium/low + off-domain -> warning prepend"]
+    StreamRoute --> RequestGuard["Cloud Run Request Guard\nprompt high -> 400\nprompt medium/low -> warning\noff-domain -> category block/warn"]
     RequestGuard --> Supervisor["Cloud Run Supervisor"]
     Worker --> Supervisor
 
@@ -139,7 +139,9 @@ User Query
 Cloud Run Supervisor
   -> Request Guard
      +-- prompt injection high -> HTTP 400
-     `-- prompt medium/low or off-domain -> warning prepend + continue
+     +-- prompt medium/low -> warning prepend + continue
+     +-- off-domain live/current/local/personal -> deterministic block
+     `-- off-domain external-action/general-coding -> warning suffix + continue
   -> Domain Evidence Resolution
      +-- metadata intentFrame
      `-- monitoring domain parser fallback
@@ -162,7 +164,7 @@ Cloud Run Supervisor
 | 영역 | 구현 내용 |
 |---|---|
 | NLQ 전처리 | ChatInputArea UX guard, QueryGuard(공격/로그/장문), NLQ intentFrame, streaming output filter |
-| Request guard | prompt injection high 차단, medium/low 경고 통과, off-domain 경고 위임 |
+| Request guard | prompt injection high 차단, medium/low 경고 통과, off-domain category별 block/warn |
 | Stream transport | AI SDK v6 `UIMessageStream`, `DefaultChatTransport`, resumable stream option |
 | Job queue | Redis job store, Cloud Tasks dispatch, Cloud Run `/api/jobs/process` worker |
 | Supervisor mode | explicit `multi`, gated `single`, complexity-based `auto` |

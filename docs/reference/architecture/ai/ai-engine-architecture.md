@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-25
+> Last reviewed: 2026-06-04
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,deterministic-runtime,multi-agent,cloud-run
 >
-> **v8.12.39** | Updated 2026-05-25
+> **v8.12.88** | Updated 2026-06-04
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## 1. Overview
@@ -267,7 +267,7 @@ flowchart TB
 
     subgraph CR["Cloud Run AI Engine (Hono)"]
         Entry["Supervisor Request"]
-        RequestGuard["Request Guard\nprompt high block\nmedium/low + off-domain warning delegation"]
+        RequestGuard["Request Guard\nprompt high block\nmedium/low warning\noff-domain category block/warn"]
         Mode{"resolveSupervisorModeDecision()"}
         DomEvidence["Domain Evidence Resolution\nmetadata intentFrame first\ndomain parser fallback\nsupervisor-domain-evidence.ts"]
         Evidence["DomainEvidenceResult\nprompt + fallback + semantic trace\nmonitoring evidence provider"]
@@ -307,7 +307,7 @@ flowchart TB
 
 #### Supervisor Stream Request Branching
 
-`/api/ai/supervisor/stream/v2`는 prompt guard와 deterministic short-circuit을 먼저 평가한 뒤, 차단이 아닌 경고성 입력은 LLM 경로로 위임합니다. 이 순서는 비용과 보안을 동시에 지키기 위한 request-path 계약입니다.
+`/api/ai/supervisor/stream/v2`는 prompt guard와 deterministic short-circuit을 먼저 평가한 뒤, 차단이 아닌 경고성 입력은 LLM 경로로 위임합니다. off-domain은 category별로 `block` 또는 `warn`을 분리합니다. 이 순서는 비용과 보안을 동시에 지키기 위한 request-path 계약입니다.
 
 ```mermaid
 flowchart TB
@@ -327,9 +327,11 @@ flowchart TB
     ServiceCommand -->|yes| ServiceAnswer["deterministic command guidance\nusage=0"]
     ServiceCommand -->|no| OffDomain{"off-domain\nwithout operational context?"}
 
-    OffDomain -->|yes| WarnOffDomain["off-domain warning queued\nshouldShortCircuit=false"]
+    OffDomain -->|live_fact /\nlocal_recommendation /\npersonal_general| BlockOffDomain["deterministic off-domain block\nprovider=off-domain-guard\nusage=0"]
+    OffDomain -->|external_action /\ngeneral_coding| WarnOffDomain["off-domain warning queued\ncontinue to LLM"]
     OffDomain -->|no| LLMPath["normal LLM path"]
     WarnOffDomain --> LLMPath
+    BlockOffDomain --> Done["done"]
 
     LLMPath --> Mode{"resolved mode"}
     Mode -->|single| Single["single path\nstreamText + prepareStep"]

@@ -1,0 +1,159 @@
+{
+  "runId": "QA-20260604-0648",
+  "recordedAt": "2026-06-04T14:12:58.111Z",
+  "recordedAtKst": "2026-06-04 23:12:58 KST",
+  "runTitle": "Cloud Run Production Targeted QA - v8.12.88 Off-Domain Guardrail",
+  "owner": "codex",
+  "source": "cloud-run-direct+vercel-cli",
+  "environment": {
+    "target": "vercel-production+cloud-run-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_4ouyrzWwdYJ3FcedNZcrp2pesDN3",
+    "deploymentUrl": "https://openmanager-rl93ky6vm-skyasus-projects.vercel.app",
+    "commitSha": "3b91b069d547cf226c58bce153c94bcafdf714ef"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "security-pack",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Vercel production /api/version returned v8.12.88, release tag v8.12.88, commit 3b91b069d547cf226c58bce153c94bcafdf714ef, and GitLab pipeline 2564039473",
+    "Cloud Run /health returned status ok, version 8.12.88, routesReady true, and provider/API config enabled",
+    "Cloud Run /api/ai/supervisor live fact query '오늘 서울 날씨 알려줘' returned deterministic off-domain block with usage 0, offDomainAction block, offDomainCategory live_fact",
+    "Cloud Run /api/ai/supervisor general coding query '파이썬 피보나치 코드 짜줘' delegated to LLM and appended the off-domain warning suffix",
+    "Cloud Run /api/ai/supervisor operational-context query 'nginx 로그 파싱 스크립트 만들어줘' routed to Advisor command guidance without off-domain warning",
+    "Vercel usage check passed with billed 0.0000 USD for the current billing period"
+  ],
+  "skippedSurfaces": [
+    "Broad browser route matrix was not rerun because this was a targeted AI Engine guardrail verification for v8.12.88",
+    "Standard five-question conversational AI QA was not rerun because the changed behavior is off-domain boundary handling and the targeted prompts covered block, warn, and operational-context exception branches",
+    "Vision real-image QA was not in scope because Vision routing/provider behavior did not change",
+    "Cloud Run admin /monitoring and /monitoring/traces were not queried because this run verified request guard behavior rather than trace sampling or admin observability"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Cloud Run direct supervisor general coding warn",
+      "agent": "Supervisor",
+      "provider": "groq",
+      "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "route": "/api/ai/supervisor",
+      "source": "response metadata durationMs",
+      "latencyMs": 1025,
+      "processingTimeMs": 1025
+    },
+    {
+      "surface": "Cloud Run direct supervisor operational command guidance",
+      "agent": "Advisor Agent",
+      "provider": "mistral",
+      "model": "mistral-small-latest",
+      "route": "/api/ai/supervisor",
+      "source": "response metadata durationMs",
+      "latencyMs": 8205,
+      "processingTimeMs": 8205
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The targeted prompts cover the three changed off-domain branches: deterministic block, warn delegation, and operational-context exception.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Live/current external fact requests fail closed with zero-token deterministic refusal, while best-effort categories retain explicit user-visible boundary warnings.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": false,
+      "rationale": "Runtime version, health, latency metadata, and usage evidence were captured; warn-path metadata could be richer but does not block the release-facing user contract.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-04T23:07:59+09:00",
+      "summary": "Current Vercel billing period reviewed after v8.12.88 off-domain guardrail targeted production QA; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.12.88 off-domain guardrail targeted production evidence",
+      "path": "reports/qa/evidence/qa-20260604-v81288-off-domain-guardrail.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "off-domain-block-warn-v81288-production-qa",
+      "title": "v8.12.88 off-domain block/warn guardrail verified on Cloud Run production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production /api/version and Cloud Run /health returned v8.12.88; live_fact block returned deterministic usage 0; general_coding warn appended suffix after LLM response; operational nginx log parsing request routed without off-domain warning.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production is currently serving v8.12.88 on Vercel and Cloud Run.",
+    "The first exploratory call to bare /supervisor returned 404; the production Cloud Run API route is /api/ai/supervisor and passed with X-API-Key.",
+    "Non-blocking observability gap: warn-path responses append the warning suffix but do not expose offDomainAction=warn in non-stream metadata.",
+    "Architecture docs were updated in the same work session to match the category-level off-domain block/warn policy."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run service URL",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+    },
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline v8.12.88",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2564039473"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-rl93ky6vm-skyasus-projects.vercel.app/"
+    }
+  ]
+}

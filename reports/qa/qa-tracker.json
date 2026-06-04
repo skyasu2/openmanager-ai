@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-30T13:45:31.747Z"
+    "updatedAt": "2026-06-04T14:12:58.111Z"
   },
   "sequence": {
-    "nextRunNumber": 648
+    "nextRunNumber": 649
   },
   "summary": {
-    "totalRecordedRuns": 645,
-    "totalRuns": 504,
+    "totalRecordedRuns": 646,
+    "totalRuns": 505,
     "excludedRuns": 141,
-    "totalChecks": 4431,
-    "totalPassed": 4230,
+    "totalChecks": 4437,
+    "totalPassed": 4236,
     "totalFailed": 159,
     "completionRate": 100,
-    "completedItems": 741,
+    "completedItems": 742,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 31,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260530-0647",
-    "lastRecordedAt": "2026-05-30T13:45:31.747Z",
-    "latestRecordedRunId": "QA-20260530-0647",
-    "latestRecordedAt": "2026-05-30T13:45:31.747Z"
+    "lastRunId": "QA-20260604-0648",
+    "lastRecordedAt": "2026-06-04T14:12:58.111Z",
+    "latestRecordedRunId": "QA-20260604-0648",
+    "latestRecordedAt": "2026-06-04T14:12:58.111Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18260,6 +18260,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-30T13:45:31.747Z"
+    },
+    "off-domain-block-warn-v81288-production-qa": {
+      "id": "off-domain-block-warn-v81288-production-qa",
+      "title": "v8.12.88 off-domain block/warn guardrail verified on Cloud Run production",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260604-0648",
+      "firstSeenAt": "2026-06-04T14:12:58.111Z",
+      "lastSeenRunId": "QA-20260604-0648",
+      "lastSeenAt": "2026-06-04T14:12:58.111Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production /api/version and Cloud Run /health returned v8.12.88; live_fact block returned deterministic usage 0; general_coding warn appended suffix after LLM response; operational nginx log parsing request routed without off-domain warning.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-04T14:12:58.111Z"
     }
   },
   "runs": [
@@ -37816,6 +37840,148 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260604-0648",
+      "recordedAt": "2026-06-04T14:12:58.111Z",
+      "recordedAtKst": "2026-06-04 23:12:58 KST",
+      "title": "Cloud Run Production Targeted QA - v8.12.88 Off-Domain Guardrail",
+      "owner": "codex",
+      "source": "cloud-run-direct+vercel-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260604-0648.json",
+      "environment": {
+        "target": "vercel-production+cloud-run-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_4ouyrzWwdYJ3FcedNZcrp2pesDN3",
+        "deploymentUrl": "https://openmanager-rl93ky6vm-skyasus-projects.vercel.app",
+        "commitSha": "3b91b069d547cf226c58bce153c94bcafdf714ef"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "security-pack",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version returned v8.12.88, release tag v8.12.88, commit 3b91b069d547cf226c58bce153c94bcafdf714ef, and GitLab pipeline 2564039473",
+        "Cloud Run /health returned status ok, version 8.12.88, routesReady true, and provider/API config enabled",
+        "Cloud Run /api/ai/supervisor live fact query '오늘 서울 날씨 알려줘' returned deterministic off-domain block with usage 0, offDomainAction block, offDomainCategory live_fact",
+        "Cloud Run /api/ai/supervisor general coding query '파이썬 피보나치 코드 짜줘' delegated to LLM and appended the off-domain warning suffix",
+        "Cloud Run /api/ai/supervisor operational-context query 'nginx 로그 파싱 스크립트 만들어줘' routed to Advisor command guidance without off-domain warning",
+        "Vercel usage check passed with billed 0.0000 USD for the current billing period"
+      ],
+      "skippedSurfaces": [
+        "Broad browser route matrix was not rerun because this was a targeted AI Engine guardrail verification for v8.12.88",
+        "Standard five-question conversational AI QA was not rerun because the changed behavior is off-domain boundary handling and the targeted prompts covered block, warn, and operational-context exception branches",
+        "Vision real-image QA was not in scope because Vision routing/provider behavior did not change",
+        "Cloud Run admin /monitoring and /monitoring/traces were not queried because this run verified request guard behavior rather than trace sampling or admin observability"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Cloud Run direct supervisor general coding warn",
+          "agent": "Supervisor",
+          "provider": "groq",
+          "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+          "route": "/api/ai/supervisor",
+          "source": "response metadata durationMs",
+          "latencyMs": 1025,
+          "processingTimeMs": 1025
+        },
+        {
+          "surface": "Cloud Run direct supervisor operational command guidance",
+          "agent": "Advisor Agent",
+          "provider": "mistral",
+          "model": "mistral-small-latest",
+          "route": "/api/ai/supervisor",
+          "source": "response metadata durationMs",
+          "latencyMs": 8205,
+          "processingTimeMs": 8205
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The targeted prompts cover the three changed off-domain branches: deterministic block, warn delegation, and operational-context exception.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Live/current external fact requests fail closed with zero-token deterministic refusal, while best-effort categories retain explicit user-visible boundary warnings.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": false,
+          "rationale": "Runtime version, health, latency metadata, and usage evidence were captured; warn-path metadata could be richer but does not block the release-facing user contract.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-04T23:07:59+09:00",
+          "summary": "Current Vercel billing period reviewed after v8.12.88 off-domain guardrail targeted production QA; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.12.88 off-domain guardrail targeted production evidence",
+          "path": "reports/qa/evidence/qa-20260604-v81288-off-domain-guardrail.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run service URL",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+        },
+        {
+          "type": "general",
+          "label": "GitLab tag pipeline v8.12.88",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2564039473"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-rl93ky6vm-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -37824,16 +37990,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 353,
-      "appropriateCount": 302,
+      "seenCount": 354,
+      "appropriateCount": 303,
       "partialCount": 51,
       "inappropriateCount": 0,
       "improvementNeededCount": 70,
-      "lastRunId": "QA-20260530-0646",
-      "lastSeenAt": "2026-05-30T08:57:48.785Z",
+      "lastRunId": "QA-20260604-0648",
+      "lastSeenAt": "2026-06-04T14:12:58.111Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Live Analyst RCA query completed on v8.12.84, used the prefetch context, and the latest answer segment did not expose detectAnomaliesAllServers, runAllServerAnomalyScan, or precomputed evidence labels.",
+      "lastRationale": "The targeted prompts cover the three changed off-domain branches: deterministic block, warn delegation, and operational-context exception.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -37841,16 +38007,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 150,
+      "seenCount": 151,
       "appropriateCount": 117,
-      "partialCount": 33,
+      "partialCount": 34,
       "inappropriateCount": 0,
       "improvementNeededCount": 34,
-      "lastRunId": "QA-20260530-0645",
-      "lastSeenAt": "2026-05-30T00:20:52.444Z",
-      "lastFit": "appropriate",
+      "lastRunId": "QA-20260604-0648",
+      "lastSeenAt": "2026-06-04T14:12:58.111Z",
+      "lastFit": "partially-appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "api-was-dc1-01 장애 RCA에서 토폴로지 의존성(LB→API-WAS→DB/캐시) 추론 및 HAProxy 제외·graceful restart·수평확장 등 구체적 대응 제시",
+      "lastRationale": "Runtime version, health, latency metadata, and usage evidence were captured; warn-path metadata could be richer but does not block the release-facing user contract.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -37858,16 +38024,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 95,
-      "appropriateCount": 76,
+      "seenCount": 96,
+      "appropriateCount": 77,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260521-0550",
-      "lastSeenAt": "2026-05-21T05:23:03.217Z",
+      "lastRunId": "QA-20260604-0648",
+      "lastSeenAt": "2026-06-04T14:12:58.111Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Semantic frame routing trust boundary confirmed: off-domain query gracefully deflected; positive framing on server query did not bypass real data analysis.",
+      "lastRationale": "Live/current external fact requests fail closed with zero-token deterministic refusal, while best-effort categories retain explicit user-visible boundary warnings.",
       "lastNextAction": ""
     },
     "sre-devops": {
