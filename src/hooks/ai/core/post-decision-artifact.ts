@@ -1,11 +1,12 @@
+import { resolveRegisteredServerId } from '@/config/server-registry';
 import {
-  ARTIFACT_INTENT_RULE_VERSION,
   type ChatArtifactIntent,
-  classifyChatArtifactIntent,
-} from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+  withArtifactIntentRuleVersion,
+} from '@/lib/ai/chat-artifacts/artifact-intent-contract';
 import type {
   RouteDecision,
   RouteDecisionArtifactKind,
+  RouteDecisionDecider,
 } from '@/lib/ai/route-decision';
 import type { AsyncQueryResult } from '../useAsyncAIQuery';
 
@@ -15,6 +16,13 @@ type ExecutableChatArtifactIntent = Extract<
 >;
 
 const POST_DECISION_REASON = 'llm_artifact_classification';
+const SERVER_MONITORING_ID_PATTERN =
+  /\b((?:api|web|db|cache|storage|lb|monitoring|batch|worker)-[a-z0-9]+(?:-[a-z0-9]+)*)\b/i;
+
+type ResolvedPostDecisionArtifact = {
+  artifactKind: RouteDecisionArtifactKind;
+  decidedBy: RouteDecisionDecider;
+};
 
 export function resolvePostDecisionArtifactIntent({
   result,
@@ -23,28 +31,20 @@ export function resolvePostDecisionArtifactIntent({
   result: AsyncQueryResult;
   query: string;
 }): ExecutableChatArtifactIntent | null {
-  const artifactKind = resolvePostDecisionArtifactKind(result);
-  if (!artifactKind) return null;
+  const artifact = resolvePostDecisionArtifact(result);
+  if (!artifact) return null;
 
-  const frontendIntent = classifyChatArtifactIntent(query);
-  if (
-    isExecutableChatArtifactIntent(frontendIntent) &&
-    frontendIntent.kind === artifactKind
-  ) {
-    return frontendIntent;
-  }
-
-  return createPostDecisionArtifactIntent(artifactKind);
+  return createPostDecisionArtifactIntent(artifact, query);
 }
 
-function resolvePostDecisionArtifactKind(
+function resolvePostDecisionArtifact(
   result: AsyncQueryResult
-): RouteDecisionArtifactKind | null {
+): ResolvedPostDecisionArtifact | null {
   const resultRouteDecision = result.routeDecision;
   const assistantResultRouteDecision = result.assistantResult?.routeDecision;
   const assistantPlanRouteDecision = result.assistantPlan?.routeDecision;
 
-  const assistantResultKind = readKindFromRouteDecision(
+  const assistantResultKind = readArtifactFromRouteDecision(
     result.assistantResult?.routeDecision ?? resultRouteDecision,
     result.assistantResult?.artifactKind
   );
@@ -54,67 +54,98 @@ function resolvePostDecisionArtifactKind(
     result.assistantPlan?.executionPath === 'client-artifact'
       ? result.assistantPlan.artifactKind
       : undefined;
-  if (assistantPlanKind) return assistantPlanKind;
+  if (assistantPlanKind) {
+    return {
+      artifactKind: assistantPlanKind,
+      decidedBy:
+        result.assistantPlan?.decidedBy ??
+        assistantPlanRouteDecision?.decidedBy ??
+        'cloud-run',
+    };
+  }
 
-  const assistantPlanRouteKind = readKindFromRouteDecision(
+  const assistantPlanRouteKind = readArtifactFromRouteDecision(
     assistantPlanRouteDecision,
     assistantPlanRouteDecision?.artifactKind
   );
   if (assistantPlanRouteKind) return assistantPlanRouteKind;
 
-  const routeDecisionKind = readKindFromRouteDecision(
+  const routeDecisionKind = readArtifactFromRouteDecision(
     resultRouteDecision,
     resultRouteDecision?.artifactKind
   );
   if (routeDecisionKind) return routeDecisionKind;
 
-  const assistantResultRouteKind = readKindFromRouteDecision(
+  const assistantResultRouteKind = readArtifactFromRouteDecision(
     assistantResultRouteDecision,
     assistantResultRouteDecision?.artifactKind
   );
   return assistantResultRouteKind ?? null;
 }
 
-function readKindFromRouteDecision(
+function readArtifactFromRouteDecision(
   routeDecision: RouteDecision | undefined,
   artifactKind: RouteDecisionArtifactKind | undefined
-): RouteDecisionArtifactKind | null {
+): ResolvedPostDecisionArtifact | null {
   if (routeDecision?.executionPath !== 'client-artifact') return null;
-  return artifactKind ?? routeDecision.artifactKind ?? null;
+  const resolvedKind = artifactKind ?? routeDecision.artifactKind;
+  if (!resolvedKind) return null;
+  return {
+    artifactKind: resolvedKind,
+    decidedBy: routeDecision.decidedBy,
+  };
 }
 
 function createPostDecisionArtifactIntent(
-  artifactKind: RouteDecisionArtifactKind
+  artifact: ResolvedPostDecisionArtifact,
+  query: string
 ): ExecutableChatArtifactIntent | null {
-  switch (artifactKind) {
+  switch (artifact.artifactKind) {
     case 'incident-report':
     case 'monitoring-analysis':
     case 'server-snapshot':
-      return {
-        kind: artifactKind,
-        reason: POST_DECISION_REASON,
-        ruleVersion: ARTIFACT_INTENT_RULE_VERSION,
-      } as ExecutableChatArtifactIntent;
+      return withArtifactIntentRuleVersion(
+        {
+          kind: artifact.artifactKind,
+          reason: POST_DECISION_REASON,
+        },
+        artifact.decidedBy
+      ) as ExecutableChatArtifactIntent;
     case 'ops-procedure':
-      return {
-        kind: 'ops-procedure',
-        procedureType: 'script',
-        reason: POST_DECISION_REASON,
-        ruleVersion: ARTIFACT_INTENT_RULE_VERSION,
-      };
+      return withArtifactIntentRuleVersion(
+        {
+          kind: 'ops-procedure',
+          procedureType: 'script',
+          reason: POST_DECISION_REASON,
+        },
+        artifact.decidedBy
+      ) as ExecutableChatArtifactIntent;
     case 'server-monitoring-analysis':
-      return null;
+      return createServerMonitoringPostDecisionIntent(
+        query,
+        artifact.decidedBy
+      );
   }
 }
 
-function isExecutableChatArtifactIntent(
-  intent: ChatArtifactIntent
-): intent is ExecutableChatArtifactIntent {
-  return (
-    intent.kind === 'incident-report' ||
-    intent.kind === 'monitoring-analysis' ||
-    intent.kind === 'server-monitoring-analysis' ||
-    intent.kind === 'server-snapshot' ||
-    intent.kind === 'ops-procedure'
-  );
+function createServerMonitoringPostDecisionIntent(
+  query: string,
+  decidedBy: RouteDecisionDecider
+): ExecutableChatArtifactIntent | null {
+  const rawServerReference = query
+    .match(SERVER_MONITORING_ID_PATTERN)?.[1]
+    ?.toLowerCase();
+  if (!rawServerReference) return null;
+
+  const serverId =
+    resolveRegisteredServerId(rawServerReference) ?? rawServerReference;
+  return withArtifactIntentRuleVersion(
+    {
+      kind: 'server-monitoring-analysis',
+      serverId,
+      serverName: serverId,
+      reason: 'server_monitoring_action_pattern',
+    },
+    decidedBy
+  ) as ExecutableChatArtifactIntent;
 }

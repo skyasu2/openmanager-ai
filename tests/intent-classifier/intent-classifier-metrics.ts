@@ -1,4 +1,4 @@
-import type { ChatArtifactIntent } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+import type { ChatArtifactIntent } from '@/lib/ai/chat-artifacts/artifact-intent-contract';
 import type {
   ArtifactIntentCorpusCase,
   ArtifactIntentCorpusCategory,

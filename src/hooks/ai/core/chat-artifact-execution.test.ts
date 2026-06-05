@@ -2,7 +2,7 @@ import type { UIMessage } from '@ai-sdk/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { executeChatArtifact } from '@/lib/ai/chat-artifacts/artifact-execution';
 import { registerArtifactExecutor } from '@/lib/ai/chat-artifacts/artifact-executor-registry';
-import { ARTIFACT_INTENT_RULE_VERSION } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+import { ARTIFACT_INTENT_RULE_VERSION } from '@/lib/ai/chat-artifacts/artifact-intent-contract';
 import { generateServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
 import type { ServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/types';
 import { startChatArtifactGeneration } from './chat-artifact-execution';

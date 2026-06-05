@@ -1,12 +1,10 @@
 import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
 import {
-  ARTIFACT_INTENT_RULE_VERSION,
   type ChatArtifactIntent,
-  classifyChatArtifactIntent,
-  fetchLLMChatArtifactIntent,
-  shouldUseLLMChatArtifactIntent,
-} from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+  normalizeChatArtifactIntent,
+  withArtifactIntentRuleVersion,
+} from '@/lib/ai/chat-artifacts/artifact-intent-contract';
 import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type { AsyncQueryResult } from '../useAsyncAIQuery';
@@ -50,18 +48,22 @@ export function createForcedGuidanceArtifactIntent(
   target: GuidanceCtaTarget
 ): ForcedGuidanceArtifactIntent {
   if (target === 'incident-report') {
-    return {
-      kind: 'incident-report',
-      reason: 'incident_report_action_pattern',
-      ruleVersion: ARTIFACT_INTENT_RULE_VERSION,
-    };
+    return withArtifactIntentRuleVersion(
+      {
+        kind: 'incident-report',
+        reason: 'incident_report_action_pattern',
+      },
+      'frontend'
+    ) as ForcedGuidanceArtifactIntent;
   }
 
-  return {
-    kind: 'monitoring-analysis',
-    reason: 'monitoring_action_pattern',
-    ruleVersion: ARTIFACT_INTENT_RULE_VERSION,
-  };
+  return withArtifactIntentRuleVersion(
+    {
+      kind: 'monitoring-analysis',
+      reason: 'monitoring_action_pattern',
+    },
+    'frontend'
+  ) as ForcedGuidanceArtifactIntent;
 }
 
 export function createForcedGuidanceArtifactQuery(
@@ -187,30 +189,22 @@ export async function tryHandleChatArtifactRequest({
   resetRequestState: ResetRequestState;
   artifactIntentInFlightRef: MutableRefObject<boolean>;
 }): Promise<boolean> {
-  const regexIntent = classifyChatArtifactIntent(query);
-  let artifactIntent = regexIntent;
+  const intentAbortController = new AbortController();
+  artifactIntentInFlightRef.current = true;
+  runtime.artifactAbortControllerRef.current = intentAbortController;
 
-  if (regexIntent.kind === 'none' && shouldUseLLMChatArtifactIntent(query)) {
-    const intentAbortController = new AbortController();
-    artifactIntentInFlightRef.current = true;
-    runtime.artifactAbortControllerRef.current = intentAbortController;
-    try {
-      artifactIntent = await fetchLLMChatArtifactIntent(
-        query,
-        intentAbortController.signal
-      );
-    } finally {
-      artifactIntentInFlightRef.current = false;
-      if (
-        runtime.artifactAbortControllerRef.current === intentAbortController
-      ) {
-        runtime.artifactAbortControllerRef.current = null;
-      }
-    }
+  const artifactIntent = await fetchBffChatArtifactIntent(
+    query,
+    intentAbortController.signal
+  );
 
-    if (intentAbortController.signal.aborted) {
-      return true;
-    }
+  artifactIntentInFlightRef.current = false;
+  if (runtime.artifactAbortControllerRef.current === intentAbortController) {
+    runtime.artifactAbortControllerRef.current = null;
+  }
+
+  if (intentAbortController.signal.aborted) {
+    return true;
   }
 
   if (!isExecutableChatArtifactIntent(artifactIntent)) {
@@ -233,6 +227,26 @@ export async function tryHandleChatArtifactRequest({
     artifactInFlightRef: runtime.artifactInFlightRef,
   });
   return true;
+}
+
+async function fetchBffChatArtifactIntent(
+  query: string,
+  signal?: AbortSignal
+): Promise<ChatArtifactIntent> {
+  try {
+    const response = await fetch('/api/ai/artifact-intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal,
+      body: JSON.stringify({ query }),
+    });
+    if (!response.ok) {
+      return withArtifactIntentRuleVersion({ kind: 'none' }, 'bff');
+    }
+    return normalizeChatArtifactIntent(await response.json(), 'bff');
+  } catch {
+    return withArtifactIntentRuleVersion({ kind: 'none' }, 'bff');
+  }
 }
 
 export function tryHandlePostDecisionChatArtifactResult({

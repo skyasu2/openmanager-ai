@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  ARTIFACT_INTENT_RULE_VERSION,
-  classifyChatArtifactIntent,
-} from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+import { classifyChatArtifactIntent } from '@/app/api/ai/artifact-intent/deterministic';
+import { ARTIFACT_INTENT_RULE_VERSION } from '@/lib/ai/chat-artifacts/artifact-intent-contract';
 import { artifactIntentCorpus } from '../fixtures/artifacts/intent-corpus';
 import {
   ARTIFACT_INTENT_EVALUATION_KINDS,

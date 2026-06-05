@@ -3,11 +3,14 @@ import {
   buildAssistantPlanFromRouteDecision,
   buildAssistantResultFromRouteDecision,
 } from '@/lib/ai/assistant-contract';
-import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/artifact-intent-contract';
 import { createArtifactEnvelope } from '@/lib/ai/chat-artifacts/types';
 import { MONITORING_ARTIFACT_RENDERER_DOMAIN_ID } from '@/lib/ai/domain-renderers/artifact-renderer-registry';
 import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
-import { buildRouteDecision } from '@/lib/ai/route-decision';
+import {
+  buildRouteDecision,
+  type RouteDecisionDecider,
+} from '@/lib/ai/route-decision';
 import type { JobDataSlot } from '@/types/ai-jobs';
 
 type ChatArtifact = MonitoringChatArtifact;
@@ -19,10 +22,50 @@ export type GuidanceCta = {
   label: string;
 };
 
+type ArtifactGuidanceReason =
+  | 'incident_report_guidance_pattern'
+  | 'monitoring_guidance_pattern';
+
 export function getGuidanceCtaLabel(target: GuidanceCtaTarget): string {
   return target === 'incident-report'
     ? '바로 장애 보고서 생성하기'
     : '바로 이상감지/추세 분석 실행하기';
+}
+
+export function createArtifactGuidanceMessages({
+  query,
+  target,
+  reason,
+}: {
+  query: string;
+  target: GuidanceCtaTarget;
+  reason: ArtifactGuidanceReason;
+}): UIMessage[] {
+  const token = Date.now().toString(36);
+  return [
+    createTextMessage({
+      id: `artifact-guidance-user-${token}`,
+      role: 'user',
+      text: query,
+    }),
+    createTextMessage({
+      id: `artifact-guidance-assistant-${token}`,
+      role: 'assistant',
+      text:
+        target === 'incident-report'
+          ? '장애 보고서 생성 요청을 실행할 수 있습니다.'
+          : '이상감지/추세 분석 요청을 실행할 수 있습니다.',
+      metadata: {
+        type: 'guidance',
+        artifactIntentReason: reason,
+        artifactIntentTarget: target,
+        guidanceCta: {
+          target,
+          label: getGuidanceCtaLabel(target),
+        },
+      },
+    }),
+  ];
 }
 
 export function createTextMessage({
@@ -181,12 +224,14 @@ export function getArtifactErrorText(
 export function buildArtifactMetadata(
   artifact: ChatArtifact,
   intentReason: ChatArtifactIntentReason,
-  queryAsOfDataSlot?: JobDataSlot
+  queryAsOfDataSlot?: JobDataSlot,
+  decidedBy: RouteDecisionDecider = 'frontend'
 ): Record<string, unknown> {
   const routeDecision = buildArtifactRouteDecision(
     artifact.kind,
     intentReason,
-    queryAsOfDataSlot
+    queryAsOfDataSlot,
+    decidedBy
   );
   const assistantPlan = buildAssistantPlanFromRouteDecision(routeDecision);
   const assistantResult = buildAssistantResultFromRouteDecision(routeDecision);
@@ -303,19 +348,22 @@ export function buildArtifactErrorMetadata({
   artifactKind,
   intentReason,
   queryAsOfDataSlot,
+  decidedBy = 'frontend',
   requestError,
   errorText,
 }: {
   artifactKind: ChatArtifact['kind'];
   intentReason: ChatArtifactIntentReason;
   queryAsOfDataSlot?: JobDataSlot;
+  decidedBy?: RouteDecisionDecider;
   requestError: unknown;
   errorText: string;
 }): Record<string, unknown> {
   const routeDecision = buildArtifactRouteDecision(
     artifactKind,
     intentReason,
-    queryAsOfDataSlot
+    queryAsOfDataSlot,
+    decidedBy
   );
   const descriptor = getArtifactToolDescriptor(artifactKind);
 
@@ -343,14 +391,15 @@ export function buildArtifactErrorMetadata({
 function buildArtifactRouteDecision(
   artifactKind: ChatArtifact['kind'],
   intentReason: ChatArtifactIntentReason,
-  queryAsOfDataSlot?: JobDataSlot
+  queryAsOfDataSlot?: JobDataSlot,
+  decidedBy: RouteDecisionDecider = 'frontend'
 ) {
   return buildRouteDecision({
     intent: 'artifact',
     executionPath: 'client-artifact',
     artifactKind,
     reasonCodes: [intentReason],
-    decidedBy: 'frontend',
+    decidedBy,
     ...(queryAsOfDataSlot?.timeLabel && {
       dataSlot: queryAsOfDataSlot.timeLabel,
     }),

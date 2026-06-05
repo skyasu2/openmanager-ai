@@ -147,7 +147,7 @@ query-routing-signals.ts  (55줄)   # re-export facade (하위 호환 유지)
 
 ### Phase 4B/C — artifact intent BFF 완전 이관
 
-**Status: Approved (2026-06-05)**
+**Status: Implemented / Local Verified (2026-06-05)**
 
 #### 결정 사항
 
@@ -162,8 +162,9 @@ query-routing-signals.ts  (55줄)   # re-export facade (하위 호환 유지)
 **변경 대상 파일**
 - `src/app/api/ai/artifact-intent/route.ts`
 - `src/app/api/ai/artifact-intent/route.test.ts`
-- `src/lib/ai/chat-artifacts/chat-artifact-intent.ts`
-- `src/lib/ai/chat-artifacts/chat-artifact-intent.test.ts`
+- `src/app/api/ai/artifact-intent/deterministic.ts`
+- `src/app/api/ai/artifact-intent/deterministic.test.ts`
+- `src/lib/ai/chat-artifacts/artifact-intent-contract.ts`
 - `src/hooks/ai/core/chat-artifact-guidance.ts`
 - `src/hooks/ai/core/post-decision-artifact.ts`
 - `src/hooks/ai/useAIChatCore.test.ts`
@@ -173,26 +174,26 @@ query-routing-signals.ts  (55줄)   # re-export facade (하위 호환 유지)
 
 | 경로/함수 | 입력 | 출력 | 예외/무시 조건 |
 |----------|------|------|----------------|
-| `POST /api/ai/artifact-intent` | `{ query: string }` | `ChatArtifactIntent` JSON (`kind`, `reason`, `ruleVersion`, optional `serverId`, `serverName`, `procedureType`) | invalid/empty query → `{ kind:"none" }` |
+| `POST /api/ai/artifact-intent` | `{ query: string }` | `ChatArtifactIntent` JSON (`kind`, `reason`, `ruleVersion`, `decidedBy`, optional `serverId`, `serverName`, `procedureType`) | invalid/empty query → `{ kind:"none" }` |
 | BFF deterministic classifier | trimmed query | 기존 `classifyChatArtifactIntent()`와 동일한 deterministic 결과 | negation/how-to/formatting/capacity forecast는 `none` 유지 |
 | BFF LLM classifier fallback | deterministic `none` + LLM candidate query | `incident-report` / `monitoring-analysis` / `none` | production scale gate off, missing key, provider error → `none` |
 | frontend pre-send artifact handler | user query | `/api/ai/artifact-intent` 결과가 executable이면 artifact generation 1회, 아니면 normal chat | artifact intent fetch abort 시 chat fallthrough 금지 |
 | post-decision resolver | async result metadata + original query | metadata `artifactKind`를 executable intent로 변환 | server-monitoring-analysis는 metadata/query에서 server id가 없으면 무시 |
 
 **테스트 시나리오 (구현 전 확정)**
-- [ ] BFF route가 production scale gate off 상태에서도 `server-snapshot` deterministic intent를 반환한다.
-- [ ] BFF route가 production scale gate off 상태에서도 `server-monitoring-analysis`와 resolved `serverId`를 반환한다.
-- [ ] BFF route가 production scale gate off 상태에서도 `ops-procedure`와 `procedureType`을 반환한다.
-- [ ] BFF route가 capacity forecast/how-to/formatting-only 쿼리를 `none`으로 유지한다.
-- [ ] frontend pre-send handler가 명시 artifact 쿼리에도 프론트 regex가 아니라 `/api/ai/artifact-intent` 응답으로 artifact generation을 시작한다.
-- [ ] frontend post-decision resolver가 `server-monitoring-analysis`를 프론트 classifier 없이 metadata/query 기반으로만 처리한다.
-- [ ] `chat-artifact-intent.ts`의 런타임 패턴 로직은 프론트 호출 경로에서 제거된다.
+- [x] BFF route가 production scale gate off 상태에서도 `server-snapshot` deterministic intent를 반환한다.
+- [x] BFF route가 production scale gate off 상태에서도 `server-monitoring-analysis`와 resolved `serverId`를 반환한다.
+- [x] BFF route가 production scale gate off 상태에서도 `ops-procedure`와 `procedureType`을 반환한다.
+- [x] BFF route가 capacity forecast/how-to/formatting-only 쿼리를 `none`으로 유지한다.
+- [x] frontend pre-send handler가 명시 artifact 쿼리에도 프론트 regex가 아니라 `/api/ai/artifact-intent` 응답으로 artifact generation을 시작한다.
+- [x] frontend post-decision resolver가 `server-monitoring-analysis`를 프론트 classifier 없이 metadata/query 기반으로만 처리한다.
+- [x] `chat-artifact-intent.ts`의 런타임 패턴 로직은 프론트 호출 경로에서 제거된다.
 
 **선행 조건:**
 1. Phase 4A 완료: stream/job result post-decision 메커니즘 추가 ✅
 2. Phase 3 나머지 3종 제거 검증 (아티팩트 패널 회귀 테스트) — 본 Phase 4B/C 테스트로 수행
 3. `MISTRAL_SCALE_PLAN_CONFIRMED` 환경변수 설정 또는 Mistral 대체 결정 — deterministic BFF classifier로 대체 결정 ✅
-4. `/api/ai/artifact-intent` latency 측정 (목표: p95 < 300ms) — deterministic route 단위 성능 또는 targeted QA에서 확인
+4. `/api/ai/artifact-intent` latency 측정 (목표: p95 < 300ms) — deterministic route 단위 테스트 통과, 실환경 p95은 배포 후 QA에서 확인
 
 **완료 시 효과:**
 - `chat-artifact-intent.ts` 패턴 수 20개 → 0개 (파일 삭제)
@@ -200,21 +201,21 @@ query-routing-signals.ts  (55줄)   # re-export facade (하위 호환 유지)
 - 새 artifact 종류 추가 시 BFF 1곳만 수정
 
 **체크리스트:**
-- [ ] Phase 4A post-decision bridge 완료
-- [ ] `server-monitoring-analysis` 프론트 분류 제거 + 회귀 테스트
-- [ ] `server-snapshot` 프론트 분류 제거 + 회귀 테스트
-- [ ] `ops-procedure` 프론트 분류 제거 + 회귀 테스트
-- [ ] `artifact-intent` BFF에 패턴 로직 이식
-- [ ] 프론트 `classifyChatArtifactIntent()` 호출 제거
-- [ ] `chat-artifact-intent.ts` 파일 삭제
+- [x] Phase 4A post-decision bridge 완료
+- [x] `server-monitoring-analysis` 프론트 분류 제거 + 회귀 테스트
+- [x] `server-snapshot` 프론트 분류 제거 + 회귀 테스트
+- [x] `ops-procedure` 프론트 분류 제거 + 회귀 테스트
+- [x] `artifact-intent` BFF에 패턴 로직 이식
+- [x] 프론트 `classifyChatArtifactIntent()` 호출 제거
+- [x] `chat-artifact-intent.ts` 파일 삭제
 
 **Task 목록**
-- [ ] Task 0 — failing test 커밋: BFF deterministic ownership + frontend BFF 응답 기반 artifact 실행 계약 고정
-- [ ] Task 1 — BFF route-local deterministic classifier 구현
-- [ ] Task 2 — frontend pre-send handler에서 local regex classifier 제거
-- [ ] Task 3 — post-decision resolver의 frontend classifier 의존 제거
-- [ ] Task 4 — obsolete runtime pattern file 삭제 또는 type-only contract 파일로 분리
-- [ ] Task 5 — targeted tests, `npm run type-check`, `npm run lint`, `npm run test:quick`
+- [x] Task 0 — failing test 커밋: BFF deterministic ownership + frontend BFF 응답 기반 artifact 실행 계약 고정
+- [x] Task 1 — BFF route-local deterministic classifier 구현
+- [x] Task 2 — frontend pre-send handler에서 local regex classifier 제거
+- [x] Task 3 — post-decision resolver의 frontend classifier 의존 제거
+- [x] Task 4 — obsolete runtime pattern file 삭제 + type-only contract 파일 분리
+- [x] Task 5 — local verification: `npm run type-check`, `npm run lint`, `npm run test:quick`, targeted vitest 51 tests
 
 ---
 

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   classifyChatArtifactIntent,
   shouldUseLLMChatArtifactIntent,
-} from './chat-artifact-intent';
+} from './deterministic';
 
 describe('classifyChatArtifactIntent', () => {
   it('routes explicit incident report creation requests to incident-report artifact', () => {

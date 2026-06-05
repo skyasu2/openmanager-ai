@@ -1,7 +1,7 @@
 import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
 import { resolveArtifactExecutor } from '@/lib/ai/chat-artifacts/artifact-executor-registry';
-import type { ChatArtifactIntent } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+import type { ChatArtifactIntent } from '@/lib/ai/chat-artifacts/artifact-intent-contract';
 import { registerMonitoringArtifactExecutors } from '@/lib/ai/domains/monitoring/artifact-executors';
 import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
 import type { JobDataSlot } from '@/types/ai-jobs';
@@ -119,7 +119,8 @@ export function startChatArtifactGeneration({
         metadata: buildArtifactMetadata(
           artifact,
           artifactIntent.reason,
-          queryAsOfDataSlot
+          queryAsOfDataSlot,
+          artifactIntent.decidedBy
         ),
       });
       setMessages(
@@ -145,6 +146,7 @@ export function startChatArtifactGeneration({
           artifactKind,
           intentReason: artifactIntent.reason,
           queryAsOfDataSlot,
+          decidedBy: artifactIntent.decidedBy,
           requestError,
           errorText,
         }),

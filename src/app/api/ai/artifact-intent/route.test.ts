@@ -172,9 +172,11 @@ describe('artifact intent route', () => {
     const response = await POST(createPostRequest({ query: '보고서 뽑아줘' }));
     const body = await response.json();
 
-    expect(body).toEqual({
+    expect(body).toMatchObject({
       kind: 'incident-report',
       reason: 'llm_artifact_classification',
+      ruleVersion: expect.any(String),
+      decidedBy: 'bff',
     });
     expect(mocks.generateText).toHaveBeenCalledTimes(1);
   });
@@ -188,9 +190,11 @@ describe('artifact intent route', () => {
     const response = await POST(createPostRequest({ query: '보고서 뽑아줘' }));
     const body = await response.json();
 
-    expect(body).toEqual({
+    expect(body).toMatchObject({
       kind: 'incident-report',
       reason: 'llm_artifact_classification',
+      ruleVersion: expect.any(String),
+      decidedBy: 'bff',
     });
     expect(mocks.createMistral).toHaveBeenCalledWith({
       apiKey: 'test-mistral-key',
@@ -228,9 +232,11 @@ describe('artifact intent route', () => {
     );
     const body = await response.json();
 
-    expect(body).toEqual({
+    expect(body).toMatchObject({
       kind: 'monitoring-analysis',
       reason: 'llm_artifact_classification',
+      ruleVersion: expect.any(String),
+      decidedBy: 'bff',
     });
   });
 
