@@ -1,36 +1,38 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-05-26 22:41:52 KST
+> Generated at: 2026-06-05 22:27:36 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 612 |
-| Counted Runs | 482 |
-| Total Checks | 4261 |
-| Total Passed | 4073 |
-| Total Failed | 153 |
+| Recorded Runs | 658 |
+| Counted Runs | 514 |
+| Total Checks | 4555 |
+| Total Passed | 4354 |
+| Total Failed | 159 |
 | Overall Pass Rate | 95.59% |
-| Latest Recorded Run | QA-20260526-0614 |
-| Last Counted Run | QA-20260526-0614 |
+| Latest Recorded Run | QA-20260605-0660 |
+| Last Counted Run | QA-20260605-0660 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-25T12:52:44.071Z -> 2026-05-26T12:52:44.071Z (24h)
-- Runs with observations: 5 recorded / 3 counted
-- Samples: 14
+- Window: 2026-06-04T13:08:33.704Z -> 2026-06-05T13:08:33.704Z (24h)
+- Runs with observations: 6 recorded / 5 counted
+- Samples: 8
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Metrics Query Agent | cloud-run-ai | 8 | 3245ms | 8498ms | 284ms | 284ms | 1917ms | 2545ms | QA-20260526-0614 |
-| Metrics Query Agent | streaming-ai | 5 | 3592ms | 5570ms | 602ms | 741ms | 899ms | 1487ms | QA-20260526-0611 |
-| Metrics Query | deterministic-monitoring | 1 | 1097ms | 1097ms | 1097ms | 1097ms | 1097ms | 1097ms | QA-20260526-0613 |
+| Advisor Agent | mistral | 2 | 6718ms | 8205ms | 5132ms | 5132ms | 6718ms | 8205ms | QA-20260605-0658 |
+| Supervisor | groq | 2 | 1238ms | 1451ms | - | - | 1238ms | 1451ms | QA-20260605-0649 |
+| Supervisor | unknown | 1 | 1213ms | 1213ms | - | - | - | - | QA-20260605-0650 |
+| Artifact Intent Classifier | mistral | 2 | 604ms | 625ms | - | - | 604ms | 625ms | QA-20260605-0659 |
+| Analyst Agent | mistral | 1 | 0ms | 0ms | 747ms | 747ms | - | - | QA-20260605-0653 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-25T12:52:44.071Z -> 2026-05-26T12:52:44.071Z (24h)
+- Window: 2026-06-04T13:08:33.704Z -> 2026-06-05T13:08:33.704Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -49,9 +51,9 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 482 | 4261 | 95.59% | 85 | 17.63% | 94 | 19.5% |
-| Last 30 Counted Runs | 30 | 169 | 86.98% | 5 | 16.67% | 6 | 20% |
-| Last 10 Counted Runs | 10 | 67 | 94.03% | 0 | 0% | 0 | 0% |
+| All Counted Runs | 514 | 4555 | 95.59% | 88 | 17.12% | 97 | 18.87% |
+| Last 30 Counted Runs | 30 | 283 | 97.17% | 2 | 6.67% | 2 | 6.67% |
+| Last 10 Counted Runs | 10 | 124 | 100% | 0 | 0% | 0 | 0% |
 
 ## Gate Run Windows
 
@@ -71,48 +73,45 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 423 | 294 |
+| targeted | 459 | 325 |
 | legacy | 137 | 137 |
 | broad | 35 | 34 |
+| smoke | 15 | 6 |
 | release-gate | 11 | 11 |
-| smoke | 5 | 5 |
 | regression | 1 | 1 |
 
 ## Priority Recurrence
 
 | Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| P0 | 49 | 10 | 20.41% | 0 | 0 | 0% | 49 | 0 |
-| P1 | 307 | 110 | 35.83% | 0 | 0 | 0% | 302 | 5 |
-| P2 | 321 | 78 | 24.3% | 0 | 0 | 0% | 308 | 13 |
-| P3 | 57 | 18 | 31.58% | 0 | 0 | 0% | 48 | 9 |
+| P0 | 50 | 10 | 20% | 0 | 0 | 0% | 50 | 0 |
+| P1 | 326 | 114 | 34.97% | 0 | 0 | 0% | 322 | 4 |
+| P2 | 343 | 78 | 22.74% | 0 | 0 | 0% | 330 | 13 |
+| P3 | 61 | 18 | 29.51% | 0 | 0 | 0% | 51 | 10 |
 | P4 | 5 | 1 | 20% | 0 | 0 | 0% | 2 | 3 |
-| P5 | 5 | 0 | 0% | 0 | 0 | 0% | 4 | 1 |
+| P5 | 5 | 1 | 20% | 0 | 0 | 0% | 5 | 0 |
 
 ## Deployment Regression Correlation
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
-| gitlab-pipeline-2553301909-v8.12.51-cloud-run-ai-engine-00559-62w | vercel-production | 1 | 12 | 100% | 0 | 0% | QA-20260526-0614 | ad7735e7 |
-| dpl_6uigr9o8SHPZPjfH4Nb1uy7bWLGM | vercel-production | 1 | 8 | 100% | 0 | 0% | QA-20260526-0613 | 9ee0a193 |
-| dpl_BVJyVGDfMJ3MQB53pWWDn2fwR3BB | vercel-production | 1 | 16 | 100% | 0 | 0% | QA-20260526-0611 | cbca218e |
-| dpl_FocxFMt8y6Cy3GGXxwGUXBjhTyRp | vercel-production | 1 | 5 | 100% | 0 | 0% | QA-20260525-0591 | beb8e6ac |
-| dpl_EJx6EaYjDnbA9dbBexrn3g1LrCxY | vercel-production | 1 | 4 | 75% | 1 | 100% | QA-20260525-0590 | 68715a95 |
-| dpl_5KXXyEWQFhPjHCmgPozKs8DfvNG5 | vercel-production | 1 | 6 | 100% | 0 | 0% | QA-20260525-0589 | 3748656c |
-| dpl_7Wbtupu75cp3QzUM6QoY2h4kLp4k | vercel-production | 1 | 9 | 100% | 0 | 0% | QA-20260525-0587 | f194ec74 |
-| dpl_C16eKGD4LRzryrgF26bYRLv7dA6G | vercel-production | 1 | 7 | 100% | 0 | 0% | QA-20260525-0586 | ce2808bc |
-| dpl_DDwFH26Jso8hGpukmEQFjkPMzvz5 | vercel-production | 1 | 2 | 100% | 0 | 0% | QA-20260525-0585 | 4cf58251 |
+| dpl_5ttYjommNd3ooBXegHLqHY7M6RK6 | vercel-production | 2 | 25 | 100% | 0 | 0% | QA-20260605-0660 | 63ca79bc |
+| dpl_BrE1dBffAFfHfrKEuqDdWXD1qf7t | vercel-production | 1 | 20 | 100% | 0 | 0% | QA-20260605-0657 | 105f9b17 |
+| dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq | vercel-production | 2 | 27 | 100% | 0 | 0% | QA-20260605-0656 | 3aa2f7bc |
+| dpl_J1PEim6zfHjgGUoB9NcYqgEH2hVj | vercel-production | 1 | 11 | 100% | 0 | 0% | QA-20260605-0651 | 36b29a5c |
+| dpl_5Af3pqTpnHXXXPUxqQWfRLWBR2r7 | vercel-production+cloud-run-production | 2 | 22 | 100% | 0 | 0% | QA-20260605-0650 | 9ae1f605 |
+| dpl_4ouyrzWwdYJ3FcedNZcrp2pesDN3 | vercel-production+cloud-run-production | 1 | 6 | 100% | 0 | 0% | QA-20260604-0648 | 3b91b069 |
+| dpl_JD28Eo72pCqgfRMP6qPEJ6M8pBzf | vercel-production | 1 | 10 | 100% | 0 | 0% | QA-20260530-0647 | ed19d759 |
+| dpl_B9gD74nvF4FwUahzo3NwFmKZ85WA | vercel-production | 1 | 5 | 100% | 0 | 0% | QA-20260530-0646 | 2510ade1 |
+| dpl_EhLf7tgfW7Hm3cQYz9pDEca9rxw9 | vercel-production | 2 | 8 | 100% | 0 | 0% | QA-20260529-0641 | ef784e4d |
+| gitlab-pipeline-2558589906-v8.12.73 | vercel-production | 1 | 15 | 100% | 0 | 0% | QA-20260528-0636 | 095023c0 |
+| gitlab-pipeline-2558270507-v8.12.72 | vercel-production | 1 | 13 | 100% | 0 | 0% | QA-20260528-0634 | 9d1870d4 |
+| gitlab-pipeline-2557819992-v8.12.68 | vercel-production | 1 | 9 | 100% | 0 | 0% | QA-20260528-0630 | c7b54f50 |
 
 ## Recent Daily Trend (KST)
 
 | Date | Runs | Checks | Pass Rate | Failed Runs | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-05-12 | 9 | 73 | 91.78% | 3 | 3 | 33.33% |
-| 2026-05-13 | 7 | 59 | 98.31% | 1 | 1 | 14.29% |
-| 2026-05-14 | 4 | 42 | 95.24% | 1 | 1 | 25% |
-| 2026-05-15 | 4 | 63 | 100% | 0 | 0 | 0% |
-| 2026-05-17 | 3 | 29 | 93.1% | 1 | 1 | 33.33% |
-| 2026-05-18 | 13 | 173 | 96.53% | 2 | 2 | 15.38% |
 | 2026-05-19 | 10 | 104 | 92.31% | 3 | 3 | 30% |
 | 2026-05-20 | 3 | 36 | 91.67% | 1 | 1 | 33.33% |
 | 2026-05-21 | 8 | 78 | 100% | 0 | 0 | 0% |
@@ -120,12 +119,21 @@
 | 2026-05-23 | 7 | 38 | 89.47% | 1 | 1 | 14.29% |
 | 2026-05-24 | 9 | 34 | 73.53% | 3 | 4 | 44.44% |
 | 2026-05-25 | 9 | 53 | 83.02% | 2 | 2 | 22.22% |
-| 2026-05-26 | 10 | 67 | 94.03% | 0 | 0 | 0% |
+| 2026-05-26 | 11 | 74 | 89.19% | 1 | 1 | 9.09% |
+| 2026-05-27 | 10 | 78 | 92.31% | 2 | 2 | 20% |
+| 2026-05-28 | 6 | 59 | 96.61% | 0 | 0 | 0% |
+| 2026-05-29 | 2 | 8 | 87.5% | 0 | 0 | 0% |
+| 2026-05-30 | 3 | 18 | 100% | 0 | 0 | 0% |
+| 2026-06-04 | 1 | 6 | 100% | 0 | 0 | 0% |
+| 2026-06-05 | 9 | 118 | 100% | 0 | 0 | 0% |
 
 ## Recent Regression Runs
 
 | Run ID | Time (UTC) | Scope | Failed Checks | Pending | Deferred | Wont-Fix | Title |
 |---|---|---|---:|---:|---:|---:|---|
+| QA-20260527-0624 | 2026-05-27T07:17:17.887Z | targeted | 3 | 3 | 0 | 0 | Vercel Playwright MCP targeted QA - 2026-05-26..27 modified surfaces only |
+| QA-20260527-0620 | 2026-05-27T03:05:16.952Z | targeted | 1 | 0 | 0 | 0 | AI 어시스턴트 신규 질문 평가 Q-NEW52~Q-NEW57 + P15 재확인 (v8.12.56) |
+| QA-20260526-0615 | 2026-05-26T14:54:35.345Z | targeted | 2 | 0 | 0 | 0 | AI 어시스턴트 신규 질문 평가 Q-NEW46~Q-NEW51 (P15/P16 발견) |
 | QA-20260525-0590 | 2026-05-25T03:57:03.861Z | targeted | 1 | 1 | 0 | 0 | v8.12.36 Production QA - Q-NEW13 Advisor evidence regression check |
 | QA-20260525-0584 | 2026-05-24T15:52:12.919Z | targeted | 1 | 0 | 0 | 4 | v8.12.28 신규 6문항 AI 어시스턴트 평가 — 디스크필터·Advisor·팔로업·AZ비교·네트워크 |
 | QA-20260524-0579 | 2026-05-24T07:21:06.892Z | targeted | 0 | 1 | 0 | 2 | v8.12.20 신규 AI Assistant 6문항 QA - 목록 가독성·위험 라우팅·트렌드 관찰 |
@@ -133,9 +141,6 @@
 | QA-20260524-0574 | 2026-05-24T02:01:17.511Z | targeted | 1 | 1 | 0 | 0 | Cloud Run 94ce8471b production targeted QA - AI routing closure check |
 | QA-20260524-0572 | 2026-05-23T15:52:37.929Z | targeted | 3 | 0 | 0 | 0 | v8.12.16 AI 어시스턴트 5차 평가 — 미테스트 6문항 (cache그룹·역방향필터·최솟값·그룹+예측·Advisor·세션컨텍스트) |
 | QA-20260523-0569 | 2026-05-23T10:19:45.964Z | targeted | 1 | 0 | 0 | 1 | v8.12.15 focused Vercel production QA - quick-start, artifact envelope, DB threshold |
-| QA-20260520-0544 | 2026-05-20T08:08:43.778Z | targeted | 3 | 2 | 0 | 0 | Vercel Playwright MCP Targeted QA - v8.11.184 dashboard and AI state |
-| QA-20260519-0535 | 2026-05-19T05:14:14.572Z | broad | 4 | 0 | 0 | 3 | v8.11.179 Chrome DevTools MCP QA - AI Assistant 미검증 영역 집중 테스트 |
-| QA-20260519-0533 | 2026-05-19T02:49:58.801Z | targeted | 2 | 0 | 0 | 0 | v8.11.178 내용 충실도 검증 — AI 수치 정합성·응답 경로·신호 강도 |
 
 ## Recurring Open Items
 
@@ -143,7 +148,6 @@
 |---|---|---|---:|---|---|
 | ai-thinking-visualizer-contract-drift | P1 | wont-fix | 2 | QA-20260428-0357 | Thinking visualizer production UI contract drift |
 | analyst-single-server-response-mismatch | P1 | wont-fix | 1 | QA-20260519-0535 | Analyst 단일 서버 분석 응답 구조 불일치 수정 |
-| landing-console-api-system-unauthorized | P1 | wont-fix | 1 | QA-20260330-0195 | 랜딩 비로그인 상태에서 /api/system 401 콘솔 에러 제거 또는 graceful handling |
 | landing-vibe-content-deployment-drift | P1 | wont-fix | 1 | QA-20260330-0195 | Vibe Coding 프로덕션 카드 내용과 현재 소스 간 배포 드리프트 해소 |
 | server-comparison-deterministic-path | P1 | wont-fix | 1 | QA-20260522-0559 | 서버 1:1 비교 쿼리 deterministic 경로 미확립 |
 | ai-adversarial-natural-language-qa-pack | P2 | wont-fix | 1 | QA-20260512-0487 | Add QC/security-style natural-language AI regression prompts |
@@ -151,6 +155,7 @@
 | ai-metric-ranking-memory-path-metadata | P2 | wont-fix | 1 | QA-20260418-0304 | Memory top-N query should expose deterministic metric-ranking path instead of filter fallback metadata |
 | ai-remediation-response-quality | P2 | wont-fix | 1 | QA-20260519-0535 | AI Chat 조치 방법 응답 품질 개선 |
 | analyst-domain-context-injection | P2 | wont-fix | 1 | QA-20260522-0559 | 심층 분석 시 서버 도메인 특성 미주입 |
+| analyst-drilldown | P2 | wont-fix | 1 | QA-20260301-0030 | Analyst 서버별 드릴다운 |
 
 ## Most Repeated Completed Items
 

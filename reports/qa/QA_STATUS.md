@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-05 22:08:34 KST
+> Generated at: 2026-06-05 22:27:36 KST
 
 ## Summary
 
@@ -76,7 +76,7 @@ Latest run: QA-20260605-0660 (2026-06-05T13:08:33.704Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: SHA 16eead09
+- Deployment: dpl_5ttYjommNd3ooBXegHLqHY7M6RK6 / SHA 63ca79bc
 - Coverage Packs: ai-core, ai-advanced-surface
 - Covered Surfaces: Vercel production v8.12.94 배포 확인 (commit 63ca79bc0f, pipeline 2579250784 success), MISTRAL_SCALE_PLAN_CONFIRMED=true Vercel env 정상 반영 확인 (개행 문자 이슈 수정 후 재설정), POST /api/ai/artifact-intent — '모니터링 결과 분석 부탁해' → kind:monitoring-analysis, reason:llm_artifact_classification, decidedBy:bff (2226ms) — LLM 경로 활성 확인, POST /api/ai/artifact-intent — '장애 보고서 만들어줘' → kind:incident-report, reason:incident_report_action_pattern, decidedBy:bff — 결정론적 경로 정상 유지, POST /api/ai/artifact-intent — 'CPU 높은 서버 알려줘' → kind:none, reason:local_gate_none — 일반 질문 정상 필터, 이전 production_llm_gate_disabled 반환 케이스가 LLM 분류 경로로 정상 전환됨, ministral-3b-latest 3초 타임아웃, maxDuration 5s 내 정상 응답 (2.2초)
 - Skipped Surfaces: AI Chat 전체 대화 흐름 — 분류기 라우트만 대상, AI 응답 내용 변경 없음, Reporter/Analyst 탭 — 변경 없음

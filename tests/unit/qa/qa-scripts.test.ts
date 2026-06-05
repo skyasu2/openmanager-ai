@@ -154,8 +154,8 @@ function currentSeoulDateStamp() {
   return formatter.format(new Date()).replace(/-/g, '');
 }
 
-function createValidPayload(overrides?: Record<string, unknown>) {
-  return {
+function createValidPayload(overrides: Record<string, unknown> = {}) {
+  const payload: Record<string, unknown> = {
     runTitle: 'QA script regression smoke',
     owner: 'codex',
     source: 'playwright-mcp',
@@ -203,6 +203,21 @@ function createValidPayload(overrides?: Record<string, unknown>) {
     artifacts: [],
     ...overrides,
   };
+
+  if (
+    !Object.hasOwn(overrides, 'artifacts') &&
+    (payload.releaseFacing !== false || payload.countsTowardSummary !== false)
+  ) {
+    payload.artifacts = [
+      {
+        type: 'playwright-report',
+        label: 'QA script regression report',
+        url: 'https://storage.example.com/playwright/qa-script-regression-report.html',
+      },
+    ];
+  }
+
+  return payload;
 }
 
 function writeTrackerFile(tempDir: string, payload: Record<string, unknown>) {
@@ -1001,6 +1016,37 @@ describe('QA scripts', () => {
     expectOutputContainsIfCaptured(
       `${recordResult.stdout}${recordResult.stderr}`,
       'artifacts/dashboard.png'
+    );
+  });
+
+  it('rejects release-facing runs without artifact evidence unless debt is acknowledged', () => {
+    const tempDir = createTempWorkspace();
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        artifacts: [],
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+        env: {
+          VERCEL_DEPLOYMENT_ID: 'dpl_missingartifact123',
+          VERCEL_GIT_COMMIT_SHA: 'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          VERCEL_GIT_COMMIT_REF: 'main',
+          VERCEL_TARGET_ENV: 'production',
+          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+        },
+      }
+    );
+
+    expect(recordResult.status).toBe(1);
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      '최소 1개 이상의 durable artifact evidence'
     );
   });
 

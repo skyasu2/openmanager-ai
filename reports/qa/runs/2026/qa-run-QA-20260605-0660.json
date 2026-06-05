@@ -6,14 +6,14 @@
   "owner": "claude",
   "source": "playwright-mcp",
   "environment": {
-    "target": "",
-    "url": "",
-    "frontend": "",
-    "backend": "",
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
     "branch": "main",
-    "deploymentId": "",
-    "deploymentUrl": "",
-    "commitSha": "16eead09d5138db4b745adbbcd3f4344a825964e"
+    "deploymentId": "dpl_5ttYjommNd3ooBXegHLqHY7M6RK6",
+    "deploymentUrl": "https://openmanager-6mtub60hk-skyasus-projects.vercel.app",
+    "commitSha": "63ca79bc0fe11e6b5933f53fbf9bc1c77e636711"
   },
   "scope": "targeted",
   "releaseFacing": true,
@@ -45,6 +45,13 @@
   "expertAssessments": [],
   "usageChecks": [],
   "artifacts": [],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "historical-no-durable-evidence",
+    "reason": "QA-20260605-0660 repeated a narrow Artifact BFF classifier probe after QA-20260605-0659 but did not capture contemporaneous durable evidence. QA-20260605-0659 already preserves release-facing Playwright MCP screenshots, Vercel usage, expert assessment, deployment links, deterministic and LLM classifier probes, UI artifact generation, and standard AI QA for the same v8.12.94 production activation window, so this missing artifact is tracked as accepted historical evidence debt instead of backfilled.",
+    "recordedAt": "2026-06-05T22:25:43+09:00",
+    "recordedBy": "codex"
+  },
   "completedImprovements": [
     {
       "id": "artifact-bff-llm-분류기-production-활성화-ministral-3b-latest-llm_artifact_classification-경로-정상-작동-v8.12.94",

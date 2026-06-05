@@ -883,12 +883,20 @@ function validateArtifactEvidencePolicy(
   artifacts,
   releaseFacing,
   countsTowardSummary,
-  dateStamp
+  dateStamp,
+  artifactDebt
 ) {
   validateArtifactPathExists(artifacts);
 
   if (!requiresDurableArtifactEvidence(releaseFacing, countsTowardSummary)) {
     return;
+  }
+
+  if (artifacts.length === 0 && artifactDebt?.status !== 'acknowledged') {
+    throw new Error(
+      'releaseFacing=true 또는 countsTowardSummary=true 런에는 최소 1개 이상의 durable artifact evidence 또는 artifactDebt acknowledged가 필요합니다. ' +
+        'reports/qa/evidence/... 경로나 URL artifact를 기록하세요.'
+    );
   }
 
   const invalidArtifacts = artifacts
@@ -1439,7 +1447,8 @@ function run() {
     artifacts,
     releaseFacing,
     countsTowardSummary,
-    dateStamp
+    dateStamp,
+    artifactDebt
   );
   const runNumber = Number(tracker.sequence.nextRunNumber || tracker.runs.length + 1);
   const runId = `QA-${dateStamp}-${String(runNumber).padStart(4, '0')}`;
