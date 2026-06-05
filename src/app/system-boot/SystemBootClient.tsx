@@ -32,28 +32,28 @@ const BOOT_STAGES = [
     description: '시스템 환경 설정을 확인하고 있습니다...',
   },
   {
-    name: 'AI 엔드포인트 연결',
+    name: 'AI 엔드포인트 웜업',
     delay: 1200,
     icon: ServerIcon,
-    description: 'AI 엔진과 통신을 준비하고 있습니다...',
+    description: 'AI 엔진 응답 준비를 미리 요청하고 있습니다...',
   },
   {
-    name: '데이터베이스 연결',
+    name: '데이터 소스 준비',
     delay: 1900,
     icon: Database,
-    description: 'Supabase 데이터베이스에 연결하고 있습니다...',
+    description: '모니터링 데이터 슬롯과 세션 정보를 준비하고 있습니다...',
   },
   {
-    name: 'AI 엔진 로딩',
+    name: 'AI 엔진 준비',
     delay: 2600,
     icon: Brain,
-    description: 'AI 분석 엔진을 초기화하고 있습니다...',
+    description: 'AI 분석 요청을 처리할 화면 상태를 준비하고 있습니다...',
   },
   {
-    name: '서버 데이터 동기화',
+    name: '서버 데이터 표시 준비',
     delay: 3300,
     icon: Cpu,
-    description: '실시간 서버 메트릭을 동기화하고 있습니다...',
+    description: '현재 관측 서버 메트릭 표시를 준비하고 있습니다...',
   },
   {
     name: '대시보드 준비',
@@ -114,7 +114,7 @@ export default function SystemBootClient() {
     setBootState('completed');
 
     // 완료 상태 표시
-    setCurrentStage('시스템 준비 완료');
+    setCurrentStage('시스템 시작 완료');
     setCurrentIcon(CheckCircle);
     setProgress(100);
     setIsTransitioning(false);
@@ -325,7 +325,7 @@ export default function SystemBootClient() {
             </p>
             {bootState === 'completed' && (
               <p className="animate-pulse mt-2 text-green-400">
-                🎉 시스템 준비 완료! 대시보드로 이동 중...
+                시스템 준비 완료. 대시보드로 이동 중...
               </p>
             )}
           </div>

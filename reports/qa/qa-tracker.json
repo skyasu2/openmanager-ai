@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-05T00:34:46.612Z"
+    "updatedAt": "2026-06-05T01:25:05.069Z"
   },
   "sequence": {
-    "nextRunNumber": 654
+    "nextRunNumber": 655
   },
   "summary": {
-    "totalRecordedRuns": 651,
+    "totalRecordedRuns": 652,
     "totalRuns": 509,
-    "excludedRuns": 142,
+    "excludedRuns": 143,
     "totalChecks": 4483,
     "totalPassed": 4282,
     "totalFailed": 159,
     "completionRate": 100,
-    "completedItems": 753,
+    "completedItems": 754,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 30,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260605-0653",
     "lastRecordedAt": "2026-06-05T00:34:46.612Z",
-    "latestRecordedRunId": "QA-20260605-0653",
-    "latestRecordedAt": "2026-06-05T00:34:46.612Z"
+    "latestRecordedRunId": "QA-20260605-0654",
+    "latestRecordedAt": "2026-06-05T01:25:05.069Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18524,6 +18524,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-06-05T00:34:46.612Z"
+    },
+    "frontend-ui-ux-wiring-polish-local-verification": {
+      "id": "frontend-ui-ux-wiring-polish-local-verification",
+      "title": "Frontend UI/UX wiring polish verified on local dev browser session",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260605-0654",
+      "firstSeenAt": "2026-06-05T01:25:05.069Z",
+      "lastSeenRunId": "QA-20260605-0654",
+      "lastSeenAt": "2026-06-05T01:25:05.069Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Chrome DevTools MCP local QA: landing examples, custom stop/logout Dialogs, AI sidebar open/close, console/network checks all passed",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-05T01:25:05.069Z"
     }
   },
   "runs": [
@@ -38852,6 +38876,82 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 6,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260605-0654",
+      "recordedAt": "2026-06-05T01:25:05.069Z",
+      "recordedAtKst": "2026-06-05 10:25:05 KST",
+      "title": "Local Dev Chrome DevTools MCP - Frontend UI/UX Wiring Polish Verification",
+      "owner": "codex",
+      "source": "chrome-devtools-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260605-0654.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://localhost:3000",
+        "frontend": "Next.js dev server",
+        "backend": "local dev API routes",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "09c0aaaa5f2057439e3559c958d0b3684d79b262"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "landing render: / loads successfully on local dev",
+        "landing example questions: rendered as static text/list, not clickable prompt buttons",
+        "guest login: /login guest mode creates session and returns to landing",
+        "main active system state: dashboard entry and system stop controls render",
+        "main system stop: custom Dialog opens with cancel/confirm actions, browser confirm not used",
+        "dashboard render: /dashboard loads 18 server monitoring surface",
+        "profile system stop: profile menu item opens custom system stop Dialog",
+        "profile logout: profile menu item opens custom session end Dialog",
+        "AI sidebar open: role=dialog visible with aria-modal=true and aria-hidden=false",
+        "AI sidebar close: dialog removed from DOM after close, leaving no focusable offscreen residue",
+        "console: 0 runtime errors; only existing ServerDashboard render performance warnings observed",
+        "network: critical app/API requests returned 200; development HMR/soft health aborts observed as non-blocking"
+      ],
+      "skippedSurfaces": [
+        "Vercel production QA skipped because the UI polish changes are still local and not deployed",
+        "Live AI conversational QA skipped because no AI prompt, routing, data, or output contract changed",
+        "Actual destructive confirm actions skipped: system stop/logout Dialog open and cancel were verified only",
+        "Mobile viewport regression skipped in this targeted local verification",
+        "Pure Playwright MCP new-browser session skipped because another MCP Chrome profile was already in use; Chrome DevTools MCP was used for browser-rendered verification"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "not-required",
+          "status": "skipped",
+          "result": "unknown",
+          "checkedAt": "",
+          "summary": "Local-only QA on undeployed UI changes; no Vercel production usage was generated.",
+          "evidence": "target=local-dev",
+          "url": ""
+        }
+      ],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

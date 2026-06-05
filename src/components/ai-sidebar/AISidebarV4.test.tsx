@@ -315,19 +315,19 @@ describe('AISidebarV4', () => {
   it('hides the offscreen sidebar from assistive technology when closed', () => {
     render(<AISidebarV4 {...defaultProps} isOpen={false} />);
 
-    expect(screen.getByTestId('ai-sidebar')).toHaveAttribute(
-      'aria-hidden',
-      'true'
-    );
+    const sidebar = screen.getByTestId('ai-sidebar');
+    expect(sidebar).toHaveAttribute('aria-hidden', 'true');
+    expect(sidebar).toHaveAttribute('inert');
+    expect(sidebar).toHaveClass('pointer-events-none');
   });
 
   it('exposes the sidebar dialog to assistive technology when open', () => {
     render(<AISidebarV4 {...defaultProps} />);
 
-    expect(screen.getByTestId('ai-sidebar')).toHaveAttribute(
-      'aria-hidden',
-      'false'
-    );
+    const sidebar = screen.getByTestId('ai-sidebar');
+    expect(sidebar).toHaveAttribute('aria-hidden', 'false');
+    expect(sidebar).not.toHaveAttribute('inert');
+    expect(sidebar).not.toHaveClass('pointer-events-none');
   });
 
   it('renders chat view by default', () => {

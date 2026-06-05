@@ -352,6 +352,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
         aria-labelledby="ai-sidebar-v4-title"
         aria-modal={isOpen || undefined}
         aria-hidden={!isOpen}
+        inert={!isOpen ? true : undefined}
         className={cn(
           'gpu-sidebar-slide-in fixed z-50 flex bg-white shadow-2xl',
           isMobile
@@ -359,7 +360,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
             : 'right-0 top-0 h-full',
           // 리사이징 중이 아닐 때만 너비 전환 애니메이션
           !isResizing && 'transition-[width] duration-200 ease-out',
-          isOpen ? '' : 'gpu-sidebar-slide-out',
+          isOpen ? '' : 'gpu-sidebar-slide-out pointer-events-none',
           className
         )}
         // 📐 데스크톱에서는 동적 너비 적용

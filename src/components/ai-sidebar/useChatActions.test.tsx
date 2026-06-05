@@ -22,6 +22,57 @@ vi.mock('@/hooks/ai/useFileAttachments', () => ({
   })),
 }));
 
+describe('useChatActions send guard', () => {
+  it('forwards sends during generation so the chat core can queue the follow-up', () => {
+    const handleSendInput = vi.fn();
+    const messagesEndRef = {
+      current: null,
+    } as RefObject<HTMLDivElement | null>;
+
+    const { result } = renderHook(() =>
+      useChatActions({
+        setInputValue: vi.fn(),
+        handleSendInput,
+        isGenerating: true,
+        isLimitReached: false,
+        messagesEndRef,
+        limitedMessagesLength: 0,
+      })
+    );
+
+    act(() => {
+      result.current.handleSendWithAttachments();
+    });
+
+    expect(handleSendInput).toHaveBeenCalledOnce();
+    expect(handleSendInput).toHaveBeenCalledWith(undefined);
+  });
+
+  it('still blocks sends after the session limit is reached', () => {
+    const handleSendInput = vi.fn();
+    const messagesEndRef = {
+      current: null,
+    } as RefObject<HTMLDivElement | null>;
+
+    const { result } = renderHook(() =>
+      useChatActions({
+        setInputValue: vi.fn(),
+        handleSendInput,
+        isGenerating: true,
+        isLimitReached: true,
+        messagesEndRef,
+        limitedMessagesLength: 0,
+      })
+    );
+
+    act(() => {
+      result.current.handleSendWithAttachments();
+    });
+
+    expect(handleSendInput).not.toHaveBeenCalled();
+  });
+});
+
 describe('useChatActions auto-scroll', () => {
   const originalRequestAnimationFrame = globalThis.requestAnimationFrame;
 

@@ -3,14 +3,10 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { DashboardSection } from './DashboardSection';
 
 describe('DashboardSection', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('대시보드 진입 버튼을 명확한 텍스트 라벨로 렌더링한다', () => {
     const onNavigateDashboard = vi.fn();
 
@@ -29,7 +25,6 @@ describe('DashboardSection', () => {
 
   it('시스템 종료는 확인된 경우에만 실행한다', () => {
     const onStopSystem = vi.fn();
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
 
     render(
       <DashboardSection
@@ -41,11 +36,17 @@ describe('DashboardSection', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '시스템 종료하기' }));
 
-    expect(confirmSpy).toHaveBeenCalledWith('시스템을 종료하시겠습니까?');
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByText('시스템 종료')).toBeInTheDocument();
     expect(onStopSystem).not.toHaveBeenCalled();
 
-    confirmSpy.mockReturnValue(true);
+    fireEvent.click(screen.getByRole('button', { name: '취소' }));
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(onStopSystem).not.toHaveBeenCalled();
+
     fireEvent.click(screen.getByRole('button', { name: '시스템 종료하기' }));
+    fireEvent.click(screen.getByRole('button', { name: '종료 확인' }));
 
     expect(onStopSystem).toHaveBeenCalledTimes(1);
   });

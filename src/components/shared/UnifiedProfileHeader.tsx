@@ -1,7 +1,24 @@
 'use client';
 
-import { BarChart3, ChevronDown, LogIn, LogOut, User } from 'lucide-react';
+import {
+  AlertTriangle,
+  BarChart3,
+  ChevronDown,
+  LogIn,
+  LogOut,
+  User,
+} from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 // 프로필 컴포넌트 임포트
 import {
   ProfileAvatar,
@@ -19,6 +36,8 @@ import type {
 import { useSystemStatus } from '@/hooks/useSystemStatus';
 import { logger } from '@/lib/logging';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
+
+type PendingProfileAction = 'system-stop' | 'logout' | null;
 
 /**
  * 통합 프로필 헤더 컴포넌트 (리팩토링 버전)
@@ -40,6 +59,9 @@ export default function UnifiedProfileHeader({
 
   const { menuState, dropdownRef, toggleMenu, closeMenu } = useProfileMenu();
   const [isHydrated, setIsHydrated] = useState(false);
+  const [pendingAction, setPendingAction] =
+    useState<PendingProfileAction>(null);
+  const [isConfirmActionRunning, setIsConfirmActionRunning] = useState(false);
   const isAuthResolving = status === 'loading' || isProfileLoading;
 
   useEffect(() => {
@@ -75,18 +97,11 @@ export default function UnifiedProfileHeader({
       logger.info('시스템 시작 성공');
     } catch (error) {
       logger.error('시스템 시작 오류:', error);
-      alert('시스템 시작 중 오류가 발생했습니다.');
+      toast.error('시스템 시작 중 오류가 발생했습니다.');
     }
   }, [startLocalSystem, startRemoteSystem]);
 
-  // 시스템 종료 핸들러
-  const handleSystemStop = useCallback(async () => {
-    const confirmed = confirm(
-      '시스템을 종료하시겠습니까?\n\n종료 후 메인 페이지에서 다시 시작할 수 있습니다.'
-    );
-
-    if (!confirmed) return;
-
+  const executeSystemStop = useCallback(async () => {
     try {
       logger.info('시스템 종료 요청 (프로필에서)');
 
@@ -100,17 +115,69 @@ export default function UnifiedProfileHeader({
       localStorage.removeItem('system_auto_shutdown');
     } catch (error) {
       logger.error('시스템 종료 오류:', error);
-      alert('시스템 종료 중 오류가 발생했습니다.');
+      toast.error('시스템 종료 중 오류가 발생했습니다.');
     }
   }, [stopLocalSystem, stopRemoteSystem]);
 
+  // 시스템 종료 핸들러
+  const handleSystemStop = useCallback(() => {
+    setPendingAction('system-stop');
+  }, []);
+
   // 관리자 인증 핸들러
-  const handleLogoutClick = useCallback(async () => {
+  const handleLogoutClick = useCallback(() => {
+    closeMenu();
+    setPendingAction('logout');
+  }, [closeMenu]);
+
+  const executeLogout = useCallback(async () => {
     const success = await handleLogout();
     if (success) {
       closeMenu();
     }
   }, [closeMenu, handleLogout]);
+
+  const handleCancelPendingAction = useCallback(() => {
+    if (isConfirmActionRunning) {
+      return;
+    }
+    setPendingAction(null);
+  }, [isConfirmActionRunning]);
+
+  const handleConfirmPendingAction = useCallback(async () => {
+    if (!pendingAction) {
+      return;
+    }
+
+    setIsConfirmActionRunning(true);
+    try {
+      if (pendingAction === 'system-stop') {
+        await executeSystemStop();
+      } else {
+        await executeLogout();
+      }
+    } finally {
+      setIsConfirmActionRunning(false);
+      setPendingAction(null);
+    }
+  }, [executeLogout, executeSystemStop, pendingAction]);
+
+  const confirmDialogContent = useMemo(() => {
+    if (pendingAction === 'system-stop') {
+      return {
+        title: '시스템 종료',
+        description:
+          '시스템을 종료하시겠습니까? 종료 후 메인 페이지에서 다시 시작할 수 있습니다.',
+        confirmLabel: '종료 확인',
+      };
+    }
+
+    return {
+      title: '세션 종료',
+      description: '현재 계정에서 로그아웃하고 로그인 화면으로 이동합니다.',
+      confirmLabel: '로그아웃 확인',
+    };
+  }, [pendingAction]);
 
   // 메뉴 아이템 구성 (시스템 시작/종료는 드롭다운 전용 섹션으로 이동)
   const menuItems = useMemo<MenuItem[]>(() => {
@@ -366,6 +433,47 @@ export default function UnifiedProfileHeader({
         systemVersion={systemStatus?.version}
         systemEnvironment={systemStatus?.environment}
       />
+
+      <Dialog
+        open={Boolean(pendingAction)}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleCancelPendingAction();
+          }
+        }}
+      >
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-600">
+              <AlertTriangle className="h-5 w-5" aria-hidden="true" />
+            </div>
+            <DialogTitle>{confirmDialogContent.title}</DialogTitle>
+            <DialogDescription>
+              {confirmDialogContent.description}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCancelPendingAction}
+              disabled={isConfirmActionRunning}
+            >
+              취소
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => {
+                void handleConfirmPendingAction();
+              }}
+              loading={isConfirmActionRunning}
+            >
+              {confirmDialogContent.confirmLabel}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

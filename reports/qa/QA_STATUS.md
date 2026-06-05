@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-05 09:34:46 KST
+> Generated at: 2026-06-05 10:25:05 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 651 |
+| Total Recorded Runs | 652 |
 | Total Runs (Counted) | 509 |
-| Non-counted Runs | 142 |
+| Non-counted Runs | 143 |
 | Total Checks | 4483 |
 | Passed | 4282 |
 | Failed | 159 |
-| Completed Items | 753 |
+| Completed Items | 754 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 30 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260605-0653 (2026-06-05T00:34:46.612Z) |
-| Latest Recorded Run | QA-20260605-0653 (2026-06-05T00:34:46.612Z) |
+| Latest Recorded Run | QA-20260605-0654 (2026-06-05T01:25:05.069Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260605-0653 (2026-06-05T00:34:46.612Z)
+Latest run: QA-20260605-0654 (2026-06-05T01:25:05.069Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -44,11 +44,11 @@ Latest run: QA-20260605-0653 (2026-06-05T00:34:46.612Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | not-required | skipped | unknown | Local-only QA on undeployed UI changes; no Vercel production usage was generated. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-04T00:34:46.612Z -> 2026-06-05T00:34:46.612Z (24h)
+- Window: 2026-06-04T01:25:05.069Z -> 2026-06-05T01:25:05.069Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 5
 
@@ -61,7 +61,7 @@ Latest run: QA-20260605-0653 (2026-06-05T00:34:46.612Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-04T00:34:46.612Z -> 2026-06-05T00:34:46.612Z (24h)
+- Window: 2026-06-04T01:25:05.069Z -> 2026-06-05T01:25:05.069Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -73,12 +73,12 @@ Latest run: QA-20260605-0653 (2026-06-05T00:34:46.612Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: SHA c9f57e45
-- Coverage Packs: ai-core, ai-advanced-surface, observability-pack
-- Covered Surfaces: P1-Q1: CPU 상위 3개 — monitoring-metric-ranking + monitoring-metric-trend 정상, 응답 빠름, api-was-dc1-01(90%), api-was-dc1-02(83%), db-mysql-dc1-primary(64%), P1-Q2: CPU+메모리 AND 복합 — monitoring-metric-current multi-metric 복합점수 정렬 정상 (P8 회귀 없음), P1-Q3: 꾸준히 증가 트렌드 — monitoring-metric-trend METRIC_TREND_PATTERN 정상 (v8.12.21), P1-Q4: 위험한 서버 목록 — monitoring-server-health ACTION_NEEDED_PATTERN 정상 (v8.12.20), 즉시 조치 1대/주의 1대, P1-Q5: 컨텍스트 팔로업 — 위험 서버 2대 정확 유지, Groq llama-4-scout 경로, 내용 정확, P2: react-markdown 렌더링 — code 2개, strong 19개 정상 렌더링. ### / --- / ``` literal 미노출 (v8.12.80-82), P3: Analyst 이상 탐지 prefetch — TTFB 747ms (기존 2-5s 대비 대폭 개선), runAllServerAnomalyScan evidence 주입 확인 (v8.12.84), P4-block: off-domain 날씨 쿼리 — 결정론적 거부 메시지 정상 (v8.12.88), P4-warn: off-domain 코딩 쿼리 — LLM 응답 + 경고 텍스트 인라인 표시 정상 (v8.12.89), P7-P17: api-was vs web-nginx 크로스 그룹 비교 — deterministic monitoring-metric-current, 2그룹 64.3% vs 28.3% 정상 (v8.12.59), P7-P20: CPU 증가율 랭킹 — monitoring-metric-trend delta 기준 내림차순 정상, api-was-dc1-02 +34.6%p 1위 (v8.12.72), P7-P24: 전체 평균 메모리 — monitoring-metric-current 18대 46.7% 정상 (v8.12.79), P8-Reporter: 장애 보고서 생성 — incident-report 200, 이상감지 2건 발견, 심각 1건, timeline schema 정상 (~55초), 콘솔 에러: 0건 (전체 세션 통틀어), Vercel production deployment dpl_J1PEim6zfHjgGUoB9NcYqgEH2hVj v8.12.90 정상 서빙 확인
-- Skipped Surfaces: Vision 탭 live 이미지 업로드 E2E — wont-fix 유지, Vision routing 변경 없음, 모바일 뷰포트 회귀 — 이번 세션 범위 외, OAuth 로그인 — guest 모드로 QA 수행
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: SHA 09c0aaaa
+- Coverage Packs: core-routes-smoke, dashboard-core, modal-detail-pack
+- Covered Surfaces: landing render: / loads successfully on local dev, landing example questions: rendered as static text/list, not clickable prompt buttons, guest login: /login guest mode creates session and returns to landing, main active system state: dashboard entry and system stop controls render, main system stop: custom Dialog opens with cancel/confirm actions, browser confirm not used, dashboard render: /dashboard loads 18 server monitoring surface, profile system stop: profile menu item opens custom system stop Dialog, profile logout: profile menu item opens custom session end Dialog, AI sidebar open: role=dialog visible with aria-modal=true and aria-hidden=false, AI sidebar close: dialog removed from DOM after close, leaving no focusable offscreen residue, console: 0 runtime errors; only existing ServerDashboard render performance warnings observed, network: critical app/API requests returned 200; development HMR/soft health aborts observed as non-blocking
+- Skipped Surfaces: Vercel production QA skipped because the UI polish changes are still local and not deployed, Live AI conversational QA skipped because no AI prompt, routing, data, or output contract changed, Actual destructive confirm actions skipped: system stop/logout Dialog open and cancel were verified only, Mobile viewport regression skipped in this targeted local verification, Pure Playwright MCP new-browser session skipped because another MCP Chrome profile was already in use; Chrome DevTools MCP was used for browser-rendered verification
 
 ## Links (Latest Run)
 
@@ -183,18 +183,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 753 items completed (full list in qa-tracker.json)
+- Total: 754 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - frontend-ui-ux-wiring-polish-local-verification: Frontend UI/UX wiring polish verified on local dev browser session (last QA-20260605-0654)
   - 표준-5문항-대화형-ai-qa-v8.12.90-기준-전항목-pass: 표준 5문항 대화형 AI QA v8.12.90 기준 전항목 PASS (last QA-20260605-0653)
   - analyst-anomaly-evidence-prefetch-production-ttfb-실측-747ms-v8.12.84: Analyst anomaly evidence prefetch production TTFB 실측 — 747ms (v8.12.84) (last QA-20260605-0653)
   - off-domain-blockwarn-경로-vercel-프론트엔드-채팅-ui-동작-확인-v8.12.88-89: off-domain block/warn 경로 Vercel 프론트엔드 채팅 UI 동작 확인 (v8.12.88-89) (last QA-20260605-0653)
   - p17p20p24-핵심-라우팅-수정-v8.12.90-회귀-없음-확인: P17/P20/P24 핵심 라우팅 수정 v8.12.90 회귀 없음 확인 (last QA-20260605-0653)
-  - react-markdown-교체-후-production-마크다운-렌더링-정상-확인-v8.12.80-82: react-markdown 교체 후 production 마크다운 렌더링 정상 확인 (v8.12.80-82) (last QA-20260605-0653)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260605-0654 | 2026-06-05T01:25:05.069Z | targeted | no | no | Local Dev Chrome DevTools MCP - Frontend UI/UX Wiring Polish Verification | 12 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260605-0653 | 2026-06-05T00:34:46.612Z | targeted | yes | yes | Vercel Production Playwright MCP - 2주간 개선 항목 통합 검증 (v8.12.90) | 13 | 6 | 0 | 0 | 0 | 0 |
 | QA-20260605-0652 | 2026-06-05T00:05:25.119Z | targeted | no | no | Vercel Production Playwright MCP Recheck - v8.12.90 After GitLab Token Recovery | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260605-0651 | 2026-06-04T16:20:31.104Z | targeted | yes | yes | Vercel Production Targeted QA - v8.12.90 Pre-Auth System Preload Fix | 11 | 2 | 0 | 0 | 0 | 0 |
@@ -214,4 +215,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260528-0637 | 2026-05-28T13:35:35.677Z | smoke | yes | no | GitLab production release smoke - v8.12.74 AI Engine shared utils refactor | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260528-0636 | 2026-05-28T10:42:22.198Z | targeted | yes | yes | Vercel production stream QA - v8.12.73 Q-NEW76 metric risk compare omitted noun | 15 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260528-0635 | 2026-05-28T09:20:18.560Z | targeted | no | no | Cloud Run production residual recheck - v8.12.72 P20 trend-rate ranking | 5 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260528-0634 | 2026-05-28T09:01:00.708Z | targeted | yes | yes | Vercel production stream QA - v8.12.72 Q-NEW72 metric risk compare | 13 | 1 | 0 | 0 | 0 | 0 |

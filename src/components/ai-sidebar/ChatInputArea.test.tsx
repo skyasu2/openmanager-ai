@@ -353,7 +353,9 @@ describe('ChatInputArea controls', () => {
     expect(onSendWithAttachments).toHaveBeenCalledTimes(1);
   });
 
-  it('disables the send button while a generation is in progress', () => {
+  it('keeps the send button active during generation so follow-up questions can be queued', () => {
+    const onSendWithAttachments = vi.fn();
+
     render(
       <ChatInputArea
         textareaRef={createRef<HTMLTextAreaElement>()}
@@ -367,7 +369,7 @@ describe('ChatInputArea controls', () => {
         canAddMore={true}
         previewImage={null}
         dragHandlers={{}}
-        onSendWithAttachments={vi.fn()}
+        onSendWithAttachments={onSendWithAttachments}
         onOpenFileDialog={vi.fn()}
         onFileSelect={vi.fn()}
         onImageClick={vi.fn()}
@@ -379,7 +381,12 @@ describe('ChatInputArea controls', () => {
       />
     );
 
-    expect(screen.getByRole('button', { name: '요청 처리 중' })).toBeDisabled();
+    const sendButton = screen.getByRole('button', { name: '대기열에 추가' });
+    expect(sendButton).not.toBeDisabled();
+
+    fireEvent.click(sendButton);
+
+    expect(onSendWithAttachments).toHaveBeenCalledTimes(1);
   });
 
   it('keeps Web source control visible and removes user-facing RAG control', () => {

@@ -7,6 +7,16 @@
 'use client';
 
 import { BarChart3 } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface DashboardSectionProps {
   canAccessDashboard: boolean;
@@ -19,6 +29,13 @@ export function DashboardSection({
   onNavigateDashboard,
   onStopSystem,
 }: DashboardSectionProps) {
+  const [isStopDialogOpen, setIsStopDialogOpen] = useState(false);
+
+  const handleConfirmStop = () => {
+    setIsStopDialogOpen(false);
+    onStopSystem?.();
+  };
+
   return (
     <div className="mx-auto max-w-4xl text-center">
       <div className="mb-6 flex justify-center">
@@ -34,26 +51,47 @@ export function DashboardSection({
                 <span className="text-lg">대시보드 열기</span>
               </button>
 
-              {/* 손가락 포인터 */}
-              <div className="flex flex-col items-center gap-1">
-                <span className="finger-pointer-dashboard">👆</span>
-                <span className="text-xs font-medium text-white/[0.78]">
-                  클릭하세요
-                </span>
-              </div>
-
               {onStopSystem && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (confirm('시스템을 종료하시겠습니까?')) {
-                      onStopSystem();
-                    }
-                  }}
-                  className="text-sm text-red-400 hover:text-red-300 underline underline-offset-4 decoration-red-400/30 transition-colors"
-                >
-                  시스템 종료하기
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setIsStopDialogOpen(true)}
+                    className="text-sm text-red-400 hover:text-red-300 underline underline-offset-4 decoration-red-400/30 transition-colors"
+                  >
+                    시스템 종료하기
+                  </button>
+
+                  <Dialog
+                    open={isStopDialogOpen}
+                    onOpenChange={setIsStopDialogOpen}
+                  >
+                    <DialogContent className="max-w-sm">
+                      <DialogHeader>
+                        <DialogTitle>시스템 종료</DialogTitle>
+                        <DialogDescription>
+                          시스템을 종료하시겠습니까? 종료 후 메인 페이지에서
+                          다시 시작할 수 있습니다.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <DialogFooter>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setIsStopDialogOpen(false)}
+                        >
+                          취소
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          onClick={handleConfirmStop}
+                        >
+                          종료 확인
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </>
               )}
             </div>
           ) : (

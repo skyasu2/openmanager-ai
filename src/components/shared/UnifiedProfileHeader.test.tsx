@@ -33,11 +33,17 @@ vi.mock('@/components/unified-profile/components/ProfileAvatar', () => ({
 vi.mock('@/components/unified-profile/components/ProfileDropdownMenu', () => ({
   ProfileDropdownMenu: ({
     isOpen,
+    menuItems,
     isSystemStarted,
     onSystemStart,
     onSystemStop,
   }: {
     isOpen: boolean;
+    menuItems: Array<{
+      id: string;
+      label: string;
+      action?: () => void | Promise<void>;
+    }>;
     isSystemStarted: boolean;
     onSystemStart: () => void;
     onSystemStop: () => void;
@@ -59,6 +65,19 @@ vi.mock('@/components/unified-profile/components/ProfileDropdownMenu', () => ({
             onClick={onSystemStart}
           >
             시스템 시작
+          </button>
+        ))}
+      {isOpen &&
+        menuItems.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            data-testid={`mock-menu-${item.id}`}
+            onClick={() => {
+              void item.action?.();
+            }}
+          >
+            {item.label}
           </button>
         ))}
     </div>
@@ -90,6 +109,12 @@ vi.mock('@/lib/logging', () => ({
   logger: mocks.logger,
 }));
 
+vi.mock('react-hot-toast', () => ({
+  default: {
+    error: vi.fn(),
+  },
+}));
+
 describe('UnifiedProfileHeader', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -118,10 +143,6 @@ describe('UnifiedProfileHeader', () => {
       action: 'stop',
     });
     mocks.isSystemStarted = false;
-    vi.stubGlobal(
-      'confirm',
-      vi.fn(() => true)
-    );
   });
 
   afterEach(() => {
@@ -376,7 +397,14 @@ describe('UnifiedProfileHeader', () => {
     render(<UnifiedProfileHeader />);
     fireEvent.click(screen.getByTestId('mock-system-stop'));
 
-    expect(mocks.remoteStopSystem).toHaveBeenCalledTimes(1);
+    expect(mocks.remoteStopSystem).not.toHaveBeenCalled();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '종료 확인' }));
+
+    await waitFor(() =>
+      expect(mocks.remoteStopSystem).toHaveBeenCalledTimes(1)
+    );
     await waitFor(() => expect(mocks.stopSystem).toHaveBeenCalledTimes(1));
   });
 
@@ -422,13 +450,54 @@ describe('UnifiedProfileHeader', () => {
     render(<UnifiedProfileHeader />);
     fireEvent.click(screen.getByTestId('mock-system-stop'));
 
-    expect(mocks.remoteStopSystem).toHaveBeenCalledTimes(1);
+    expect(mocks.remoteStopSystem).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: '종료 확인' }));
+
+    await waitFor(() =>
+      expect(mocks.remoteStopSystem).toHaveBeenCalledTimes(1)
+    );
     await waitFor(() =>
       expect(mocks.logger.warn).toHaveBeenCalledWith(
         '시스템 종료 요청이 실행되지 않아 로컬 상태를 유지합니다.'
       )
     );
     expect(mocks.stopSystem).not.toHaveBeenCalled();
+  });
+
+  it('프로필 로그아웃은 Dialog 확인 후 로그아웃 핸들러를 호출한다', async () => {
+    const handleLogout = vi.fn().mockResolvedValue(true);
+    mocks.useProfileMenu.mockReturnValue({
+      menuState: { showProfileMenu: true },
+      dropdownRef: { current: null },
+      toggleMenu: mocks.toggleMenu,
+      closeMenu: mocks.closeMenu,
+    });
+    mocks.useProfileAuth.mockReturnValue({
+      userInfo: {
+        id: 'guest-1',
+        name: '게스트 사용자',
+        email: 'guest@test.local',
+      },
+      userType: 'guest',
+      status: 'authenticated',
+      isLoading: false,
+      handleLogout,
+      navigateToLogin: vi.fn(),
+      navigateToDashboard: vi.fn(),
+    });
+
+    render(<UnifiedProfileHeader />);
+    fireEvent.click(screen.getByTestId('mock-menu-logout'));
+
+    expect(handleLogout).not.toHaveBeenCalled();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: '세션 종료' })
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '로그아웃 확인' }));
+
+    await waitFor(() => expect(handleLogout).toHaveBeenCalledTimes(1));
   });
 
   it('프로필 시스템 시작 원격 요청이 실행되지 않으면 로컬 상태를 변경하지 않는다', async () => {

@@ -74,17 +74,7 @@ export function useProfileAuth(): ProfileAuthHook {
    * 통합 로그아웃 처리 (AuthStateManager 사용)
    */
   const handleLogout = useCallback(async () => {
-    const userTypeLabel = userType === 'github' ? 'GitHub' : '게스트';
-    logger.info('🚪 handleLogout 호출됨:', { userType, userTypeLabel });
-
-    const confirmed = confirm(
-      `🚪 ${userTypeLabel} 계정에서 로그아웃하시겠습니까?`
-    );
-
-    if (!confirmed) {
-      logger.info('🚪 사용자가 로그아웃 취소');
-      return false;
-    }
+    logger.info('🚪 handleLogout 호출됨:', { userType });
 
     try {
       logger.info('🚪 통합 로그아웃 시작:', { userType });

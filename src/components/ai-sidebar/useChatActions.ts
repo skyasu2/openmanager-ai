@@ -48,13 +48,13 @@ export function useChatActions({
   } | null>(null);
 
   const handleSendWithAttachments = useCallback(() => {
-    if (isGenerating || isLimitReached) {
+    if (isLimitReached) {
       return;
     }
 
     handleSendInput(attachments.length > 0 ? attachments : undefined);
     clearFiles();
-  }, [attachments, clearFiles, handleSendInput, isGenerating, isLimitReached]);
+  }, [attachments, clearFiles, handleSendInput, isLimitReached]);
 
   const openFileDialog = useCallback(() => {
     fileInputRef.current?.click();
