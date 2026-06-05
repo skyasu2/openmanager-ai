@@ -113,9 +113,7 @@ describe('artifact intent route', () => {
     delete process.env.MISTRAL_API_KEY;
     const { POST } = await importRoute();
 
-    const response = await POST(
-      createPostRequest({ query: '장애 리포트 만들어줘' })
-    );
+    const response = await POST(createPostRequest({ query: '보고서 뽑아줘' }));
     const body = await response.json();
 
     expect(body).toEqual({ kind: 'none', reason: 'llm_unavailable' });
@@ -152,9 +150,7 @@ describe('artifact intent route', () => {
     process.env.VERCEL_ENV = 'production';
     const { POST } = await importRoute();
 
-    const response = await POST(
-      createPostRequest({ query: '장애 리포트 만들어줘' })
-    );
+    const response = await POST(createPostRequest({ query: '보고서 뽑아줘' }));
     const body = await response.json();
 
     expect(body).toEqual({
@@ -173,9 +169,7 @@ describe('artifact intent route', () => {
     });
     const { POST } = await importRoute();
 
-    const response = await POST(
-      createPostRequest({ query: '장애 리포트 만들어줘' })
-    );
+    const response = await POST(createPostRequest({ query: '보고서 뽑아줘' }));
     const body = await response.json();
 
     expect(body).toEqual({
@@ -191,9 +185,7 @@ describe('artifact intent route', () => {
     });
     const { POST } = await importRoute();
 
-    const response = await POST(
-      createPostRequest({ query: '장애 리포트 만들어줘' })
-    );
+    const response = await POST(createPostRequest({ query: '보고서 뽑아줘' }));
     const body = await response.json();
 
     expect(body).toEqual({
@@ -232,7 +224,7 @@ describe('artifact intent route', () => {
     const { POST } = await importRoute();
 
     const response = await POST(
-      createPostRequest({ query: '트렌드 분석 좀 해줘' })
+      createPostRequest({ query: '리스크 리포트 뽑아줘' })
     );
     const body = await response.json();
 
@@ -247,7 +239,7 @@ describe('artifact intent route', () => {
     const { POST } = await importRoute();
 
     const noneResponse = await POST(
-      createPostRequest({ query: '장애 리포트 만들어줘' })
+      createPostRequest({ query: '보고서 뽑아줘' })
     );
     await expect(noneResponse.json()).resolves.toEqual({
       kind: 'none',
@@ -256,11 +248,77 @@ describe('artifact intent route', () => {
 
     mocks.generateText.mockRejectedValueOnce(new Error('provider unavailable'));
     const errorResponse = await POST(
-      createPostRequest({ query: '장애 리포트 만들어줘' })
+      createPostRequest({ query: '보고서 뽑아줘' })
     );
     await expect(errorResponse.json()).resolves.toEqual({
       kind: 'none',
       reason: 'llm_unavailable',
     });
+  });
+
+  it('returns deterministic incident-report intent in production without Mistral Scale confirmation', async () => {
+    process.env.NODE_ENV = 'production';
+    process.env.VERCEL_ENV = 'production';
+    const { POST } = await importRoute();
+
+    const response = await POST(
+      createPostRequest({ query: '장애 리포트 만들어줘' })
+    );
+    const body = await response.json();
+
+    expect(body).toMatchObject({
+      kind: 'incident-report',
+      reason: 'incident_report_action_pattern',
+      ruleVersion: expect.any(String),
+    });
+    expect(mocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it('returns deterministic server-monitoring intent with a resolved server id', async () => {
+    process.env.NODE_ENV = 'production';
+    process.env.VERCEL_ENV = 'production';
+    const { POST } = await importRoute();
+
+    const response = await POST(
+      createPostRequest({ query: 'api-was-dc1-01 이상감지 분석해줘' })
+    );
+    const body = await response.json();
+
+    expect(body).toMatchObject({
+      kind: 'server-monitoring-analysis',
+      serverId: 'api-was-dc1-01',
+      serverName: 'api-was-dc1-01',
+      reason: 'server_monitoring_action_pattern',
+      ruleVersion: expect.any(String),
+    });
+    expect(mocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it('returns deterministic server-snapshot and ops-procedure intents without the LLM fallback', async () => {
+    process.env.NODE_ENV = 'production';
+    process.env.VERCEL_ENV = 'production';
+    const { POST } = await importRoute();
+
+    const snapshotResponse = await POST(
+      createPostRequest({ query: '서버 상태 스냅샷' })
+    );
+    await expect(snapshotResponse.json()).resolves.toMatchObject({
+      kind: 'server-snapshot',
+      reason: 'server_snapshot_implicit_artifact_keyword',
+      ruleVersion: expect.any(String),
+    });
+
+    const procedureResponse = await POST(
+      createPostRequest({
+        query: 'CPU 임계치 90% 넘으면 슬랙 알림 규칙 만들어줘',
+      })
+    );
+    await expect(procedureResponse.json()).resolves.toMatchObject({
+      kind: 'ops-procedure',
+      procedureType: 'alert-rule',
+      reason: 'ops_procedure_action_pattern',
+      ruleVersion: expect.any(String),
+    });
+    expect(mocks.generateText).not.toHaveBeenCalled();
   });
 });

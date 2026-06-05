@@ -190,6 +190,15 @@ describe('useAIChatCore', () => {
     vi.clearAllMocks();
   });
 
+  function stubArtifactIntentResponse(body: Record<string, unknown>) {
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      json: async () => body,
+    }));
+    vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch);
+    return fetchMock;
+  }
+
   it('does not expose human feedback scoring from the shared chat core', () => {
     const { result } = renderHook(() => useAIChatCore());
 
@@ -592,6 +601,11 @@ describe('useAIChatCore', () => {
         status: 'active',
       },
     });
+    const fetchMock = stubArtifactIntentResponse({
+      kind: 'incident-report',
+      reason: 'incident_report_action_pattern',
+      ruleVersion: '2026-05-15-v1',
+    });
 
     const { result } = renderHook(() =>
       useAIChatCore({ queryAsOfDataSlot: slot })
@@ -611,6 +625,13 @@ describe('useAIChatCore', () => {
       ).toBeDefined();
     });
 
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/ai/artifact-intent',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ query: '장애 보고서 작성해줘' }),
+      })
+    );
     expect(mocks.sendQuery).not.toHaveBeenCalled();
     expect(mocks.generateIncidentReportArtifact).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -631,7 +652,7 @@ describe('useAIChatCore', () => {
       executionPath: 'client-artifact',
       artifactKind: 'incident-report',
       reasonCodes: ['incident_report_action_pattern'],
-      decidedBy: 'frontend',
+      decidedBy: 'bff',
     });
     expect(result.current.messages[1]?.metadata?.assistantPlan).toMatchObject({
       kind: 'artifact',
@@ -641,7 +662,7 @@ describe('useAIChatCore', () => {
       job: false,
       artifactKind: 'incident-report',
       reasonCodes: ['incident_report_action_pattern'],
-      decidedBy: 'frontend',
+      decidedBy: 'bff',
       routeDecision: expect.objectContaining({
         intent: 'artifact',
         artifactKind: 'incident-report',
@@ -672,6 +693,11 @@ describe('useAIChatCore', () => {
         resolveArtifact = resolve;
       })
     );
+    stubArtifactIntentResponse({
+      kind: 'incident-report',
+      reason: 'incident_report_action_pattern',
+      ruleVersion: '2026-05-15-v1',
+    });
 
     const { result } = renderHook(() => useAIChatCore());
 
@@ -770,7 +796,11 @@ describe('useAIChatCore', () => {
   it('does not fall through to chat sendQuery when LLM artifact classification resolves to an artifact', async () => {
     const fetchMock = vi.fn(async () => ({
       ok: true,
-      json: async () => ({ kind: 'incident-report' }),
+      json: async () => ({
+        kind: 'incident-report',
+        reason: 'llm_artifact_classification',
+        ruleVersion: '2026-05-15-v1',
+      }),
     }));
     vi.stubGlobal('fetch', fetchMock);
     mocks.generateIncidentReportArtifact.mockResolvedValue({
@@ -831,6 +861,11 @@ describe('useAIChatCore', () => {
         });
       }
     );
+    stubArtifactIntentResponse({
+      kind: 'incident-report',
+      reason: 'incident_report_action_pattern',
+      ruleVersion: '2026-05-15-v1',
+    });
 
     const { result } = renderHook(() => useAIChatCore());
 
@@ -892,6 +927,11 @@ describe('useAIChatCore', () => {
         },
       },
     });
+    const fetchMock = stubArtifactIntentResponse({
+      kind: 'monitoring-analysis',
+      reason: 'monitoring_action_pattern',
+      ruleVersion: '2026-05-15-v1',
+    });
 
     const { result } = renderHook(() => useAIChatCore());
 
@@ -909,6 +949,13 @@ describe('useAIChatCore', () => {
       ).toBeDefined();
     });
 
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/ai/artifact-intent',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ query: '최근 추세 기준으로 리스크 분석해줘' }),
+      })
+    );
     expect(mocks.sendQuery).not.toHaveBeenCalled();
     expect(mocks.generateMonitoringAnalysisArtifact).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -930,7 +977,7 @@ describe('useAIChatCore', () => {
       job: false,
       artifactKind: 'monitoring-analysis',
       reasonCodes: ['monitoring_action_pattern'],
-      decidedBy: 'frontend',
+      decidedBy: 'bff',
     });
     expect(result.current.messages[1]?.metadata?.assistantResult).toMatchObject(
       {
@@ -975,6 +1022,11 @@ describe('useAIChatCore', () => {
       topServers: [],
       alerts: [],
     });
+    const fetchMock = stubArtifactIntentResponse({
+      kind: 'server-snapshot',
+      reason: 'server_snapshot_implicit_artifact_keyword',
+      ruleVersion: '2026-05-15-v1',
+    });
 
     const { result } = renderHook(() =>
       useAIChatCore({ queryAsOfDataSlot: slot })
@@ -994,6 +1046,13 @@ describe('useAIChatCore', () => {
       ).toBeDefined();
     });
 
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/ai/artifact-intent',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ query: '서버 상태 스냅샷' }),
+      })
+    );
     expect(mocks.sendQuery).not.toHaveBeenCalled();
     expect(mocks.generateServerSnapshotArtifact).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1013,7 +1072,7 @@ describe('useAIChatCore', () => {
       executionPath: 'client-artifact',
       artifactKind: 'server-snapshot',
       reasonCodes: ['server_snapshot_implicit_artifact_keyword'],
-      decidedBy: 'frontend',
+      decidedBy: 'bff',
       dataSlot: '07:00 KST',
     });
     expect(result.current.messages[1]?.metadata?.assistantPlan).toMatchObject({
@@ -1025,7 +1084,7 @@ describe('useAIChatCore', () => {
       artifactKind: 'server-snapshot',
       reasonCodes: ['server_snapshot_implicit_artifact_keyword'],
       dataSlot: '07:00 KST',
-      decidedBy: 'frontend',
+      decidedBy: 'bff',
       routeDecision: expect.objectContaining({
         intent: 'artifact',
         artifactKind: 'server-snapshot',
