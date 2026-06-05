@@ -1,0 +1,138 @@
+{
+  "runId": "QA-20260605-0655",
+  "recordedAt": "2026-06-05T02:01:39.005Z",
+  "recordedAtKst": "2026-06-05 11:01:39 KST",
+  "runTitle": "Vercel Production Chrome DevTools MCP Fallback - Frontend UI/UX Wiring Polish (v8.12.91)",
+  "owner": "codex",
+  "source": "chrome-devtools-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq",
+    "deploymentUrl": "https://openmanager-4fanhgj02-skyasus-projects.vercel.app",
+    "commitSha": "3aa2f7bcba4532b79aa39680aad3af430fc775c2"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "modal-detail-pack",
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "production alias https://openmanager-ai.vercel.app serves v8.12.91 on landing page",
+    "landing example questions render as static text/list items, not fake clickable prompt buttons",
+    "/login loads and guest PIN dialog opens from guest mode CTA",
+    "guest PIN authentication succeeds and returns to active-system landing state",
+    "main page system stop action opens custom app Dialog and cancel keeps the system/session active",
+    "/dashboard loads with 18-server OTel snapshot, resource summary, top-5 alerts, and server cards",
+    "AI sidebar opens from dashboard header, shows AI Engine Ready status, and exposes expected tabs/input controls",
+    "AI sidebar input accepts text and enables submit button without triggering a live AI request",
+    "AI sidebar close removes the assistant dialog from the accessibility tree and leaves the hidden node non-interactive (display:none / pointer-events:none)",
+    "profile menu opens and exposes system stop, dashboard, login, and session end actions",
+    "profile system stop path opens custom app Dialog instead of native confirm",
+    "profile session end path opens custom app Dialog instead of native confirm/alert; cancel path leaves user on dashboard",
+    "browser console error/warn count remained 0 during production UI walkthrough",
+    "critical document/fetch/xhr requests returned 200; one /api/system ERR_ABORTED is the existing route-transition abort observation tracked as non-blocking debt"
+  ],
+  "skippedSurfaces": [
+    "Direct Playwright MCP browser session: skipped after profile lock error (Browser is already in use for /home/sky-note/.cache/ms-playwright/mcp-chrome-2a9f8ab); Chrome DevTools MCP fallback used for browser QA",
+    "Live AI conversation/generation queue label: skipped to avoid unnecessary LLM/provider quota use; local component tests and production input activation covered the UI wiring risk",
+    "OAuth login providers: skipped because guest PIN auth covers the release-facing access path for this UI change",
+    "mobile viewport regression: skipped because this targeted run focused on desktop interaction wiring after already-passed local component coverage",
+    "Cloud Run admin observability endpoints: skipped because no observability or AI Engine contract behavior changed"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Targeted browser walkthrough exercised the changed UI wiring on Vercel production, while Playwright MCP profile lock was documented and substituted with Chrome DevTools MCP evidence.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel deployment dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq is Ready, production alias serves v8.12.91, and post-QA Vercel usage remains billed 0.0000 USD.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI backend behavior was not changed; the checked AI scope was limited to sidebar open/close, health badge, and input/submit UI state without spending live LLM quota.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-05T11:00:02+09:00",
+      "summary": "Current billing period 2026-06-01T07:00:00.000Z..2026-06-05T02:00:02.693Z; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827. No unexpected billed usage observed after production QA.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production dashboard after UI/UX wiring walkthrough",
+      "path": "reports/qa/evidence/qa-20260605-v81291-frontend-ui-ux-dashboard.png",
+      "note": "Captured via Chrome DevTools MCP after Playwright MCP profile lock prevented a direct Playwright browser session."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "frontend-ui-ux-wiring-polish-production-verification-v81291",
+      "title": "v8.12.91 production verification for frontend UI/UX wiring polish",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/evidence/qa-20260605-v81291-frontend-ui-ux-dashboard.png",
+      "note": "Custom dialogs, static landing prompts, AI sidebar open/close, input activation, guest login, dashboard rendering, console/network checks passed on Vercel production.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Playwright MCP direct run failed before navigation with profile lock: Browser is already in use for /home/sky-note/.cache/ms-playwright/mcp-chrome-2a9f8ab, use --isolated to run multiple instances of the same browser.",
+    "Chrome DevTools MCP fallback verified the same Vercel production URL and saved durable screenshot evidence.",
+    "No live AI prompt was submitted during this run to preserve free-tier provider quota; the production AI sidebar health and input activation paths were still exercised."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2578083591",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2578083591"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq",
+      "url": "https://openmanager-4fanhgj02-skyasus-projects.vercel.app/"
+    }
+  ]
+}

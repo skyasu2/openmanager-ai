@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-05T01:25:05.069Z"
+    "updatedAt": "2026-06-05T02:01:39.005Z"
   },
   "sequence": {
-    "nextRunNumber": 655
+    "nextRunNumber": 656
   },
   "summary": {
-    "totalRecordedRuns": 652,
-    "totalRuns": 509,
+    "totalRecordedRuns": 653,
+    "totalRuns": 510,
     "excludedRuns": 143,
-    "totalChecks": 4483,
-    "totalPassed": 4282,
+    "totalChecks": 4497,
+    "totalPassed": 4296,
     "totalFailed": 159,
     "completionRate": 100,
-    "completedItems": 754,
+    "completedItems": 755,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 30,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260605-0653",
-    "lastRecordedAt": "2026-06-05T00:34:46.612Z",
-    "latestRecordedRunId": "QA-20260605-0654",
-    "latestRecordedAt": "2026-06-05T01:25:05.069Z"
+    "lastRunId": "QA-20260605-0655",
+    "lastRecordedAt": "2026-06-05T02:01:39.005Z",
+    "latestRecordedRunId": "QA-20260605-0655",
+    "latestRecordedAt": "2026-06-05T02:01:39.005Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18548,6 +18548,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-06-05T01:25:05.069Z"
+    },
+    "frontend-ui-ux-wiring-polish-production-verification-v81291": {
+      "id": "frontend-ui-ux-wiring-polish-production-verification-v81291",
+      "title": "v8.12.91 production verification for frontend UI/UX wiring polish",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260605-0655",
+      "firstSeenAt": "2026-06-05T02:01:39.005Z",
+      "lastSeenRunId": "QA-20260605-0655",
+      "lastSeenAt": "2026-06-05T02:01:39.005Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "reports/qa/evidence/qa-20260605-v81291-frontend-ui-ux-dashboard.png",
+      "lastNote": "Custom dialogs, static landing prompts, AI sidebar open/close, input activation, guest login, dashboard rendering, console/network checks passed on Vercel production.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-05T02:01:39.005Z"
     }
   },
   "runs": [
@@ -38955,6 +38979,128 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260605-0655",
+      "recordedAt": "2026-06-05T02:01:39.005Z",
+      "recordedAtKst": "2026-06-05 11:01:39 KST",
+      "title": "Vercel Production Chrome DevTools MCP Fallback - Frontend UI/UX Wiring Polish (v8.12.91)",
+      "owner": "codex",
+      "source": "chrome-devtools-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260605-0655.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq",
+        "deploymentUrl": "https://openmanager-4fanhgj02-skyasus-projects.vercel.app",
+        "commitSha": "3aa2f7bcba4532b79aa39680aad3af430fc775c2"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "modal-detail-pack",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "production alias https://openmanager-ai.vercel.app serves v8.12.91 on landing page",
+        "landing example questions render as static text/list items, not fake clickable prompt buttons",
+        "/login loads and guest PIN dialog opens from guest mode CTA",
+        "guest PIN authentication succeeds and returns to active-system landing state",
+        "main page system stop action opens custom app Dialog and cancel keeps the system/session active",
+        "/dashboard loads with 18-server OTel snapshot, resource summary, top-5 alerts, and server cards",
+        "AI sidebar opens from dashboard header, shows AI Engine Ready status, and exposes expected tabs/input controls",
+        "AI sidebar input accepts text and enables submit button without triggering a live AI request",
+        "AI sidebar close removes the assistant dialog from the accessibility tree and leaves the hidden node non-interactive (display:none / pointer-events:none)",
+        "profile menu opens and exposes system stop, dashboard, login, and session end actions",
+        "profile system stop path opens custom app Dialog instead of native confirm",
+        "profile session end path opens custom app Dialog instead of native confirm/alert; cancel path leaves user on dashboard",
+        "browser console error/warn count remained 0 during production UI walkthrough",
+        "critical document/fetch/xhr requests returned 200; one /api/system ERR_ABORTED is the existing route-transition abort observation tracked as non-blocking debt"
+      ],
+      "skippedSurfaces": [
+        "Direct Playwright MCP browser session: skipped after profile lock error (Browser is already in use for /home/sky-note/.cache/ms-playwright/mcp-chrome-2a9f8ab); Chrome DevTools MCP fallback used for browser QA",
+        "Live AI conversation/generation queue label: skipped to avoid unnecessary LLM/provider quota use; local component tests and production input activation covered the UI wiring risk",
+        "OAuth login providers: skipped because guest PIN auth covers the release-facing access path for this UI change",
+        "mobile viewport regression: skipped because this targeted run focused on desktop interaction wiring after already-passed local component coverage",
+        "Cloud Run admin observability endpoints: skipped because no observability or AI Engine contract behavior changed"
+      ],
+      "checks": {
+        "total": 14,
+        "passed": 14,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Targeted browser walkthrough exercised the changed UI wiring on Vercel production, while Playwright MCP profile lock was documented and substituted with Chrome DevTools MCP evidence.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel deployment dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq is Ready, production alias serves v8.12.91, and post-QA Vercel usage remains billed 0.0000 USD.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI backend behavior was not changed; the checked AI scope was limited to sidebar open/close, health badge, and input/submit UI state without spending live LLM quota.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-05T11:00:02+09:00",
+          "summary": "Current billing period 2026-06-01T07:00:00.000Z..2026-06-05T02:00:02.693Z; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827. No unexpected billed usage observed after production QA.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Production dashboard after UI/UX wiring walkthrough",
+          "path": "reports/qa/evidence/qa-20260605-v81291-frontend-ui-ux-dashboard.png",
+          "note": "Captured via Chrome DevTools MCP after Playwright MCP profile lock prevented a direct Playwright browser session."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab release pipeline 2578083591",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2578083591"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq",
+          "url": "https://openmanager-4fanhgj02-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -38963,16 +39109,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 356,
-      "appropriateCount": 305,
+      "seenCount": 357,
+      "appropriateCount": 306,
       "partialCount": 51,
       "inappropriateCount": 0,
       "improvementNeededCount": 70,
-      "lastRunId": "QA-20260605-0650",
-      "lastSeenAt": "2026-06-04T15:37:32.012Z",
+      "lastRunId": "QA-20260605-0655",
+      "lastSeenAt": "2026-06-05T02:01:39.005Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The representative live AI prompt returned a grounded status summary matching dashboard telemetry and exposed monitoring-server-health as analysis basis.",
+      "lastRationale": "AI backend behavior was not changed; the checked AI scope was limited to sidebar open/close, health badge, and input/submit UI state without spending live LLM quota.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -39014,16 +39160,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 246,
-      "appropriateCount": 225,
+      "seenCount": 247,
+      "appropriateCount": 226,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260605-0652",
-      "lastSeenAt": "2026-06-05T00:05:25.119Z",
+      "lastRunId": "QA-20260605-0655",
+      "lastSeenAt": "2026-06-05T02:01:39.005Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The Vercel deployment remained Ready, version metadata matched v8.12.90, GitLab token recovery removed API verification noise, and Vercel usage stayed billed at 0.0000 USD.",
+      "lastRationale": "Vercel deployment dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq is Ready, production alias serves v8.12.91, and post-QA Vercel usage remains billed 0.0000 USD.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -39031,16 +39177,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 274,
-      "appropriateCount": 247,
+      "seenCount": 275,
+      "appropriateCount": 248,
       "partialCount": 27,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260605-0652",
-      "lastSeenAt": "2026-06-05T00:05:25.119Z",
+      "lastRunId": "QA-20260605-0655",
+      "lastSeenAt": "2026-06-05T02:01:39.005Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The requested Playwright MCP rerun covered the pre-auth console/network regression, core route smoke, login modal availability, and health recovery without duplicating aggregate release QA totals.",
+      "lastRationale": "Targeted browser walkthrough exercised the changed UI wiring on Vercel production, while Playwright MCP profile lock was documented and substituted with Chrome DevTools MCP evidence.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

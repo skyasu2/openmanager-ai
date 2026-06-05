@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-05 10:25:05 KST
+> Generated at: 2026-06-05 11:01:39 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 652 |
-| Total Runs (Counted) | 509 |
+| Total Recorded Runs | 653 |
+| Total Runs (Counted) | 510 |
 | Non-counted Runs | 143 |
-| Total Checks | 4483 |
-| Passed | 4282 |
+| Total Checks | 4497 |
+| Passed | 4296 |
 | Failed | 159 |
-| Completed Items | 754 |
+| Completed Items | 755 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 30 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260605-0653 (2026-06-05T00:34:46.612Z) |
-| Latest Recorded Run | QA-20260605-0654 (2026-06-05T01:25:05.069Z) |
+| Last Counted Run | QA-20260605-0655 (2026-06-05T02:01:39.005Z) |
+| Latest Recorded Run | QA-20260605-0655 (2026-06-05T02:01:39.005Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260605-0654 (2026-06-05T01:25:05.069Z)
+Latest run: QA-20260605-0655 (2026-06-05T02:01:39.005Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| Test Automation Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | not-required | skipped | unknown | Local-only QA on undeployed UI changes; no Vercel production usage was generated. |
+| vercel | cli | checked | normal | Current billing period 2026-06-01T07:00:00.000Z..2026-06-05T02:00:02.693Z; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827. No unexpected billed usage observed after production QA. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-04T01:25:05.069Z -> 2026-06-05T01:25:05.069Z (24h)
+- Window: 2026-06-04T02:01:39.005Z -> 2026-06-05T02:01:39.005Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 5
 
@@ -61,7 +63,7 @@ Latest run: QA-20260605-0654 (2026-06-05T01:25:05.069Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-04T01:25:05.069Z -> 2026-06-05T01:25:05.069Z (24h)
+- Window: 2026-06-04T02:01:39.005Z -> 2026-06-05T02:01:39.005Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -73,24 +75,25 @@ Latest run: QA-20260605-0654 (2026-06-05T01:25:05.069Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA 09c0aaaa
-- Coverage Packs: core-routes-smoke, dashboard-core, modal-detail-pack
-- Covered Surfaces: landing render: / loads successfully on local dev, landing example questions: rendered as static text/list, not clickable prompt buttons, guest login: /login guest mode creates session and returns to landing, main active system state: dashboard entry and system stop controls render, main system stop: custom Dialog opens with cancel/confirm actions, browser confirm not used, dashboard render: /dashboard loads 18 server monitoring surface, profile system stop: profile menu item opens custom system stop Dialog, profile logout: profile menu item opens custom session end Dialog, AI sidebar open: role=dialog visible with aria-modal=true and aria-hidden=false, AI sidebar close: dialog removed from DOM after close, leaving no focusable offscreen residue, console: 0 runtime errors; only existing ServerDashboard render performance warnings observed, network: critical app/API requests returned 200; development HMR/soft health aborts observed as non-blocking
-- Skipped Surfaces: Vercel production QA skipped because the UI polish changes are still local and not deployed, Live AI conversational QA skipped because no AI prompt, routing, data, or output contract changed, Actual destructive confirm actions skipped: system stop/logout Dialog open and cancel were verified only, Mobile viewport regression skipped in this targeted local verification, Pure Playwright MCP new-browser session skipped because another MCP Chrome profile was already in use; Chrome DevTools MCP was used for browser-rendered verification
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq / SHA 3aa2f7bc
+- Coverage Packs: core-routes-smoke, dashboard-core, modal-detail-pack, ai-core
+- Covered Surfaces: production alias https://openmanager-ai.vercel.app serves v8.12.91 on landing page, landing example questions render as static text/list items, not fake clickable prompt buttons, /login loads and guest PIN dialog opens from guest mode CTA, guest PIN authentication succeeds and returns to active-system landing state, main page system stop action opens custom app Dialog and cancel keeps the system/session active, /dashboard loads with 18-server OTel snapshot, resource summary, top-5 alerts, and server cards, AI sidebar opens from dashboard header, shows AI Engine Ready status, and exposes expected tabs/input controls, AI sidebar input accepts text and enables submit button without triggering a live AI request, AI sidebar close removes the assistant dialog from the accessibility tree and leaves the hidden node non-interactive (display:none / pointer-events:none), profile menu opens and exposes system stop, dashboard, login, and session end actions, profile system stop path opens custom app Dialog instead of native confirm, profile session end path opens custom app Dialog instead of native confirm/alert; cancel path leaves user on dashboard, browser console error/warn count remained 0 during production UI walkthrough, critical document/fetch/xhr requests returned 200; one /api/system ERR_ABORTED is the existing route-transition abort observation tracked as non-blocking debt
+- Skipped Surfaces: Direct Playwright MCP browser session: skipped after profile lock error (Browser is already in use for /home/sky-note/.cache/ms-playwright/mcp-chrome-2a9f8ab); Chrome DevTools MCP fallback used for browser QA, Live AI conversation/generation queue label: skipped to avoid unnecessary LLM/provider quota use; local component tests and production input activation covered the UI wiring risk, OAuth login providers: skipped because guest PIN auth covers the release-facing access path for this UI change, mobile viewport regression: skipped because this targeted run focused on desktop interaction wiring after already-passed local component coverage, Cloud Run admin observability endpoints: skipped because no observability or AI Engine contract behavior changed
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab release pipeline 2578083591 | [GitLab release pipeline 2578083591](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2578083591) | - |
+| vercel-deployment | Vercel production deployment dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq | [Vercel production deployment dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq](https://openmanager-4fanhgj02-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Production dashboard after UI/UX wiring walkthrough | `reports/qa/evidence/qa-20260605-v81291-frontend-ui-ux-dashboard.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -183,18 +186,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 754 items completed (full list in qa-tracker.json)
+- Total: 755 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - frontend-ui-ux-wiring-polish-production-verification-v81291: v8.12.91 production verification for frontend UI/UX wiring polish (last QA-20260605-0655)
   - frontend-ui-ux-wiring-polish-local-verification: Frontend UI/UX wiring polish verified on local dev browser session (last QA-20260605-0654)
   - 표준-5문항-대화형-ai-qa-v8.12.90-기준-전항목-pass: 표준 5문항 대화형 AI QA v8.12.90 기준 전항목 PASS (last QA-20260605-0653)
   - analyst-anomaly-evidence-prefetch-production-ttfb-실측-747ms-v8.12.84: Analyst anomaly evidence prefetch production TTFB 실측 — 747ms (v8.12.84) (last QA-20260605-0653)
   - off-domain-blockwarn-경로-vercel-프론트엔드-채팅-ui-동작-확인-v8.12.88-89: off-domain block/warn 경로 Vercel 프론트엔드 채팅 UI 동작 확인 (v8.12.88-89) (last QA-20260605-0653)
-  - p17p20p24-핵심-라우팅-수정-v8.12.90-회귀-없음-확인: P17/P20/P24 핵심 라우팅 수정 v8.12.90 회귀 없음 확인 (last QA-20260605-0653)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260605-0655 | 2026-06-05T02:01:39.005Z | targeted | yes | yes | Vercel Production Chrome DevTools MCP Fallback - Frontend UI/UX Wiring Polish (v8.12.91) | 14 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260605-0654 | 2026-06-05T01:25:05.069Z | targeted | no | no | Local Dev Chrome DevTools MCP - Frontend UI/UX Wiring Polish Verification | 12 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260605-0653 | 2026-06-05T00:34:46.612Z | targeted | yes | yes | Vercel Production Playwright MCP - 2주간 개선 항목 통합 검증 (v8.12.90) | 13 | 6 | 0 | 0 | 0 | 0 |
 | QA-20260605-0652 | 2026-06-05T00:05:25.119Z | targeted | no | no | Vercel Production Playwright MCP Recheck - v8.12.90 After GitLab Token Recovery | 13 | 0 | 0 | 0 | 0 | 0 |
@@ -214,4 +218,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260529-0638 | 2026-05-28T18:22:11.038Z | smoke | yes | no | v8.12.76 GitLab Release Smoke - AI Engine Cloud Build Recovery | 15 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260528-0637 | 2026-05-28T13:35:35.677Z | smoke | yes | no | GitLab production release smoke - v8.12.74 AI Engine shared utils refactor | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260528-0636 | 2026-05-28T10:42:22.198Z | targeted | yes | yes | Vercel production stream QA - v8.12.73 Q-NEW76 metric risk compare omitted noun | 15 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260528-0635 | 2026-05-28T09:20:18.560Z | targeted | no | no | Cloud Run production residual recheck - v8.12.72 P20 trend-rate ranking | 5 | 0 | 0 | 0 | 0 | 0 |
