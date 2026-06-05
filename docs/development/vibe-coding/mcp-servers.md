@@ -112,7 +112,7 @@ Codex MCP는 project `.codex/config.toml`만 OpenManager 서버 목록을 보유
 |---|---|---:|---|
 | `supabase-db` | `run-with-project-env.sh` → `start-supabase-mcp.sh` | `30/120` | `SUPABASE_ACCESS_TOKEN` runtime 주입 |
 | `diagram-converter` | `start-node-mcp-package.sh diagram-converter-mcp 0.2.11 dist/index.js` | `120/180` | pinned |
-| `playwright` | Windows HTTP `url = http://localhost:8931/mcp` | `60/180` | Windows MCP 서버 별도 실행 필요 |
+| `playwright` | `start-node-mcp-package.sh @playwright/mcp 0.0.70 cli.js --isolated --output-dir tmp/playwright/mcp/screenshots` | `60/180` | stdio 기본값, 동시 Claude/Codex 세션 간 Chrome profile 충돌 방지 |
 | `next-devtools` | `start-node-mcp-package.sh next-devtools-mcp 0.3.10 dist/index.js` | `75/120` | Windows env 보강 |
 | `chrome-devtools` | `start-node-mcp-package.sh chrome-devtools-mcp 0.23.0 ... --isolated` | `90/180` | `DISPLAY=:0` |
 | `github` | HTTP MCP endpoint | `120/120` | `codex-local.sh`가 `GITHUB_PERSONAL_ACCESS_TOKEN` runtime 주입, token 없으면 auto mode에서 제외 |

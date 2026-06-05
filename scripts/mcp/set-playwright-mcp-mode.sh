@@ -78,7 +78,7 @@ function print_playwright_section() {
   print "[mcp_servers.playwright]"
   if (mode == "stdio") {
     print "command = \"bash\""
-    print "args = [\"" repo_root "/scripts/mcp/start-node-mcp-package.sh\", \"@playwright/mcp\", \"0.0.70\", \"cli.js\", \"--output-dir\", \"tmp/playwright/mcp/screenshots\"]"
+    print "args = [\"" repo_root "/scripts/mcp/start-node-mcp-package.sh\", \"@playwright/mcp\", \"0.0.70\", \"cli.js\", \"--isolated\", \"--output-dir\", \"tmp/playwright/mcp/screenshots\"]"
     print "startup_timeout_sec = 60"
     print "tool_timeout_sec = 180"
     print "required = false"
