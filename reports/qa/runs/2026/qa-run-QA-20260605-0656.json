@@ -1,0 +1,136 @@
+{
+  "runId": "QA-20260605-0656",
+  "recordedAt": "2026-06-05T03:33:51.856Z",
+  "recordedAtKst": "2026-06-05 12:33:51 KST",
+  "runTitle": "Vercel Production Playwright MCP - Recent Two-Week Improvements Applied Recheck (v8.12.91)",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq",
+    "deploymentUrl": "https://openmanager-4fanhgj02-skyasus-projects.vercel.app",
+    "commitSha": "3aa2f7bcba4532b79aa39680aad3af430fc775c2"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "Vercel MCP project metadata reports latest production deployment dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq as READY",
+    "production alias https://openmanager-ai.vercel.app /api/version returns v8.12.91, commit 3aa2f7bcba4532b79aa39680aad3af430fc775c2, GitLab pipeline 2578083591",
+    "landing page renders OpenManager AI v8.12.91 and example questions as static list items, not clickable fake prompt buttons",
+    "/login renders OAuth buttons, disabled empty email submit, privacy link, guest CTA, and v8.12.91 copy",
+    "guest PIN dialog opens from guest CTA; PIN entry enables Login and authenticates through POST /api/auth/guest-login 200",
+    "authenticated landing state exposes guest profile and Dashboard Open action",
+    "/dashboard loads with 18-server OTel snapshot, 17 online, 1 warning, 0 risk, 0 offline, slot 75/143, resource summary, top-5 resource alerts, and server cards",
+    "AI sidebar opens from dashboard header and shows AI Chat, automatic report, anomaly tabs, AI Engine Ready button, starter cards, and dashboard-consistent 18-server summary",
+    "AI question input accepts text and enables the message submit button without submitting a live LLM request",
+    "AI sidebar close leaves no visible dialog; remaining hidden dialog nodes have display:none and zero layout size",
+    "browser console warning/error count remained 0 during the Playwright MCP walkthrough",
+    "critical document/fetch/xhr requests returned 200: csrf-token, guest-login, ai wake-up, /api/system, soft AI health, monitoring report, OTel hourly data, and timeseries data",
+    "Vercel usage check after QA remains normal: effective 1.9358 USD, billed 0.0000 USD for the current billing period"
+  ],
+  "skippedSurfaces": [
+    "Live AI conversation generation was skipped to preserve provider quota because QA-20260605-0653 already recorded the standard 5-question conversational AI QA pass for the recent two-week improvement set",
+    "OAuth provider login was skipped because guest PIN auth covers the release-facing access path for this targeted production recheck",
+    "Mobile viewport regression was skipped because this run focused on desktop Vercel application of recent changes and recent local/production UI wiring QA already covered the changed desktop path",
+    "Cloud Run admin observability endpoints were skipped because this recheck targeted Vercel frontend deployment/application state, not Cloud Run admin monitoring behavior",
+    "Vercel Speed Insights vitals POSTs showed transient ERR_ABORTED entries followed by successful 200 vitals posts; treated as non-blocking telemetry noise because core product/API requests were successful"
+  ],
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Direct Playwright MCP covered the changed Vercel UI/auth/dashboard/AI-sidebar surfaces with console and network inspection.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel MCP and /api/version agree on the latest production deployment, commit, and release pipeline; usage remains billed 0.0000 USD.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "This run confirms AI sidebar wiring and relies on QA-20260605-0653 for the already-passed live standard 5-question conversational AI assessment, avoiding redundant provider spend.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-05T12:25:47+09:00",
+      "summary": "Current billing period 2026-06-01T07:00:00.000Z..2026-06-05T03:25:47.314Z; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827. No unexpected billed usage observed after production QA.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production dashboard recent improvements recheck",
+      "path": "reports/qa/evidence/qa-20260605-v81291-recent-improvements-dashboard.png",
+      "note": "Captured by direct Playwright MCP after dashboard and AI sidebar UI checks."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "recent-two-week-improvements-vercel-application-v81291",
+      "title": "Recent two-week improvements confirmed applied on Vercel production v8.12.91",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/evidence/qa-20260605-v81291-recent-improvements-dashboard.png",
+      "note": "Vercel deployment metadata, /api/version, landing/login guest flow, dashboard OTel snapshot, AI sidebar wiring, console cleanliness, critical network requests, and Vercel usage all passed.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Recent two-week Git history spans v8.12.1 through v8.12.91 and primarily covers AI routing/evidence paths, dashboard UI/UX, CI/deploy stability, off-domain guardrails, and frontend UI wiring polish.",
+    "This run did not submit a live AI prompt. The live conversational AI standard 5-question result is covered by QA-20260605-0653 and was judged PASS for the recent two-week improvement set.",
+    "Network observation: several Vercel Speed Insights vitals POSTs were aborted, then later vitals POSTs returned 200. Product-critical requests all returned 200, so this is recorded as non-blocking telemetry noise."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release pipeline 2578083591",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2578083591"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq",
+      "url": "https://openmanager-4fanhgj02-skyasus-projects.vercel.app/"
+    }
+  ]
+}
