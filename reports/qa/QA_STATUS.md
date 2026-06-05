@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-05 12:33:52 KST
+> Generated at: 2026-06-05 15:56:31 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 654 |
-| Total Runs (Counted) | 511 |
+| Total Recorded Runs | 655 |
+| Total Runs (Counted) | 512 |
 | Non-counted Runs | 143 |
-| Total Checks | 4510 |
-| Passed | 4309 |
+| Total Checks | 4530 |
+| Passed | 4329 |
 | Failed | 159 |
-| Completed Items | 756 |
+| Completed Items | 757 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 30 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260605-0656 (2026-06-05T03:33:51.856Z) |
-| Latest Recorded Run | QA-20260605-0656 (2026-06-05T03:33:51.856Z) |
+| Last Counted Run | QA-20260605-0657 (2026-06-05T06:56:30.699Z) |
+| Latest Recorded Run | QA-20260605-0657 (2026-06-05T06:56:30.699Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,23 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260605-0656 (2026-06-05T03:33:51.856Z)
+Latest run: QA-20260605-0657 (2026-06-05T06:56:30.699Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Test Automation Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
 | AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period 2026-06-01T07:00:00.000Z..2026-06-05T03:25:47.314Z; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827. No unexpected billed usage observed after production QA. |
+| vercel | cli | checked | normal | Current billing period 2026-06-01T07:00:00.000Z..2026-06-05T06:52:06.423Z; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827. No unexpected billed usage observed after v8.12.92 release QA. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-04T03:33:51.856Z -> 2026-06-05T03:33:51.856Z (24h)
+- Window: 2026-06-04T06:56:30.699Z -> 2026-06-05T06:56:30.699Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 5
 
@@ -63,7 +63,7 @@ Latest run: QA-20260605-0656 (2026-06-05T03:33:51.856Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-04T03:33:51.856Z -> 2026-06-05T03:33:51.856Z (24h)
+- Window: 2026-06-04T06:56:30.699Z -> 2026-06-05T06:56:30.699Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -77,23 +77,23 @@ Latest run: QA-20260605-0656 (2026-06-05T03:33:51.856Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq / SHA 3aa2f7bc
+- Deployment: dpl_BrE1dBffAFfHfrKEuqDdWXD1qf7t / SHA 105f9b17
 - Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: Vercel MCP project metadata reports latest production deployment dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq as READY, production alias https://openmanager-ai.vercel.app /api/version returns v8.12.91, commit 3aa2f7bcba4532b79aa39680aad3af430fc775c2, GitLab pipeline 2578083591, landing page renders OpenManager AI v8.12.91 and example questions as static list items, not clickable fake prompt buttons, /login renders OAuth buttons, disabled empty email submit, privacy link, guest CTA, and v8.12.91 copy, guest PIN dialog opens from guest CTA; PIN entry enables Login and authenticates through POST /api/auth/guest-login 200, authenticated landing state exposes guest profile and Dashboard Open action, /dashboard loads with 18-server OTel snapshot, 17 online, 1 warning, 0 risk, 0 offline, slot 75/143, resource summary, top-5 resource alerts, and server cards, AI sidebar opens from dashboard header and shows AI Chat, automatic report, anomaly tabs, AI Engine Ready button, starter cards, and dashboard-consistent 18-server summary, AI question input accepts text and enables the message submit button without submitting a live LLM request, AI sidebar close leaves no visible dialog; remaining hidden dialog nodes have display:none and zero layout size, browser console warning/error count remained 0 during the Playwright MCP walkthrough, critical document/fetch/xhr requests returned 200: csrf-token, guest-login, ai wake-up, /api/system, soft AI health, monitoring report, OTel hourly data, and timeseries data, Vercel usage check after QA remains normal: effective 1.9358 USD, billed 0.0000 USD for the current billing period
-- Skipped Surfaces: Live AI conversation generation was skipped to preserve provider quota because QA-20260605-0653 already recorded the standard 5-question conversational AI QA pass for the recent two-week improvement set, OAuth provider login was skipped because guest PIN auth covers the release-facing access path for this targeted production recheck, Mobile viewport regression was skipped because this run focused on desktop Vercel application of recent changes and recent local/production UI wiring QA already covered the changed desktop path, Cloud Run admin observability endpoints were skipped because this recheck targeted Vercel frontend deployment/application state, not Cloud Run admin monitoring behavior, Vercel Speed Insights vitals POSTs showed transient ERR_ABORTED entries followed by successful 200 vitals posts; treated as non-blocking telemetry noise because core product/API requests were successful
+- Covered Surfaces: GitLab release tag pipeline 2578503432 completed successfully for v8.12.92 at commit 105f9b17997e18500bdf80fac38fba0310d4d367, release smoke verified /, /login, and /api/version on production with expected version 8.12.92, Vercel production deployment dpl_BrE1dBffAFfHfrKEuqDdWXD1qf7t is Ready and aliases https://openmanager-ai.vercel.app, production /api/version returns version 8.12.92, frontend 8.12.92, releaseTag v8.12.92, commit 105f9b17997e18500bdf80fac38fba0310d4d367, and GitLab pipeline 2578503432, landing page renders OpenManager AI v8.12.92, guest session state, and dashboard CTA, /dashboard renders 18 servers, 17 online, 1 warning, 0 risk, 0 offline, OTel slot 94/143 at 15:40 KST, and resource summary CPU 30 / MEM 47 / Disk 37, AI sidebar opens from dashboard and shows AI Chat, automatic report, anomaly tabs, AI Engine Ready, and dashboard-consistent 18-server summary, /api/ai/artifact-intent classifies '서버 상태 스냅샷' as server-snapshot with reason server_snapshot_implicit_artifact_keyword, ruleVersion 2026-05-15-v1, decidedBy bff, /api/ai/artifact-intent classifies 'api-was-dc1-01 이상감지 분석해줘' as server-monitoring-analysis with serverId api-was-dc1-01, reason server_monitoring_action_pattern, decidedBy bff, /api/ai/artifact-intent classifies 'CPU 임계치 90% 넘으면 슬랙 알림 규칙 만들어줘' as ops-procedure with procedureType alert-rule, reason ops_procedure_action_pattern, decidedBy bff, /api/ai/artifact-intent classifies '장애 리포트 만들어줘' as incident-report with reason incident_report_action_pattern, decidedBy bff, /api/ai/artifact-intent returns kind none for normal conversational query 'CPU 높은 서버 알려줘' with reason local_gate_none, /api/ai/artifact-intent returns kind none for capacity forecast conversational query with reason local_gate_none, AI sidebar UI generated the server status snapshot artifact through the BFF intent path: total 18, warning 1, risk 0, average CPU 29.6%, top servers, and MD/JSON download buttons, standard five-question conversational AI QA passed: overall summary, web-server-01 alias detail, 24h peak load time, immediate action query, and network-problem follow-up, critical product navigation and BFF API requests succeeded during Playwright MCP walkthrough, intent API repeated probe intentionally hit the aiAnalysis 10/min rate limiter; subsequent reset check returned 200, so the 429 entries are treated as non-blocking guard behavior, Vercel usage check after QA remains normal with effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827
+- Skipped Surfaces: OAuth provider login was skipped because guest session covers the release-facing access path for this targeted production artifact routing QA, Mobile viewport regression was skipped because this run focused on desktop Vercel artifact BFF migration verification, Cloud Run admin /monitoring was skipped because the changed surface is frontend-to-BFF artifact intent routing; release smoke already verified deployment health, Full modal/detail pack was skipped because no modal/detail implementation changed in this routing migration, Vision/image-upload QA was skipped because Vision was outside the artifact intent BFF migration scope
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab release pipeline 2578083591 | [GitLab release pipeline 2578083591](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2578083591) | - |
-| vercel-deployment | Vercel production deployment dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq | [Vercel production deployment dpl_g7Zfcag1nht2qUvsEPYJRjQoUGrq](https://openmanager-4fanhgj02-skyasus-projects.vercel.app/) | - |
+| general | GitLab release pipeline 2578503432 | [GitLab release pipeline 2578503432](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2578503432) | - |
+| vercel-deployment | Vercel production deployment dpl_BrE1dBffAFfHfrKEuqDdWXD1qf7t | [Vercel production deployment dpl_BrE1dBffAFfHfrKEuqDdWXD1qf7t](https://openmanager-43x5zq0nj-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production dashboard recent improvements recheck | `reports/qa/evidence/qa-20260605-v81291-recent-improvements-dashboard.png` | - |
+| playwright-screenshot | Production artifact intent BFF server snapshot UI | `reports/qa/evidence/qa-20260605-v81292-artifact-bff-dashboard.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -186,18 +186,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 756 items completed (full list in qa-tracker.json)
+- Total: 757 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - artifact-intent-bff-migration-v81292: Artifact intent deterministic routing migrated to BFF and verified on Vercel production v8.12.92 (last QA-20260605-0657)
   - recent-two-week-improvements-vercel-application-v81291: Recent two-week improvements confirmed applied on Vercel production v8.12.91 (last QA-20260605-0656)
   - frontend-ui-ux-wiring-polish-production-verification-v81291: v8.12.91 production verification for frontend UI/UX wiring polish (last QA-20260605-0655)
   - frontend-ui-ux-wiring-polish-local-verification: Frontend UI/UX wiring polish verified on local dev browser session (last QA-20260605-0654)
   - 표준-5문항-대화형-ai-qa-v8.12.90-기준-전항목-pass: 표준 5문항 대화형 AI QA v8.12.90 기준 전항목 PASS (last QA-20260605-0653)
-  - analyst-anomaly-evidence-prefetch-production-ttfb-실측-747ms-v8.12.84: Analyst anomaly evidence prefetch production TTFB 실측 — 747ms (v8.12.84) (last QA-20260605-0653)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260605-0657 | 2026-06-05T06:56:30.699Z | targeted | yes | yes | Vercel Production Playwright MCP - Artifact Intent BFF Release QA (v8.12.92) | 20 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260605-0656 | 2026-06-05T03:33:51.856Z | targeted | yes | yes | Vercel Production Playwright MCP - Recent Two-Week Improvements Applied Recheck (v8.12.91) | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260605-0655 | 2026-06-05T02:01:39.005Z | targeted | yes | yes | Vercel Production Chrome DevTools MCP Fallback - Frontend UI/UX Wiring Polish (v8.12.91) | 14 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260605-0654 | 2026-06-05T01:25:05.069Z | targeted | no | no | Local Dev Chrome DevTools MCP - Frontend UI/UX Wiring Polish Verification | 12 | 1 | 0 | 0 | 0 | 0 |
@@ -217,4 +218,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260529-0640 | 2026-05-29T10:28:51.014Z | targeted | yes | yes | Vercel Playwright MCP 대화형 AI QA - 표준 5문항 점검 (v8.12.77) | 5 | 0 | 0 | 0 | 1 | 0 |
 | QA-20260529-0639 | 2026-05-29T03:17:33.247Z | smoke | yes | no | GitLab production release smoke - v8.12.77 landing mouse spotlight motion | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260529-0638 | 2026-05-28T18:22:11.038Z | smoke | yes | no | v8.12.76 GitLab Release Smoke - AI Engine Cloud Build Recovery | 15 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260528-0637 | 2026-05-28T13:35:35.677Z | smoke | yes | no | GitLab production release smoke - v8.12.74 AI Engine shared utils refactor | 14 | 0 | 0 | 0 | 0 | 0 |
