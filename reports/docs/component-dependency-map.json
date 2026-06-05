@@ -11,11 +11,11 @@
     "totalComponentNodes": 152
   },
   "metrics": {
-    "componentSourceLines": 30557,
+    "componentSourceLines": 30666,
     "componentNodes": 145,
-    "componentEdges": 151,
-    "graphDensity": 0.007232,
-    "aliasEdges": 41,
+    "componentEdges": 153,
+    "graphDensity": 0.007328,
+    "aliasEdges": 43,
     "relativeEdges": 110,
     "isolatedComponents": 17,
     "sccCycleGroups": 0,
@@ -27,11 +27,11 @@
       "inDegree": 6
     },
     {
-      "component": "ai/analysis/constants",
-      "inDegree": 4
+      "component": "ui/dialog",
+      "inDegree": 5
     },
     {
-      "component": "ui/dialog",
+      "component": "ai/analysis/constants",
       "inDegree": 4
     },
     {
@@ -185,6 +185,11 @@
     {
       "fromDomain": "providers",
       "toDomain": "providers",
+      "count": 2
+    },
+    {
+      "fromDomain": "shared",
+      "toDomain": "ui",
       "count": 2
     },
     {

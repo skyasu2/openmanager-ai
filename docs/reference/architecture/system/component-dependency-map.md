@@ -51,11 +51,11 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 30557 |
+| Component source lines | 30666 |
 | Component nodes | 145 |
-| Component edges | 151 |
-| Graph density | 0.72% |
-| Alias edges (`@/components/*`) | 41 |
+| Component edges | 153 |
+| Graph density | 0.73% |
+| Alias edges (`@/components/*`) | 43 |
 | Relative edges (`./`, `../`) | 110 |
 | Isolated components | 17 |
 | SCC cycle groups | 0 |
@@ -92,6 +92,7 @@ flowchart LR
   d4 -->|2| d3
   d4 -->|2| d6
   d9 -->|2| d9
+  d10 -->|2| d12
   d10 -->|2| d13
   d13 -->|2| d13
   d0 -->|1| d4
@@ -139,6 +140,7 @@ flowchart LR
 | dashboard | charts | 2 |
 | dashboard | error | 2 |
 | providers | providers | 2 |
+| shared | ui | 2 |
 | shared | unified-profile | 2 |
 | unified-profile | unified-profile | 2 |
 | ai | dashboard | 1 |
@@ -154,8 +156,8 @@ flowchart LR
 | Component | In-Degree |
 | --- | --- |
 | ai/AIAssistantIconPanel | 6 |
+| ui/dialog | 5 |
 | ai/analysis/constants | 4 |
-| ui/dialog | 4 |
 | dashboard/EnhancedServerModal.components | 3 |
 | dashboard/shared/StatCell | 3 |
 | ai-sidebar/CloudRunStatusIndicator | 2 |
