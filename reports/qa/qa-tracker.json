@@ -31877,6 +31877,13 @@
       "expertAssessments": [],
       "usageChecks": [],
       "artifacts": [],
+      "artifactDebt": {
+        "status": "acknowledged",
+        "kind": "historical-no-durable-evidence",
+        "reason": "QA-20260605-0653 was a release-facing Playwright MCP conversational AI validation run, but no contemporaneous durable artifact was captured. Follow-up QA-20260605-0656 preserved direct Vercel Playwright MCP dashboard/UI evidence for the same recent-improvement verification window, so this older missing artifact is tracked as accepted historical evidence debt instead of backfilled with non-contemporaneous proof.",
+        "recordedAt": "2026-06-05T14:21:03+09:00",
+        "recordedBy": "codex"
+      },
       "links": [],
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
