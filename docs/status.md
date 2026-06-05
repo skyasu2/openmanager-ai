@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-06-05 | **현재 버전 스냅샷**: v8.12.92
+**상태 스냅샷 기준일**: 2026-06-05 | **현재 버전 스냅샷**: v8.12.93
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.93** (2026-06-05) — Features: config: activate Artifact BFF LLM classifier in production; Tests: qa: record Langfuse baseline start; Tests: qa: record v8.12.92 artifact BFF release QA
 - **v8.12.92** (2026-06-05) — Features: route artifact intent through BFF classifier; Tests: spec: routing phase 4bc add failing tests before implementation; Tests: qa: record v8.12.91 recent improvements recheck
 - **v8.12.91** (2026-06-05) — Bug Fixes: ui: align frontend polish interactions; Tests: qa: record v8.12.90 2주간 개선 항목 통합 Playwright MCP QA (QA-20260605-0653); Tests: qa: record v8.12.90 vercel recheck
 - **v8.12.90** (2026-06-05) — Bug Fixes: vercel: avoid preauth system preload; Tests: qa: record free-tier direction review; Tests: qa: record v8.12.89 off-domain warn metadata
 - **v8.12.89** (2026-06-04) — Bug Fixes: ai-engine: expose off-domain warn metadata
-- **v8.12.88** (2026-05-30) — Features: ai-engine: configure off-domain guardrail with block and warn paths; Tests: qa: record v8.12.87 parallel release smoke
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
