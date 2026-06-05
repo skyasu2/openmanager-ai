@@ -1,0 +1,154 @@
+{
+  "runId": "QA-20260605-0653",
+  "recordedAt": "2026-06-05T00:34:46.612Z",
+  "recordedAtKst": "2026-06-05 09:34:46 KST",
+  "runTitle": "Vercel Production Playwright MCP - 2주간 개선 항목 통합 검증 (v8.12.90)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "",
+    "url": "",
+    "frontend": "",
+    "backend": "",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "c9f57e454cd0901fdb37f232bd93bcf688a36577"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "ai-advanced-surface",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "P1-Q1: CPU 상위 3개 — monitoring-metric-ranking + monitoring-metric-trend 정상, 응답 빠름, api-was-dc1-01(90%), api-was-dc1-02(83%), db-mysql-dc1-primary(64%)",
+    "P1-Q2: CPU+메모리 AND 복합 — monitoring-metric-current multi-metric 복합점수 정렬 정상 (P8 회귀 없음)",
+    "P1-Q3: 꾸준히 증가 트렌드 — monitoring-metric-trend METRIC_TREND_PATTERN 정상 (v8.12.21)",
+    "P1-Q4: 위험한 서버 목록 — monitoring-server-health ACTION_NEEDED_PATTERN 정상 (v8.12.20), 즉시 조치 1대/주의 1대",
+    "P1-Q5: 컨텍스트 팔로업 — 위험 서버 2대 정확 유지, Groq llama-4-scout 경로, 내용 정확",
+    "P2: react-markdown 렌더링 — code 2개, strong 19개 정상 렌더링. ### / --- / ``` literal 미노출 (v8.12.80-82)",
+    "P3: Analyst 이상 탐지 prefetch — TTFB 747ms (기존 2-5s 대비 대폭 개선), runAllServerAnomalyScan evidence 주입 확인 (v8.12.84)",
+    "P4-block: off-domain 날씨 쿼리 — 결정론적 거부 메시지 정상 (v8.12.88)",
+    "P4-warn: off-domain 코딩 쿼리 — LLM 응답 + 경고 텍스트 인라인 표시 정상 (v8.12.89)",
+    "P7-P17: api-was vs web-nginx 크로스 그룹 비교 — deterministic monitoring-metric-current, 2그룹 64.3% vs 28.3% 정상 (v8.12.59)",
+    "P7-P20: CPU 증가율 랭킹 — monitoring-metric-trend delta 기준 내림차순 정상, api-was-dc1-02 +34.6%p 1위 (v8.12.72)",
+    "P7-P24: 전체 평균 메모리 — monitoring-metric-current 18대 46.7% 정상 (v8.12.79)",
+    "P8-Reporter: 장애 보고서 생성 — incident-report 200, 이상감지 2건 발견, 심각 1건, timeline schema 정상 (~55초)",
+    "콘솔 에러: 0건 (전체 세션 통틀어)",
+    "Vercel production deployment dpl_J1PEim6zfHjgGUoB9NcYqgEH2hVj v8.12.90 정상 서빙 확인"
+  ],
+  "skippedSurfaces": [
+    "Vision 탭 live 이미지 업로드 E2E — wont-fix 유지, Vision routing 변경 없음",
+    "모바일 뷰포트 회귀 — 이번 세션 범위 외",
+    "OAuth 로그인 — guest 모드로 QA 수행"
+  ],
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI Chat 이상 탐지 쿼리",
+      "agent": "Analyst Agent",
+      "provider": "mistral",
+      "model": "mistral-small",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "UI 메타데이터 배지",
+      "latencyMs": 0,
+      "ttfbMs": 747
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "표준-5문항-대화형-ai-qa-v8.12.90-기준-전항목-pass",
+      "title": "표준 5문항 대화형 AI QA v8.12.90 기준 전항목 PASS",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "react-markdown-교체-후-production-마크다운-렌더링-정상-확인-v8.12.80-82",
+      "title": "react-markdown 교체 후 production 마크다운 렌더링 정상 확인 (v8.12.80-82)",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "analyst-anomaly-evidence-prefetch-production-ttfb-실측-747ms-v8.12.84",
+      "title": "Analyst anomaly evidence prefetch production TTFB 실측 — 747ms (v8.12.84)",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "off-domain-blockwarn-경로-vercel-프론트엔드-채팅-ui-동작-확인-v8.12.88-89",
+      "title": "off-domain block/warn 경로 Vercel 프론트엔드 채팅 UI 동작 확인 (v8.12.88-89)",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "p17p20p24-핵심-라우팅-수정-v8.12.90-회귀-없음-확인",
+      "title": "P17/P20/P24 핵심 라우팅 수정 v8.12.90 회귀 없음 확인",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "reporter-탭-장애-보고서-생성-정상-timeline-schema-드리프트-없음",
+      "title": "Reporter 탭 장애 보고서 생성 정상, timeline schema 드리프트 없음",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
