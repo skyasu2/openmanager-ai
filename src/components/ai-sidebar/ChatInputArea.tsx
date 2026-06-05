@@ -91,6 +91,7 @@ export const ChatInputArea = memo(function ChatInputArea({
   const showInputLengthWarning = inputLength >= CHAT_INPUT_WARNING_LENGTH;
   const isInputAtHardCap = inputLength >= CHAT_INPUT_MAX_LENGTH;
   const inputLengthLabel = `입력 ${formatChatInputCount(inputLength)}/${formatChatInputCount(CHAT_INPUT_MAX_LENGTH)}자`;
+  const sendButtonLabel = isGenerating ? '대기열에 추가' : '메시지 전송';
 
   const handleFileAttach = useCallback(() => {
     onOpenFileDialog();
@@ -291,12 +292,11 @@ export const ChatInputArea = memo(function ChatInputArea({
                 type="submit"
                 disabled={
                   (!inputValue.trim() && attachments.length === 0) ||
-                  isGenerating ||
                   sessionState?.isLimitReached
                 }
                 className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-500 text-white shadow-sm transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40 md:h-9 md:w-9"
-                title={isGenerating ? '요청 처리 중' : '메시지 전송'}
-                aria-label={isGenerating ? '요청 처리 중' : '메시지 전송'}
+                title={sendButtonLabel}
+                aria-label={sendButtonLabel}
               >
                 <Send className="h-4 w-4" />
               </button>

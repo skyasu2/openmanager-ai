@@ -3,7 +3,7 @@ import type {
   AssistantPlan,
   AssistantResult,
 } from '@/lib/ai/assistant-contract';
-import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/artifact-intent-contract';
 import type {
   ArtifactEnvelope,
   IncidentReportArtifact,

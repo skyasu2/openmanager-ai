@@ -21,7 +21,10 @@ import type { DeveloperPanelData } from '@/lib/ai/developer-panel';
 import { logger } from '@/lib/logging';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
-import { tryHandleChatArtifactRequest } from './core/chat-artifact-guidance';
+import {
+  tryHandleChatArtifactRequest,
+  tryHandlePostDecisionChatArtifactResult,
+} from './core/chat-artifact-guidance';
 import {
   executeLocalChatCoreSendPlan,
   resolveChatCoreSendPlan,
@@ -144,6 +147,9 @@ export function useAIChatCore(
   >(null);
 
   const messagesRef = useRef<UIMessage[]>([]);
+  const setHybridMessagesRef = useRef<(messages: UIMessage[]) => void>(
+    () => {}
+  );
   const getPendingQuery = useCallback(() => pendingQueryRef.current, []);
   const clearPendingQuery = useCallback(() => {
     pendingQueryRef.current = '';
@@ -166,6 +172,24 @@ export function useAIChatCore(
     },
     []
   );
+  const handlePostDecisionArtifactResult = useCallback(
+    (result: import('./useAsyncAIQuery').AsyncQueryResult) =>
+      tryHandlePostDecisionChatArtifactResult({
+        result,
+        query: pendingQueryRef.current,
+        artifactIntentInFlightRef: artifactRefs.artifactIntentInFlightRef,
+        sessionId,
+        queryAsOfDataSlot,
+        messagesRef,
+        setMessages: setHybridMessagesRef.current,
+        setError,
+        setArtifactIsLoading,
+        artifactRequestIdRef: artifactRefs.artifactRequestIdRef,
+        artifactAbortControllerRef: artifactRefs.artifactAbortControllerRef,
+        artifactInFlightRef: artifactRefs.artifactInFlightRef,
+      }),
+    [artifactRefs, sessionId, queryAsOfDataSlot, setArtifactIsLoading]
+  );
 
   const hybridCallbacks = useAIChatHybridCallbacks({
     onMessageSend,
@@ -179,6 +203,7 @@ export function useAIChatCore(
     setStreamRagSources,
     getDeveloperPanelData,
     setDeveloperPanelData: updateDeveloperPanelData,
+    onPostDecisionArtifactResult: handlePostDecisionArtifactResult,
   });
 
   const {
@@ -204,6 +229,7 @@ export function useAIChatCore(
     queryAsOfDataSlot,
     ...hybridCallbacks,
   });
+  setHybridMessagesRef.current = setMessages;
   const isGenerating = hybridIsLoading || artifactIsLoading;
 
   const {

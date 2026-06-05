@@ -1,17 +1,17 @@
 import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
 import {
-  ARTIFACT_INTENT_RULE_VERSION,
   type ChatArtifactIntent,
-  classifyChatArtifactIntent,
-  fetchLLMChatArtifactIntent,
-  shouldUseLLMChatArtifactIntent,
-} from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+  normalizeChatArtifactIntent,
+  withArtifactIntentRuleVersion,
+} from '@/lib/ai/chat-artifacts/artifact-intent-contract';
 import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
 import type { JobDataSlot } from '@/types/ai-jobs';
+import type { AsyncQueryResult } from '../useAsyncAIQuery';
 import type { FileAttachment } from '../useFileAttachments';
 import { startChatArtifactGeneration } from './chat-artifact-execution';
 import type { GuidanceCtaTarget } from './chat-artifact-metadata';
+import { resolvePostDecisionArtifactIntent } from './post-decision-artifact';
 
 type ChatArtifact = MonitoringChatArtifact;
 
@@ -48,18 +48,22 @@ export function createForcedGuidanceArtifactIntent(
   target: GuidanceCtaTarget
 ): ForcedGuidanceArtifactIntent {
   if (target === 'incident-report') {
-    return {
-      kind: 'incident-report',
-      reason: 'incident_report_action_pattern',
-      ruleVersion: ARTIFACT_INTENT_RULE_VERSION,
-    };
+    return withArtifactIntentRuleVersion(
+      {
+        kind: 'incident-report',
+        reason: 'incident_report_action_pattern',
+      },
+      'frontend'
+    ) as ForcedGuidanceArtifactIntent;
   }
 
-  return {
-    kind: 'monitoring-analysis',
-    reason: 'monitoring_action_pattern',
-    ruleVersion: ARTIFACT_INTENT_RULE_VERSION,
-  };
+  return withArtifactIntentRuleVersion(
+    {
+      kind: 'monitoring-analysis',
+      reason: 'monitoring_action_pattern',
+    },
+    'frontend'
+  ) as ForcedGuidanceArtifactIntent;
 }
 
 export function createForcedGuidanceArtifactQuery(
@@ -185,30 +189,22 @@ export async function tryHandleChatArtifactRequest({
   resetRequestState: ResetRequestState;
   artifactIntentInFlightRef: MutableRefObject<boolean>;
 }): Promise<boolean> {
-  const regexIntent = classifyChatArtifactIntent(query);
-  let artifactIntent = regexIntent;
+  const intentAbortController = new AbortController();
+  artifactIntentInFlightRef.current = true;
+  runtime.artifactAbortControllerRef.current = intentAbortController;
 
-  if (regexIntent.kind === 'none' && shouldUseLLMChatArtifactIntent(query)) {
-    const intentAbortController = new AbortController();
-    artifactIntentInFlightRef.current = true;
-    runtime.artifactAbortControllerRef.current = intentAbortController;
-    try {
-      artifactIntent = await fetchLLMChatArtifactIntent(
-        query,
-        intentAbortController.signal
-      );
-    } finally {
-      artifactIntentInFlightRef.current = false;
-      if (
-        runtime.artifactAbortControllerRef.current === intentAbortController
-      ) {
-        runtime.artifactAbortControllerRef.current = null;
-      }
-    }
+  const artifactIntent = await fetchBffChatArtifactIntent(
+    query,
+    intentAbortController.signal
+  );
 
-    if (intentAbortController.signal.aborted) {
-      return true;
-    }
+  artifactIntentInFlightRef.current = false;
+  if (runtime.artifactAbortControllerRef.current === intentAbortController) {
+    runtime.artifactAbortControllerRef.current = null;
+  }
+
+  if (intentAbortController.signal.aborted) {
+    return true;
   }
 
   if (!isExecutableChatArtifactIntent(artifactIntent)) {
@@ -233,6 +229,71 @@ export async function tryHandleChatArtifactRequest({
   return true;
 }
 
+async function fetchBffChatArtifactIntent(
+  query: string,
+  signal?: AbortSignal
+): Promise<ChatArtifactIntent> {
+  try {
+    const response = await fetch('/api/ai/artifact-intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal,
+      body: JSON.stringify({ query }),
+    });
+    if (!response.ok) {
+      return withArtifactIntentRuleVersion({ kind: 'none' }, 'bff');
+    }
+    return normalizeChatArtifactIntent(await response.json(), 'bff');
+  } catch {
+    return withArtifactIntentRuleVersion({ kind: 'none' }, 'bff');
+  }
+}
+
+export function tryHandlePostDecisionChatArtifactResult({
+  result,
+  query,
+  artifactIntentInFlightRef,
+  ...runtime
+}: ArtifactGenerationRuntimeContext & {
+  result: AsyncQueryResult;
+  query: string;
+  artifactIntentInFlightRef: MutableRefObject<boolean>;
+}): boolean {
+  const normalizedQuery = query.trim();
+  if (!normalizedQuery) return false;
+  if (
+    runtime.artifactInFlightRef.current ||
+    artifactIntentInFlightRef.current
+  ) {
+    return false;
+  }
+
+  const artifactIntent = resolvePostDecisionArtifactIntent({
+    result,
+    query: normalizedQuery,
+  });
+  if (!artifactIntent) return false;
+
+  startChatArtifactGeneration({
+    artifactIntent,
+    query: normalizedQuery,
+    sessionId: runtime.sessionId,
+    queryAsOfDataSlot: runtime.queryAsOfDataSlot,
+    messages: withoutTrailingMatchingUserMessage(
+      runtime.messagesRef.current,
+      normalizedQuery
+    ),
+    messagesRef: runtime.messagesRef,
+    setMessages: runtime.setMessages,
+    setError: runtime.setError,
+    setArtifactIsLoading: runtime.setArtifactIsLoading,
+    artifactRequestIdRef: runtime.artifactRequestIdRef,
+    artifactAbortControllerRef: runtime.artifactAbortControllerRef,
+    artifactInFlightRef: runtime.artifactInFlightRef,
+  });
+  return true;
+}
+
 function isExecutableChatArtifactIntent(
   intent: ChatArtifactIntent
 ): intent is ExecutableChatArtifactIntent {
@@ -243,4 +304,30 @@ function isExecutableChatArtifactIntent(
     intent.kind === 'server-snapshot' ||
     intent.kind === 'ops-procedure'
   );
+}
+
+function withoutTrailingMatchingUserMessage(
+  messages: UIMessage[],
+  query: string
+): UIMessage[] {
+  const lastMessage = messages.at(-1);
+  if (lastMessage?.role !== 'user') return messages;
+
+  return readMessageText(lastMessage).trim() === query
+    ? messages.slice(0, -1)
+    : messages;
+}
+
+function readMessageText(message: UIMessage): string {
+  const content = (message as { content?: unknown }).content;
+  if (typeof content === 'string') return content;
+  if (!Array.isArray(message.parts)) return '';
+
+  return message.parts
+    .map((part) =>
+      part && typeof part === 'object' && 'text' in part
+        ? String(part.text ?? '')
+        : ''
+    )
+    .join('');
 }

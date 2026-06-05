@@ -1,5 +1,5 @@
 import type { JobDataSlot } from '@/types/ai-jobs';
-import type { ChatArtifactIntent } from './chat-artifact-intent';
+import type { ChatArtifactIntent } from './artifact-intent-contract';
 import type { ChatArtifact } from './types';
 
 export type ArtifactExecutorIntent = Exclude<

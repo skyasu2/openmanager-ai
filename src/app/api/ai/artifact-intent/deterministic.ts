@@ -1,43 +1,9 @@
 import { resolveRegisteredServerId } from '@/config/server-registry';
-
-export const ARTIFACT_INTENT_RULE_VERSION = '2026-05-15-v1';
-
-type ChatArtifactIntentVersion = {
-  ruleVersion: typeof ARTIFACT_INTENT_RULE_VERSION;
-};
-
-type ChatArtifactIntentWithoutVersion =
-  | { kind: 'none' }
-  | { kind: 'incident-report'; reason: ChatArtifactIntentReason }
-  | { kind: 'monitoring-analysis'; reason: ChatArtifactIntentReason }
-  | {
-      kind: 'server-monitoring-analysis';
-      serverId: string;
-      serverName?: string;
-      reason: ChatArtifactIntentReason;
-    }
-  | { kind: 'server-snapshot'; reason: ChatArtifactIntentReason }
-  | {
-      kind: 'ops-procedure';
-      procedureType: 'runbook' | 'alert-rule' | 'script';
-      reason: ChatArtifactIntentReason;
-    };
-
-export type ChatArtifactIntent = ChatArtifactIntentWithoutVersion &
-  ChatArtifactIntentVersion;
-
-export type ChatArtifactIntentReason =
-  | 'incident_report_action_pattern'
-  | 'incident_report_implicit_keyword'
-  | 'monitoring_action_pattern'
-  | 'monitoring_implicit_artifact_keyword'
-  | 'ops_procedure_action_pattern'
-  | 'ops_procedure_followup_edit_pattern'
-  | 'server_monitoring_action_pattern'
-  | 'server_snapshot_action_pattern'
-  | 'server_snapshot_implicit_artifact_keyword'
-  | 'llm_artifact_classification'
-  | 'llm_unavailable';
+import {
+  type ChatArtifactIntent,
+  type ChatArtifactIntentWithoutVersion,
+  withArtifactIntentRuleVersion,
+} from '@/lib/ai/chat-artifacts/artifact-intent-contract';
 
 const ARTIFACT_NEGATION_PATTERN =
   /(말고|아니고|없이|나중에|필요\s*없|하지\s*마|하지\s*말|제외)/i;
@@ -85,7 +51,7 @@ const LLM_ARTIFACT_SHAPE_PATTERN =
 function withRuleVersion(
   intent: ChatArtifactIntentWithoutVersion
 ): ChatArtifactIntent {
-  return { ...intent, ruleVersion: ARTIFACT_INTENT_RULE_VERSION };
+  return withArtifactIntentRuleVersion(intent, 'bff');
 }
 
 function isImplicitKeywordRequest(query: string): boolean {
@@ -294,35 +260,4 @@ export function shouldUseLLMChatArtifactIntent(query: string): boolean {
     LLM_ARTIFACT_SHAPE_PATTERN.test(normalized) &&
     isImplicitKeywordRequest(normalized)
   );
-}
-
-export async function fetchLLMChatArtifactIntent(
-  query: string,
-  signal?: AbortSignal
-): Promise<ChatArtifactIntent> {
-  try {
-    const response = await fetch('/api/ai/artifact-intent', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal,
-      body: JSON.stringify({ query }),
-    });
-    if (!response.ok) return withRuleVersion({ kind: 'none' });
-    const data = (await response.json()) as { kind?: string };
-    if (data.kind === 'incident-report') {
-      return withRuleVersion({
-        kind: 'incident-report',
-        reason: 'llm_artifact_classification',
-      });
-    }
-    if (data.kind === 'monitoring-analysis') {
-      return withRuleVersion({
-        kind: 'monitoring-analysis',
-        reason: 'llm_artifact_classification',
-      });
-    }
-    return withRuleVersion({ kind: 'none' });
-  } catch {
-    return withRuleVersion({ kind: 'none' });
-  }
 }

@@ -5,10 +5,14 @@ import {
 import { generateText, Output } from 'ai';
 import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { shouldUseLLMChatArtifactIntent } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+import { withArtifactIntentRuleVersion } from '@/lib/ai/chat-artifacts/artifact-intent-contract';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import {
+  classifyChatArtifactIntent,
+  shouldUseLLMChatArtifactIntent,
+} from './deterministic';
 
 export const maxDuration = 5;
 
@@ -58,6 +62,12 @@ async function handler(request: NextRequest): Promise<NextResponse> {
   if (!query) {
     return NextResponse.json({ kind: 'none', reason: 'empty_query' });
   }
+
+  const deterministicIntent = classifyChatArtifactIntent(query);
+  if (deterministicIntent.kind !== 'none') {
+    return NextResponse.json(deterministicIntent);
+  }
+
   if (!shouldUseLLMChatArtifactIntent(query)) {
     return NextResponse.json({ kind: 'none', reason: 'local_gate_none' });
   }
@@ -100,10 +110,15 @@ async function handler(request: NextRequest): Promise<NextResponse> {
       output.kind === 'incident-report' ||
       output.kind === 'monitoring-analysis'
     ) {
-      return NextResponse.json({
-        kind: output.kind,
-        reason: 'llm_artifact_classification',
-      });
+      return NextResponse.json(
+        withArtifactIntentRuleVersion(
+          {
+            kind: output.kind,
+            reason: 'llm_artifact_classification',
+          },
+          'bff'
+        )
+      );
     }
     return NextResponse.json({ kind: 'none', reason: 'llm_none' });
   } catch (error) {

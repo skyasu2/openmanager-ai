@@ -70,13 +70,6 @@ export function SystemStartSection({
             </span>
           )}
         </div>
-
-        {/* 손가락 포인터 */}
-        {!systemStartCountdown && (
-          <div className="flex justify-center">
-            <span className="finger-pointer-primary">👆</span>
-          </div>
-        )}
       </div>
 
       {/* AI 어시스턴트 안내 */}
@@ -90,19 +83,22 @@ export function SystemStartSection({
               />
             )}
             <span className="font-semibold">
-              시작하면 이런 질문을 바로 할 수 있습니다
+              시작 후 사용할 수 있는 예시 질문
             </span>
           </div>
-          <div className="grid gap-2 text-left sm:grid-cols-2">
+          <ul
+            className="grid gap-2 text-left sm:grid-cols-2"
+            aria-label="시스템 시작 후 사용할 수 있는 예시 질문"
+          >
             {START_EXAMPLES.map((example) => (
-              <div
+              <li
                 key={example}
-                className="rounded-2xl border border-white/[0.16] bg-white/[0.085] px-3 py-3 text-sm leading-relaxed text-white/[0.92]"
+                className="cursor-default select-text rounded-2xl border border-white/[0.16] bg-white/[0.085] px-3 py-3 text-sm leading-relaxed text-white/[0.92]"
               >
                 <span className="text-cyan-300">Q.</span> {example}
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </div>
     </div>
