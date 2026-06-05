@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-06-05 KST (Frontend UI/UX wiring polish 완료)
+**Last Updated**: 2026-06-05 KST (Routing Phase 4B/C 착수)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -15,7 +15,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| _None_ | - | 현재 진행 중인 작업 없음. |
+| 라우팅 패턴 Phase 4B/C — artifact intent BFF 완전 이관 | Medium | `MISTRAL_SCALE_PLAN_CONFIRMED`에 의존하지 않는 deterministic BFF classifier로 이관. 계획서: [`refactor-routing-patterns.md`](refactor-routing-patterns.md). |
 
 ---
 
@@ -31,7 +31,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| 라우팅 패턴 Phase 4B/C — artifact intent BFF 완전 이관 | Low | Phase 4A 완료 후 남은 3종 분류 이관, `MISTRAL_SCALE_PLAN_CONFIRMED`/대체 provider 결정, `/api/ai/artifact-intent` p95 확인이 필요. 계획서: [`refactor-routing-patterns.md`](refactor-routing-patterns.md). |
+| _None_ | - | 현재 보류 중인 작업 없음. |
 
 ---
 
