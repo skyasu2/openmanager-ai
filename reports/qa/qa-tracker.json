@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-05T12:41:09.056Z"
+    "updatedAt": "2026-06-05T13:08:33.704Z"
   },
   "sequence": {
-    "nextRunNumber": 660
+    "nextRunNumber": 661
   },
   "summary": {
-    "totalRecordedRuns": 657,
-    "totalRuns": 513,
+    "totalRecordedRuns": 658,
+    "totalRuns": 514,
     "excludedRuns": 144,
-    "totalChecks": 4550,
-    "totalPassed": 4349,
+    "totalChecks": 4555,
+    "totalPassed": 4354,
     "totalFailed": 159,
     "completionRate": 100,
-    "completedItems": 758,
+    "completedItems": 760,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 30,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260605-0659",
-    "lastRecordedAt": "2026-06-05T12:41:09.056Z",
-    "latestRecordedRunId": "QA-20260605-0659",
-    "latestRecordedAt": "2026-06-05T12:41:09.056Z"
+    "lastRunId": "QA-20260605-0660",
+    "lastRecordedAt": "2026-06-05T13:08:33.704Z",
+    "latestRecordedRunId": "QA-20260605-0660",
+    "latestRecordedAt": "2026-06-05T13:08:33.704Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18644,6 +18644,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-06-05T12:41:09.056Z"
+    },
+    "artifact-bff-llm-분류기-production-활성화-ministral-3b-latest-llm_artifact_classification-경로-정상-작동-v8.12.94": {
+      "id": "artifact-bff-llm-분류기-production-활성화-ministral-3b-latest-llm_artifact_classification-경로-정상-작동-v8.12.94",
+      "title": "Artifact BFF LLM 분류기 production 활성화 — ministral-3b-latest llm_artifact_classification 경로 정상 작동 (v8.12.94)",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260605-0660",
+      "firstSeenAt": "2026-06-05T13:08:33.704Z",
+      "lastSeenRunId": "QA-20260605-0660",
+      "lastSeenAt": "2026-06-05T13:08:33.704Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-05T13:08:33.704Z"
+    },
+    "langfuse-samplerate-100-적용-후-eventcount-기록-시작-확인-v8.12.93": {
+      "id": "langfuse-samplerate-100-적용-후-eventcount-기록-시작-확인-v8.12.93",
+      "title": "Langfuse sampleRate 100% 적용 후 eventCount 기록 시작 확인 (v8.12.93)",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260605-0660",
+      "firstSeenAt": "2026-06-05T13:08:33.704Z",
+      "lastSeenRunId": "QA-20260605-0660",
+      "lastSeenAt": "2026-06-05T13:08:33.704Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-05T13:08:33.704Z"
     }
   },
   "runs": [
@@ -39689,6 +39737,62 @@
       "expertCount": 3,
       "expertNeedsImprovementCount": 0,
       "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260605-0660",
+      "recordedAt": "2026-06-05T13:08:33.704Z",
+      "recordedAtKst": "2026-06-05 22:08:33 KST",
+      "title": "Vercel Production Playwright MCP - Artifact BFF LLM 분류기 활성화 검증 (v8.12.94)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260605-0660.json",
+      "environment": {
+        "target": "",
+        "url": "",
+        "frontend": "",
+        "backend": "",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "16eead09d5138db4b745adbbcd3f4344a825964e"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel production v8.12.94 배포 확인 (commit 63ca79bc0f, pipeline 2579250784 success)",
+        "MISTRAL_SCALE_PLAN_CONFIRMED=true Vercel env 정상 반영 확인 (개행 문자 이슈 수정 후 재설정)",
+        "POST /api/ai/artifact-intent — '모니터링 결과 분석 부탁해' → kind:monitoring-analysis, reason:llm_artifact_classification, decidedBy:bff (2226ms) — LLM 경로 활성 확인",
+        "POST /api/ai/artifact-intent — '장애 보고서 만들어줘' → kind:incident-report, reason:incident_report_action_pattern, decidedBy:bff — 결정론적 경로 정상 유지",
+        "POST /api/ai/artifact-intent — 'CPU 높은 서버 알려줘' → kind:none, reason:local_gate_none — 일반 질문 정상 필터",
+        "이전 production_llm_gate_disabled 반환 케이스가 LLM 분류 경로로 정상 전환됨",
+        "ministral-3b-latest 3초 타임아웃, maxDuration 5s 내 정상 응답 (2.2초)"
+      ],
+      "skippedSurfaces": [
+        "AI Chat 전체 대화 흐름 — 분류기 라우트만 대상, AI 응답 내용 변경 없음",
+        "Reporter/Analyst 탭 — 변경 없음"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
