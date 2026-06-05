@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-05 01:20:31 KST
+> Generated at: 2026-06-05 09:05:25 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 649 |
+| Total Recorded Runs | 650 |
 | Total Runs (Counted) | 508 |
-| Non-counted Runs | 141 |
+| Non-counted Runs | 142 |
 | Total Checks | 4470 |
 | Passed | 4269 |
 | Failed | 159 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260605-0651 (2026-06-04T16:20:31.104Z) |
-| Latest Recorded Run | QA-20260605-0651 (2026-06-04T16:20:31.104Z) |
+| Latest Recorded Run | QA-20260605-0652 (2026-06-05T00:05:25.119Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260605-0651 (2026-06-04T16:20:31.104Z)
+Latest run: QA-20260605-0652 (2026-06-05T00:05:25.119Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -46,12 +46,11 @@ Latest run: QA-20260605-0651 (2026-06-04T16:20:31.104Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current Vercel billing period reviewed after v8.12.90 production deploy; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827. |
-| gcp-cloud-run | cli | checked | normal | Cloud Run ai-engine remained unchanged on ai-engine-00592-47p with cpu=1, memory=512Mi, maxScale=1, concurrency=16, and 100% traffic. |
+| vercel | cli | checked | normal | Current Vercel billing period reviewed after the v8.12.90 post-token-recovery Playwright MCP rerun; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-03T16:20:31.104Z -> 2026-06-04T16:20:31.104Z (24h)
+- Window: 2026-06-04T00:05:25.119Z -> 2026-06-05T00:05:25.119Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 4
 
@@ -63,7 +62,7 @@ Latest run: QA-20260605-0651 (2026-06-04T16:20:31.104Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-03T16:20:31.104Z -> 2026-06-04T16:20:31.104Z (24h)
+- Window: 2026-06-04T00:05:25.119Z -> 2026-06-05T00:05:25.119Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -75,18 +74,17 @@ Latest run: QA-20260605-0651 (2026-06-04T16:20:31.104Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
+- Release-Facing: no
+- Counts Toward Summary: no
 - Deployment: dpl_J1PEim6zfHjgGUoB9NcYqgEH2hVj / SHA 36b29a5c
-- Coverage Packs: core-routes-smoke, dashboard-core, observability-pack
-- Covered Surfaces: v8.12.90 release commit and tag were pushed to GitLab canonical main, Vercel production deployment dpl_J1PEim6zfHjgGUoB9NcYqgEH2hVj was Ready for alias https://openmanager-ai.vercel.app, Production /api/version returned v8.12.90, release tag v8.12.90, commit 36b29a5ca3d7e2505312cee873c6c7653c00e9c6, and GitLab pipeline 2577188591, Production smoke passed for GET /, GET /login, and GET /api/version with expected v8.12.90 commit metadata, Playwright MCP pre-auth landing check cleared cookies/storage before navigation and rendered the logged-out landing state, Playwright MCP pre-auth landing console messages were 0, Playwright MCP pre-auth landing observed no /api/system requests, Playwright MCP observed the new public HEAD /api/health?service=ai&soft=true preload path instead of the auth-protected /api/system path, Direct HEAD /api/health?service=ai&soft=true returned HTTP 200, Vercel usage check passed with effective 1.9358 USD and billed 0.0000 USD, Cloud Run ai-engine was unchanged on ai-engine-00592-47p with cpu=1, memory=512Mi, maxScale=1, and 100% traffic
-- Skipped Surfaces: Full broad route matrix was not rerun because the release fixed a targeted pre-auth landing preload path, Guest login and AI chat were not repeated because v8.12.90 did not change auth login, dashboard telemetry, AI routing, or AI Engine behavior, AI Engine post-deploy QA was not repeated because deploy_ai_engine was skipped for no cloud-run/ai-engine changes and /api/health confirmed the existing ai-engine version remained healthy
+- Coverage Packs: core-routes-smoke, observability-pack
+- Covered Surfaces: GitLab API token recovery was verified separately before this rerun; Vercel production QA could proceed without GitLab API 401 noise, Vercel production deployment dpl_J1PEim6zfHjgGUoB9NcYqgEH2hVj remained Ready for alias https://openmanager-ai.vercel.app, Production /api/version returned v8.12.90, release tag v8.12.90, commit 36b29a5ca3d7e2505312cee873c6c7653c00e9c6, and GitLab pipeline 2577188591, Playwright MCP pre-auth landing rendered the logged-out landing state with v8.12.90 visible, Playwright MCP pre-auth landing console warning/error count was 0, Playwright MCP pre-auth landing observed 0 /api/system requests, Playwright MCP observed the public /api/health?service=ai&soft=true preload path instead of the auth-protected /api/system path, Playwright MCP route checks passed for /login, /main redirect to /, /privacy, and a custom 404 route, Playwright MCP guest login modal opened from /login with no console warning/error, Soft AI health initially returned a recoverable Cloud Run cold-start timeout and then recovered to ok/healthy with ai-engine version 8.12.89, Vercel usage check remained normal with effective 1.9358 USD and billed 0.0000 USD
+- Skipped Surfaces: This was a verification-only rerun on the same v8.12.90 deployment, so it is not counted toward aggregate QA totals, Dashboard guest login was not completed because the Playwright MCP execution sandbox cannot read .env.local/process env and the guest PIN was not passed into the MCP session, AI chat and live conversational QA were not rerun because the task did not change AI routing, prompt behavior, or Cloud Run AI Engine code, Full broad route matrix was not rerun because QA-20260605-0651 already covered the targeted production fix and this run was requested as a post-token-recovery recheck
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Cloud Run service URL | [Cloud Run service URL](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
 | general | GitLab tag pipeline v8.12.90 | [GitLab tag pipeline v8.12.90](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2577188591) | - |
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
 | vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-5dlwvbbv4-skyasus-projects.vercel.app/) | - |
@@ -95,7 +93,7 @@ Latest run: QA-20260605-0651 (2026-06-04T16:20:31.104Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.12.90 pre-auth system preload production evidence | `reports/qa/evidence/qa-20260605-v81290-preauth-system-preload.md` | - |
+| playwright-report | v8.12.90 Vercel Playwright MCP recheck after GitLab token recovery | `reports/qa/evidence/qa-20260605-v81290-vercel-playwright-token-recovery-recheck.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -200,6 +198,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260605-0652 | 2026-06-05T00:05:25.119Z | targeted | no | no | Vercel Production Playwright MCP Recheck - v8.12.90 After GitLab Token Recovery | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260605-0651 | 2026-06-04T16:20:31.104Z | targeted | yes | yes | Vercel Production Targeted QA - v8.12.90 Pre-Auth System Preload Fix | 11 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260605-0650 | 2026-06-04T15:37:32.012Z | targeted | yes | yes | Vercel Production Targeted QA - Free Tier and Two-Week Direction Review | 12 | 2 | 0 | 0 | 1 | 0 |
 | QA-20260605-0649 | 2026-06-04T15:08:53.658Z | targeted | yes | yes | Cloud Run Production Targeted QA - v8.12.89 Off-Domain Warn Metadata | 10 | 1 | 0 | 0 | 0 | 0 |
@@ -219,4 +218,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260528-0635 | 2026-05-28T09:20:18.560Z | targeted | no | no | Cloud Run production residual recheck - v8.12.72 P20 trend-rate ranking | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260528-0634 | 2026-05-28T09:01:00.708Z | targeted | yes | yes | Vercel production stream QA - v8.12.72 Q-NEW72 metric risk compare | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260528-0633 | 2026-05-28T08:02:28.899Z | smoke | yes | no | GitLab production release smoke - v8.12.71 Q-NEW72 metric risk compare | 10 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260528-0632 | 2026-05-28T07:05:27.882Z | smoke | yes | no | GitLab production release smoke - v8.12.70 P23 metric ranking fix | 10 | 0 | 0 | 0 | 0 | 0 |

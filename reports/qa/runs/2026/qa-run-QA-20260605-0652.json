@@ -1,0 +1,122 @@
+{
+  "runId": "QA-20260605-0652",
+  "recordedAt": "2026-06-05T00:05:25.119Z",
+  "recordedAtKst": "2026-06-05 09:05:25 KST",
+  "runTitle": "Vercel Production Playwright MCP Recheck - v8.12.90 After GitLab Token Recovery",
+  "owner": "codex",
+  "source": "vercel-cli+playwright-mcp+usage-check",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_J1PEim6zfHjgGUoB9NcYqgEH2hVj",
+    "deploymentUrl": "https://openmanager-5dlwvbbv4-skyasus-projects.vercel.app",
+    "commitSha": "36b29a5ca3d7e2505312cee873c6c7653c00e9c6"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "GitLab API token recovery was verified separately before this rerun; Vercel production QA could proceed without GitLab API 401 noise",
+    "Vercel production deployment dpl_J1PEim6zfHjgGUoB9NcYqgEH2hVj remained Ready for alias https://openmanager-ai.vercel.app",
+    "Production /api/version returned v8.12.90, release tag v8.12.90, commit 36b29a5ca3d7e2505312cee873c6c7653c00e9c6, and GitLab pipeline 2577188591",
+    "Playwright MCP pre-auth landing rendered the logged-out landing state with v8.12.90 visible",
+    "Playwright MCP pre-auth landing console warning/error count was 0",
+    "Playwright MCP pre-auth landing observed 0 /api/system requests",
+    "Playwright MCP observed the public /api/health?service=ai&soft=true preload path instead of the auth-protected /api/system path",
+    "Playwright MCP route checks passed for /login, /main redirect to /, /privacy, and a custom 404 route",
+    "Playwright MCP guest login modal opened from /login with no console warning/error",
+    "Soft AI health initially returned a recoverable Cloud Run cold-start timeout and then recovered to ok/healthy with ai-engine version 8.12.89",
+    "Vercel usage check remained normal with effective 1.9358 USD and billed 0.0000 USD"
+  ],
+  "skippedSurfaces": [
+    "This was a verification-only rerun on the same v8.12.90 deployment, so it is not counted toward aggregate QA totals",
+    "Dashboard guest login was not completed because the Playwright MCP execution sandbox cannot read .env.local/process env and the guest PIN was not passed into the MCP session",
+    "AI chat and live conversational QA were not rerun because the task did not change AI routing, prompt behavior, or Cloud Run AI Engine code",
+    "Full broad route matrix was not rerun because QA-20260605-0651 already covered the targeted production fix and this run was requested as a post-token-recovery recheck"
+  ],
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The Vercel deployment remained Ready, version metadata matched v8.12.90, GitLab token recovery removed API verification noise, and Vercel usage stayed billed at 0.0000 USD.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The requested Playwright MCP rerun covered the pre-auth console/network regression, core route smoke, login modal availability, and health recovery without duplicating aggregate release QA totals.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The soft health endpoint exposed a recoverable Cloud Run cold-start timeout and then returned ok/healthy on retry, matching the expected free-tier cold-start behavior.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-05T09:03:51+09:00",
+      "summary": "Current Vercel billing period reviewed after the v8.12.90 post-token-recovery Playwright MCP rerun; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.12.90 Vercel Playwright MCP recheck after GitLab token recovery",
+      "path": "reports/qa/evidence/qa-20260605-v81290-vercel-playwright-token-recovery-recheck.md"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "The intentional 404 route emitted a browser document 404 console error; it is not counted as a production console regression for the landing/login/privacy route checks.",
+    "The first /api/health?service=ai&soft=true call returned a recoverable cloud_run_health_timeout and the retry returned ok/healthy with ai-engine 8.12.89.",
+    "The Playwright MCP execution sandbox did not expose Node fs/process access, so the guest PIN was not read from .env.local for dashboard login. The guest PIN modal itself opened cleanly."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline v8.12.90",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2577188591"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-5dlwvbbv4-skyasus-projects.vercel.app/"
+    }
+  ]
+}
