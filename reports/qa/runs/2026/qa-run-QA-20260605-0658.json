@@ -1,0 +1,115 @@
+{
+  "runId": "QA-20260605-0658",
+  "recordedAt": "2026-06-05T11:03:39.705Z",
+  "recordedAtKst": "2026-06-05 20:03:39 KST",
+  "runTitle": "Cloud Run Observability Check - Langfuse 100% Sampling Baseline Start (v8.12.92)",
+  "owner": "codex",
+  "source": "cloud-run-monitoring",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "ai-engine-00593-4kj",
+    "deploymentUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "commitSha": "9b971f98fa83f778ab175ce25d8e05d8fc1fcef9"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Cloud Run ai-engine service URL resolves to https://ai-engine-jdhrhws7ia-an.a.run.app with latest ready revision ai-engine-00593-4kj",
+    "Cloud Run live environment includes LANGFUSE_SAMPLE_RATE=1.0",
+    "Cloud Run /health returns status ok with langfuse=true, cloudRunApi=true, and all primary provider flags true",
+    "Authenticated /monitoring returns status ok and Langfuse operational state: isReady=true, isOperational=true, clientInitialized=true, hasKeysConfigured=true, isDisabled=false, sampleRate=100%",
+    "Authenticated /monitoring reports Langfuse monthKey 2026-06 with eventCount=2 and limit=50000",
+    "Authenticated /monitoring/traces?limit=20 returns status ok with 15 visible traces from 20 fetched Langfuse traces",
+    "Latest visible Langfuse trace 69fb0a8f is sampled=true, success=true, Advisor Agent, provider=mistral, model=mistral-small-latest, durationMs=5231, ttfbMs=5132",
+    "Initial trace baseline from the returned sample: 15 duration samples, average duration 3607ms, p95 duration 10366ms, 10 TTFB samples, average TTFB 2130ms, p95 TTFB 5533ms"
+  ],
+  "skippedSurfaces": [
+    "No new live AI prompt was submitted; this run only verified that the newly enabled Langfuse 100% sampling path is producing and exposing traces",
+    "No Vercel UI Playwright walk-through was run because the scope is Cloud Run observability, not frontend behavior",
+    "No artifact-intent LLM fallback activation was attempted; production remains gated until trace evidence shows deterministic routing misses that justify the cost tradeoff"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Latest Langfuse visible trace",
+      "agent": "Advisor Agent",
+      "provider": "mistral",
+      "model": "mistral-small-latest",
+      "route": "cloud-run /api/ai/supervisor",
+      "source": "Cloud Run /monitoring/traces metadata",
+      "latencyMs": 5231,
+      "ttfbMs": 5132,
+      "processingTimeMs": 5231
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Langfuse runtime is operational at 100% sampling, authenticated monitoring endpoints return trace visibility, and the first post-change sample includes latency/provider/routing metadata needed for baseline tracking.",
+      "nextAction": "Collect 24-72h of organic production traces before deciding whether to enable the artifact-intent Mistral fallback gate."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run health is ok, live revision matches the manual observability change, and runtime stays within the existing free-tier limits.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-05T20:02:45+09:00",
+      "summary": "Cloud Run live revision ai-engine-00593-4kj remains within free-tier guardrails and exposes LANGFUSE_SAMPLE_RATE=1.0. Langfuse monitoring reports eventCount=2 of limit=50000 for monthKey 2026-06.",
+      "evidence": "gcloud run services describe ai-engine --region asia-northeast1; authenticated Cloud Run /monitoring",
+      "url": ""
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This is a non-release, non-counting observability baseline run. It should not move the public validation baseline.",
+    "The visible trace sample still includes historical traces from before 2026-06-05; only one visible trace in the returned sample is from 2026-06-05 after the 100% sampling change. Treat the aggregate latency rollup as a baseline seed, not a statistically stable distribution.",
+    "Artifact-intent LLM fallback remains intentionally gated in Vercel production because MISTRAL_SCALE_PLAN_CONFIRMED is not configured. Current next action is trace collection, not activation."
+  ],
+  "links": [
+    {
+      "type": "langfuse-trace",
+      "label": "Latest visible Langfuse trace 69fb0a8f",
+      "url": "https://us.cloud.langfuse.com/project/cmjk0fm8u045gad07tf8xaptk/traces/69fb0a8fbacd156a958e38a49b72a983"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run Langfuse traces endpoint",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/monitoring/traces?limit=20"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run monitoring endpoint",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/monitoring"
+    }
+  ]
+}

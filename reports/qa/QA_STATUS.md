@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-05 15:56:31 KST
+> Generated at: 2026-06-05 20:03:40 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 655 |
+| Total Recorded Runs | 656 |
 | Total Runs (Counted) | 512 |
-| Non-counted Runs | 143 |
+| Non-counted Runs | 144 |
 | Total Checks | 4530 |
 | Passed | 4329 |
 | Failed | 159 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260605-0657 (2026-06-05T06:56:30.699Z) |
-| Latest Recorded Run | QA-20260605-0657 (2026-06-05T06:56:30.699Z) |
+| Latest Recorded Run | QA-20260605-0658 (2026-06-05T11:03:39.705Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,36 +34,35 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260605-0657 (2026-06-05T06:56:30.699Z)
+Latest run: QA-20260605-0658 (2026-06-05T11:03:39.705Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | Collect 24-72h of organic production traces before deciding whether to enable the artifact-intent Mistral fallback gate. |
 | DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period 2026-06-01T07:00:00.000Z..2026-06-05T06:52:06.423Z; effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827. No unexpected billed usage observed after v8.12.92 release QA. |
+| cloud-run | cli | checked | normal | Cloud Run live revision ai-engine-00593-4kj remains within free-tier guardrails and exposes LANGFUSE_SAMPLE_RATE=1.0. Langfuse monitoring reports eventCount=2 of limit=50000 for monthKey 2026-06. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-04T06:56:30.699Z -> 2026-06-05T06:56:30.699Z (24h)
-- Runs with observations: 4 recorded / 4 counted
-- Samples: 5
+- Window: 2026-06-04T11:03:39.705Z -> 2026-06-05T11:03:39.705Z (24h)
+- Runs with observations: 5 recorded / 4 counted
+- Samples: 6
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Advisor Agent | mistral | 1 | 8205ms | 8205ms | - | - | 8205ms | 8205ms | QA-20260604-0648 |
+| Advisor Agent | mistral | 2 | 6718ms | 8205ms | 5132ms | 5132ms | 6718ms | 8205ms | QA-20260605-0658 |
 | Supervisor | groq | 2 | 1238ms | 1451ms | - | - | 1238ms | 1451ms | QA-20260605-0649 |
 | Supervisor | unknown | 1 | 1213ms | 1213ms | - | - | - | - | QA-20260605-0650 |
 | Analyst Agent | mistral | 1 | 0ms | 0ms | 747ms | 747ms | - | - | QA-20260605-0653 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-04T06:56:30.699Z -> 2026-06-05T06:56:30.699Z (24h)
+- Window: 2026-06-04T11:03:39.705Z -> 2026-06-05T11:03:39.705Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -75,25 +74,26 @@ Latest run: QA-20260605-0657 (2026-06-05T06:56:30.699Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_BrE1dBffAFfHfrKEuqDdWXD1qf7t / SHA 105f9b17
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: GitLab release tag pipeline 2578503432 completed successfully for v8.12.92 at commit 105f9b17997e18500bdf80fac38fba0310d4d367, release smoke verified /, /login, and /api/version on production with expected version 8.12.92, Vercel production deployment dpl_BrE1dBffAFfHfrKEuqDdWXD1qf7t is Ready and aliases https://openmanager-ai.vercel.app, production /api/version returns version 8.12.92, frontend 8.12.92, releaseTag v8.12.92, commit 105f9b17997e18500bdf80fac38fba0310d4d367, and GitLab pipeline 2578503432, landing page renders OpenManager AI v8.12.92, guest session state, and dashboard CTA, /dashboard renders 18 servers, 17 online, 1 warning, 0 risk, 0 offline, OTel slot 94/143 at 15:40 KST, and resource summary CPU 30 / MEM 47 / Disk 37, AI sidebar opens from dashboard and shows AI Chat, automatic report, anomaly tabs, AI Engine Ready, and dashboard-consistent 18-server summary, /api/ai/artifact-intent classifies '서버 상태 스냅샷' as server-snapshot with reason server_snapshot_implicit_artifact_keyword, ruleVersion 2026-05-15-v1, decidedBy bff, /api/ai/artifact-intent classifies 'api-was-dc1-01 이상감지 분석해줘' as server-monitoring-analysis with serverId api-was-dc1-01, reason server_monitoring_action_pattern, decidedBy bff, /api/ai/artifact-intent classifies 'CPU 임계치 90% 넘으면 슬랙 알림 규칙 만들어줘' as ops-procedure with procedureType alert-rule, reason ops_procedure_action_pattern, decidedBy bff, /api/ai/artifact-intent classifies '장애 리포트 만들어줘' as incident-report with reason incident_report_action_pattern, decidedBy bff, /api/ai/artifact-intent returns kind none for normal conversational query 'CPU 높은 서버 알려줘' with reason local_gate_none, /api/ai/artifact-intent returns kind none for capacity forecast conversational query with reason local_gate_none, AI sidebar UI generated the server status snapshot artifact through the BFF intent path: total 18, warning 1, risk 0, average CPU 29.6%, top servers, and MD/JSON download buttons, standard five-question conversational AI QA passed: overall summary, web-server-01 alias detail, 24h peak load time, immediate action query, and network-problem follow-up, critical product navigation and BFF API requests succeeded during Playwright MCP walkthrough, intent API repeated probe intentionally hit the aiAnalysis 10/min rate limiter; subsequent reset check returned 200, so the 429 entries are treated as non-blocking guard behavior, Vercel usage check after QA remains normal with effective 1.9358 USD, billed 0.0000 USD, chargeCount 1827
-- Skipped Surfaces: OAuth provider login was skipped because guest session covers the release-facing access path for this targeted production artifact routing QA, Mobile viewport regression was skipped because this run focused on desktop Vercel artifact BFF migration verification, Cloud Run admin /monitoring was skipped because the changed surface is frontend-to-BFF artifact intent routing; release smoke already verified deployment health, Full modal/detail pack was skipped because no modal/detail implementation changed in this routing migration, Vision/image-upload QA was skipped because Vision was outside the artifact intent BFF migration scope
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: ai-engine-00593-4kj / SHA 9b971f98
+- Coverage Packs: observability-pack
+- Covered Surfaces: Cloud Run ai-engine service URL resolves to https://ai-engine-jdhrhws7ia-an.a.run.app with latest ready revision ai-engine-00593-4kj, Cloud Run live environment includes LANGFUSE_SAMPLE_RATE=1.0, Cloud Run /health returns status ok with langfuse=true, cloudRunApi=true, and all primary provider flags true, Authenticated /monitoring returns status ok and Langfuse operational state: isReady=true, isOperational=true, clientInitialized=true, hasKeysConfigured=true, isDisabled=false, sampleRate=100%, Authenticated /monitoring reports Langfuse monthKey 2026-06 with eventCount=2 and limit=50000, Authenticated /monitoring/traces?limit=20 returns status ok with 15 visible traces from 20 fetched Langfuse traces, Latest visible Langfuse trace 69fb0a8f is sampled=true, success=true, Advisor Agent, provider=mistral, model=mistral-small-latest, durationMs=5231, ttfbMs=5132, Initial trace baseline from the returned sample: 15 duration samples, average duration 3607ms, p95 duration 10366ms, 10 TTFB samples, average TTFB 2130ms, p95 TTFB 5533ms
+- Skipped Surfaces: No new live AI prompt was submitted; this run only verified that the newly enabled Langfuse 100% sampling path is producing and exposing traces, No Vercel UI Playwright walk-through was run because the scope is Cloud Run observability, not frontend behavior, No artifact-intent LLM fallback activation was attempted; production remains gated until trace evidence shows deterministic routing misses that justify the cost tradeoff
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab release pipeline 2578503432 | [GitLab release pipeline 2578503432](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2578503432) | - |
-| vercel-deployment | Vercel production deployment dpl_BrE1dBffAFfHfrKEuqDdWXD1qf7t | [Vercel production deployment dpl_BrE1dBffAFfHfrKEuqDdWXD1qf7t](https://openmanager-43x5zq0nj-skyasus-projects.vercel.app/) | - |
+| langfuse-trace | Latest visible Langfuse trace 69fb0a8f | [Latest visible Langfuse trace 69fb0a8f](https://us.cloud.langfuse.com/project/cmjk0fm8u045gad07tf8xaptk/traces/69fb0a8fbacd156a958e38a49b72a983) | - |
+| monitoring | Cloud Run Langfuse traces endpoint | [Cloud Run Langfuse traces endpoint](https://ai-engine-jdhrhws7ia-an.a.run.app/monitoring/traces?limit=20) | - |
+| monitoring | Cloud Run monitoring endpoint | [Cloud Run monitoring endpoint](https://ai-engine-jdhrhws7ia-an.a.run.app/monitoring) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production artifact intent BFF server snapshot UI | `reports/qa/evidence/qa-20260605-v81292-artifact-bff-dashboard.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -198,6 +198,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260605-0658 | 2026-06-05T11:03:39.705Z | targeted | no | no | Cloud Run Observability Check - Langfuse 100% Sampling Baseline Start (v8.12.92) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260605-0657 | 2026-06-05T06:56:30.699Z | targeted | yes | yes | Vercel Production Playwright MCP - Artifact Intent BFF Release QA (v8.12.92) | 20 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260605-0656 | 2026-06-05T03:33:51.856Z | targeted | yes | yes | Vercel Production Playwright MCP - Recent Two-Week Improvements Applied Recheck (v8.12.91) | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260605-0655 | 2026-06-05T02:01:39.005Z | targeted | yes | yes | Vercel Production Chrome DevTools MCP Fallback - Frontend UI/UX Wiring Polish (v8.12.91) | 14 | 1 | 0 | 0 | 0 | 0 |
@@ -217,4 +218,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260529-0641 | 2026-05-29T12:50:47.147Z | targeted | yes | yes | Vercel Playwright MCP - Q5 컨텍스트 팔로업 라벨 명확화 검증 (ai-engine-00583) | 3 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260529-0640 | 2026-05-29T10:28:51.014Z | targeted | yes | yes | Vercel Playwright MCP 대화형 AI QA - 표준 5문항 점검 (v8.12.77) | 5 | 0 | 0 | 0 | 1 | 0 |
 | QA-20260529-0639 | 2026-05-29T03:17:33.247Z | smoke | yes | no | GitLab production release smoke - v8.12.77 landing mouse spotlight motion | 16 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260529-0638 | 2026-05-28T18:22:11.038Z | smoke | yes | no | v8.12.76 GitLab Release Smoke - AI Engine Cloud Build Recovery | 15 | 1 | 0 | 0 | 0 | 0 |
