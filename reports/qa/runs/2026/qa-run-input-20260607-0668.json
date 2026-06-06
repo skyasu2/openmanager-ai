@@ -1,0 +1,133 @@
+{
+  "runTitle": "Vercel Production Playwright MCP - 25차 AI 어시스턴트 평가 (v8.12.100)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-advanced-surface"],
+  "coveredSurfaces": [
+    "P25 회귀 확인: TOP+BOTTOM 동시 질의 => deterministic/monitoring-server-health 33ms (FIXED 재확인)",
+    "Q-NEW95: 메모리 경고 상태인 서버들의 평균 CPU => 전체 18대 CPU 반환 (상태 필터 무시, 신규 P26 발견)",
+    "Q-NEW96: 디스크가 거의 꽉 찬 서버 있어? => capacity-forecast 29ms (미래 예측으로 해석, PARTIAL)",
+    "Q-NEW97: DB vs cache 더 많은 서버가 경고 상태? => monitoring-server-health 불안정 점수 비교 (방향 맞으나 카운트 미명시, PARTIAL)",
+    "Q-NEW98: storage-nfs-dc1-01 vs db-mysql-dc1-primary 디스크 비교 => monitoring-metric-current PASS (DISK 82% vs 53%, 평균 67.5%)",
+    "Q-NEW99: 전체 서버 중 CPU·메모리·디스크 모두 50% 미만인 서버 몇 대? => '상위 부하 내림차순'으로 반전 처리 (신규 P27 발견)",
+    "OTel 교차 검증: slot 01:30 KST, CPU avg 31.1%, db-mysql-dc1-primary DISK 82% warning, lb-haproxy-dc1-03 stable"
+  ],
+  "skippedSurfaces": [
+    "멀티턴 컨텍스트 팔로업 재검증 미실시",
+    "Reporter 에이전트 테스트 미실시",
+    "Analyst 에이전트 지연 실측 미실시"
+  ],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "381b80cee"
+  },
+  "checks": {
+    "total": 6,
+    "passed": 2,
+    "failed": 2
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "P25 TOP+BOTTOM 동시 질의",
+      "agent": "monitoring-server-health",
+      "provider": "deterministic",
+      "model": "monitoring-server-health",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "UI 라우팅 레이블",
+      "latencyMs": 33
+    },
+    {
+      "surface": "Q-NEW95 상태 필터 집계",
+      "agent": "monitoring-metric-current",
+      "provider": "deterministic",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "UI 라우팅 레이블",
+      "latencyMs": 31
+    },
+    {
+      "surface": "Q-NEW96 디스크 거의 꽉 찬",
+      "agent": "monitoring-capacity-forecast",
+      "provider": "deterministic",
+      "model": "monitoring-capacity-forecast",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "UI 라우팅 레이블",
+      "latencyMs": 29
+    },
+    {
+      "surface": "Q-NEW98 이종 서버 단일 메트릭 비교",
+      "agent": "monitoring-metric-current",
+      "provider": "deterministic",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "UI 라우팅 레이블",
+      "latencyMs": 28
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "p25-top-bottom-dual-query",
+      "title": "P25: TOP+BOTTOM 복합 의도 동시 처리 수정 완료 (v8.12.100)",
+      "priority": "P3",
+      "isBlocking": false,
+      "evidence": "가장 위험한 서버 + 안정적인 서버 동시 질의 => deterministic/monitoring-server-health 33ms. db-mysql-dc1-primary(불안정 102점, warning) + lb-haproxy-dc1-03(36.2점, online) 정확 반환. 24차 evidence-unavailable에서 수정 완료 확인.",
+      "status": "completed"
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "p26-status-filter-cross-metric-aggregate",
+      "title": "P26: 상태 필터 + 다른 메트릭 집계 복합 의도 미처리",
+      "priority": "P3",
+      "isBlocking": false,
+      "overengineeringScope": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "note": "'메모리 경고 상태인 서버들의 평균 CPU' => 상태 필터(warning) 무시하고 전체 18대 CPU 평균(31.1%) 반환. 상태 조건으로 서버 서브셋 필터 후 다른 메트릭 집계하는 복합 의도 미지원.",
+      "status": "pending"
+    },
+    {
+      "id": "p27-lt-threshold-and-filter-count",
+      "title": "P27: 미만(<) AND 조건 필터 카운트 반전 처리",
+      "priority": "P3",
+      "isBlocking": false,
+      "overengineeringScope": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "note": "'CPU·메모리·디스크 모두 50% 미만인 서버 몇 대야?' => '상위 부하 내림차순(합산 내림차순)' 반전 처리. 기대: 10대(01:30 KST OTel 기준). 실제: DB/storage 상위 부하 목록 반환. 이전 Q-NEW84 '이상(>=) AND' 처리는 PASS였으나 '미만(<) AND' 방향은 실패.",
+      "status": "pending"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Q-NEW97: DB vs cache 경고 상태 비교 응답",
+      "path": "reports/qa/evidence/qa-20260607-q97-db-cache-status-compare.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Q-NEW98: storage vs db 디스크 비교 응답 (PASS)",
+      "path": "reports/qa/evidence/qa-20260607-q98-storage-db-disk-compare.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Q-NEW99: 50% 미만 AND 조건 필터 카운트 반전 실패",
+      "path": "reports/qa/evidence/qa-20260607-q99-lt50-and-filter-fail.png"
+    }
+  ],
+  "notes": [
+    "25차 평가 (v8.12.100): P25 수정 회귀 확인 + 신규 5문항 (Q-NEW95~99)",
+    "OTel 교차 검증 슬롯: 01:30 KST (hour-01.json slots[3]). CPU avg 31.1%, db-mysql-dc1-primary warning(CPU 62%/MEM 73%/DISK 82%), lb-haproxy-dc1-03 안정(CPU 36.2%/MEM 33.3%/DISK 24%)",
+    "신규 P26: '상태 필터 + 다른 메트릭 집계' 복합 의도 미처리. warning 서버 서브셋 필터 후 다른 메트릭 집계 불가.",
+    "신규 P27: '미만(<) AND' 3중 조건 필터 카운트 반전. '>=이상' 방향(Q-NEW84 PASS)은 처리되나 '< 미만' 방향 미처리.",
+    "Q-NEW96 PARTIAL: '거의 꽉 찬' 자연어 임계값이 capacity-forecast(미래 예측)으로 라우팅. 현재 현황 조회(monitoring-metric-current)가 더 적합.",
+    "Q-NEW97 PARTIAL: 'DB vs cache 경고 상태 서버 수 비교' 대신 불안정 점수 평균 비교. 방향은 정확(DB 더 위험)이나 '경고 수' 직접 카운트 미제공.",
+    "Q-NEW98 PASS: 이종 서버(storage vs db) 단일 메트릭(DISK) 비교 정확. OTel 일치(82% vs 53%, 평균 67.5%).",
+    "P26·P27 심각도 낮음 — wont-fix 규칙 적용. 기준선(90/100) 이미 충족 중."
+  ]
+}
