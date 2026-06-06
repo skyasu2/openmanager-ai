@@ -1,6 +1,6 @@
 ---
 name: ai-observability
-description: Analyze OpenManager AI assistant routing, provider distribution, latency, failures, fallbacks, and Langfuse traces with npm run langfuse:check.
+description: Analyze OpenManager AI assistant routing, provider distribution, latency, failures, fallbacks, and Langfuse traces with npm run langfuse:check. Use when the user asks to inspect AI assistant state, Langfuse traces, routing quality, Analyst or Supervisor latency, provider behavior, or whether AI QA needs browser verification.
 version: v1.0.0
 user-invocable: true
 allowed-tools: Bash, Read, Grep

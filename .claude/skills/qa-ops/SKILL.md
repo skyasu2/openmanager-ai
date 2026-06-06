@@ -1,7 +1,7 @@
 ---
 name: qa-ops
-description: Final QA workflow for OpenManager with Vercel+Playwright MCP default, local-dev fallback for non-AI checks, mandatory cumulative logging to reports/qa, and conversational AI QA for AI-related changes.
-version: v1.5.2
+description: Execute final QA for OpenManager with Vercel+Playwright MCP by default, switch to local dev QA when AI validation is unnecessary, record every run into reports/qa tracker, and include conversational AI QA for AI-related changes.
+version: v1.5.5
 user-invocable: true
 allowed-tools: Bash, Read, Grep, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_type, mcp__playwright__browser_wait_for, mcp__playwright__browser_console_messages, mcp__playwright__browser_network_requests, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_fill_form, mcp__playwright__browser_evaluate, mcp__playwright__browser_close
 disable-model-invocation: true
@@ -47,18 +47,24 @@ disable-model-invocation: true
 ## Workflow
 
 1. 기준선 확인.
-- `npm run qa:status` — 현재 누적 상태 요약
-- `cat reports/qa/QA_STATUS.md` — 상세 현황
-- `cat public/data/qa/validation-evidence.json | python3 -m json.tool` — public snapshot 확인
+- `sed -n '1,220p' reports/qa/QA_STATUS.md` — 상세 현황 (큰 파일 안전 로드)
+- `cat reports/qa/qa-tracker.json` — tracker SSOT
+- `sed -n '1,220p' .agents/skills/qa-ops/references/current-surface-checklist.md` — 서피스 baseline 선택자
+- `qa-tracker.json` + `QA_STATUS.md`를 현재 QA 상태 SSOT로 취급합니다.
+- broad/release-gate 비교가 필요하면 `current-surface-checklist.md`의 Current Production Reference 섹션에서 run JSON 경로를 확인합니다.
 
 1. 환경 선택.
-- 기본: **Vercel Production + Playwright MCP** (`https://openmanager-ai.vercel.app`)
-- AI 기능 검증 불필요 시: 로컬 dev 서버 QA 허용
+- 기본: **Vercel Production + Playwright MCP** (`https://openmanager-ai.vercel.app`) — 기능 QA 및 E2E 플로우
+- 진단: Chrome DevTools MCP (LCP/CLS 등 Core Web Vitals, Lighthouse 감사, 메모리 누수, 네트워크 심층 검사)
+- AI 기능 검증 불필요 시 (UI/카피/레이아웃/기본 인증 동선): 로컬 dev 서버 QA 허용
+- `next-devtools.browser_eval`이 `Connection closed`로 실패하면 Playwright MCP로 전환하고 `nextjs_call`은 런타임 진단에만 사용 — 릴리즈 QA에서 이 폴백을 사용했다면 증거에 명시합니다.
 
-1. 시나리오 실행.
-- 공통: landing/login/dashboard/modal
-- AI 필수: AI assistant/chat/분석 응답 경로
-- 비AI: UI/카피/레이아웃/기본 인증 동선 중심
+1. 현재 서피스에서 QA 팩 선택.
+- **Core route 팩**: `/`, `/main`, `/login`, `/system-boot`, `/dashboard`
+- **AI surface 팩**: AI 사이드바, `/dashboard/ai-assistant`, analyst, reporter, feedback, streaming path
+- **Modal/detail 팩**: alerts, topology, 서버 상세 탭, 로그 탐색기, 프로필 메뉴
+- **Observability/security 팩**: `X-AI-*` timing 헤더, `/monitoring`, `/monitoring/traces`, Langfuse trace 가시성, 차단 프롬프트/보안 회귀
+- **Secondary route 팩**: `/auth/error`, `/auth/success`, `/privacy`
 - 변경된 리스크를 덮는 가장 작은 대표 pack을 선택하고, route/device/provider matrix 확장은 구체적 리스크가 있을 때만 수행
 - **Data Parity (AI 검증 시)**: `GET /api/health?service=parity`로 `slot.globalSlotIndex` 기록, AI 응답 `dataSlot.slotIndex`와 ±1 이내인지 확인
 - run 입력에는 `scope`, `releaseFacing`, `coveredSurfaces`, `skippedSurfaces`를 기록합니다.
@@ -83,11 +89,17 @@ disable-model-invocation: true
 - Vision 라이브 smoke를 실행했을 때는 provider, model, 이미지 수, 합격/불합격을 `reports/qa`에 기록하고 추가 샘플 수집을 위해 재실행하지 않는다.
 - Z.AI GLM Vision fallback 라이브 smoke는 선택 테스트에서 가정하지 않는다. 실제 이미지 호출에서 `provider=zai`, `modelId=glm-4.6v-flash`가 명시적으로 실행된 경우에만 검증됨으로 표시한다.
 
+1. Vercel 배포/QA 전 사용량 확인.
+- 우선: `npm run check:usage:vercel`
+- CLI/인증 불가 시: Vercel Usage 대시보드 수동 확인
+- 결과를 `usageChecks`에 `platform`, `method`, `status`, `result`, `summary`와 함께 기록합니다.
+
 1. 결과 기록(필수).
 - `cp reports/qa/templates/qa-run-input.example.json /tmp/qa-run-input.json`
 - JSON 편집 후: `npm run qa:record -- --input /tmp/qa-run-input.json`
 - `npm run qa:status`
 - `broad`/`release-gate` run은 `expertAssessments`와 `usageChecks` 포함 필수
+- 전파 확인 전용 재실행(이미 기록된 상태 동기화 확인)은 `countsTowardSummary=false`로 표시합니다.
 
 1. 결과 보고.
 - 항상: target, run id, scope, checks, release decision
@@ -177,6 +189,7 @@ End with one short operator note for the highest remaining risk or `none in test
 
 ## Changelog
 
+- 2026-06-06: v1.5.5 - 서피스 팩 테이블(Core/AI/Modal/Observability/Secondary) 추가, Vercel 사용량 체크 단계 추가, 기준선 로딩 개선(sed -n + current-surface-checklist.md), Chrome DevTools MCP 진단 안내 추가 (Codex v1.5.4/v1.5.5 동기화)
 - 2026-06-06: v1.5.3 - AI routing/provider/latency QA 전에 ai-observability/Langfuse precheck를 사용하도록 연결
 - 2026-02-26: v1.0.0 - 최종 QA 운영/누적 추적 스킬 신설
 - 2026-03-14: v1.1.0 - `state-triage`, `env-sync` 선행 규칙 추가

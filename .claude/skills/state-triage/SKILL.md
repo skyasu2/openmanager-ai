@@ -1,7 +1,7 @@
 ---
 name: state-triage
-description: Analyze current OpenManager QA, runtime, deployment, and AI-path state; identify the primary symptom, root cause, free-tier fit, and next action.
-version: v2.2.0
+description: Analyze current OpenManager QA, runtime, deployment, and AI-path state; identify the primary symptom, root cause, free-tier fit, and next action. Use when the user asks what is broken now, why a recent QA failed, whether the issue can be fixed within free-tier rules, or what step to take next after QA.
+version: v2.3.0
 user-invocable: true
 allowed-tools: Bash, Read, Grep
 disable-model-invocation: true
@@ -49,13 +49,15 @@ curl -s "$CLOUD_RUN_AI_URL/api/ai/providers" -H "X-API-Key: $CLOUD_RUN_API_SECRE
 - Z.AI(GLM Flash)는 v8.11.156부터 Reporter primary provider임. `zai: true` 부재 시 Reporter 에이전트가 Mistral fallback으로 전환됨.
 
 1. 실패 유형 분류.
-- `availability`: health fail, 5xx, auth break, env drift
-- `logic-or-quality`: network `200`인데 UI/응답 품질이 잘못됨
-- `data-or-ssot`: dashboard와 AI가 다른 사실을 말함
-- `latency-or-cold-start`: 첫 호출 지연, retry 후 회복
+- `availability`: health check fail, 5xx, auth break, env drift, deploy failure
+- `logic-or-quality`: network `200`인데 UI/응답 품질이 잘못됨, fallback 메시지, 잘못된 UI 상태
+- `data-or-ssot`: dashboard와 AI가 다른 사실을 말함, OTel 데이터셋 불일치
+- `latency-or-cold-start`: 첫 호출 지연, retry 후 회복, timeout/fallback 헤더 노출
 - `ai-provider-quota`: AI 응답 없음/빈 응답 → rate limit 또는 model 접근 불가 (Groq RPD 1,000/일, Z.AI 장애 시 Reporter fallback 경로 확인)
+- `security-regression`: 차단된 프롬프트 UX, raw JSON 노출, auth 강화, CSP/보안 계약 회귀
 - `observability-gap`: 기능은 되지만 자동화 관측이 약함
-- `observability-monitoring`: timing header, trace, Langfuse, sampled traceId visibility 문제
+- `observability-monitoring`: timing header, `/monitoring`, trace, Langfuse, sampled traceId visibility 문제
+- `qa-metadata`: app 자체는 정상이나 QA tracker/public snapshot/증거/집계 규칙 의미론적 오류
 - `observability-monitoring`, `latency-or-cold-start`, `ai-provider-quota`, AI routing 증상은 browser-heavy QA 전에 `ai-observability`와 `npm run langfuse:check`로 trace evidence를 확인합니다.
 
 1. 최소 코드 경로로 축소.
@@ -75,11 +77,13 @@ curl -s "$CLOUD_RUN_AI_URL/api/ai/providers" -H "X-API-Key: $CLOUD_RUN_API_SECRE
 - 기본 해법은 routing/fallback/cache/test/env sync여야 한다
 
 1. 다음 액션 선택.
-- `code-fix`
-- `config-fix`
-- `deploy-and-qa`
-- `wont-fix`
-- `broader-qa`
+- `code-fix`: 로직, 라우팅, fallback, UI 상태가 원인
+- `config-fix`: env drift 또는 시크릿 불일치
+- `deploy-and-qa`: 코드는 로컬에서 수정 완료, 검증만 남은 경우
+- `qa-checklist-fix`: 앱 동작은 존재하나 QA/스킬 흐름이 해당 route/기능을 충분히 다루지 못함
+- `qa-metadata-fix`: 앱은 정상이나 QA tracker/증거 의미론이나 집계 규칙이 잘못됨
+- `wont-fix`: non-blocking, 포트폴리오 또는 QA 정책상 accepted debt
+- `broader-qa`: 회귀 의심, 더 넓은 커버리지가 필요
 
 ## Related Skills
 
