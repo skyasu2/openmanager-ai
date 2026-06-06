@@ -26,6 +26,34 @@ import {
   readSnapshotTimeLabel,
 } from './snapshot-utils';
 
+type MetricStatusFilter = Exclude<
+  ParsedCurrentMetricsEvidenceRequest['statusFilter'],
+  'healthy-only' | undefined
+>;
+
+function getMetricStatusFilter(
+  statusFilter: ParsedCurrentMetricsEvidenceRequest['statusFilter']
+): MetricStatusFilter | null {
+  return statusFilter && statusFilter !== 'healthy-only' ? statusFilter : null;
+}
+
+function applyMetricStatusFilter(params: {
+  servers: SnapshotServer[];
+  targetLabel: string;
+  statusFilter: ParsedCurrentMetricsEvidenceRequest['statusFilter'];
+}): { servers: SnapshotServer[]; targetLabel: string } {
+  const statusFilter = getMetricStatusFilter(params.statusFilter);
+  if (!statusFilter) {
+    return { servers: params.servers, targetLabel: params.targetLabel };
+  }
+
+  const servers = params.servers.filter((server) => server.status === statusFilter);
+  return {
+    servers,
+    targetLabel: `${removeTargetCountSuffix(params.targetLabel)} 중 ${statusFilter} 상태 ${servers.length}대`,
+  };
+}
+
 function buildMetricRiskComparisonAnswer(params: {
   parsed: ParsedCurrentMetricsEvidenceRequest;
   snapshot: DomainSnapshot;
@@ -129,12 +157,27 @@ export function buildMetricCurrentAnswer(params: {
   if (!metric) return null;
 
   const allServers = readSnapshotServers(params.snapshot);
-  const { servers, targetLabel } = filterSnapshotServers(
+  const target = filterSnapshotServers(
     allServers,
     params.parsed.targets,
     { preferExplicitLabel: params.parsed.contextualTargets === true }
   );
-  if (servers.length === 0) return null;
+  const { servers, targetLabel } = applyMetricStatusFilter({
+    ...target,
+    statusFilter: params.parsed.statusFilter,
+  });
+  if (servers.length === 0) {
+    const statusFilter = getMetricStatusFilter(params.parsed.statusFilter);
+    if (statusFilter) {
+      const timeLabel = readSnapshotTimeLabel(params.snapshot);
+      return [
+        `📊 **${targetLabel} ${getMetricLabel(metric)} 현황**`,
+        `• 대상: ${targetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+        '• 결과: 현재 조건을 만족하는 서버는 없습니다.',
+      ].join('\n');
+    }
+    return null;
+  }
 
   const rawRows = servers
     .map((server) => ({
@@ -145,7 +188,17 @@ export function buildMetricCurrentAnswer(params: {
       (row): row is { server: SnapshotServer; value: number } =>
         row.value !== null
     );
-  if (rawRows.length === 0) return null;
+  if (rawRows.length === 0) {
+    const statusFilter = getMetricStatusFilter(params.parsed.statusFilter);
+    if (statusFilter) {
+      return [
+        `📊 **${targetLabel} ${getMetricLabel(metric)} 현황**`,
+        `• 대상: ${targetLabel}${readSnapshotTimeLabel(params.snapshot) ? ` · 데이터 슬롯 ${readSnapshotTimeLabel(params.snapshot)} KST` : ''}`,
+        '• 결과: 현재 조건을 만족하는 서버는 없습니다.',
+      ].join('\n');
+    }
+    return null;
+  }
 
   if (params.parsed.threshold !== undefined) {
     const threshold = params.parsed.threshold;
@@ -416,7 +469,12 @@ function buildMultiMetricFilterAnswer(params: {
       };
     })
     .filter((row): row is NonNullable<typeof row> => row !== null)
-    .sort((left, right) => right.score - left.score);
+    .sort((left, right) =>
+      params.parsed.thresholdOperator === '<' ||
+      params.parsed.thresholdOperator === '<='
+        ? left.score - right.score
+        : right.score - left.score
+    );
 
   const metricLabels = metrics.map(getMetricLabel);
   const conditionJoiner = params.parsed.filterOperator === 'OR' ? ' OR ' : ' AND ';

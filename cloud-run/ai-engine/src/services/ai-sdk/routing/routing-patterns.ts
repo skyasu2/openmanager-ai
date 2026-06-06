@@ -27,6 +27,19 @@ export const MIN_METRIC_PATTERN =
 export const CAPACITY_FULL_FORECAST_PATTERN =
   /(?:\d{1,3}\s*(?:분|시간|일|주|개월)\s*(?:이내|안에|내|후|뒤|까지).{0,48}(?:꽉|가득|다)\s*(?:찰|차|찬|참)|(?:꽉|가득|다)\s*(?:찰|차|찬|참).{0,48}\d{1,3}\s*(?:분|시간|일|주|개월)\s*(?:이내|안에|내|후|뒤|까지))/i;
 
+const NEAR_FULL_CURRENT_PATTERN =
+  /(?:거의|거진|near(?:ly)?|almost)?\s*(?:꽉|가득|다)\s*(?:찬|찼|차|참)|(?:near(?:ly)?|almost)\s*full/i;
+
+const FORECAST_CONTEXT_PATTERN =
+  /(?:\d{1,3}\s*(?:분|시간|일|주|개월)\s*(?:이내|안에|내|후|뒤|까지)|언제|예측|전망|앞으로|미래|될\s*(?:것|거|듯)|forecast|predict|future|when|will)/i;
+
+export function isCurrentNearFullMetricLookup(query: string): boolean {
+  return (
+    NEAR_FULL_CURRENT_PATTERN.test(query) &&
+    !FORECAST_CONTEXT_PATTERN.test(query)
+  );
+}
+
 /**
  * 재시작 필요 여부 조회: 실행 방법이 아니라 "어떤 서버가 재시작/즉시 조치 대상인가"를 묻는 쿼리
  * 예: "재시작해야 할 서버 있어?", "재시작이 필요한 서버", "재시작이 필요해?"

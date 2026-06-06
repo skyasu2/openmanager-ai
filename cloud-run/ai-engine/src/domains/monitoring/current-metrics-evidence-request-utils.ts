@@ -2,6 +2,7 @@ import type {
   DomainEvidenceRequest,
   DomainIntentFrame,
 } from '../../core/assistant-runtime';
+import type { QueryStatus } from '../../services/ai-sdk/agents/orchestrator-query-intent';
 import type { classifyQueryIntent } from '../../services/ai-sdk/agents/orchestrator-query-intent';
 import {
   MONITORING_METRIC_CURRENT_CAPABILITY_ID,
@@ -136,6 +137,7 @@ export function buildGroupHealthCompareRequest(params: {
   message: string;
   groupTargets: string[];
   metric: SupportedMetric | null;
+  statusFilter?: QueryStatus;
 }): ParsedCurrentMetricsEvidenceRequest | null {
   if (
     params.metric ||
@@ -152,6 +154,7 @@ export function buildGroupHealthCompareRequest(params: {
     sourceIntent: 'group-health-compare',
     answerQuery: params.message,
     groupTargets: params.groupTargets.slice(0, 2),
+    ...(params.statusFilter && { statusFilter: params.statusFilter }),
   };
 }
 

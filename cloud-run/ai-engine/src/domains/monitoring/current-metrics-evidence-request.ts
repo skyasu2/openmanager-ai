@@ -4,7 +4,11 @@ import {
   type QueryMetric,
   type QueryOperator,
   type QueryRankOrder,
+  type QueryStatus,
 } from '../../services/ai-sdk/agents/orchestrator-query-intent';
+import {
+  isCurrentNearFullMetricLookup,
+} from '../../services/ai-sdk/routing/routing-patterns';
 import {
   FORCE_KB_QUERY_PATTERN,
   shouldPreferAdvisorForOperationalAdvice,
@@ -17,6 +21,7 @@ import {
   MONITORING_METRIC_TREND_CAPABILITY_ID,
   MONITORING_SERVER_HEALTH_CAPABILITY_ID,
 } from './constants';
+import { STATUS_THRESHOLDS } from '../../config/status-thresholds';
 import {
   ACTION_NEEDED_PATTERN,
   COMPOSITE_LOAD_RANKING_PATTERN,
@@ -89,9 +94,30 @@ export interface ParsedCurrentMetricsEvidenceRequest {
   rankCount?: number;
   rankOrder?: QueryRankOrder;
   rankBasis?: 'composite-load';
-  statusFilter?: 'healthy-only';
+  statusFilter?: 'healthy-only' | QueryStatus;
   trendDirection?: TrendDirection;
   trendRankBy?: TrendRankBy;
+}
+
+function resolveExplicitStatusFilter(
+  message: string,
+  statusValue: QueryStatus | undefined
+): QueryStatus | undefined {
+  const explicitStatus = statusValue ?? inferExplicitStatusValue(message);
+  if (!explicitStatus) return undefined;
+  return /(?:상태|status).{0,16}(?:online|warning|critical|offline|온라인|정상|경고|위험|오프라인)|(?:online|warning|critical|offline|온라인|정상|경고|위험|오프라인).{0,16}(?:상태|status|서버|server)/i.test(
+    message
+  )
+    ? explicitStatus
+    : undefined;
+}
+
+function inferExplicitStatusValue(message: string): QueryStatus | undefined {
+  if (/offline|오프라인/i.test(message)) return 'offline';
+  if (/critical|위험/i.test(message)) return 'critical';
+  if (/warning|경고/i.test(message)) return 'warning';
+  if (/online|온라인|정상/i.test(message)) return 'online';
+  return undefined;
 }
 
 function isTopBottomServerHealthMessage(message: string): boolean {
@@ -120,6 +146,10 @@ function parseCurrentMetricsFrame(
   const requestGroupTarget = inferGroupTargetFromMessage(request.message);
   const mentionedMetrics = extractMentionedMetrics(request.message);
   const metricConditions = extractMetricDirectionalConditions(request.message);
+  const statusFilter = resolveExplicitStatusFilter(
+    request.message,
+    classification.statusValue
+  );
 
   if (
     mentionedMetrics.length >= 2 &&
@@ -135,6 +165,28 @@ function parseCurrentMetricsFrame(
       metrics: mentionedMetrics,
       targets: metricTargets,
     });
+  }
+
+  if (
+    messageMetric &&
+    isCurrentNearFullMetricLookup(request.message) &&
+    !HISTORICAL_OR_TREND_PATTERN.test(request.message)
+  ) {
+    const metricTargets = resolveMetricTargets({
+      request,
+      explicitServerTargets,
+      groupTarget: requestGroupTarget,
+    });
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'current-near-full-filter',
+      answerQuery: request.message,
+      metric: messageMetric,
+      threshold: STATUS_THRESHOLDS[messageMetric].warning,
+      thresholdOperator: '>=',
+      ...(metricTargets.length > 0 && { targets: metricTargets }),
+    };
   }
 
   if (
@@ -227,6 +279,7 @@ function parseCurrentMetricsFrame(
       message: request.message,
       groupTargets: healthGroupTargets,
       metric: messageMetric,
+      statusFilter,
     });
     if (healthGroupCompare) return healthGroupCompare;
 
@@ -338,6 +391,7 @@ function parseCurrentMetricsFrame(
       ...(serverCompareMetrics ? { metrics: serverCompareMetrics } : { metric }),
       ...(frameThreshold ?? {}),
       ...(metricTargets.length > 0 && { targets: metricTargets }),
+      ...(statusFilter && { statusFilter }),
     };
   }
 
@@ -423,6 +477,10 @@ function parseCurrentMetricsMessage(
     explicitServerTargets,
     groupTarget,
   });
+  const statusFilter = resolveExplicitStatusFilter(
+    message,
+    classification.statusValue
+  );
 
   if (isTopBottomServerHealthMessage(message)) {
     const healthGroupTarget = inferGroupTargetFromMessage(message);
@@ -488,8 +546,26 @@ function parseCurrentMetricsMessage(
     message,
     groupTargets,
     metric,
+    statusFilter,
   });
   if (groupHealthCompare) return groupHealthCompare;
+
+  if (
+    metric &&
+    isCurrentNearFullMetricLookup(message) &&
+    !HISTORICAL_OR_TREND_PATTERN.test(message)
+  ) {
+    return {
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'current-near-full-filter',
+      answerQuery: message,
+      metric,
+      threshold: STATUS_THRESHOLDS[metric].warning,
+      thresholdOperator: '>=',
+      ...(metricTargets.length > 0 && { targets: metricTargets }),
+    };
+  }
 
   if (
     !metric &&
@@ -554,6 +630,7 @@ function parseCurrentMetricsMessage(
       answerQuery: message,
       metric,
       targets: groupTargets,
+      ...(statusFilter && { statusFilter }),
     };
   }
 
@@ -578,6 +655,7 @@ function parseCurrentMetricsMessage(
       sourceIntent: 'all-aggregate',
       answerQuery: message,
       metric,
+      ...(statusFilter && { statusFilter }),
     };
   }
 
@@ -654,10 +732,7 @@ function parseCurrentMetricsMessage(
     }
     if (
       classification.intent === 'data-filter' &&
-      classification.threshold !== undefined &&
-      (classification.operator === undefined ||
-        classification.operator === '>=' ||
-        classification.operator === '>')
+      classification.threshold !== undefined
     ) {
       return {
         intent: 'metric_current',
@@ -717,6 +792,7 @@ function parseCurrentMetricsMessage(
       threshold: classification.threshold,
       thresholdOperator: classification.operator ?? '>=',
       ...(metricTargets.length > 0 && { targets: metricTargets }),
+      ...(statusFilter && { statusFilter }),
     };
   }
 

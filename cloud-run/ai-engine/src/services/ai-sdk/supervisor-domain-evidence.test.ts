@@ -531,6 +531,64 @@ describe('supervisor domain evidence support', () => {
     });
   });
 
+  it('Q-NEW96: resolves current near-full disk wording through metric-current despite capacity provider order', async () => {
+    const domain: AssistantDomain = {
+      ...monitoringDomainPack,
+      dataSource: {
+        async snapshot() {
+          return {
+            timestamp: '2026-06-07T01:30:00+09:00',
+            data: {
+              timeLabel: '01:30',
+              servers: [
+                {
+                  id: 'storage-nfs-dc1-01',
+                  type: 'storage',
+                  status: 'warning',
+                  cpu: 35,
+                  memory: 40,
+                  disk: 82,
+                },
+                {
+                  id: 'web-nginx-dc1-01',
+                  type: 'web',
+                  status: 'online',
+                  cpu: 10,
+                  memory: 30,
+                  disk: 30,
+                },
+              ],
+            },
+          };
+        },
+      },
+    };
+    const support = await resolveDomainEvidenceSupport({
+      query: '디스크가 거의 꽉 찬 서버 있어?',
+      domain,
+      sessionId: 'session-q96-current-near-full',
+      traceId: 'trace-q96-current-near-full',
+    });
+
+    expect(support?.id).toBe('monitoring-metric-current');
+    expect(support?.fallback).toContain('디스크 80% 이상 서버');
+    expect(support?.fallback).toContain('storage-nfs-dc1-01');
+    expect(support?.fallback).not.toContain('도달 예측');
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: 'monitoring.metric_current',
+      intent: 'metric_current',
+      sourceIntent: 'current-near-full-filter',
+      semanticQueryTrace: {
+        selectedDomain: monitoringDomainPack.id,
+        selectedCapability: 'monitoring.metric_current',
+        selectedEvidenceProvider: 'monitoring-metric-current',
+        evidenceAvailable: true,
+        clarificationRequired: false,
+      },
+    });
+  });
+
   it('resolves urgent action ranking prompts as deterministic server health evidence', async () => {
     const spy = vi.spyOn(precomputedState, 'getCurrentState').mockReturnValue({
       slotIndex: 0,

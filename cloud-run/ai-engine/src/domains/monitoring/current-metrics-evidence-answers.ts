@@ -233,6 +233,17 @@ function getServerInstabilityScore(server: SnapshotServer): number {
   return round1(metricPressure + getStatusPenalty(server));
 }
 
+type ConcreteStatusFilter = Exclude<
+  ParsedCurrentMetricsEvidenceRequest['statusFilter'],
+  'healthy-only' | undefined
+>;
+
+function getConcreteStatusFilter(
+  statusFilter: ParsedCurrentMetricsEvidenceRequest['statusFilter']
+): ConcreteStatusFilter | null {
+  return statusFilter && statusFilter !== 'healthy-only' ? statusFilter : null;
+}
+
 export function buildGroupHealthCompareAnswer(params: {
   parsed: ParsedCurrentMetricsEvidenceRequest;
   snapshot: DomainSnapshot;
@@ -274,6 +285,50 @@ export function buildGroupHealthCompareAnswer(params: {
     })
     .filter((summary): summary is NonNullable<typeof summary> => summary !== null);
   if (summaries.length < 2) return null;
+
+  const statusFilter = getConcreteStatusFilter(params.parsed.statusFilter);
+  if (statusFilter) {
+    const timeLabel = readSnapshotTimeLabel(params.snapshot);
+    const sortedByCount = [...summaries].sort(
+      (left, right) =>
+        (right.statusCounts[statusFilter] ?? 0) -
+        (left.statusCounts[statusFilter] ?? 0)
+    );
+    const leader = sortedByCount[0];
+    const follower = sortedByCount[1];
+    if (!leader || !follower) return null;
+
+    const leaderCount = leader.statusCounts[statusFilter] ?? 0;
+    const followerCount = follower.statusCounts[statusFilter] ?? 0;
+    const diff = leaderCount - followerCount;
+    const conclusion =
+      diff === 0
+        ? `두 그룹의 ${statusFilter} 상태 서버 수가 같습니다.`
+        : `${leader.label}가 ${follower.label}보다 ${statusFilter} 상태 서버가 ${diff}대 더 많습니다.`;
+
+    return [
+      `📊 **${summaries.map((summary) => summary.label).join(' vs ')} ${statusFilter} 상태 서버 수 비교**`,
+      `• 기준: ${statusFilter} 상태 서버 수`,
+      `• 대상: ${summaries
+        .map((summary) => `${summary.label} ${summary.rows.length}대`)
+        .join(' · ')}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+      `• 집계: ${summaries
+        .map(
+          (summary) =>
+            `${summary.label} ${summary.statusCounts[statusFilter] ?? 0}대`
+        )
+        .join(' · ')}`,
+      `• 결론: ${conclusion}`,
+      ...buildNumberedServerSection(
+        '그룹별 서버 현황',
+        summaries.flatMap((summary) =>
+          summary.rows.map(
+            (row) => `${summary.label} / ${formatServerHealthRow(row.server)}`
+          )
+        )
+      ),
+    ].join('\n');
+  }
 
   const sortedByScore = [...summaries].sort(
     (left, right) => right.avgScore - left.avgScore

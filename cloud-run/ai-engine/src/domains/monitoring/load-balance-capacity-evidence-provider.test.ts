@@ -197,6 +197,20 @@ describe('monitoring capacity forecast evidence provider', () => {
     }
   });
 
+  it('does not claim current near-full wording without a forecast time window', () => {
+    expect(
+      monitoringCapacityForecastEvidenceProvider.canHandle(
+        createRequest('디스크가 거의 꽉 찬 서버 있어?')
+      )
+    ).toBe(false);
+
+    expect(
+      monitoringCapacityForecastEvidenceProvider.canHandle(
+        createRequest('48시간 이내에 디스크 꽉 찰 서버 있어?')
+      )
+    ).toBe(true);
+  });
+
   it('resolves English threshold wording and memory typos to deterministic evidence', async () => {
     const result = await monitoringCapacityForecastEvidenceProvider.resolve(
       createRequest('capacity-test-01 memori when will it exceed 90%')

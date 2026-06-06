@@ -12,7 +12,10 @@ import {
   MONITORING_CAPACITY_FORECAST_CAPABILITY_ID,
   MONITORING_LOCATION_LOAD_BALANCE_CAPABILITY_ID,
 } from './constants';
-import { CAPACITY_FULL_FORECAST_PATTERN } from '../../services/ai-sdk/routing/routing-patterns';
+import {
+  CAPACITY_FULL_FORECAST_PATTERN,
+  isCurrentNearFullMetricLookup,
+} from '../../services/ai-sdk/routing/routing-patterns';
 import {
   type SnapshotServer,
   isRecord,
@@ -557,6 +560,8 @@ export const monitoringCapacityForecastEvidenceProvider: DomainEvidenceProvider 
   {
     id: 'monitoring-capacity-forecast',
     canHandle(request) {
+      if (isCurrentNearFullMetricLookup(request.message)) return false;
+
       return (
         request.intentFrame?.capabilityId ===
           MONITORING_CAPACITY_FORECAST_CAPABILITY_ID ||
