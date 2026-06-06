@@ -1,0 +1,170 @@
+{
+  "runId": "QA-20260606-0663",
+  "recordedAt": "2026-06-06T10:00:46.159Z",
+  "recordedAtKst": "2026-06-06 19:00:46 KST",
+  "runTitle": "Vercel Production Manual QA - v8.12.98 AI assistant example questions and deploy smoke",
+  "owner": "codex",
+  "source": "manual-user-reported-production-qa",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_FQQRoEozYZQ3v9P2r1dQrRxatMDT",
+    "deploymentUrl": "https://openmanager-nvmxvgis4-skyasus-projects.vercel.app",
+    "commitSha": "d4f9b521efff0025560a9fffecfd25a1c3f51339"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "GitLab semver tag release pipeline v8.12.98 completed successfully (pipeline 2581247234, commit d4f9b521efff0025560a9fffecfd25a1c3f51339)",
+    "Frontend production deploy, AI Engine deploy job, post_deploy_smoke, and post_deploy_ai_engine_smoke all succeeded",
+    "Vercel production alias /api/version returned version 8.12.98, releaseTag v8.12.98, commitSha d4f9b521efff0025560a9fffecfd25a1c3f51339, and pipelineUrl 2581247234",
+    "Vercel production alias /api/health returned healthy database, cache, and ai services",
+    "Vercel production deployment dpl_FQQRoEozYZQ3v9P2r1dQrRxatMDT is Ready and aliased to openmanager-ai.vercel.app",
+    "Cloud Run ai-engine /health returned status ok with configured providers and routesReady=true",
+    "Cloud Run ai-engine latestReadyRevision ai-engine-00595-lk4 receives 100% traffic with cpu=1 and memory=512Mi free-tier guardrails",
+    "AI Assistant streaming response rendered in production",
+    "AI Assistant analysis basis card rendered with tool name and period metadata",
+    "AI Assistant copy and regenerate controls rendered",
+    "AI Assistant inline code highlighting rendered",
+    "Manual AI prompt: 'CPU 사용률이 가장 높은 서버는?' returned api-was-dc1-01 (96%), api-was-dc1-02 (88%), db-mysql-dc1-primary (77%) with operational interpretation and fast response",
+    "Manual AI prompt: '지금 당장 점검해야 할 서버는?' routed to Analyst for deeper RCA, identified cache-redis-dc1-01 memory 82%, warned about OOM Killer risk, suggested redis-cli checks, and asked whether to call getServerLogs next"
+  ],
+  "skippedSurfaces": [
+    "Full broad route pack was not repeated because this was a targeted post-deploy confirmation for landing example-question UX and AI assistant behavior",
+    "Modal/detail pack was not repeated; no modal or server detail code changed in v8.12.97-v8.12.98",
+    "Cloud Run admin /monitoring and /monitoring/traces were not rechecked because the changed frontend surface did not alter observability endpoints"
+  ],
+  "checks": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Two representative production AI assistant prompts returned grounded metric answers, expected Analyst routing for deeper RCA, streaming UI, evidence card, copy/regenerate controls, and inline code rendering.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab v8.12.98 release pipeline completed deploy and smoke jobs; Vercel alias version/health and deployment metadata matched the release SHA.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Analysis basis metadata rendered in the assistant, health/version endpoints were checked, and Cloud Run resource limits stayed within free-tier constraints.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-06T18:59:46+09:00",
+      "summary": "Current billing period checked via vercel usage after v8.12.98 production deploy; effective=3.2367 USD, billed=0.0000 USD, chargeCount=3045, no unexpected billed usage observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "gcp-cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-06T18:59:46+09:00",
+      "summary": "Cloud Run ai-engine stayed within free-tier guardrails: cpu=1, memory=512Mi, latestReadyRevision ai-engine-00595-lk4 at 100% traffic; /health returned status ok.",
+      "evidence": "gcloud run services describe ai-engine --region asia-northeast1 --format json; curl -s https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+      "url": "https://console.cloud.google.com/run"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "GitLab v8.12.98 release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2581247234",
+      "note": "deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke succeeded"
+    },
+    {
+      "type": "playwright-report",
+      "label": "Vercel v8.12.98 production deployment",
+      "url": "https://openmanager-nvmxvgis4-skyasus-projects.vercel.app/",
+      "note": "Deployment ID dpl_FQQRoEozYZQ3v9P2r1dQrRxatMDT; direct deployment URL is protected, production alias was verified"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Vercel /api/version v8.12.98",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Vercel /api/health v8.12.98",
+      "url": "https://openmanager-ai.vercel.app/api/health"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Cloud Run /health ai-engine 8.12.95",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "landing-ai-example-question-cards-v81298-production-deployed",
+      "title": "Landing AI example question cards moved to SystemStartSection and verified in production v8.12.98",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "GitLab pipeline 2581247234, Vercel /api/version 8.12.98, and user-provided production AI assistant QA recap",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "The AI assistant prompt observations are user-provided manual production QA evidence. Codex independently verified deployment pipeline status, Vercel alias version/health, Vercel deployment metadata, Vercel usage, and Cloud Run health/resource guardrails.",
+    "No additional deployment was required after this check because HEAD, gitlab/main, tag v8.12.98, and the Vercel production alias all point to the same release commit.",
+    "Direct Vercel deployment URL access is protected; production alias https://openmanager-ai.vercel.app was used for public endpoint verification."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.12.98 release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2581247234"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run ai-engine health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_FQQRoEozYZQ3v9P2r1dQrRxatMDT",
+      "url": "https://openmanager-nvmxvgis4-skyasus-projects.vercel.app/"
+    }
+  ]
+}
