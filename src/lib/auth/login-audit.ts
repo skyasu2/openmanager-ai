@@ -8,7 +8,10 @@ import { getSupabaseServerUrl } from '@/lib/supabase/env';
 import { getRequestCountryCode } from './guest-region-policy';
 
 const SECURITY_AUDIT_TABLE = 'security_audit_logs';
+const AUDIT_RETENTION_DAYS = 90;
+const AUDIT_RETENTION_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 let auditTableAvailable = true;
+let lastAuditCleanupAtMs = 0;
 
 type AuthProvider = 'guest' | 'github' | 'google' | 'unknown';
 type LoginActionType = 'login' | 'login_blocked';
@@ -76,6 +79,7 @@ function isMissingAuditTableError(
 
 export function resetLoginAuditRuntimeStateForTests() {
   auditTableAvailable = true;
+  lastAuditCleanupAtMs = 0;
 }
 
 export function normalizeOAuthProvider(
@@ -86,6 +90,38 @@ export function normalizeOAuthProvider(
   if (normalized === 'google') return 'google';
   if (normalized === 'guest') return 'guest';
   return 'unknown';
+}
+
+async function cleanupSecurityAuditLogsIfDue(nowMs = Date.now()) {
+  if (
+    lastAuditCleanupAtMs > 0 &&
+    nowMs - lastAuditCleanupAtMs < AUDIT_RETENTION_CLEANUP_INTERVAL_MS
+  ) {
+    return;
+  }
+
+  lastAuditCleanupAtMs = nowMs;
+  const cutoff = new Date(
+    nowMs - AUDIT_RETENTION_DAYS * 24 * 60 * 60 * 1000
+  ).toISOString();
+
+  try {
+    const { error } = await supabaseAdmin
+      .from(SECURITY_AUDIT_TABLE)
+      .delete()
+      .lt('created_at', cutoff);
+
+    if (error) {
+      logger.warn(
+        `[AuthAudit] Failed to cleanup login audit logs older than ${AUDIT_RETENTION_DAYS} days: ${error.message}`
+      );
+    }
+  } catch (error) {
+    logger.warn(
+      '[AuthAudit] Unexpected error while cleaning up old login audit logs',
+      error
+    );
+  }
 }
 
 export async function recordLoginEvent(
@@ -149,6 +185,7 @@ export async function recordLoginEvent(
       return false;
     }
 
+    await cleanupSecurityAuditLogsIfDue();
     return true;
   } catch (error) {
     logger.warn(

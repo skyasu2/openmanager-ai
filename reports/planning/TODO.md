@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-06-06 KST (B-1 라우팅 회귀 감지 스크립트 완료)
+**Last Updated**: 2026-06-06 KST (E-4 security_audit_logs retention 완료)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -23,7 +23,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| E-4 security_audit_logs retention | P2 | 장기 DB 증가 차단. live DB에서 `pg_cron` 미설치 확인, Edge Function 또는 앱 레벨 retention 경로 검토 |
 | D-2 Analyst maxSteps 하향 검증 | P3 | 2026-06-06 A-2 기준 after Analyst 표본 `n=1`, 병목 미확정. 추가 표본에서 P95 재상승 시만 착수 |
 
 ---
