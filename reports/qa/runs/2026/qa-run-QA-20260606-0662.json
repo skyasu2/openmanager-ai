@@ -1,0 +1,149 @@
+{
+  "runId": "QA-20260606-0662",
+  "recordedAt": "2026-06-06T06:33:47.793Z",
+  "recordedAtKst": "2026-06-06 15:33:47 KST",
+  "runTitle": "GitLab Release Deploy Smoke - v8.12.96 landing refactor release",
+  "owner": "codex",
+  "source": "gitlab-ci-cli-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_3k4vLQ2UAVCQxGZ4oBBnPKwodq6t",
+    "deploymentUrl": "https://openmanager-pk3y720uj-skyasus-projects.vercel.app",
+    "commitSha": "8b14676e2531a9ecceb4998864ed9bfd9054bc84"
+  },
+  "scope": "smoke",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "GitLab semver tag release pipeline v8.12.96 completed successfully (pipeline 2581172608, commit 8b14676e2531a9ecceb4998864ed9bfd9054bc84)",
+    "Frontend production deploy job and post_deploy_smoke succeeded",
+    "Vercel production / and /login smoke passed with expected version 8.12.96",
+    "Vercel /api/version returned version 8.12.96, releaseTag v8.12.96, commitSha 8b14676e2531a9ecceb4998864ed9bfd9054bc84, pipelineUrl 2581172608",
+    "Vercel /api/health returned healthy for database, cache, and ai services",
+    "AI Engine deploy job and smoke succeeded with no runtime version bump; Cloud Run /health correctly remained version 8.12.95",
+    "Cloud Run latestReadyRevision ai-engine-00595-lk4 receives 100% traffic",
+    "Cloud Run live resource limits remained cpu=1 and memory=512Mi",
+    "Vercel usage checked after production deploy; no unexpected billed usage observed"
+  ],
+  "skippedSurfaces": [
+    "Full dashboard/modal/AI conversational walkthrough not repeated because the changed surface was landing copy/framing",
+    "Cloud Run AI Engine code deployment was not required; ai-engine component version intentionally kept at 8.12.95"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab semver tag pipeline completed production deploy and smoke; Vercel version/commit and health checks matched v8.12.96.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel /api/version, /api/health, Cloud Run /health, revision traffic, and usage/resource guardrails were verified after deploy.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-06T15:32:10+09:00",
+      "summary": "Current billing period checked via vercel usage; effective=2.5854 USD, billed=0.0000 USD, no unexpected billed usage observed after v8.12.96 deploy.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "gcp-cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-06T15:32:09+09:00",
+      "summary": "Cloud Run ai-engine stayed within free-tier guardrails: cpu=1, memory=512Mi, latest revision ai-engine-00595-lk4 at 100% traffic.",
+      "evidence": "gcloud run services describe ai-engine --region asia-northeast1",
+      "url": "https://console.cloud.google.com/run"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "GitLab v8.12.96 release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2581172608",
+      "note": "deploy, deploy_ai_engine skip/smoke path, post_deploy_smoke, and post_deploy_ai_engine_smoke succeeded"
+    },
+    {
+      "type": "playwright-report",
+      "label": "Vercel v8.12.96 production deployment",
+      "url": "https://openmanager-pk3y720uj-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Vercel /api/version v8.12.96",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Cloud Run /health ai-engine 8.12.95",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "landing-ai-server-ops-framing-v81296-production-deployed",
+      "title": "Landing page AI server ops framing refactor deployed to Vercel production in v8.12.96",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "GitLab pipeline 2581172608 and Vercel /api/version 8.12.96",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Deployment path used canonical GitLab semver tag v8.12.96.",
+    "This release supersedes the v8.12.95 production frontend deployment because a new landing refactor commit arrived on main after v8.12.95 was deployed."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.12.96 release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2581172608"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run ai-engine health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_3k4vLQ2UAVCQxGZ4oBBnPKwodq6t",
+      "url": "https://openmanager-pk3y720uj-skyasus-projects.vercel.app/"
+    }
+  ]
+}
