@@ -129,12 +129,13 @@ export const AGENT_RUNTIME_POLICIES = {
     ],
   },
   // Analyst: Mistral-first (32K context needed). Typical flow:
-  //   detectAnomaliesAllServers → detectAnomalies/predictTrends → finalAnswer.
-  // Cerebras remains last because its 8K runtime cannot satisfy this path and
-  // would otherwise become a phantom primary that immediately falls through.
+  //   detectAnomaliesAllServers pre-executed as evidence (not a step).
+  //   Remaining loop: tool lookup → optional correlate → finalAnswer = 3 steps typical.
+  //   Cap at 4 (was 5): evidence pre-injection (1차 개선) removed one step; 4 covers
+  //   even multi-hop RCA without the phantom 5th step overhead.
   'Analyst Agent': {
     providerOrder: ANALYST_FIRST_PROVIDER_ORDER,
-    maxSteps: 5,
+    maxSteps: 4,
     evidenceBudget: 3,
     toolAllowlist: [
       'getServerMetrics',

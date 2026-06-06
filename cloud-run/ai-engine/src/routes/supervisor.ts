@@ -38,6 +38,7 @@ import {
   runWithQueryAsOf,
 } from '../data/query-as-of-context';
 import { logger } from '../lib/logger';
+import { getDataCache } from '../lib/cache-layer';
 import '../services/ai-sdk/domain-bootstrap';
 import { normalizeSupervisorLocalRouteDecision } from '../services/ai-sdk/supervisor-mode';
 import { normalizeSupervisorSemanticMetadata } from '../services/ai-sdk/supervisor-semantic-metadata';
@@ -405,18 +406,50 @@ supervisorRouter.post('/stream', async (c: Context) => {
           metadata,
         };
 
+        // ─── 쿼리 응답 캐시 (images/files 첨부 시 캐시 건너뜀) ───
+        const canCache = !images?.length && !files?.length && query.length >= 10;
+        const cache = canCache ? getDataCache() : null;
+        const cacheKey = canCache ? `stream:${query.trim().toLowerCase().slice(0, 120)}` : '';
+
+        if (cache && cacheKey) {
+          const cached = await cache.get<string>('analysis', cacheKey);
+          if (cached) {
+            logger.info({ cacheKey: cacheKey.slice(0, 40) }, 'SupervisorStream cache HIT — replaying');
+            // 캐시 히트: 텍스트를 빠르게 재생 (30자 단위 청크)
+            const chunkSize = 30;
+            for (let i = 0; i < cached.length; i += chunkSize) {
+              await stream.writeSSE({
+                id: String(messageId++),
+                event: 'text_delta',
+                data: JSON.stringify({ type: 'text_delta', data: cached.slice(i, i + chunkSize) }),
+              });
+              await stream.sleep(10);
+            }
+            await stream.writeSSE({
+              id: String(messageId++),
+              event: 'done',
+              data: JSON.stringify({ type: 'done', data: { cached: true, response: cached } }),
+            });
+            return;
+          }
+        }
+
+        // 캐시 미스: 정상 실행하며 텍스트 수집
+        let collectedText = '';
         await runWithQueryAsOf(queryAsOf, async () => {
           for await (const event of executeSupervisorStream(request)) {
             const safeEventData =
               event.type === 'error' ? sanitizeErrorData(event.data) : event.data;
+
+            let eventText = '';
+            if (event.type === 'text_delta') {
+              eventText = filterMaliciousOutput(sanitizeChineseCharacters(event.data as string));
+              collectedText += eventText;
+            }
+
             const eventData = JSON.stringify({
               type: event.type,
-              data:
-                event.type === 'text_delta'
-                  ? filterMaliciousOutput(
-                      sanitizeChineseCharacters(event.data as string)
-                    )
-                  : safeEventData,
+              data: event.type === 'text_delta' ? eventText : safeEventData,
             });
 
             await stream.writeSSE({
@@ -425,12 +458,17 @@ supervisorRouter.post('/stream', async (c: Context) => {
               data: eventData,
             });
 
-            // Small delay to prevent overwhelming the client
             if (event.type === 'text_delta') {
               await stream.sleep(5);
             }
           }
         });
+
+        // 응답 캐시 저장 (텍스트가 있을 때만, TTL=analysis 10분)
+        if (cache && cacheKey && collectedText.length > 50) {
+          cache.set('analysis', cacheKey, collectedText).catch(() => {});
+          logger.debug({ cacheKey: cacheKey.slice(0, 40) }, 'SupervisorStream cached response');
+        }
 
         logger.info({ eventCount: messageId }, 'SupervisorStream completed');
       } catch (error) {
