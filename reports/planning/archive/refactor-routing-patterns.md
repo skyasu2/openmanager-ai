@@ -1,8 +1,12 @@
+> Owner: project
+> Status: Completed
+> Doc type: planning
+> Last reviewed: 2026-06-06
+
 # 작업 계획서: 라우팅 패턴 파일 리팩토링
 
 **작성일**: 2026-05-29  
-**Owner**: project  
-**상태**: Approved (Phase 4B/C deterministic BFF 이관 착수)
+**완료일**: 2026-06-05
 **우선순위**: Medium  
 
 ---
@@ -21,7 +25,7 @@
 ### 목표 달성 현황
 - ✅ 파일당 200줄 이하 (routing 분할 파일 최대 204줄)
 - ✅ 기능 회귀 없음 (GitLab validate pipeline `2561100115` success)
-- ⏸ 새 패턴 추가 시 한 곳만 수정 — Phase 4에서 완결
+- ✅ 새 패턴 추가 시 한 곳만 수정 — Phase 4B/C deterministic BFF 이관으로 완결
 
 ---
 
@@ -74,7 +78,7 @@ query-routing-signals.ts  (55줄)   # re-export facade (하위 호환 유지)
 
 ---
 
-## 착수 단계
+## 완료 단계
 
 ### Phase 4A — post-decision artifact bridge
 
@@ -121,11 +125,11 @@ query-routing-signals.ts  (55줄)   # re-export facade (하위 호환 유지)
 
 #### 테스트 시나리오 (구현 전 확정)
 
-- [ ] `assistantPlan.routeDecision.artifactKind=server-snapshot` + `executionPath=client-artifact` → `server-snapshot` intent로 변환한다.
-- [ ] `routeDecision.artifactKind=server-monitoring-analysis`가 `client-artifact` 경로로 들어오면 query에서 serverId를 재해석해 intent에 포함한다.
-- [ ] `executionPath=job` 또는 `artifactKind` 없는 일반 응답은 artifact generation을 호출하지 않는다.
-- [ ] pre-send 분류로 이미 artifact generation을 시작한 경우 post-decision handler가 중복 호출하지 않는다.
-- [ ] async job SSE metadata가 `assistantPlan`/`routeDecision.artifactKind`를 클라이언트 결과까지 보존한다.
+- [x] `assistantPlan.routeDecision.artifactKind=server-snapshot` + `executionPath=client-artifact` → `server-snapshot` intent로 변환한다.
+- [x] `routeDecision.artifactKind=server-monitoring-analysis`가 `client-artifact` 경로로 들어오면 query에서 serverId를 재해석해 intent에 포함한다.
+- [x] `executionPath=job` 또는 `artifactKind` 없는 일반 응답은 artifact generation을 호출하지 않는다.
+- [x] pre-send 분류로 이미 artifact generation을 시작한 경우 post-decision handler가 중복 호출하지 않는다.
+- [x] async job SSE metadata가 `assistantPlan`/`routeDecision.artifactKind`를 클라이언트 결과까지 보존한다.
 
 #### Task 목록
 
@@ -143,7 +147,7 @@ query-routing-signals.ts  (55줄)   # re-export facade (하위 호환 유지)
 
 ---
 
-## 보류 단계
+## 완료 단계
 
 ### Phase 4B/C — artifact intent BFF 완전 이관
 
