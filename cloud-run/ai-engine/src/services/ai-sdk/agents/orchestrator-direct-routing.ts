@@ -1,6 +1,8 @@
 import type {
+  AssistantDomain,
   AssistantInputType,
   DomainIntentFrame,
+  DomainRoutingOverridePolicy,
 } from '../../../core/assistant-runtime';
 import type { PreFilterResult } from './orchestrator-types';
 import {
@@ -29,29 +31,43 @@ export interface DirectRoutingTarget {
 }
 
 export interface DirectRoutingContext {
+  domain?: AssistantDomain;
   intentFrame?: DomainIntentFrame;
   inputType?: AssistantInputType;
 }
 
 // 0.8 → 0.65: NLQ intentFrame이 routing primary signal로 실질 반영되도록 임계값 완화.
 // 기존 0.8은 실제 분류 신뢰도에 비해 높아 semantic_frame 경로가 fallback되는 빈도가 높았음.
-const SEMANTIC_AGENT_CONFIDENCE_THRESHOLD = 0.65;
-const ANALYST_PREFILTER_OVERRIDE_CAPABILITIES = new Set([
-  'monitoring.metric_current',
-  'monitoring.server_health',
-]);
-const ANALYST_PREFILTER_OVERRIDE_INTENTS = new Set([
-  'metric_current',
-  'server_health',
-]);
+const FALLBACK_DIRECT_ROUTING_POLICY: DomainRoutingOverridePolicy = {
+  defaultDirectRoutingAgent: DEFAULT_DIRECT_ROUTING_AGENT,
+  semanticConfidenceThreshold: 0.65,
+  analystOverrideCapabilities: [],
+  analystOverrideIntents: [],
+};
+
+function resolveRoutingOverridePolicy(
+  domain: AssistantDomain | undefined
+): DomainRoutingOverridePolicy {
+  return domain?.routingOverridePolicy ?? FALLBACK_DIRECT_ROUTING_POLICY;
+}
+
+function hasNormalizedPolicyValue(
+  values: readonly string[],
+  value: string | undefined
+): boolean {
+  const normalized = value?.trim().toLowerCase();
+  if (!normalized) return false;
+  return values.some((entry) => entry.trim().toLowerCase() === normalized);
+}
 
 function resolveSemanticFrameAgent(
-  intentFrame: DomainIntentFrame | undefined
+  intentFrame: DomainIntentFrame | undefined,
+  policy: DomainRoutingOverridePolicy
 ): string | undefined {
   if (!intentFrame) return undefined;
   if (
     normalizeConfidence(intentFrame.confidence) <
-    SEMANTIC_AGENT_CONFIDENCE_THRESHOLD
+    policy.semanticConfidenceThreshold
   ) {
     return undefined;
   }
@@ -88,11 +104,12 @@ function shouldAdvisorPreFilterOverrideSemanticFrame(
 function shouldAnalystPreFilterOverrideSemanticFrame(
   preFilterResult: PreFilterResult,
   semanticAgent: string,
-  context: DirectRoutingContext
+  context: DirectRoutingContext,
+  policy: DomainRoutingOverridePolicy
 ): boolean {
   if (
     !isExplicitAnalystPreFilter(preFilterResult) ||
-    semanticAgent !== DEFAULT_DIRECT_ROUTING_AGENT
+    semanticAgent !== policy.defaultDirectRoutingAgent
   ) {
     return false;
   }
@@ -100,9 +117,8 @@ function shouldAnalystPreFilterOverrideSemanticFrame(
   const capabilityId = context.intentFrame?.capabilityId?.trim().toLowerCase();
   const intent = context.intentFrame?.intent?.trim().toLowerCase();
   return (
-    (capabilityId !== undefined &&
-      ANALYST_PREFILTER_OVERRIDE_CAPABILITIES.has(capabilityId)) ||
-    (intent !== undefined && ANALYST_PREFILTER_OVERRIDE_INTENTS.has(intent))
+    hasNormalizedPolicyValue(policy.analystOverrideCapabilities, capabilityId) ||
+    hasNormalizedPolicyValue(policy.analystOverrideIntents, intent)
   );
 }
 
@@ -110,13 +126,15 @@ export function resolveDirectRoutingTarget(
   preFilterResult: PreFilterResult,
   context: DirectRoutingContext = {}
 ): DirectRoutingTarget {
-  const semanticAgent = resolveSemanticFrameAgent(context.intentFrame);
+  const policy = resolveRoutingOverridePolicy(context.domain);
+  const semanticAgent = resolveSemanticFrameAgent(context.intentFrame, policy);
   if (semanticAgent) {
     if (
       shouldAnalystPreFilterOverrideSemanticFrame(
         preFilterResult,
         semanticAgent,
-        context
+        context,
+        policy
       )
     ) {
       return {
@@ -170,10 +188,10 @@ export function resolveDirectRoutingTarget(
   }
 
   return {
-    agentName: DEFAULT_DIRECT_ROUTING_AGENT,
+    agentName: policy.defaultDirectRoutingAgent,
     confidence: preFilterResult.confidence,
     source: 'deterministic_fallback',
-    reason: 'Direct routing (default metrics fallback)',
+    reason: 'Direct routing (default direct routing fallback)',
   };
 }
 

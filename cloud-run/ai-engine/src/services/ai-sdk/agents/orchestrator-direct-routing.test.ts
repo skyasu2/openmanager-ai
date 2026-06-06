@@ -215,6 +215,7 @@ describe('resolveDirectRoutingTarget', () => {
           confidence: 0.88,
         },
         {
+          domain: monitoringDomainPack,
           intentFrame: frame({
             capabilityId: 'monitoring.metric_current',
             intent: 'metric_current',

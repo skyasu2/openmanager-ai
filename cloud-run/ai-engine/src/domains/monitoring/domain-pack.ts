@@ -366,6 +366,16 @@ export const monitoringIntentParser: DomainIntentParser = {
   },
 };
 
+const monitoringRoutingOverridePolicy: AssistantDomain['routingOverridePolicy'] = {
+  defaultDirectRoutingAgent: 'Metrics Query Agent',
+  semanticConfidenceThreshold: 0.65,
+  analystOverrideCapabilities: [
+    MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+    MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+  ],
+  analystOverrideIntents: ['metric_current', 'server_health'],
+};
+
 export const monitoringDomainPack: AssistantDomain = {
   id: MONITORING_DOMAIN_ID,
   version: MONITORING_DOMAIN_VERSION,
@@ -380,6 +390,7 @@ export const monitoringDomainPack: AssistantDomain = {
   dataSource: monitoringDomainDataSource,
   capabilities: monitoringCapabilities,
   intentParser: monitoringIntentParser,
+  routingOverridePolicy: monitoringRoutingOverridePolicy,
   evidenceProviders: [
     monitoringPeakMetricEvidenceProvider,
     monitoringLocationLoadBalanceEvidenceProvider,

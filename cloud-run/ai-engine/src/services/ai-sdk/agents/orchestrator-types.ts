@@ -14,7 +14,10 @@ import type {
   RetrievalMetadata,
 } from '../../../lib/retrieval-contract';
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
-import type { DomainDataSource } from '../../../core/assistant-runtime';
+import type {
+  AssistantDomain,
+  DomainDataSource,
+} from '../../../core/assistant-runtime';
 import type { InternalDisclosureMode } from '../internal-disclosure-policy';
 import type { SanitizedRoutingDecisionTrace } from '../routing/routing-decision-trace';
 import type { AgentLoopTelemetry } from './config/agent-loop-settings';
@@ -73,6 +76,7 @@ export interface MultiAgentRequest {
    * @see https://ai-sdk.dev/docs/ai-sdk-core/prompts#file-parts
    */
   files?: FileAttachment[];
+  domain?: AssistantDomain;
   dataSource?: DomainDataSource;
   /** Structured semantic parser metadata forwarded by the trusted supervisor. */
   metadata?: Record<string, unknown>;

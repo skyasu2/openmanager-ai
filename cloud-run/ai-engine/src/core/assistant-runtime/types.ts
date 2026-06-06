@@ -206,6 +206,13 @@ export interface DomainDataSource {
   ): Promise<DomainHistoryEntry[]>;
 }
 
+export interface DomainRoutingOverridePolicy {
+  defaultDirectRoutingAgent: string;
+  semanticConfidenceThreshold: number;
+  analystOverrideCapabilities: readonly string[];
+  analystOverrideIntents: readonly string[];
+}
+
 export interface AssistantDomain {
   id: string;
   version: string;
@@ -219,6 +226,7 @@ export interface AssistantDomain {
   capabilities?: DomainCapabilityManifest;
   intentParser?: DomainIntentParser;
   evidenceProviders?: DomainEvidenceProvider[];
+  routingOverridePolicy?: DomainRoutingOverridePolicy;
 }
 
 export interface AssistantStateStore {

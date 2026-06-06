@@ -350,6 +350,7 @@ export async function* executeSupervisorStream(
         }),
         images: request.images,
         files: request.files,
+        domain: runtimeContext.host.domain,
         dataSource: runtimeContext.host.domain.dataSource,
         metadata: request.metadata,
         domainEvidencePrompt: appendSupervisorContextPrompt(

@@ -43,6 +43,7 @@ export type {
   DomainIntentFrame,
   DomainIntentParser,
   DomainIntentScope,
+  DomainRoutingOverridePolicy,
   DomainSnapshot,
   FactPackBuilder,
   RoutingPolicy,

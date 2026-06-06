@@ -100,6 +100,7 @@ export async function* executeMultiAgentStream(
   }
 
   const directTarget = resolveDirectRoutingTarget(preFilterResult, {
+    domain: request.domain,
     intentFrame: normalizeSupervisorIntentFrame(request.metadata?.intentFrame),
     inputType: normalizeSupervisorInputType(request.metadata?.inputType),
   });

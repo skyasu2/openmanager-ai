@@ -292,10 +292,11 @@ async function executeMultiAgentMode(
       enableWebSearch: request.enableWebSearch,
       enableRAG: request.enableRAG,
       ...(request.internalDisclosureMode && {
-        internalDisclosureMode: request.internalDisclosureMode,
+      internalDisclosureMode: request.internalDisclosureMode,
       }),
       images: request.images,
       files: request.files,
+      domain: request.runtimeHost?.domain,
       dataSource: request.runtimeHost?.domain.dataSource,
       metadata: request.metadata,
       domainEvidencePrompt: buildSupervisorLogContextPrompt(request.metadata),
