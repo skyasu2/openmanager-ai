@@ -92,6 +92,23 @@ describe('preFilterQuery', () => {
     expect(result.confidence).toBe(0.88);
   });
 
+  it.each([
+    'db-mysql-dc1-backup 디스크 73% 왜 이렇게 높아?',
+    'db-mysql-dc1-backup 디스크 73% 왜 높은지 알려줘',
+    'api-was-dc1-01 CPU 81% 이유가 뭐야?',
+    'cache-redis-dc1-01 메모리 사용률 91% 때문에 느린 거야?',
+    'storage-nfs-dc1-01 disk 88% why so high?',
+  ])(
+    'routes metric RCA wording variants to Analyst instead of current-metric fallback: %s',
+    (query) => {
+      const result = preFilterQuery(query);
+
+      expect(result.shouldHandoff).toBe(true);
+      expect(result.suggestedAgent).toBe('Analyst Agent');
+      expect(result.confidence).toBe(0.88);
+    }
+  );
+
   it('answers clear service command questions directly without generic metric handoff', () => {
     const result = preFilterQuery(
       'HAProxy에서 현재 연결된 백엔드 서버 목록이랑 상태 확인하는 명령어 알려줘'
