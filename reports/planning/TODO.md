@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-06-06 KST (A-1 RCA 라우팅 보강 완료)
+**Last Updated**: 2026-06-06 KST (E-6 approval/incident 사용 여부 분석 완료)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -23,7 +23,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| E-6 approval/incident 사용 여부 확인 | P1 | Supabase cleanup 선행 분석. 삭제/유지 판단 전에 실제 request path 추적 |
 | E-1 command_vectors 잔여 이관+삭제 | P1 | 5행 잔여. knowledge_base 확인 후 DROP TABLE migration |
 | C-1 orchestrator 중간층 상수 분리 | P2 | `AssistantDomain.routingOverridePolicy` 인터페이스 추가. A-1 완료 후 진행 가능한 구조화 후보 |
 | E-2 knowledge_relationships 삭제 | P2 | 런타임 미사용 테이블. E-1 후 DROP TABLE migration |
