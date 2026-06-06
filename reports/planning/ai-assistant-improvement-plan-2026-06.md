@@ -25,10 +25,10 @@
 |------|------|------|
 | 완료 | A-2 | Langfuse production 기준선 확보. after 표본 부족으로 D-2 미착수 |
 | 완료 | A-1 | RCA 표현군 Analyst routing 보강 완료 |
-| 진행 | C-1 | orchestrator 라우팅 정책 분리로 구조 설명력과 유지보수성 개선 |
+| 완료 | C-1 | orchestrator 라우팅 정책을 `AssistantDomain.routingOverridePolicy`로 분리 |
 | 완료 | E-1/E-2/E-3/E-5/E-6 | live DB 기준 legacy GraphRAG cleanup과 extension schema 정리 확인 |
 | 진행 | E-4 | security_audit_logs retention 설계 필요. live DB에서 pg_cron 미설치 확인 |
-| 진행 | B-1 | 수동 QA 의존을 줄이는 경량 회귀 방어. A-1/C-1 후 라우팅 기준 확정 필요 |
+| 진행 | B-1 | 수동 QA 의존을 줄이는 경량 회귀 방어. A-1/C-1 완료로 기준 테이블 정의 가능 |
 | 조건부 | D-2 | A-2에서 개선 후 Analyst P95 병목이 확인되지 않아 현재 미착수 |
 | 보류 | B-2, D-1 | 상업화/장기 운영 자동화 성격. 현재 포트폴리오에는 과함 |
 
@@ -117,14 +117,14 @@
 
 ## Task C — 도메인 이식성 개선
 
-**Status: Proceed / Portfolio architecture cleanup**
+**Status: Completed (2026-06-06)**
 
 ### C-1. orchestrator-direct-routing.ts 중간층 상수 분리
 
 **현상**: `orchestrator-direct-routing.ts` 43% 코드가 모니터링 특화 상수. 새 도메인 포팅 시 이 파일 수동 수정 필요.
 
 **작업**:
-- [ ] `AssistantDomain` 인터페이스에 `routingOverridePolicy` 선택 필드 추가
+- [x] `AssistantDomain` 인터페이스에 `routingOverridePolicy` 선택 필드 추가
   ```typescript
   routingOverridePolicy?: {
     analystOverrideCapabilities: string[];
@@ -133,9 +133,15 @@
     semanticConfidenceThreshold: number;
   };
   ```
-- [ ] `orchestrator-direct-routing.ts`가 위 필드를 읽도록 리팩터링 (하드코딩 제거)
-- [ ] `monitoring/domain-pack.ts`에 현재 값 이전
-- [ ] 회귀 테스트: 기존 라우팅 동작 유지 확인
+- [x] `orchestrator-direct-routing.ts`가 위 필드를 읽도록 리팩터링 (하드코딩 제거)
+- [x] `monitoring/domain-pack.ts`에 현재 값 이전
+- [x] 회귀 테스트: 기존 라우팅 동작 유지 확인
+
+**결과**:
+- `AssistantDomain.routingOverridePolicy`에 default direct agent, semantic confidence threshold, Analyst override capability/intent 목록을 추가
+- monitoring domain pack이 기존 `metric_current`/`server_health` Analyst override 정책을 소유
+- non-stream/stream multi-agent request가 runtime host domain을 direct router에 전달
+- 검증: AI Engine `type-check`, AI Engine 전체 test, root `test:contract`, root `lint`, root `type-check`, root `test:quick` 통과
 
 **예상 작업량**: 중간 (인터페이스 수정 + 파일 2개 리팩터링)
 **SDD 게이트**: test(spec) 선행 커밋 필요
@@ -309,14 +315,14 @@ live DB에서 `pg_cron`은 설치되어 있지 않음.
 진행 대상
   1. A-2  Analyst 지연 기준선 실측       → 완료. after n=1이라 D-2는 미착수
   2. A-1  "왜" RCA 라우팅 보강           → 완료. RCA 표현군 Analyst routing 보강
-  3. C-1  orchestrator 중간층 분리       → 다음 구조화 후보
+  3. C-1  orchestrator 중간층 분리       → 완료. routingOverridePolicy로 domain pack 소유화
   4. E-6  approval/incident 사용 여부    → 완료. incident_reports 삭제 후보, approval_history API 호환성 보류
   5. E-1  command_vectors 이관+삭제      → 완료 확인. live DB에서 테이블 없음
   6. E-2  knowledge_relationships 삭제   → 완료 확인. live DB에서 테이블 없음
   7. E-3  knowledge_base.embedding 제거  → 완료 확인. live DB에서 컬럼 없음
   8. E-5  Extension 스키마 migration     → 완료 확인. vector/pg_trgm extensions schema
   9. E-4  security_audit_logs retention  → 다음 DB hygiene 후보. pg_cron 미설치라 대체 경로 필요
- 10. B-1  라우팅 회귀 감지 스크립트     → C-1 이후 QA 신뢰도 보강
+ 10. B-1  라우팅 회귀 감지 스크립트     → 다음 QA 신뢰도 보강 후보
  11. D-2  Analyst maxSteps 하향 검증     → A-2에서 병목 확인 시에만
 
 보류 대상

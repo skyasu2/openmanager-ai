@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-06-06 KST (planning 정합성 정리 및 Supabase E-1~E-3/E-5 live 상태 확인)
+**Last Updated**: 2026-06-06 KST (C-1 orchestrator routing override policy 완료)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -23,9 +23,8 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| C-1 orchestrator 중간층 상수 분리 | P2 | `AssistantDomain.routingOverridePolicy` 인터페이스 추가. A-1 완료 후 진행 가능한 구조화 후보 |
 | E-4 security_audit_logs retention | P2 | 장기 DB 증가 차단. live DB에서 `pg_cron` 미설치 확인, Edge Function 또는 앱 레벨 retention 경로 검토 |
-| B-1 라우팅 회귀 감지 스크립트 | P2 | 표준 질문의 expected agent/provider 이탈 자동 감지. A-2 기준선 확보 및 A-1 완료, C-1 이후 진행 권장 |
+| B-1 라우팅 회귀 감지 스크립트 | P2 | 표준 질문의 expected agent/provider 이탈 자동 감지. A-2/A-1/C-1 기준선 확보 후 진행 권장 |
 | D-2 Analyst maxSteps 하향 검증 | P3 | 2026-06-06 A-2 기준 after Analyst 표본 `n=1`, 병목 미확정. 추가 표본에서 P95 재상승 시만 착수 |
 
 ---
