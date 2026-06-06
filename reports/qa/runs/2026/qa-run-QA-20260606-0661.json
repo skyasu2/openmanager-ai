@@ -1,0 +1,173 @@
+{
+  "runId": "QA-20260606-0661",
+  "recordedAt": "2026-06-06T06:20:08.317Z",
+  "recordedAtKst": "2026-06-06 15:20:08 KST",
+  "runTitle": "GitLab Release Deploy Smoke - v8.12.95 RCA routing and observability release",
+  "owner": "codex",
+  "source": "gitlab-ci-cli-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_36r1xN5jRjGiDf79VkCbTZWUhsoW",
+    "deploymentUrl": "https://openmanager-1pjlx73xi-skyasus-projects.vercel.app",
+    "commitSha": "7af581df10eb74737613f74d1631fa871d4be917"
+  },
+  "scope": "smoke",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "observability-pack",
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "GitLab semver tag release pipeline v8.12.95 completed successfully (pipeline 2581156317, commit 7af581df10eb74737613f74d1631fa871d4be917)",
+    "Frontend production deploy job and post_deploy_smoke succeeded",
+    "AI Engine Cloud Run deploy job and post_deploy_ai_engine_smoke succeeded",
+    "Vercel production / and /login smoke passed with expected version 8.12.95",
+    "Vercel /api/version returned version 8.12.95, releaseTag v8.12.95, commitSha 7af581df10eb74737613f74d1631fa871d4be917, pipelineUrl 2581156317",
+    "Vercel /api/health returned healthy for database, cache, and ai services",
+    "Cloud Run /health returned version 8.12.95 with supabase, upstash, groq, mistral, zai, cerebras, tavily, gemini, langfuse, and cloudRunApi configured",
+    "Cloud Run latestReadyRevision ai-engine-00595-lk4 receives 100% traffic",
+    "Cloud Run unauthenticated /monitoring returned authentication-required response as expected",
+    "Cloud Run live resource limits remained cpu=1 and memory=512Mi",
+    "Vercel usage checked after production deploy; no unexpected billed usage observed"
+  ],
+  "skippedSurfaces": [
+    "Full Playwright dashboard/modal walkthrough not repeated because the changed deployed surface was AI Engine RCA routing plus observability tooling",
+    "Conversational AI five-question QA not repeated in this smoke run; GitLab AI Engine smoke and Vercel health/version checks were the deployment gate"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab semver tag pipeline completed deploy and smoke for both Vercel frontend and Cloud Run AI Engine; live health/version checks matched v8.12.95.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel /api/version, /api/health, Cloud Run /health, revision traffic, and usage/resource guardrails were verified after deploy.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The release includes RCA routing tests and implementation, and the deployed AI Engine reports v8.12.95 healthy.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-06T15:16:38+09:00",
+      "summary": "Current billing period checked via vercel usage; effective=2.5854 USD, billed=0.0000 USD, no unexpected billed usage observed after v8.12.95 deploy.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "gcp-cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-06T15:17:16+09:00",
+      "summary": "Cloud Run ai-engine stayed within free-tier guardrails: cpu=1, memory=512Mi, latest revision ai-engine-00595-lk4 at 100% traffic.",
+      "evidence": "gcloud run services describe ai-engine --region asia-northeast1",
+      "url": "https://console.cloud.google.com/run"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "GitLab v8.12.95 release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2581156317",
+      "note": "deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke succeeded"
+    },
+    {
+      "type": "playwright-report",
+      "label": "Vercel v8.12.95 production deployment",
+      "url": "https://openmanager-1pjlx73xi-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Vercel /api/version v8.12.95",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Cloud Run /health v8.12.95",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "rca-routing-why-cause-v81295-production-deployed",
+      "title": "RCA why/cause routing fix deployed to Cloud Run production in v8.12.95",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "GitLab pipeline 2581156317 and Cloud Run /health version 8.12.95",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "langfuse-latency-fallback-v81295-production-deployed",
+      "title": "Langfuse latency fallback display fix released in v8.12.95",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Vercel /api/version and GitLab pipeline 2581156317",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Deployment path used canonical GitLab semver tag v8.12.95; no manual Cloud Run deploy fallback was used.",
+    "Root artifact push blocker was resolved by moving local screenshots to tmp/root-artifacts/2026-06-06 before pushing the release tag."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.12.95 release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2581156317"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run ai-engine health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_36r1xN5jRjGiDf79VkCbTZWUhsoW",
+      "url": "https://openmanager-1pjlx73xi-skyasus-projects.vercel.app/"
+    }
+  ]
+}
