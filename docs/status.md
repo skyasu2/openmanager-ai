@@ -4,12 +4,12 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-06-06
+> Last reviewed: 2026-06-07
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-06-06 | **현재 버전 스냅샷**: v8.12.99
+**상태 스냅샷 기준일**: 2026-06-07 | **현재 버전 스냅샷**: v8.12.100
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.100** (2026-06-07) — Bug Fixes: ai-engine: handle risky and stable server dual queries; Bug Fixes: qa: accept npm-captured routing trace JSON; Tests: qa: record 24차 AI assistant evaluation v8.12.99
 - **v8.12.99** (2026-06-06) — Features: security audit retention implement to pass specs; Features: routing regression check implement to pass specs; Features: orchestrator routing override policy implement to pass specs
 - **v8.12.96** (2026-06-06) — Code Refactoring: landing: remove simulator/portfolio framing, focus on AI server ops; Tests: qa: record v8.12.95 release smoke
 - **v8.12.95** (2026-06-06) — Bug Fixes: observability: preserve Langfuse trace latency fallback; Bug Fixes: observability: polish langfuse check cli output; Features: RCA routing implement to pass specs
 - **v8.12.94** (2026-06-05) — notable user-facing changes 없음
-- **v8.12.93** (2026-06-05) — Features: config: activate Artifact BFF LLM classifier in production; Tests: qa: record Langfuse baseline start; Tests: qa: record v8.12.92 artifact BFF release QA
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
