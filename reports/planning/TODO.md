@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-06-06 KST (AI 어시스턴트 구조·성능 분석 완료, 개선 계획서 작성)
+**Last Updated**: 2026-06-06 KST (포트폴리오 기준 잔여 작업 재정렬)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -24,18 +24,9 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | A-1 "왜/원인" RCA 라우팅 보강 | P1 | `orchestrator-direct-routing.ts` pre-filter에 RCA 패턴 추가. 계획서: [ai-assistant-improvement-plan-2026-06.md](ai-assistant-improvement-plan-2026-06.md) |
-| A-2 Analyst P95 production 실측 | P1 | `langfuse:check --json`으로 before/after 비교. Claude 직접 수행 |
-| E-6 approval/incident 사용 여부 확인 | P1 | `approval-store-supabase.ts` request path 추적. 30분 분석 |
-| E-1 command_vectors 잔여 이관+삭제 | P1 | 5행 잔여. knowledge_base 확인 후 DROP TABLE migration |
-| E-2 knowledge_relationships 삭제 | P2 | 런타임 미사용 테이블. DROP TABLE migration |
-| E-3 knowledge_base.embedding 컬럼 제거 | P2 | cosine path 비활성, 벡터 데이터 삭제. E-1·E-2 완료 후 |
-| E-4 security_audit_logs retention | P2 | pg_cron 또는 Edge Function으로 90일 자동 정리 |
-| B-1 라우팅 회귀 감지 스크립트 | P2 | `scripts/qa/routing-regression-check.js` + 기준 테이블. Codex 위임 적합 |
-| C-1 orchestrator 중간층 상수 분리 | P2 | `AssistantDomain.routingOverridePolicy` 인터페이스 추가. 도메인 이식성 55%→70% |
-| E-5 Extension 스키마 migration | P3 | Supabase advisor 경고 해소. E-3 완료 후 |
-| B-2 Langfuse Score 자동 기록 | P3 | LLM-as-judge 기초, 상업화 준비 시 |
-| D-1 Langfuse 주간 자동 집계 | P3 | CI 주 1회 실행 |
-| D-2 Analyst maxSteps 하향 검증 | P3 | A-2 완료 후 |
+| A-2 Analyst P95 production 실측 | P1 | `npm run langfuse:check`으로 before/after 기준선 확보. 코딩 없이 포트폴리오 성능 근거 보강 |
+| B-1 라우팅 회귀 감지 스크립트 | P2 | 표준 질문의 expected agent/provider 이탈 자동 감지. A-2 기준선 확정 후 진행 |
+| D-2 Analyst maxSteps 하향 검증 | P3 | A-2에서 Analyst P95 병목이 실제로 확인될 때만 착수 |
 
 ---
 
@@ -43,7 +34,15 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| _None_ | - | 현재 보류 중인 작업 없음. |
+| E-6 approval/incident 사용 여부 확인 | Hold | 포트폴리오 체감 개선 없음. 삭제/정리 필요가 재확인될 때 분석 |
+| E-1 command_vectors 잔여 이관+삭제 | Hold | DB maintenance 성격. 비가역 migration이므로 현 단계 보류 |
+| E-2 knowledge_relationships 삭제 | Hold | DB maintenance 성격. E-1 착수 전까지 보류 |
+| E-3 knowledge_base.embedding 컬럼 제거 | Hold | DB maintenance 성격. 실제 DB 용량/성능 압박이 생길 때 재검토 |
+| E-4 security_audit_logs retention | Hold | 장기 운영 hygiene. 포트폴리오 공개 품질에는 직접 영향 작음 |
+| E-5 Extension 스키마 migration | Hold | Supabase advisor 대응 성격. 상업화/운영 확장 전까지 보류 |
+| B-2 Langfuse Score 자동 기록 | Hold | LLM-as-judge/evals 기초. 상업화 준비 시 재개 |
+| D-1 Langfuse 주간 자동 집계 | Hold | 장기 운영 자동화. 현재는 `npm run langfuse:check` 수동 점검으로 충분 |
+| C-1 orchestrator 중간층 상수 분리 | Hold | 새 도메인 이식성 개선. 포트폴리오 단계에서는 회귀 위험 대비 체감 효과 낮음 |
 
 ---
 
