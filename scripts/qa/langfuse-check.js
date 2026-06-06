@@ -49,8 +49,6 @@ function fetchJson(url, authToken, timeoutMs = 12_000) {
       method: 'GET',
     };
 
-    const timer = setTimeout(() => reject(new Error('Request timed out')), timeoutMs);
-
     const req = https.request(options, (res) => {
       let body = '';
       res.setEncoding('utf8');
@@ -64,6 +62,10 @@ function fetchJson(url, authToken, timeoutMs = 12_000) {
         }
       });
     });
+
+    const timer = setTimeout(() => {
+      req.destroy(new Error('Request timed out'));
+    }, timeoutMs);
 
     req.on('error', (err) => { clearTimeout(timer); reject(err); });
     req.end();
@@ -81,9 +83,10 @@ const RED   = '\x1b[31m';
 const CYAN  = '\x1b[36m';
 const BLUE  = '\x1b[34m';
 const MAGENTA = '\x1b[35m';
+const IS_TTY = Boolean(process.stdout.isTTY);
 
 function colorize(str, code) {
-  if (process.stdout.isTTY === false) return str;
+  if (!IS_TTY) return str;
   return `${code}${str}${RESET}`;
 }
 
@@ -103,6 +106,17 @@ function fmtTimestamp(iso) {
   const d = new Date(iso);
   const pad = (n) => String(n).padStart(2, '0');
   return `${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function resolveTraceLatencyMs(trace) {
+  const info = extractRoutingInfo(trace);
+  const metadataLatencyMs = Number(info.durationMs);
+  if (Number.isFinite(metadataLatencyMs)) return metadataLatencyMs;
+
+  const traceLatencySeconds = Number(trace.latency);
+  if (Number.isFinite(traceLatencySeconds)) return traceLatencySeconds * 1000;
+
+  return null;
 }
 
 function latencyColor(ms) {
@@ -133,7 +147,7 @@ function extractRoutingInfo(trace) {
   return {
     provider:   meta.provider    || meta.modelId    || null,
     modelId:    meta.modelId     || null,
-    durationMs: meta.durationMs  || meta.ttfbMs     || trace.latency || null,
+    durationMs: meta.durationMs  || meta.ttfbMs     || null,
     finalAgent: meta.finalAgent  || null,
     toolsCalled: meta.toolsCalled || [],
     success:    meta.success != null ? meta.success : null,
@@ -154,7 +168,7 @@ function printTraceRow(trace, idx) {
   const provStr = truncate(info.provider || 'det', 12);
   const prov = colorize(provStr.padEnd(12), providerColor(info.provider || 'deterministic'));
 
-  const latMs = info.durationMs || (trace.latency ? trace.latency * 1000 : null);
+  const latMs = resolveTraceLatencyMs(trace);
   const lat = colorize(fmtMs(latMs).padStart(7), latencyColor(latMs));
 
   const agentStr = info.finalAgent ? truncate(info.finalAgent, 14) : '—';
@@ -183,14 +197,14 @@ function printSummary(traces) {
   }
 
   const latencies = main
-    .map(t => extractRoutingInfo(t).durationMs || (t.latency ? t.latency * 1000 : null))
-    .filter(Boolean);
+    .map(resolveTraceLatencyMs)
+    .filter((latencyMs) => Number.isFinite(latencyMs));
 
   const avgLat = latencies.length
     ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length)
     : null;
   const p95Lat = latencies.length
-    ? latencies.sort((a, b) => a - b)[Math.floor(latencies.length * 0.95)]
+    ? [...latencies].sort((a, b) => a - b)[Math.ceil(latencies.length * 0.95) - 1]
     : null;
 
   const providers = {};
@@ -261,7 +275,7 @@ async function main() {
   const fetchLimit = query ? Math.max(limit, 100) : limit;
   const url = `${baseUrl}/api/public/traces?limit=${fetchLimit}`;
 
-  if (!wantJson) process.stdout.write(colorize(`Langfuse 조회 중 (limit=${fetchLimit})…`, DIM) + '\r');
+  if (!wantJson && IS_TTY) process.stdout.write(colorize(`Langfuse 조회 중 (limit=${fetchLimit})…`, DIM) + '\r');
 
   let result;
   try {
@@ -276,7 +290,7 @@ async function main() {
     process.exit(1);
   }
 
-  if (!wantJson) process.stdout.write('\x1b[2K\r');
+  if (!wantJson && IS_TTY) process.stdout.write('\x1b[2K\r');
 
   let traces = result.data.data || [];
 
