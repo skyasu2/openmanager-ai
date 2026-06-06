@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-06-05 KST (Routing Phase 4B/C 구현/검증 완료)
+**Last Updated**: 2026-06-06 KST (AI 어시스턴트 구조·성능 분석 완료, 개선 계획서 작성)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -23,7 +23,13 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| _None_ | - | 현재 대기 중인 작업 없음. |
+| A-1 "왜/원인" RCA 라우팅 보강 | P1 | `orchestrator-direct-routing.ts` pre-filter에 RCA 패턴 추가. 계획서: [ai-assistant-improvement-plan-2026-06.md](ai-assistant-improvement-plan-2026-06.md) |
+| A-2 Analyst P95 production 실측 | P1 | `langfuse:check --json`으로 before/after 비교. Claude 직접 수행 |
+| B-1 라우팅 회귀 감지 스크립트 | P2 | `scripts/qa/routing-regression-check.js` + 기준 테이블. Codex 위임 적합 |
+| C-1 orchestrator 중간층 상수 분리 | P2 | `AssistantDomain.routingOverridePolicy` 인터페이스 추가. 도메인 이식성 55%→70% |
+| B-2 Langfuse Score 자동 기록 | P3 | LLM-as-judge 기초, 상업화 준비 시 |
+| D-1 Langfuse 주간 자동 집계 | P3 | CI 주 1회 실행 |
+| D-2 Analyst maxSteps 하향 검증 | P3 | A-2 완료 후 |
 
 ---
 

@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-05-07
+> Last reviewed: 2026-06-05
 > Canonical: docs/guides/observability.md
 > Tags: observability,langfuse,monitoring
 
@@ -67,6 +67,31 @@ LANGFUSE_BASE_URL=https://us.cloud.langfuse.com   # US 리전 (기본값)
 ```
 
 ### 1.4 점검 방법
+
+#### 방법 0: `npm run langfuse:check` (가장 빠른 CLI 조회)
+
+브라우저 로그인 없이 `.env.local` 키로 Langfuse REST API 직접 호출. **Claude/AI 에이전트가 사용하기에 가장 적합한 방법**.
+
+```bash
+npm run langfuse:check                   # 최근 20건 트레이스 요약
+npm run langfuse:check -- --limit 50     # 50건
+npm run langfuse:check -- --q supervisor # 이름 필터
+npm run langfuse:check -- --json         # 원시 JSON (파이프라인용)
+```
+
+출력 예시:
+```
+── Langfuse 최근 트레이스 ──────────────────────────────────
+## 날짜·시각       트레이스 이름           Provider  Latency  Agent     St
+ 1  06-05 23:09  supervisor-execution  mistral   6.3s   Analyst   ok
+ 2  05-26 19:36  supervisor-execution  det       2.0s   —         ok
+
+── 집계 통계 ──
+  평균 지연: 4.0s  P95: 10.4s
+  Provider: deterministic ×10  mistral ×3  groq ×2
+```
+
+**전제**: `.env.local`에 `LANGFUSE_SECRET_KEY`, `LANGFUSE_PUBLIC_KEY` 설정 필요.
 
 #### 방법 1: `/monitoring` 엔드포인트 (사용량 상태)
 

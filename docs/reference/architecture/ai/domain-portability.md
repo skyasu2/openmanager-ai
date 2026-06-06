@@ -4,15 +4,46 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-17
+> Last reviewed: 2026-06-05
 > Canonical: docs/reference/architecture/ai/domain-portability.md
-> Tags: ai,domain-portability,artifacts,frontend,cloud-run
+> Tags: ai,domain-portability,artifacts,frontend,cloud-run,reuse
 
 ## Purpose
 
 이 문서는 OpenManager AI Assistant 구현을 참조해 다른 도메인의 AI 어시스턴트를 만들 때 필요한 backend/frontend 경계를 설명한다.
 
 범위는 “같은 앱에 여러 도메인을 동시에 운영하는 제품 기능”이 아니라, 현재 구현을 다른 도메인 프로젝트로 포팅하거나 새 도메인 shell을 만들 때의 기준이다.
+
+## 실측 재활용 수치 (2026-06-05 코드 분석)
+
+코드 레이어별 도메인 특화 비율 (실제 줄 수 측정):
+
+| 파일 / 레이어 | 모니터링 특화 | 범용 | 비고 |
+|-------------|:-----------:|:----:|------|
+| `route-decision.ts` | 20% | 80% | 상수 정의만 교체 대상 |
+| `chat-artifacts/types.ts` | 24% | 76% | 아티팩트 타입 정의만 교체 |
+| `supervisor/route.ts` | 32% | 68% | `buildServerContextMessage` 교체 필요 |
+| `orchestrator-direct-routing.ts` | **43%** | 57% | ⚠️ 중간층 — 아래 주의사항 참조 |
+| `useAIChatCore.ts` | 5% | 95% | 거의 범용 |
+| `domain-pack.ts` | 66% | 34% | 완전 교체 대상 (의도된 설계) |
+
+**전체 코드 재활용 비율**: ~73% (코드 기준) / 실용 기준 **55~60%**
+
+실용 기준이 낮은 이유: `orchestrator-direct-routing.ts` 중간층에 모니터링 상수가 남아있어 새 도메인 적용 시 이 파일도 수정 필요.
+
+### ⚠️ orchestrator-direct-routing.ts 중간층 이슈
+
+이 파일은 이론적으로 domain-agnostic이어야 하지만, 현재 43% 코드가 모니터링 특화 상수를 포함한다:
+
+```typescript
+// 모니터링 특화 상수 (교체 필요)
+const ANALYST_PREFILTER_OVERRIDE_CAPABILITIES = ['metric_current', 'server_health', ...];
+const ANALYST_PREFILTER_OVERRIDE_INTENTS = ['anomaly', 'rca'];
+const DEFAULT_DIRECT_ROUTING_AGENT = 'Metrics Query Agent';
+const SEMANTIC_AGENT_CONFIDENCE_THRESHOLD = 0.65;
+```
+
+새 도메인 포팅 시 이 상수들을 `AssistantDomain` 인터페이스의 `capabilities` 매니페스트에서 읽도록 리팩터링하면 완전한 도메인 격리가 가능하다. 현재는 수동 복사+수정이 필요하다.
 
 ## Current Shape
 
@@ -311,4 +342,3 @@ For backend-only domain changes:
 cd cloud-run/ai-engine && npm run type-check
 cd cloud-run/ai-engine && npm run test
 ```
-
