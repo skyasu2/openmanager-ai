@@ -3,7 +3,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-29
+> Last reviewed: 2026-06-06
 > Canonical: docs/reference/architecture/infrastructure/redis-usage.md
 > Tags: redis,upstash,cache,rate-limit,job-queue,infrastructure
 
