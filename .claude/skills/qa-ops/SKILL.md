@@ -24,6 +24,7 @@ disable-model-invocation: true
 
 - 실패 원인, 무료 티어 적합성, 다음 액션 분석이 먼저 필요하면 `state-triage`를 선행합니다.
 - preview/production env drift 가능성이 보이면 `env-sync`를 먼저 실행하고 QA를 재개합니다.
+- AI routing, provider mix, latency, failure, fallback, Langfuse trace health가 범위이면 browser-heavy QA 전에 `ai-observability`를 먼저 사용합니다. Langfuse는 내부 AI-call 증거를 좁히고, Playwright는 사용자 화면 증거를 검증합니다.
 
 ## Trigger Keywords
 
@@ -50,11 +51,11 @@ disable-model-invocation: true
 - `cat reports/qa/QA_STATUS.md` — 상세 현황
 - `cat public/data/qa/validation-evidence.json | python3 -m json.tool` — public snapshot 확인
 
-2. 환경 선택.
+1. 환경 선택.
 - 기본: **Vercel Production + Playwright MCP** (`https://openmanager-ai.vercel.app`)
 - AI 기능 검증 불필요 시: 로컬 dev 서버 QA 허용
 
-3. 시나리오 실행.
+1. 시나리오 실행.
 - 공통: landing/login/dashboard/modal
 - AI 필수: AI assistant/chat/분석 응답 경로
 - 비AI: UI/카피/레이아웃/기본 인증 동선 중심
@@ -64,6 +65,7 @@ disable-model-invocation: true
 
 3.5 대화형 AI QA (AI 관련 변경 시 필수 추가 단계).
 - AI 프롬프트, 에이전트 라우팅, 지식 베이스, precomputed-state/data source, 응답 파싱, 출력 포맷 동작이 변경될 때 실행
+- routing/provider/latency/failure/fallback 동작이 범위이면 브라우저 질의 전에 `ai-observability`로 작은 Langfuse baseline을 확보합니다.
 - 표준 5개 질문을 AI 어시스턴트에게 순서대로 질의 (상세: `docs/guides/testing/test-strategy.md` § 1.5)
   1. "현재 서버 전체 상태를 요약해줘"
   2. "web-server-01 상태를 자세히 알려줘"
@@ -81,13 +83,13 @@ disable-model-invocation: true
 - Vision 라이브 smoke를 실행했을 때는 provider, model, 이미지 수, 합격/불합격을 `reports/qa`에 기록하고 추가 샘플 수집을 위해 재실행하지 않는다.
 - Z.AI GLM Vision fallback 라이브 smoke는 선택 테스트에서 가정하지 않는다. 실제 이미지 호출에서 `provider=zai`, `modelId=glm-4.6v-flash`가 명시적으로 실행된 경우에만 검증됨으로 표시한다.
 
-4. 결과 기록(필수).
+1. 결과 기록(필수).
 - `cp reports/qa/templates/qa-run-input.example.json /tmp/qa-run-input.json`
 - JSON 편집 후: `npm run qa:record -- --input /tmp/qa-run-input.json`
 - `npm run qa:status`
 - `broad`/`release-gate` run은 `expertAssessments`와 `usageChecks` 포함 필수
 
-5. 결과 보고.
+1. 결과 보고.
 - 항상: target, run id, scope, checks, release decision
 - 관련 있을 때만: covered/skipped surfaces, usage, expert gaps, completed/pending, next priority
 
@@ -175,6 +177,7 @@ End with one short operator note for the highest remaining risk or `none in test
 
 ## Changelog
 
+- 2026-06-06: v1.5.3 - AI routing/provider/latency QA 전에 ai-observability/Langfuse precheck를 사용하도록 연결
 - 2026-02-26: v1.0.0 - 최종 QA 운영/누적 추적 스킬 신설
 - 2026-03-14: v1.1.0 - `state-triage`, `env-sync` 선행 규칙 추가
 - 2026-03-25: v1.2.0 - Data Parity Contract 검증 단계 추가 (±1 슬롯 기준)

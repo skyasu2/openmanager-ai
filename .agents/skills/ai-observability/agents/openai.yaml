@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenManager AI Observability"
+  short_description: "Inspect AI routing, latency, providers, and Langfuse traces"
+  default_prompt: "Use $openmanager-ai-observability to inspect Langfuse traces, provider distribution, AI routing, latency, failures, and fallback behavior before deciding whether browser QA is needed."

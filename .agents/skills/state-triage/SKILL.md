@@ -34,6 +34,7 @@ Turn recent evidence into a concrete next step before editing code or rerunning 
 - `security-regression`: blocked prompt UX, raw JSON leakage, auth hardening, CSP/security contract regression
 - `observability-gap`: behavior works but automation or accessibility cannot observe it well
 - `qa-metadata`: tracker/public snapshot/proof/summary semantics drift even though the app itself works
+- For `observability-monitoring`, `latency-or-cold-start`, `ai-provider-quota`, or AI routing symptoms, use `$ai-observability` and `npm run langfuse:check` before expanding to browser-heavy QA.
 
 1. Map the symptom to the smallest code path that can explain it.
 - First map it to the user-facing product surface:
@@ -76,6 +77,7 @@ Turn recent evidence into a concrete next step before editing code or rerunning 
 - Use `$qa-ops` after `qa-checklist-fix` so the new surface coverage is exercised immediately.
 - Use `$cloud-run` when the next step involves Cloud Run deploy, cost check, or GCP verification.
 - Use `$env-sync` when preview and production differ, health checks fail after deploy, or missing runtime secrets are the likely cause.
+- Use `$ai-observability` when the next step needs Langfuse trace evidence, provider distribution, routing quality, latency, failures, or fallback status.
 
 ## Output format
 

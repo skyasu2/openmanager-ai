@@ -22,6 +22,7 @@ Final QA operation workflow with cumulative tracking.
 - If the user asks `what is wrong`, `why did this fail`, `can this be fixed within free tier`, or `what should we do next after QA`, use `$state-triage` before rerunning broad QA.
 - Use this skill after triage when the next action is actually to execute QA, validate a fix on Vercel, or record a run.
 - If triage points to preview or production env drift, use `$env-sync` before broad QA so you do not record a known config failure as a product regression.
+- If the scope is AI routing, provider mix, latency, failure, fallback, or Langfuse trace health, use `$ai-observability` before browser-heavy QA. Langfuse narrows internal AI-call symptoms; Playwright validates user-facing UI proof.
 
 ## Execute this workflow
 
@@ -60,6 +61,7 @@ Final QA operation workflow with cumulative tracking.
 
 1. Run conversational AI QA for AI-related changes.
 - Required when AI prompt, agent routing, knowledge base, precomputed-state/data source, response parsing, or output formatting behavior changes.
+- Before browser interaction, capture a small Langfuse baseline through `$ai-observability` when routing, provider, latency, failure, or fallback behavior is in scope.
 - Ask the AI Assistant the standard five questions in order. Details: `docs/guides/testing/test-strategy.md` § 1.5.
   1. "현재 서버 전체 상태를 요약해줘"
   2. "web-server-01 상태를 자세히 알려줘"
@@ -222,6 +224,7 @@ Close with one short operator note that explains the highest remaining risk or s
 
 ## Changelog
 
+- 2026-06-06: v1.5.5 - Added ai-observability/Langfuse precheck guidance for AI routing, provider, latency, failure, and fallback QA.
 - 2026-04-28: v1.4.0 - Added Async Job + SSE Probing Playbook for Cloud Tasks dispatch QA, including EventSource Performance API capture, CSRF-safe UI flow, reconnect interpretation, and health badge separation.
 - 2026-05-07: v1.5.0 - Added conversational AI QA for AI-related changes with the standard five-question set and tracker recording guidance.
 - 2026-05-07: v1.5.1 - Aligned QA selection with risk-based test methodology, cost guardrails, and representative live-run limits.

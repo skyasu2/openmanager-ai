@@ -55,6 +55,8 @@ curl -s "$CLOUD_RUN_AI_URL/api/ai/providers" -H "X-API-Key: $CLOUD_RUN_API_SECRE
 - `latency-or-cold-start`: 첫 호출 지연, retry 후 회복
 - `ai-provider-quota`: AI 응답 없음/빈 응답 → rate limit 또는 model 접근 불가 (Groq RPD 1,000/일, Z.AI 장애 시 Reporter fallback 경로 확인)
 - `observability-gap`: 기능은 되지만 자동화 관측이 약함
+- `observability-monitoring`: timing header, trace, Langfuse, sampled traceId visibility 문제
+- `observability-monitoring`, `latency-or-cold-start`, `ai-provider-quota`, AI routing 증상은 browser-heavy QA 전에 `ai-observability`와 `npm run langfuse:check`로 trace evidence를 확인합니다.
 
 1. 최소 코드 경로로 축소.
 - UI만 깨졌으면 컴포넌트/훅
@@ -82,6 +84,7 @@ curl -s "$CLOUD_RUN_AI_URL/api/ai/providers" -H "X-API-Key: $CLOUD_RUN_API_SECRE
 ## Related Skills
 
 - `qa-ops` - 최종 QA/기록
+- `ai-observability` - Langfuse trace, provider distribution, routing, latency, failure/fallback 확인
 - `cloud-run` - Cloud Run deploy/cost
 - `env-sync` - preview/production env drift 정리
 
@@ -98,6 +101,7 @@ State Triage
 
 ## Changelog
 
+- 2026-06-06: v2.3.0 - AI observability symptoms에 Langfuse precheck skill 연결
 - 2026-05-21: v2.2.0 - Z.AI Reporter primary 맥락 추가, Groq RPD 병목 ai-provider-quota 분류에 명시
 - 2026-04-25: v2.1.0 - Cloud Run URL 하드코딩 제거, provider/model 무료 여부 단정 제거
 - 2026-03-14: v1.0.0 - QA 이후 원인 분류/다음 액션 결정용 스킬 추가

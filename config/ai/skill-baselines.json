@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastReviewed": "2026-05-29",
+  "lastReviewed": "2026-06-06",
   "policy": {
     "standardsDoc": "docs/development/vibe-coding/skills.md",
     "geminiSameNameOverlay": "forbidden",
@@ -12,6 +12,21 @@
     }
   },
   "skills": {
+    "ai-observability": {
+      "purpose": "Analyze OpenManager AI assistant routing, provider, latency, failure, fallback, and Langfuse trace evidence before or alongside UI QA.",
+      "invariants": [
+        "Use npm run langfuse:check for AI routing, provider, latency, failure, and fallback checks before starting browser-heavy QA when AI behavior is in scope.",
+        "Use --json for structured routing or latency comparisons and do not print secret values from .env.local.",
+        "Treat Langfuse as internal AI-call observability; use Playwright or QA ops separately for user-facing UI proof.",
+        "Do not include live Langfuse or LLM calls in default local smoke gates unless the user explicitly asks for live observability evidence.",
+        "Escalate sandboxed network execution only for the approved Langfuse check command when DNS or external access is blocked."
+      ],
+      "adapters": {
+        "codex": ".agents/skills/ai-observability/SKILL.md",
+        "claude": ".claude/skills/ai-observability/SKILL.md",
+        "gemini": ".agents/skills/ai-observability/SKILL.md"
+      }
+    },
     "cloud-run": {
       "purpose": "Deploy and verify the Cloud Run ai-engine within OpenManager free-tier and rollback constraints.",
       "invariants": [
@@ -109,6 +124,7 @@
         "Switch to local dev only when AI-path validation is unnecessary.",
         "Record QA evidence through qa:record and status commands.",
         "Keep release-facing QA risk-based and representative; avoid repeated live runs, broad matrix expansion, or coverage-percentage chasing.",
+        "For AI routing, provider, latency, failure, or fallback evidence, use ai-observability and Langfuse before expanding browser QA.",
         "For AI-related prompt, routing, knowledge base, precomputed-state/data source, response parsing, or output formatting changes, include conversational AI QA with the standard five-question set and record the result.",
         "Run Vision Agent real-image Gemini/GLM calls only as an explicit manual smoke when Vision routing/provider behavior is in scope; default QA must rely on deterministic contracts and must not repeatedly spend Vision provider quota.",
         "For async AI Job + SSE QA, use the UI flow instead of CSRF-bypassing direct fetches, inspect EventSource streams through the Performance API, and report health probe failures separately from successful query execution."
@@ -139,6 +155,7 @@
         "Load current policy and recent evidence before proposing fixes.",
         "Classify the failure type before editing code.",
         "Prefer the smallest code path or config path that explains the symptom.",
+        "For AI routing, provider, latency, failure, fallback, or observability symptoms, use ai-observability and Langfuse evidence before broad QA.",
         "For provider symptoms, consider current provider metadata, quota limits, and Reporter Z.AI fallback before infra changes."
       ],
       "adapters": {
