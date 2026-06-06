@@ -7,7 +7,19 @@ import {
   DEFAULT_DIRECT_ROUTING_AGENT,
   resolveDirectRoutingTarget,
 } from './orchestrator-direct-routing';
+import { monitoringDomainPack } from '../../../domains/monitoring/domain-pack';
 import type { PreFilterResult } from './orchestrator-types';
+
+type DomainRoutingOverridePolicyForSpec = {
+  defaultDirectRoutingAgent: string;
+  semanticConfidenceThreshold: number;
+  analystOverrideCapabilities: string[];
+  analystOverrideIntents: string[];
+};
+
+type DomainWithRoutingOverridePolicyForSpec = {
+  routingOverridePolicy: DomainRoutingOverridePolicyForSpec;
+};
 
 const fallbackPreFilter: PreFilterResult = {
   shouldHandoff: true,
@@ -32,6 +44,16 @@ function frame(
     confidence: 0.92,
     ...overrides,
   };
+}
+
+function contextWithRoutingPolicy(
+  routingOverridePolicy: DomainRoutingOverridePolicyForSpec,
+  overrides: Record<string, unknown> = {}
+): Parameters<typeof resolveDirectRoutingTarget>[1] {
+  return {
+    ...overrides,
+    domain: { routingOverridePolicy } satisfies DomainWithRoutingOverridePolicyForSpec,
+  } as Parameters<typeof resolveDirectRoutingTarget>[1];
 }
 
 describe('resolveDirectRoutingTarget', () => {
@@ -237,6 +259,103 @@ describe('resolveDirectRoutingTarget', () => {
     ).toMatchObject({
       agentName: 'Metrics Query Agent',
       source: 'semantic_frame',
+    });
+  });
+
+  it('uses the domain semantic confidence threshold before pre-filter fallback', () => {
+    expect(
+      resolveDirectRoutingTarget(
+        {
+          shouldHandoff: true,
+          suggestedAgent: 'Advisor Agent',
+          confidence: 0.9,
+        },
+        contextWithRoutingPolicy(
+          {
+            defaultDirectRoutingAgent: 'Sample Metrics Agent',
+            semanticConfidenceThreshold: 0.4,
+            analystOverrideCapabilities: [],
+            analystOverrideIntents: [],
+          },
+          {
+            intentFrame: frame({
+              capabilityId: 'monitoring.metric_current',
+              intent: 'metric_current',
+              confidence: 0.5,
+            }),
+          }
+        )
+      )
+    ).toMatchObject({
+      agentName: DEFAULT_DIRECT_ROUTING_AGENT,
+      source: 'semantic_frame',
+      confidence: 0.5,
+    });
+  });
+
+  it('uses the domain default direct routing agent when no specialist signal exists', () => {
+    expect(
+      resolveDirectRoutingTarget(
+        {
+          shouldHandoff: true,
+          confidence: 0.4,
+        },
+        contextWithRoutingPolicy({
+          defaultDirectRoutingAgent: 'Sample Metrics Agent',
+          semanticConfidenceThreshold: 0.65,
+          analystOverrideCapabilities: [],
+          analystOverrideIntents: [],
+        })
+      )
+    ).toMatchObject({
+      agentName: 'Sample Metrics Agent',
+      source: 'deterministic_fallback',
+    });
+  });
+
+  it('uses the domain Analyst override allowlist instead of monitoring hardcoding', () => {
+    expect(
+      resolveDirectRoutingTarget(
+        {
+          shouldHandoff: true,
+          suggestedAgent: 'Analyst Agent',
+          confidence: 0.88,
+        },
+        contextWithRoutingPolicy(
+          {
+            defaultDirectRoutingAgent: DEFAULT_DIRECT_ROUTING_AGENT,
+            semanticConfidenceThreshold: 0.65,
+            analystOverrideCapabilities: [],
+            analystOverrideIntents: [],
+          },
+          {
+            intentFrame: frame({
+              capabilityId: 'monitoring.metric_current',
+              intent: 'metric_current',
+              confidence: 0.93,
+            }),
+          }
+        )
+      )
+    ).toMatchObject({
+      agentName: DEFAULT_DIRECT_ROUTING_AGENT,
+      source: 'semantic_frame',
+    });
+  });
+
+  it('defines monitoring routing override policy in the monitoring domain pack', () => {
+    expect(
+      (monitoringDomainPack as {
+        routingOverridePolicy?: DomainRoutingOverridePolicyForSpec;
+      }).routingOverridePolicy
+    ).toMatchObject({
+      defaultDirectRoutingAgent: DEFAULT_DIRECT_ROUTING_AGENT,
+      semanticConfidenceThreshold: 0.65,
+      analystOverrideCapabilities: [
+        'monitoring.metric_current',
+        'monitoring.server_health',
+      ],
+      analystOverrideIntents: ['metric_current', 'server_health'],
     });
   });
 });
