@@ -124,11 +124,11 @@ function Home() {
             서버 운영을 AI에게 묻다
           </p>
           <p className="landing-hero-kicker text-sm font-medium leading-relaxed tracking-normal text-white/[0.78] sm:text-base">
-            시뮬레이션 OTel 데이터 기반 AI 운영 포트폴리오
+            자연어 질의 · 장애 감지 · 운영 보고서를 AI가 실시간으로 처리합니다
           </p>
         </div>
 
-        <div className="mb-12 min-h-[30rem] sm:min-h-[26rem]">
+        <div className="mb-12 min-h-[16rem] sm:min-h-[18rem]">
           {shouldShowSystemStart ? (
             <SystemStartSection
               isMounted={isMounted}
