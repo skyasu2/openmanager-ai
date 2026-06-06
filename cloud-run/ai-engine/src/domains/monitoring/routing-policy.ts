@@ -133,7 +133,7 @@ export type IntentCategory = 'anomaly' | 'prediction' | 'math' | 'rca' | 'adviso
 const TOOL_ROUTING_PATTERNS = {
   anomaly: /이상|급증|급감|스파이크|anomal|탐지|감지|비정상/i,
   prediction: /예측|트렌드|추이|전망|forecast|추세|언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?|임계(?:치|값)?.*(?:전|넘|초과|도달)|넘기\s*전|미리.*알|고갈|포화|saturat(?:e|ion)|run\s*out/i,
-  rca: /장애|rca|타임라인|상관관계|원인|왜|근본|incident/i,
+  rca: /장애|rca|root\s*cause|타임라인|상관관계|원인|왜|이유|때문|근본|incident|\bwhy\b|\breason\b|\bcause\b/i,
   math: /(?:계산|연산|수식|중앙값|표준편차|percentile|p\d{2}|지수|루트|\d+(?:\.\d+)?\s*(?:[+*\/\^]|\s-\s)\s*\d+)/i,
   advisor:
     /해결|방법|명령어|가이드|해야|뭘\s*해야|무엇을\s*해야|순서|점검|확인하고|조언|개선|튜닝|스크립트|script|bash|shell|slack|슬랙|webhook|alertmanager|prometheus|runbook|런북|재마운트|remount|troubleshoot|이력|과거|사례|검색|보안|강화|백업|최적화|best.?practice|권장|추천|토폴로지|아키텍처|구성도|topology|architecture/i,

@@ -76,6 +76,37 @@ describe('current metrics domain evidence providers', () => {
     ).toBeNull();
   });
 
+  it.each([
+    'api-was-dc1-01 CPU 81% 이유가 뭐야?',
+    'cache-redis-dc1-01 메모리 사용률 91% 때문에 느린 거야?',
+    'storage-nfs-dc1-01 disk 88% why so high?',
+  ])(
+    'does not claim explicit RCA current-metric questions as deterministic evidence: %s',
+    (message) => {
+      const request = {
+        ...createEvidenceRequest(message),
+        intentFrame: {
+          domainId: MONITORING_DOMAIN_ID,
+          intent: 'metric_current',
+          capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+          scope: 'entity',
+          targets: ['api-was-dc1-01'],
+          metric: 'cpu',
+          timeWindow: 'current',
+          aggregation: 'summary',
+          ambiguity: 'low',
+          executionMode: 'single',
+          confidence: 0.93,
+        },
+      };
+
+      expect(parseCurrentMetricsEvidenceRequest(request)).toBeNull();
+      expect(monitoringMetricCurrentEvidenceProvider.canHandle(request)).toBe(
+        false
+      );
+    }
+  );
+
   it('does not claim single-server performance advice as metric ranking evidence', async () => {
     const request = {
       ...createEvidenceRequest(

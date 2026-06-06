@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-06-06 KST (A-2 Langfuse Analyst 기준선 실측 완료)
+**Last Updated**: 2026-06-06 KST (A-1 RCA 라우팅 보강 완료)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -23,14 +23,13 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| A-1 "왜/원인" RCA 라우팅 보강 | P1 | `orchestrator-direct-routing.ts` pre-filter에 RCA 패턴 추가. 계획서: [ai-assistant-improvement-plan-2026-06.md](ai-assistant-improvement-plan-2026-06.md) |
 | E-6 approval/incident 사용 여부 확인 | P1 | Supabase cleanup 선행 분석. 삭제/유지 판단 전에 실제 request path 추적 |
 | E-1 command_vectors 잔여 이관+삭제 | P1 | 5행 잔여. knowledge_base 확인 후 DROP TABLE migration |
-| C-1 orchestrator 중간층 상수 분리 | P2 | `AssistantDomain.routingOverridePolicy` 인터페이스 추가. A-1 이후 진행 권장 |
+| C-1 orchestrator 중간층 상수 분리 | P2 | `AssistantDomain.routingOverridePolicy` 인터페이스 추가. A-1 완료 후 진행 가능한 구조화 후보 |
 | E-2 knowledge_relationships 삭제 | P2 | 런타임 미사용 테이블. E-1 후 DROP TABLE migration |
 | E-3 knowledge_base.embedding 컬럼 제거 | P2 | cosine path 비활성, 벡터 데이터 삭제. E-1·E-2 완료 후 |
 | E-4 security_audit_logs retention | P2 | 장기 DB 증가 차단. pg_cron/Edge Function 중 Free Tier 적합 경로 선택 |
-| B-1 라우팅 회귀 감지 스크립트 | P2 | 표준 질문의 expected agent/provider 이탈 자동 감지. A-2 기준선 확보 완료, A-1/C-1 이후 진행 |
+| B-1 라우팅 회귀 감지 스크립트 | P2 | 표준 질문의 expected agent/provider 이탈 자동 감지. A-2 기준선 확보 및 A-1 완료, C-1 이후 진행 권장 |
 | E-5 Extension 스키마 migration | P3 | Supabase advisor 경고 해소. E-3 완료 후 disposable DB에서 시뮬레이션 |
 | D-2 Analyst maxSteps 하향 검증 | P3 | 2026-06-06 A-2 기준 after Analyst 표본 `n=1`, 병목 미확정. 추가 표본에서 P95 재상승 시만 착수 |
 

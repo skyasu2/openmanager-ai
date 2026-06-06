@@ -22,6 +22,7 @@ import {
   COMPOSITE_LOAD_RANKING_PATTERN,
   COMPOSITE_PRESSURE_RANKING_PATTERN,
   CURRENT_METRIC_GROUP_PATTERN,
+  EXPLICIT_RCA_QUERY_PATTERN,
   GROUP_SERVER_LIST_PATTERN,
   HISTORICAL_OR_TREND_PATTERN,
   METRIC_TREND_PATTERN,
@@ -817,6 +818,7 @@ export function parseCurrentMetricsEvidenceRequest(
 ): ParsedCurrentMetricsEvidenceRequest | null {
   if (FORCE_KB_QUERY_PATTERN.test(request.message)) return null;
   if (shouldPreferAdvisorForOperationalAdvice(request.message)) return null;
+  if (EXPLICIT_RCA_QUERY_PATTERN.test(request.message)) return null;
 
   const parsed =
     parseCurrentMetricsFrame(request) ?? parseCurrentMetricsMessage(request);

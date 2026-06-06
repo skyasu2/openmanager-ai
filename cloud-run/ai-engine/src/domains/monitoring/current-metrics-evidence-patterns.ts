@@ -4,8 +4,10 @@ export const HISTORICAL_OR_TREND_PATTERN =
   /(지난\s*\d|최근\s*\d|24\s*(?:시간|h)|하루|어제|last\s+\d|last24h|past\s+\d|평균|avg|추세|트렌드|trend|예측|forecast|비교|대비|변화|compare)/i;
 export const SERVER_HEALTH_PATTERN =
   /(?:서버|인프라|시스템|fleet|server|infra|system).{0,20}(상태|현황|요약|health|summary|status)|(?:상태|현황|요약|health|summary|status).{0,20}(서버|인프라|시스템|fleet|server|infra|system)/i;
+export const EXPLICIT_RCA_QUERY_PATTERN =
+  /왜|원인|이유|때문|근본\s*원인|rca|root\s*cause|\bwhy\b|\breason\b|\bcause\b/i;
 export const SERVER_HEALTH_EXCLUSION_PATTERN =
-  /왜|원인|해결|방법|명령어|command|script|예측|트렌드|보고서|리포트|장애\s*보고서/i;
+  /왜|원인|이유|때문|근본\s*원인|rca|root\s*cause|\bwhy\b|\breason\b|\bcause\b|해결|방법|명령어|command|script|예측|트렌드|보고서|리포트|장애\s*보고서/i;
 export const SERVER_DETAIL_PATTERN =
   /\b[a-z0-9]+(?:-[a-z0-9]+){1,}\b.{0,24}(상태|현황|자세|상세|health|status|detail|어때|알려)/i;
 // 각 그룹 설명:

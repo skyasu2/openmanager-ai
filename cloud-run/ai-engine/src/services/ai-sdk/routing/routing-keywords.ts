@@ -4,7 +4,7 @@ export const INFRA_CONTEXT_PATTERN =
 
 /** 이상감지·RCA·분석 의도 패턴 */
 export const ANALYST_QUERY_PATTERN =
-  /이상|비정상|징후|분석|예측|트렌드|패턴|원인|왜|상관관계|근본\s*원인|rca|고장|느려|다운|안\s*됨|안됨|장애/i;
+  /이상|비정상|징후|분석|예측|트렌드|패턴|원인|왜|이유|때문|상관관계|근본\s*원인|rca|root\s*cause|\bwhy\b|\breason\b|\bcause\b|고장|느려|다운|안\s*됨|안됨|장애/i;
 
 /** 보고서·타임라인 요청 패턴 */
 export const REPORTER_QUERY_PATTERN =
@@ -41,7 +41,7 @@ export const TOOL_ROUTING_PATTERNS = {
   anomaly: /이상|징후|급증|급감|스파이크|anomal|탐지|감지|비정상/i,
   prediction:
     /예측|트렌드|추이|전망|forecast|추세|임계치.*전|넘기\s*전|미리.*알|고갈|(?:위험\s*(?:수준|레벨|임계|단계)|critical\s*(?:level|threshold)).{0,24}(?:도달|초과|넘|시점|예측|reach|hit)|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?/i,
-  rca: /장애|rca|타임라인|상관관계|원인|왜|근본|incident/i,
+  rca: /장애|rca|root\s*cause|타임라인|상관관계|원인|왜|이유|때문|근본|incident|\bwhy\b|\breason\b|\bcause\b/i,
   math:
     /(?:계산|연산|수식|중앙값|표준편차|percentile|p\d{2}|지수|루트|\d+(?:\.\d+)?\s*(?:[+*\/\^]|\s-\s)\s*\d+)/i,
   advisor:
