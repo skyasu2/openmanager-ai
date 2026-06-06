@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-06T13:25:18.055Z"
+    "updatedAt": "2026-06-06T14:36:04.907Z"
   },
   "sequence": {
-    "nextRunNumber": 665
+    "nextRunNumber": 666
   },
   "summary": {
-    "totalRecordedRuns": 662,
-    "totalRuns": 518,
+    "totalRecordedRuns": 663,
+    "totalRuns": 519,
     "excludedRuns": 144,
-    "totalChecks": 4603,
-    "totalPassed": 4402,
-    "totalFailed": 159,
+    "totalChecks": 4610,
+    "totalPassed": 4407,
+    "totalFailed": 160,
     "completionRate": 100,
-    "completedItems": 766,
+    "completedItems": 767,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 30,
+    "wontFixItems": 31,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260606-0664",
-    "lastRecordedAt": "2026-06-06T13:25:18.055Z",
-    "latestRecordedRunId": "QA-20260606-0664",
-    "latestRecordedAt": "2026-06-06T13:25:18.055Z"
+    "lastRunId": "QA-20260606-0665",
+    "lastRecordedAt": "2026-06-06T14:36:04.907Z",
+    "latestRecordedRunId": "QA-20260606-0665",
+    "latestRecordedAt": "2026-06-06T14:36:04.907Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18836,6 +18836,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-06-06T13:25:18.055Z"
+    },
+    "p24-all-scope-average": {
+      "id": "p24-all-scope-average",
+      "title": "P24: 전체 서버 all-scope 단일 메트릭 평균 집계 수정 완료",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260606-0665",
+      "firstSeenAt": "2026-06-06T14:36:04.907Z",
+      "lastSeenRunId": "QA-20260606-0665",
+      "lastSeenAt": "2026-06-06T14:36:04.907Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "전체 18대 평균 CPU 질의 => 32.3% 정확 반환. deterministic/monitoring-metric-current 경로. 23차 evidence-unavailable에서 v8.12.99 기준 수정 확인",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-06T14:36:04.907Z"
+    },
+    "p25-top-bottom-dual-query": {
+      "id": "p25-top-bottom-dual-query",
+      "title": "P25: 가장 위험한 서버 + 가장 안정적인 서버 동시 질의 미처리",
+      "priority": "P3",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260606-0665",
+      "firstSeenAt": "2026-06-06T14:36:04.907Z",
+      "lastSeenRunId": "QA-20260606-0665",
+      "lastSeenAt": "2026-06-06T14:36:04.907Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "monitoring.server_health intent 인식됐으나 TOP+BOTTOM 복합 의도 처리 evidence provider 부재. evidence-unavailable 반환",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-06-06T14:36:04.907Z"
     }
   },
   "runs": [
@@ -40525,6 +40573,141 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260606-0665",
+      "recordedAt": "2026-06-06T14:36:04.907Z",
+      "recordedAtKst": "2026-06-06 23:36:04 KST",
+      "title": "Vercel Production Playwright MCP - 24차 AI 어시스턴트 평가 (v8.12.99)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260606-0665.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_4VdYaBKQqx6B8TXXBZL9nv1VzxUF",
+        "deploymentUrl": "",
+        "commitSha": "5e3c43cd65488e3a021403e5727eb23556fca7ba"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "P24 재검증: 전체 서버 평균 CPU 질의 => 32.3% 정확 반환 (FIXED, 23차 evidence-unavailable에서 수정)",
+        "Off-domain 가드레일 (v8.12.88~89): 날씨 질문 => 도메인 외 안내 + OpenManager 범위 리다이렉션",
+        "Analyst 지연 실측 (v8.12.84 prefetch): RCA 쿼리 Mistral/mistral-small 2032ms (23차 7~20s 대비 대폭 개선)",
+        "Q-NEW92 group avg compare: cache vs web 평균 메모리 49% vs 39%, 10%p 결론 명시",
+        "Q-NEW93 capacity-forecast 특정 서버: db-mysql-dc1-backup 48h 내 80% 초과 여부 => 24h 83.1%, 48h 90.3%",
+        "Q-NEW94 TOP+BOTTOM 동시 질의: 위험+안정 서버 동시 => evidence-unavailable (신규 P25 발견)",
+        "OTel 교차 검증: slot 23:00 KST, CPU avg 32.3%, MEM 44%, DISK 37%, 18대 online 경고 0건"
+      ],
+      "skippedSurfaces": [
+        "Artifact BFF LLM 분류기 (v8.12.94) 재검증 미실시",
+        "Multi-turn contextual follow-up 재검증 미실시"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 5,
+        "failed": 1
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI Chat RCA 쿼리",
+          "agent": "Analyst Agent",
+          "provider": "mistral",
+          "model": "mistral-small",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "UI 라우팅 레이블",
+          "latencyMs": 2032
+        },
+        {
+          "surface": "AI Chat capacity-forecast",
+          "agent": "CapacityForecast",
+          "provider": "groq",
+          "model": "llama-4-scout",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "UI 라우팅 레이블",
+          "latencyMs": 3500
+        },
+        {
+          "surface": "AI Chat all-scope 평균 CPU",
+          "agent": "MetricsQuery",
+          "provider": "deterministic",
+          "model": "monitoring-metric-current",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "UI 라우팅 레이블",
+          "latencyMs": 120
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "24차 평가: P24 수정 확인, off-domain 가드레일, Analyst 지연 개선 실측. 신규 P25 발견 및 기록.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "",
+          "summary": "24차 QA 평가 시점 기준 이전 QA-20260606-0664에서 billed=0.0000 USD 확인됨. 이번 targeted 런에서 추가 비용 발생 없음 (AI Chat 7회 질의, 함수 실행 정상 범위 내).",
+          "evidence": "",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "T1 P24 수정확인 - 전체 평균 CPU 32.3% 반환",
+          "path": "reports/qa/evidence/qa-20260606-24th-p24-avg-cpu.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "T2 Off-domain 가드레일 - 날씨 질문 거절",
+          "path": "reports/qa/evidence/qa-20260606-24th-off-domain-guardrail.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "T3 이상 징후 감지 - 경고 0건 정직 응답",
+          "path": "reports/qa/evidence/qa-20260606-24th-anomaly-detect.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "T4 Analyst RCA 2032ms - Mistral/mistral-small",
+          "path": "reports/qa/evidence/qa-20260606-24th-analyst-rca.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run ai-engine health",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
     }
   ],
   "experts": {
@@ -40533,16 +40716,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 362,
-      "appropriateCount": 311,
+      "seenCount": 363,
+      "appropriateCount": 312,
       "partialCount": 51,
       "inappropriateCount": 0,
       "improvementNeededCount": 70,
-      "lastRunId": "QA-20260606-0663",
-      "lastSeenAt": "2026-06-06T10:00:46.159Z",
+      "lastRunId": "QA-20260606-0665",
+      "lastSeenAt": "2026-06-06T14:36:04.907Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Two representative production AI assistant prompts returned grounded metric answers, expected Analyst routing for deeper RCA, streaming UI, evidence card, copy/regenerate controls, and inline code rendering.",
+      "lastRationale": "24차 평가: P24 수정 확인, off-domain 가드레일, Analyst 지연 개선 실측. 신규 P25 발견 및 기록.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
