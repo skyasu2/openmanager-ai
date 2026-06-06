@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-06T14:36:04.907Z"
+    "updatedAt": "2026-06-06T15:25:12.210Z"
   },
   "sequence": {
-    "nextRunNumber": 666
+    "nextRunNumber": 667
   },
   "summary": {
-    "totalRecordedRuns": 663,
-    "totalRuns": 519,
+    "totalRecordedRuns": 664,
+    "totalRuns": 520,
     "excludedRuns": 144,
-    "totalChecks": 4610,
-    "totalPassed": 4407,
+    "totalChecks": 4620,
+    "totalPassed": 4417,
     "totalFailed": 160,
     "completionRate": 100,
-    "completedItems": 767,
+    "completedItems": 768,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 31,
+    "wontFixItems": 30,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260606-0665",
-    "lastRecordedAt": "2026-06-06T14:36:04.907Z",
-    "latestRecordedRunId": "QA-20260606-0665",
-    "latestRecordedAt": "2026-06-06T14:36:04.907Z"
+    "lastRunId": "QA-20260607-0666",
+    "lastRecordedAt": "2026-06-06T15:25:12.210Z",
+    "latestRecordedRunId": "QA-20260607-0666",
+    "latestRecordedAt": "2026-06-06T15:25:12.210Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18863,27 +18863,27 @@
     },
     "p25-top-bottom-dual-query": {
       "id": "p25-top-bottom-dual-query",
-      "title": "P25: 가장 위험한 서버 + 가장 안정적인 서버 동시 질의 미처리",
+      "title": "P25: 가장 위험한 서버 + 가장 안정적인 서버 동시 질의 deterministic evidence 처리",
       "priority": "P3",
-      "status": "wont-fix",
+      "status": "completed",
       "firstSeenRunId": "QA-20260606-0665",
       "firstSeenAt": "2026-06-06T14:36:04.907Z",
-      "lastSeenRunId": "QA-20260606-0665",
-      "lastSeenAt": "2026-06-06T14:36:04.907Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260607-0666",
+      "lastSeenAt": "2026-06-06T15:25:12.210Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "v8.12.100 Cloud Run direct supervisor response returned monitoring-server-health deterministic evidence with both 위험 서버 and 안정 서버 sections",
       "lastNote": "monitoring.server_health intent 인식됐으나 TOP+BOTTOM 복합 의도 처리 evidence provider 부재. evidence-unavailable 반환",
       "isBlocking": false,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
-      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastStatusChangeAt": "2026-06-06T14:36:04.907Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-06T15:25:12.210Z"
     }
   },
   "runs": [
@@ -40708,6 +40708,158 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260607-0666",
+      "recordedAt": "2026-06-06T15:25:12.210Z",
+      "recordedAtKst": "2026-06-07 00:25:12 KST",
+      "title": "Cloud Run Production Targeted QA - v8.12.100 P25 TOP+BOTTOM dual server query fix",
+      "owner": "codex",
+      "source": "gitlab-ci-cli-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260607-0666.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_8gGRNXZ1heoCMtiHCNNKhGdVhyJv",
+        "deploymentUrl": "https://openmanager-82ndsftih-skyasus-projects.vercel.app",
+        "commitSha": "176d4b621bdc1401cff6a6c9393f64d26805d470"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-advanced-surface",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "GitLab semver tag release pipeline v8.12.100 completed successfully (pipeline 2581738367, commit 176d4b621bdc1401cff6a6c9393f64d26805d470)",
+        "Frontend deploy, AI Engine deploy, post_deploy_smoke, and post_deploy_ai_engine_smoke jobs all succeeded",
+        "Vercel production /, /login, and /api/version smoke passed with expected version 8.12.100",
+        "Vercel /api/version returned version 8.12.100, releaseTag v8.12.100, commitSha 176d4b621bdc1401cff6a6c9393f64d26805d470, and pipelineUrl 2581738367",
+        "Cloud Run ai-engine /health returned status ok, version 8.12.100, configured providers, and routesReady=true",
+        "Cloud Run latestReadyRevision ai-engine-00598-pqc receives 100% traffic with cpu=1 and memory=512Mi",
+        "P25 production direct supervisor query returned deterministic monitoring-server-health evidence for '가장 위험한 서버와 가장 안정적인 서버를 같이 알려줘'",
+        "P25 response included both risky and stable server sections: db-mysql-dc1-primary as most risky and lb-haproxy-dc1-03 as most stable",
+        "P25 metadata returned provider=deterministic, modelId=monitoring-server-health, toolsCalled=[monitoring-server-health], evidenceAvailable=true, latency=25ms"
+      ],
+      "skippedSurfaces": [
+        "Full Playwright UI conversational matrix was not repeated because this targeted run verifies the changed Cloud Run deterministic evidence path directly",
+        "Artifact BFF LLM classifier and Vision image upload surfaces were not in scope"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "P25 TOP+BOTTOM dual server query",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "model": "monitoring-server-health",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run direct supervisor JSON",
+          "latencyMs": 25
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "P25 now resolves as deterministic server health evidence and no longer falls through to evidence-unavailable.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab release pipeline deployed frontend and AI Engine, both post-deploy smoke jobs passed, and Cloud Run stayed within 1 CPU / 512Mi free-tier guardrails.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-07T00:22:49+09:00",
+          "summary": "Current billing period checked via vercel usage after v8.12.100 production deploy; effective=3.2367 USD, billed=0.0000 USD, chargeCount=3045, no unexpected billed usage observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "gcp-cloud-run",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-07T00:22:49+09:00",
+          "summary": "Cloud Run ai-engine stayed within free-tier guardrails: cpu=1, memory=512Mi, latestReadyRevision ai-engine-00598-pqc at 100% traffic; /health returned status ok and version 8.12.100.",
+          "evidence": "gcloud run services describe ai-engine --region asia-northeast1 --format json; curl -s https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+          "url": "https://console.cloud.google.com/run"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "GitLab v8.12.100 release pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2581738367",
+          "note": "deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke succeeded"
+        },
+        {
+          "type": "playwright-report",
+          "label": "Vercel v8.12.100 production deployment",
+          "url": "https://openmanager-82ndsftih-skyasus-projects.vercel.app/",
+          "note": "Deployment ID dpl_8gGRNXZ1heoCMtiHCNNKhGdVhyJv; production alias was verified"
+        },
+        {
+          "type": "playwright-network",
+          "label": "Vercel /api/version v8.12.100",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        },
+        {
+          "type": "playwright-network",
+          "label": "Cloud Run /health ai-engine 8.12.100",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+        },
+        {
+          "type": "playwright-network",
+          "label": "Cloud Run P25 direct supervisor POST",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/api/ai/supervisor",
+          "note": "POST body: 가장 위험한 서버와 가장 안정적인 서버를 같이 알려줘; response success=true, toolsCalled=[monitoring-server-health], evidenceAvailable=true"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.12.100 release pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2581738367"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run ai-engine health",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_8gGRNXZ1heoCMtiHCNNKhGdVhyJv",
+          "url": "https://openmanager-82ndsftih-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -40716,16 +40868,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 363,
-      "appropriateCount": 312,
+      "seenCount": 364,
+      "appropriateCount": 313,
       "partialCount": 51,
       "inappropriateCount": 0,
       "improvementNeededCount": 70,
-      "lastRunId": "QA-20260606-0665",
-      "lastSeenAt": "2026-06-06T14:36:04.907Z",
+      "lastRunId": "QA-20260607-0666",
+      "lastSeenAt": "2026-06-06T15:25:12.210Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "24차 평가: P24 수정 확인, off-domain 가드레일, Analyst 지연 개선 실측. 신규 P25 발견 및 기록.",
+      "lastRationale": "P25 now resolves as deterministic server health evidence and no longer falls through to evidence-unavailable.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -40767,16 +40919,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 255,
-      "appropriateCount": 234,
+      "seenCount": 256,
+      "appropriateCount": 235,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260606-0664",
-      "lastSeenAt": "2026-06-06T13:25:18.055Z",
+      "lastRunId": "QA-20260607-0666",
+      "lastSeenAt": "2026-06-06T15:25:12.210Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab semver tag pipeline completed frontend and AI Engine deploy plus both post-deploy smoke jobs; Vercel and Cloud Run runtime versions match v8.12.99.",
+      "lastRationale": "GitLab release pipeline deployed frontend and AI Engine, both post-deploy smoke jobs passed, and Cloud Run stayed within 1 CPU / 512Mi free-tier guardrails.",
       "lastNextAction": ""
     },
     "test-automation": {
