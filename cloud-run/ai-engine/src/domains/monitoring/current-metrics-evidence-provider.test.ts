@@ -2437,6 +2437,10 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).toContain('안정 서버');
     expect(evidence?.fallback).toMatch(/위험 서버[\s\S]+api-was-dc1-01/);
     expect(evidence?.fallback).toMatch(/안정 서버[\s\S]+web-nginx-dc1-01/);
+    expect(evidence?.fallback).not.toContain('불안정 점수');
+    expect(evidence?.fallback).not.toContain('상태 페널티');
+    expect(evidence?.fallback).not.toContain('warning +20');
+    expect(evidence?.fallback).not.toContain('안정 서버 BOTTOM');
     expect(evidence?.fallback).not.toContain('evidence-unavailable');
   });
 
@@ -3126,6 +3130,9 @@ describe('current metrics domain evidence providers', () => {
       expect(evidence?.fallback).toContain('api-was-dc1-01');
       expect(evidence?.fallback).toContain('lb-haproxy-dc1-01');
       expect(evidence?.fallback).toContain('로드밸런서');
+      expect(evidence?.fallback).not.toContain('불안정 점수');
+      expect(evidence?.fallback).not.toContain('그룹 점수');
+      expect(evidence?.fallback).not.toContain('상태 페널티');
     });
   });
 

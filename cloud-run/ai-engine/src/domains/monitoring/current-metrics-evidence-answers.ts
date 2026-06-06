@@ -37,6 +37,10 @@ function getCompositeLoadScore(server: SnapshotServer): number | null {
   return round1(cpu * 0.4 + memory * 0.4 + disk * 0.2);
 }
 
+function formatServerHealthRow(server: SnapshotServer): string {
+  return `**${server.id}**: 상태 ${formatServerStatus(server)}, CPU ${formatMetricPercent(getMetricValue(server, 'cpu') ?? 0)}, 메모리 ${formatMetricPercent(getMetricValue(server, 'memory') ?? 0)}, 디스크 ${formatMetricPercent(getMetricValue(server, 'disk') ?? 0)}`;
+}
+
 export function buildCompositeLoadRankingAnswer(params: {
   parsed: ParsedCurrentMetricsEvidenceRequest;
   snapshot: DomainSnapshot;
@@ -281,20 +285,20 @@ export function buildGroupHealthCompareAnswer(params: {
   const diff = round1(leader.avgScore - follower.avgScore);
   const conclusion =
     diff === 0
-      ? '두 그룹의 불안정 점수가 동일합니다.'
-      : `${leader.label}가 ${follower.label}보다 불안정 점수 ${diff}점 높습니다.`;
+      ? '두 그룹의 위험 신호 수준이 비슷합니다.'
+      : `${leader.label}가 ${follower.label}보다 상대적으로 위험 신호가 더 큽니다.`;
   const timeLabel = readSnapshotTimeLabel(params.snapshot);
 
   return [
     `📊 **${summaries.map((summary) => summary.label).join(' vs ')} 안정성 비교**`,
-    '• 기준: 서버별 최고 리소스 사용률(CPU/메모리/디스크) + 상태 페널티(warning +20, critical/offline +40)',
+    '• 기준: 상태와 CPU/메모리/디스크 사용률을 함께 반영',
     `• 대상: ${summaries
       .map((summary) => `${summary.label} ${summary.rows.length}대`)
       .join(' · ')}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
-    `• 그룹 점수: ${summaries
+    `• 그룹 현황: ${summaries
       .map(
         (summary) =>
-          `${summary.label} ${summary.avgScore}점 (online ${summary.statusCounts.online ?? 0}, warning ${summary.statusCounts.warning ?? 0}, critical ${summary.statusCounts.critical ?? 0}, offline ${summary.statusCounts.offline ?? 0})`
+          `${summary.label} (online ${summary.statusCounts.online ?? 0}, warning ${summary.statusCounts.warning ?? 0}, critical ${summary.statusCounts.critical ?? 0}, offline ${summary.statusCounts.offline ?? 0})`
       )
       .join(' · ')}`,
     `• 결론: ${conclusion}`,
@@ -302,8 +306,7 @@ export function buildGroupHealthCompareAnswer(params: {
       '그룹별 서버 현황',
       summaries.flatMap((summary) =>
         summary.rows.map(
-          (row) =>
-            `${summary.label} / **${row.server.id}**: 불안정 점수 ${row.score}점, 상태 ${formatServerStatus(row.server)}, CPU ${formatMetricPercent(getMetricValue(row.server, 'cpu') ?? 0)}, 메모리 ${formatMetricPercent(getMetricValue(row.server, 'memory') ?? 0)}, 디스크 ${formatMetricPercent(getMetricValue(row.server, 'disk') ?? 0)}`
+          (row) => `${summary.label} / ${formatServerHealthRow(row.server)}`
         )
       )
     ),
@@ -341,11 +344,11 @@ export function buildTopBottomServerHealthAnswer(params: {
 
   const timeLabel = readSnapshotTimeLabel(params.snapshot);
   const formatHealthRow = (row: (typeof scoredRows)[number]) =>
-    `**${row.server.id}**: 불안정 점수 ${row.score}점, 상태 ${formatServerStatus(row.server)}, CPU ${formatMetricPercent(getMetricValue(row.server, 'cpu') ?? 0)}, 메모리 ${formatMetricPercent(getMetricValue(row.server, 'memory') ?? 0)}, 디스크 ${formatMetricPercent(getMetricValue(row.server, 'disk') ?? 0)}`;
+    formatServerHealthRow(row.server);
 
   return [
     `📊 **${targetLabel} 위험 서버 + 안정 서버 동시 비교**`,
-    '• 기준: 서버별 최고 리소스 사용률(CPU/메모리/디스크) + 상태 페널티(warning +20, critical/offline +40)',
+    '• 기준: 상태와 CPU/메모리/디스크 사용률을 함께 반영',
     `• 대상: ${targetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
     `• 결론: 가장 위험한 서버는 ${riskRows[0]?.server.id}, 가장 안정적인 서버는 ${stableRows[0]?.server.id}입니다.`,
     ...buildNumberedServerSection(
@@ -353,7 +356,7 @@ export function buildTopBottomServerHealthAnswer(params: {
       riskRows.map(formatHealthRow)
     ),
     ...buildNumberedServerSection(
-      `안정 서버 BOTTOM ${rankCount}`,
+      `안정 서버 TOP ${rankCount}`,
       stableRows.map(formatHealthRow)
     ),
   ].join('\n');

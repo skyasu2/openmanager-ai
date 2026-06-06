@@ -513,6 +513,8 @@ describe('supervisor domain evidence support', () => {
     expect(support?.id).toBe('monitoring-server-health');
     expect(support?.fallback).toContain('위험 서버');
     expect(support?.fallback).toContain('안정 서버');
+    expect(support?.fallback).not.toContain('불안정 점수');
+    expect(support?.fallback).not.toContain('상태 페널티');
     expect(support?.fallback).not.toContain('evidence-unavailable');
     expect(support?.metadata).toMatchObject({
       responsePolicy: 'deterministic_answer',
