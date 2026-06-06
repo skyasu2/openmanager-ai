@@ -94,6 +94,19 @@ export interface ParsedCurrentMetricsEvidenceRequest {
   trendRankBy?: TrendRankBy;
 }
 
+function isTopBottomServerHealthMessage(message: string): boolean {
+  return (
+    /서버|server/i.test(message) &&
+    /위험|위험도|불안정|문제|비정상|critical|risk|unstable|problematic|unhealthy/i.test(
+      message
+    ) &&
+    /안정|정상|안전|괜찮|healthy|stable|safe|lowest\s+risk|least\s+risk/i.test(
+      message
+    ) &&
+    /같이|함께|동시|둘\s*다|모두|와|과|그리고|및|\+|both|and/i.test(message)
+  );
+}
+
 function parseCurrentMetricsFrame(
   request: DomainEvidenceRequest
 ): ParsedCurrentMetricsEvidenceRequest | null {
@@ -185,6 +198,18 @@ function parseCurrentMetricsFrame(
     (capabilityId === undefined ||
       capabilityId === MONITORING_SERVER_HEALTH_CAPABILITY_ID)
   ) {
+    if (isTopBottomServerHealthMessage(request.message)) {
+      const healthGroupTarget = inferGroupTargetFromMessage(request.message);
+      return {
+        intent: 'server_health',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        sourceIntent: 'top-bottom-health',
+        answerQuery: request.message,
+        rankCount: normalizeRankCount(frame.topN),
+        ...(healthGroupTarget && { targets: [healthGroupTarget] }),
+      };
+    }
+
     if (isHealthyOnlyServerListMessage(request.message)) {
       const healthGroupTarget = inferGroupTargetFromMessage(request.message);
       return {
@@ -398,6 +423,18 @@ function parseCurrentMetricsMessage(
     explicitServerTargets,
     groupTarget,
   });
+
+  if (isTopBottomServerHealthMessage(message)) {
+    const healthGroupTarget = inferGroupTargetFromMessage(message);
+    return {
+      intent: 'server_health',
+      capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+      sourceIntent: 'top-bottom-health',
+      answerQuery: message,
+      rankCount: normalizeMetricRankingCount(message, classification.rankCount),
+      ...(healthGroupTarget && { targets: [healthGroupTarget] }),
+    };
+  }
 
   if (isHealthyOnlyServerListMessage(message)) {
     const healthGroupTarget = inferGroupTargetFromMessage(message);

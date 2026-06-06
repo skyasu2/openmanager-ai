@@ -2394,6 +2394,52 @@ describe('current metrics domain evidence providers', () => {
     }
   });
 
+  it('P25: resolves risky and stable server dual queries as deterministic server health evidence', async () => {
+    const evidence = await monitoringServerHealthEvidenceProvider.resolve(
+      createEvidenceRequest('가장 위험한 서버와 가장 안정적인 서버를 같이 알려줘', {
+        timeLabel: '23:00',
+        servers: [
+          {
+            id: 'api-was-dc1-01',
+            status: 'warning',
+            cpu: 84,
+            memory: 62,
+            disk: 41,
+          },
+          {
+            id: 'cache-redis-dc1-01',
+            status: 'online',
+            cpu: 35,
+            memory: 88,
+            disk: 30,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            status: 'online',
+            cpu: 21,
+            memory: 45,
+            disk: 28,
+          },
+        ],
+      })
+    );
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-server-health',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        intent: 'server_health',
+        sourceIntent: 'top-bottom-health',
+      },
+    });
+    expect(evidence?.fallback).toContain('위험 서버');
+    expect(evidence?.fallback).toContain('안정 서버');
+    expect(evidence?.fallback).toMatch(/위험 서버[\s\S]+api-was-dc1-01/);
+    expect(evidence?.fallback).toMatch(/안정 서버[\s\S]+web-nginx-dc1-01/);
+    expect(evidence?.fallback).not.toContain('evidence-unavailable');
+  });
+
   it('routes "문제 있는 서버" wording to server health evidence via ACTION_NEEDED_PATTERN', async () => {
     for (const message of [
       '현재 문제 있는 서버가 무엇인지 알려줘',

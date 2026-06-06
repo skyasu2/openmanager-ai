@@ -502,6 +502,33 @@ describe('supervisor domain evidence support', () => {
     });
   });
 
+  it('P25: resolves risky and stable server dual queries as deterministic domain evidence', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: '가장 위험한 서버와 가장 안정적인 서버를 같이 알려줘',
+      domain: monitoringDomainPack,
+      sessionId: 'session-p25-top-bottom-health',
+      traceId: 'trace-p25-top-bottom-health',
+    });
+
+    expect(support?.id).toBe('monitoring-server-health');
+    expect(support?.fallback).toContain('위험 서버');
+    expect(support?.fallback).toContain('안정 서버');
+    expect(support?.fallback).not.toContain('evidence-unavailable');
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: 'monitoring.server_health',
+      intent: 'server_health',
+      sourceIntent: 'top-bottom-health',
+      semanticQueryTrace: {
+        selectedDomain: monitoringDomainPack.id,
+        selectedCapability: 'monitoring.server_health',
+        selectedEvidenceProvider: 'monitoring-server-health',
+        evidenceAvailable: true,
+        clarificationRequired: false,
+      },
+    });
+  });
+
   it('resolves urgent action ranking prompts as deterministic server health evidence', async () => {
     const spy = vi.spyOn(precomputedState, 'getCurrentState').mockReturnValue({
       slotIndex: 0,

@@ -15,6 +15,7 @@ import {
   buildMetricCurrentAnswer,
   buildMetricRankingAnswer,
   buildMetricTrendAnswer,
+  buildTopBottomServerHealthAnswer,
 } from './current-metrics-evidence-answers';
 import { buildDirectionalMultiMetricFilterAnswer } from './current-metrics-directional-answer';
 import {
@@ -96,6 +97,11 @@ async function resolveCurrentMetricsEvidence(
     parsed.sourceIntent === 'group-health-compare'
   ) {
     answer = buildGroupHealthCompareAnswer({ parsed, snapshot });
+  } else if (
+    parsed.intent === 'server_health' &&
+    parsed.sourceIntent === 'top-bottom-health'
+  ) {
+    answer = buildTopBottomServerHealthAnswer({ parsed, snapshot });
   } else if (
     parsed.intent === 'server_health' &&
     parsed.sourceIntent === 'group-server-list'

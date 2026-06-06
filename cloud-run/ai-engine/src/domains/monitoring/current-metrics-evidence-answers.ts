@@ -310,6 +310,55 @@ export function buildGroupHealthCompareAnswer(params: {
   ].join('\n');
 }
 
+export function buildTopBottomServerHealthAnswer(params: {
+  parsed: ParsedCurrentMetricsEvidenceRequest;
+  snapshot: DomainSnapshot;
+}): string | null {
+  if (params.parsed.sourceIntent !== 'top-bottom-health') return null;
+
+  const allServers = readSnapshotServers(params.snapshot);
+  const { servers, targetLabel } = filterSnapshotServers(
+    allServers,
+    params.parsed.targets
+  );
+  if (servers.length === 0) return null;
+
+  const scoredRows = servers
+    .map((server) => ({
+      server,
+      score: getServerInstabilityScore(server),
+    }))
+    .sort((left, right) => right.score - left.score);
+  if (scoredRows.length === 0) return null;
+
+  const rankCount = normalizeRankCount(params.parsed.rankCount);
+  const riskRows = scoredRows.slice(0, rankCount);
+  const stableRows = [...scoredRows]
+    .filter((row) => row.server.status !== 'offline')
+    .sort((left, right) => left.score - right.score)
+    .slice(0, rankCount);
+  if (riskRows.length === 0 || stableRows.length === 0) return null;
+
+  const timeLabel = readSnapshotTimeLabel(params.snapshot);
+  const formatHealthRow = (row: (typeof scoredRows)[number]) =>
+    `**${row.server.id}**: 불안정 점수 ${row.score}점, 상태 ${formatServerStatus(row.server)}, CPU ${formatMetricPercent(getMetricValue(row.server, 'cpu') ?? 0)}, 메모리 ${formatMetricPercent(getMetricValue(row.server, 'memory') ?? 0)}, 디스크 ${formatMetricPercent(getMetricValue(row.server, 'disk') ?? 0)}`;
+
+  return [
+    `📊 **${targetLabel} 위험 서버 + 안정 서버 동시 비교**`,
+    '• 기준: 서버별 최고 리소스 사용률(CPU/메모리/디스크) + 상태 페널티(warning +20, critical/offline +40)',
+    `• 대상: ${targetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+    `• 결론: 가장 위험한 서버는 ${riskRows[0]?.server.id}, 가장 안정적인 서버는 ${stableRows[0]?.server.id}입니다.`,
+    ...buildNumberedServerSection(
+      `위험 서버 TOP ${rankCount}`,
+      riskRows.map(formatHealthRow)
+    ),
+    ...buildNumberedServerSection(
+      `안정 서버 BOTTOM ${rankCount}`,
+      stableRows.map(formatHealthRow)
+    ),
+  ].join('\n');
+}
+
 function isHealthyServer(server: SnapshotServer): boolean {
   return (
     server.status === 'online' &&
