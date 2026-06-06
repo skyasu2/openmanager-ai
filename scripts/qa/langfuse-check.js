@@ -110,8 +110,10 @@ function fmtTimestamp(iso) {
 
 function resolveTraceLatencyMs(trace) {
   const info = extractRoutingInfo(trace);
-  const metadataLatencyMs = Number(info.durationMs);
-  if (Number.isFinite(metadataLatencyMs)) return metadataLatencyMs;
+  if (info.durationMs != null) {
+    const metadataLatencyMs = Number(info.durationMs);
+    if (Number.isFinite(metadataLatencyMs)) return metadataLatencyMs;
+  }
 
   const traceLatencySeconds = Number(trace.latency);
   if (Number.isFinite(traceLatencySeconds)) return traceLatencySeconds * 1000;
