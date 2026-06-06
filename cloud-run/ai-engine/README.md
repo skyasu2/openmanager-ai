@@ -113,6 +113,14 @@ src/
 - `onStepFinish` - 단계별 모니터링
 - 5개 라우팅 LLM Agent와 2개 내부 pipeline config가 `ConfigBasedAgent` 단일 클래스를 공유 (per-type 서브클래스 제거)
 
+### Resilient Execution Harness
+
+단순히 모델을 실행하는 루프를 넘어, 비결정적인 출력을 정형화하고 안전하게 구동하기 위해 아래와 같이 다층적인 하네스(Harness) 보호 레이어를 에이전트 실행 흐름상에 배치했습니다.
+
+1. **도구 격리 및 컨텍스트 주입 (Guides)**: [assistant-runtime-host.ts](src/services/ai-sdk/assistant-runtime-host.ts)가 `createToolSet`을 실행해 도메인용 툴들을 `AssistantRequestContext`(세션 및 트레이스 메타데이터)에 바인딩하여 모델에 제공합니다.
+2. **실시간 토큰 분석 가드 (Sensors)**: [supervisor-stream-text-guard.ts](src/services/ai-sdk/supervisor-stream-text-guard.ts)의 `createStructuredTextDeltaGuard`가 청크 단위로 방출되는 스트림 텍스트를 실시간 버퍼링/파싱하여 비정상적으로 깨진 JSON이나 원치 않는 형식의 도구 호출을 가로채고 가드합니다.
+3. **품질 재시도 및 오류 복구 (Sensors & Feedback)**: [supervisor-quality-retry.ts](src/services/ai-sdk/supervisor-quality-retry.ts) 및 [supervisor-stream-recovery.ts](src/services/ai-sdk/supervisor-stream-recovery.ts)가 작동해 AI 품질 규격 미달 시 재요청(Self-Correction) 및 예기치 못한 스트리밍 탈락 상황의 자동 재시도를 처리합니다.
+
 ### AgentFactory Pattern
 
 중앙화된 에이전트 생성:
@@ -205,13 +213,22 @@ LANGFUSE_BASE_URL=https://us.cloud.langfuse.com
 - 비용 분석
 - 성능 모니터링
 
-## Resilience - Circuit Breaker
+## Resilience & Quota Orchestration
 
-Provider 장애 시 자동 복구:
+### 1. Circuit Breaker
+
+Provider 장애 시 자동 복구 및 장애 전파 방지를 위해 각 공급자별로 서킷 브레이커가 동작합니다:
 
 ```
 CLOSED → (3회 실패) → OPEN → (30초 후) → HALF_OPEN → (성공) → CLOSED
 ```
+
+### 2. Quota-aware Pre-emptive Fallback (선제적 폴백)
+
+외부 LLM API 제공업체들(Cerebras, Groq 등)의 무료 티어는 매우 타이트한 속도 제한(Rate Limit)을 가집니다. 이를 극복하기 위해 소프트웨어 레이어(하네스)에서 선제적으로 쿼타를 방어합니다.
+
+- **실시간 쿼타 트래킹**: 모델 호출 및 토큰 소모 시마다 Upstash Redis 캐시를 통해 해당 프로바이더의 실시간 쿼타 점유 상태를 기록하고 추적합니다 (`recordModelUsage`).
+- **선제적 우회 라우팅**: [model-provider.ts](src/services/ai-sdk/model-provider.ts)의 `getSupervisorModelWithQuota` 함수는 특정 공급자의 쿼타 소모율이 80% 임계값에 도달함을 감지하면, 429 Rate Limit 에러가 발생하기 전에 미리 다음 최적의 백업 공급자로 연결 경로를 동적으로 전환시킵니다.
 
 ### 모니터링 엔드포인트
 
