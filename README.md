@@ -46,7 +46,7 @@ OpenManager AI의 범용 분류는 **운영 의사결정 AI 어시스턴트**입
 이 프로젝트의 핵심은 "AI를 붙인 대시보드"가 아니라, **운영 데이터를 자연어 인터페이스와 실행 가능한 결과로 연결하는 흐름**을 구현한 점입니다.
 
 - **🤖 Deterministic-first Supervisor**: 사용자 의도를 파악하고, 단순 메트릭 조회·ranking·server snapshot은 결정론적/단일 경로에 남기며, RCA·report·advisor·vision처럼 필요한 경우에만 전문 에이전트로 escalation.
-- **🛡️ AI Harness Engineering**: AI 어시스턴트 자체의 제품 분류명은 아니지만, 외부 LLM API의 비결정적 출력과 속도 제한을 제어하기 위한 핵심 구현 방식입니다. `Agent = Model + Harness` 관점으로 런타임 호스팅, 실시간 출력 가드, 비용/한도 보호용 사전 쿼타 폴백을 설계했습니다.
+- **🛡️ Runtime Guardrails**: 결정론적 라우팅, 출력 가드, provider fallback, quota-aware routing으로 LLM 응답의 변동성과 무료 티어 한도를 제어합니다.
 - **⚡ Hybrid Compute Architecture**: UI 렌더링은 **Vercel Edge Network**에서 처리하고, 무거운 AI 연산과 데이터 분석은 **Google Cloud Run**의 컨테이너 환경에서 처리하여 Latency와 비용 최적화.
 - **🔄 Zero-Latency Feedback**: AI 응답 생성 중에도 Tool 실행 상태(Server Check, DB Query 등)를 실시간 스트리밍으로 UI에 노출하여 UX 대기 시간 경험을 최소화.
 
@@ -55,15 +55,15 @@ OpenManager AI의 범용 분류는 **운영 의사결정 AI 어시스턴트**입
 기본 경로는 결정론적 데이터/도구 결과와 single-agent 응답을 우선 사용하고, 복잡한 요청은 5개 라우팅 에이전트로 escalation합니다. **Vercel AI SDK v6**의 stream/tool calling 계층 위에 구현되어 있습니다.
 집계 기준: 라우팅 에이전트 5개(NLQ/Analyst/Reporter/Advisor/Vision) + Evaluator/Optimizer는 Reporter 파이프라인 내부 품질 도구 + Orchestrator 1개(코디네이터).
 
-### AI Harness Core Components
+### Runtime Guardrails
 
-이 프로젝트의 AI 어시스턴트는 모델(Model) 자체의 지능만으로 동작하지 않습니다. 아래 하네스(Harness) 구성 요소가 모델 호출 전후의 컨텍스트, 출력 형식, 쿼타 상태를 제어해 운영 도메인에 맞는 응답 품질과 안정성을 보강합니다.
+AI 어시스턴트는 모델 응답만 그대로 노출하지 않고, 런타임 레이어에서 라우팅·출력 형식·provider 상태를 제어합니다.
 
-| 하네스 역할 | 목적 및 기능 | 관련 소스 코드 |
+| 역할 | 목적 | 관련 소스 코드 |
 | :--- | :--- | :--- |
-| **가이드 (Guides)** | 도메인 지침 주입 및 툴 입출력 스키마 격리 | [assistant-runtime-host.ts](cloud-run/ai-engine/src/services/ai-sdk/assistant-runtime-host.ts) |
-| **센서 (Sensors)** | 실시간 토큰 스트림 파싱 가드 및 비정상 도구 호출 필터링 | [supervisor-stream-text-guard.ts](cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream-text-guard.ts) |
-| **오케스트레이션 (Orchestration)** | API 호출량 기반 선제적 폴백 및 서킷 브레이커 | [model-provider.ts](cloud-run/ai-engine/src/services/ai-sdk/model-provider.ts) |
+| **Context** | 도메인 지침과 툴 스키마 바인딩 | [assistant-runtime-host.ts](cloud-run/ai-engine/src/services/ai-sdk/assistant-runtime-host.ts) |
+| **Output guard** | 스트림 출력과 비정상 도구 호출 필터링 | [supervisor-stream-text-guard.ts](cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream-text-guard.ts) |
+| **Fallback** | provider fallback과 quota-aware routing | [model-provider.ts](cloud-run/ai-engine/src/services/ai-sdk/model-provider.ts) |
 
 ```
 💬 "서버 상태 어때?"
@@ -269,7 +269,7 @@ This project documents known non-blocking constraints explicitly instead of hidi
 - **Production timing headers**: Vercel production does not expose `Server-Timing` consistently across all streaming and proxy paths. Operational latency evidence therefore uses `X-AI-Latency-Ms` and `X-AI-Processing-Ms` as the production SSOT.
 - **Intentional portfolio scope cuts**: the repo does not currently optimize for secondary surfaces such as AI chat detail expand, analyst per-server drilldown, or automatic weekly false-positive/false-negative reporting.
 - **Quality gate policy**: release confidence is based on targeted type/lint/test checks plus recorded production QA evidence, not on claiming an arbitrary unit-test count or a historical `tsc --noEmit zero error` tracker target.
-- **AI Harness Evaluation**: 입력/출력 가드와 선제적 쿼타 폴백은 활성화되어 있지만, 라우팅 품질을 자동 채점하는 LLM-as-judge/evals 파이프라인은 아직 계획 단계입니다. 현재는 Langfuse trace와 recorded QA를 함께 사용해 회귀를 판단합니다. 개선 계획은 [ai-assistant-improvement-plan-2026-06.md](reports/planning/ai-assistant-improvement-plan-2026-06.md)에 정리되어 있습니다.
+- **AI evaluation automation**: 런타임 가드레일은 동작하지만, 라우팅 품질을 자동 채점하는 LLM-as-judge/evals 파이프라인은 아직 계획 단계입니다. 현재는 Langfuse trace와 recorded QA로 회귀를 판단합니다. 개선 계획은 [ai-assistant-improvement-plan-2026-06.md](reports/planning/ai-assistant-improvement-plan-2026-06.md)에 정리되어 있습니다.
 
 The latest non-blocking limitations are tracked in [reports/qa/QA_STATUS.md](reports/qa/QA_STATUS.md) under `Wont-Fix Improvements`.
 
