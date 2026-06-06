@@ -28,7 +28,7 @@
 | 완료 | C-1 | orchestrator 라우팅 정책을 `AssistantDomain.routingOverridePolicy`로 분리 |
 | 완료 | E-1/E-2/E-3/E-5/E-6 | live DB 기준 legacy GraphRAG cleanup과 extension schema 정리 확인 |
 | 진행 | E-4 | security_audit_logs retention 설계 필요. live DB에서 pg_cron 미설치 확인 |
-| 진행 | B-1 | 수동 QA 의존을 줄이는 경량 회귀 방어. A-1/C-1 완료로 기준 테이블 정의 가능 |
+| 완료 | B-1 | 수동 QA 의존을 줄이는 경량 회귀 방어. `npm run qa:routing:check` 등록 완료 |
 | 조건부 | D-2 | A-2에서 개선 후 Analyst P95 병목이 확인되지 않아 현재 미착수 |
 | 보류 | B-2, D-1 | 상업화/장기 운영 자동화 성격. 현재 포트폴리오에는 과함 |
 
@@ -80,15 +80,22 @@
 
 ### B-1. 라우팅 회귀 감지 스크립트 (LLM 없이)
 
+**Status: Completed (2026-06-06)**
+
 현재 QA 661 runs는 대부분 수동 판정. 라우팅 경로(provider, agent, 성공/실패)가 expected와 달라지면 자동으로 감지하는 스크립트가 없음.
 
 **작업**:
-- [ ] `scripts/qa/routing-regression-check.js` 작성
+- [x] `scripts/qa/routing-regression-check.js` 작성
   - 입력: 기준 라우팅 테이블 (질문 → 예상 provider/agent)
   - 동작: `npm run langfuse:check -- --json` 출력으로 실제 라우팅과 비교
   - 출력: 예상과 다른 케이스 목록 + 이탈률(%)
-- [ ] 기준 라우팅 테이블 정의 (오늘 테스트 5개 + 기존 QA pass 케이스 10개)
-- [ ] `npm run qa:routing:check` 스크립트 등록
+- [x] 기준 라우팅 테이블 정의 (오늘 테스트 5개 + 기존 QA pass 케이스 10개)
+- [x] `npm run qa:routing:check` 스크립트 등록
+
+**결과**:
+- 기준 테이블: `config/qa/routing-regression-baseline.json` 15개 케이스
+- 실행 경로: `npm run qa:routing:check -- --limit 100`
+- deterministic 검증: `tests/unit/qa/routing-regression-check.test.ts`에서 pass/drift/missing 판정과 terminal report 포맷 확인
 
 **예상 작업량**: 중간 (스크립트 200~300줄 + 기준 테이블 JSON)
 **선행 조건**: Task A-2 완료 후 기준선 확정
@@ -322,7 +329,7 @@ live DB에서 `pg_cron`은 설치되어 있지 않음.
   7. E-3  knowledge_base.embedding 제거  → 완료 확인. live DB에서 컬럼 없음
   8. E-5  Extension 스키마 migration     → 완료 확인. vector/pg_trgm extensions schema
   9. E-4  security_audit_logs retention  → 다음 DB hygiene 후보. pg_cron 미설치라 대체 경로 필요
- 10. B-1  라우팅 회귀 감지 스크립트     → 다음 QA 신뢰도 보강 후보
+ 10. B-1  라우팅 회귀 감지 스크립트     → 완료. 기준 테이블 15개 + `npm run qa:routing:check`
  11. D-2  Analyst maxSteps 하향 검증     → A-2에서 병목 확인 시에만
 
 보류 대상

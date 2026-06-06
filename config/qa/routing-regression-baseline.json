@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "2026-06-06-v1",
+  "description": "Expected AI assistant routing cases for Langfuse-based routing regression checks. Provider lists allow the configured free-tier fallback mesh.",
+  "cases": [
+    {
+      "id": "metrics-cpu-top",
+      "query": "CPU 사용률이 가장 높은 서버는?",
+      "expectedAgent": "Metrics Query Agent",
+      "expectedProviders": ["groq", "zai", "mistral", "cerebras", "deterministic"]
+    },
+    {
+      "id": "metrics-memory-top3",
+      "query": "메모리 사용률 TOP 3 서버 알려줘",
+      "expectedAgent": "Metrics Query Agent",
+      "expectedProviders": ["groq", "zai", "mistral", "cerebras", "deterministic"]
+    },
+    {
+      "id": "metrics-healthy-filter",
+      "query": "현재 정상 범위인 서버 목록 보여줘",
+      "expectedAgent": "Metrics Query Agent",
+      "expectedProviders": ["groq", "zai", "mistral", "cerebras", "deterministic"]
+    },
+    {
+      "id": "metrics-efficient-server",
+      "query": "가장 효율적인 서버 알려줘",
+      "expectedAgent": "Metrics Query Agent",
+      "expectedProviders": ["groq", "zai", "mistral", "cerebras", "deterministic"]
+    },
+    {
+      "id": "metrics-restart-needed",
+      "query": "재시작해야 할 서버 있어?",
+      "expectedAgent": "Metrics Query Agent",
+      "expectedProviders": ["groq", "zai", "mistral", "cerebras", "deterministic"]
+    },
+    {
+      "id": "analyst-cpu-root-cause",
+      "query": "CPU 급증 원인 분석해줘",
+      "expectedAgent": "Analyst Agent",
+      "expectedProviders": ["mistral", "groq", "zai", "cerebras"]
+    },
+    {
+      "id": "analyst-disk-why",
+      "query": "db-mysql-dc1-backup 디스크 73% 왜 이렇게 높아?",
+      "expectedAgent": "Analyst Agent",
+      "expectedProviders": ["mistral", "groq", "zai", "cerebras"]
+    },
+    {
+      "id": "analyst-anomaly-signal",
+      "query": "이상 징후 분석해줘",
+      "expectedAgent": "Analyst Agent",
+      "expectedProviders": ["mistral", "groq", "zai", "cerebras"]
+    },
+    {
+      "id": "analyst-capacity-risk",
+      "query": "48시간 이내에 디스크 꽉 찰까?",
+      "expectedAgent": "Analyst Agent",
+      "expectedProviders": ["mistral", "groq", "zai", "cerebras"]
+    },
+    {
+      "id": "analyst-server-cpu-why",
+      "query": "lb-haproxy-dc1-01 CPU 69% 원인이 뭐야?",
+      "expectedAgent": "Analyst Agent",
+      "expectedProviders": ["mistral", "groq", "zai", "cerebras"]
+    },
+    {
+      "id": "advisor-memory-remediation",
+      "query": "메모리 부족 해결 방법 알려줘",
+      "expectedAgent": "Advisor Agent",
+      "expectedProviders": ["mistral", "zai", "groq", "cerebras"]
+    },
+    {
+      "id": "advisor-haproxy-command",
+      "query": "HAProxy에서 현재 연결된 백엔드 서버 목록이랑 상태 확인하는 명령어 알려줘",
+      "expectedAgent": "Advisor Agent",
+      "expectedProviders": ["mistral", "zai", "groq", "cerebras"]
+    },
+    {
+      "id": "advisor-performance-advice",
+      "query": "api-was-dc1-01 서버 성능 개선 조언 해줘",
+      "expectedAgent": "Advisor Agent",
+      "expectedProviders": ["mistral", "zai", "groq", "cerebras"]
+    },
+    {
+      "id": "reporter-incident-report",
+      "query": "장애 보고서 작성해줘",
+      "expectedAgent": "Reporter Agent",
+      "expectedProviders": ["zai", "mistral", "groq", "cerebras"]
+    },
+    {
+      "id": "reporter-timeline-report",
+      "query": "인시던트 타임라인 보고서 만들어줘",
+      "expectedAgent": "Reporter Agent",
+      "expectedProviders": ["zai", "mistral", "groq", "cerebras"]
+    }
+  ]
+}
