@@ -311,6 +311,7 @@ describe('resolveDirectRoutingTarget', () => {
     ).toMatchObject({
       agentName: 'Sample Metrics Agent',
       source: 'deterministic_fallback',
+      reason: 'Direct routing (default direct routing fallback)',
     });
   });
 
