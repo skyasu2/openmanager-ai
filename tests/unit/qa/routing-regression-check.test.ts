@@ -9,6 +9,7 @@ const require = createRequire(import.meta.url);
 const {
   buildRoutingRegressionReport,
   formatRoutingRegressionReport,
+  parseJsonPayload,
 } = require('../../../scripts/qa/routing-regression-check.js');
 
 describe('routing-regression-check', () => {
@@ -127,5 +128,30 @@ describe('routing-regression-check', () => {
     expect(text).toContain('incident-report');
     expect(text).toContain('agent_mismatch');
     expect(text).toContain('missing: 1');
+  });
+
+  it('parses JSON payload captured from npm run output', () => {
+    const payload = parseJsonPayload(`
+> openmanager-ai@8.12.99 langfuse:check
+> node scripts/qa/langfuse-check.js --limit 100 --q supervisor --json
+
+[
+  {
+    "name": "supervisor-execution",
+    "input": "CPU 사용률이 가장 높은 서버는?",
+    "metadata": {
+      "finalAgent": "Metrics Query Agent",
+      "provider": "groq"
+    }
+  }
+]
+`);
+
+    expect(payload).toEqual([
+      expect.objectContaining({
+        name: 'supervisor-execution',
+        input: 'CPU 사용률이 가장 높은 서버는?',
+      }),
+    ]);
   });
 });

@@ -29,8 +29,32 @@ function normalizeProvider(value) {
   return normalized;
 }
 
+function parseJsonPayload(text, source = 'JSON input') {
+  const trimmed = text.trim();
+  try {
+    return JSON.parse(trimmed);
+  } catch (strictError) {
+    const arrayStart = trimmed.indexOf('[');
+    const objectStart = trimmed.indexOf('{');
+    const starts = [arrayStart, objectStart].filter((index) => index >= 0);
+    if (starts.length === 0) {
+      throw strictError;
+    }
+
+    const payloadStart = Math.min(...starts);
+    try {
+      return JSON.parse(trimmed.slice(payloadStart));
+    } catch (payloadError) {
+      const message = payloadError instanceof Error
+        ? payloadError.message
+        : String(payloadError);
+      throw new Error(`Invalid JSON payload in ${source}: ${message}`);
+    }
+  }
+}
+
 function loadJsonFile(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  return parseJsonPayload(fs.readFileSync(filePath, 'utf8'), filePath);
 }
 
 function parseArgs(argv) {
@@ -309,4 +333,5 @@ module.exports = {
   formatRoutingRegressionReport,
   normalizeProvider,
   normalizeText,
+  parseJsonPayload,
 };
