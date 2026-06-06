@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-07 00:25:12 KST
+> Generated at: 2026-06-07 01:01:06 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 664 |
-| Total Runs (Counted) | 520 |
+| Total Recorded Runs | 665 |
+| Total Runs (Counted) | 521 |
 | Non-counted Runs | 144 |
-| Total Checks | 4620 |
-| Passed | 4417 |
+| Total Checks | 4639 |
+| Passed | 4436 |
 | Failed | 160 |
-| Completed Items | 768 |
+| Completed Items | 770 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 30 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260607-0666 (2026-06-06T15:25:12.210Z) |
-| Latest Recorded Run | QA-20260607-0666 (2026-06-06T15:25:12.210Z) |
+| Last Counted Run | QA-20260607-0667 (2026-06-06T16:01:05.302Z) |
+| Latest Recorded Run | QA-20260607-0667 (2026-06-06T16:01:05.302Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,36 +34,38 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260607-0666 (2026-06-06T15:25:12.210Z)
+Latest run: QA-20260607-0667 (2026-06-06T16:01:05.302Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked via vercel usage after v8.12.100 production deploy; effective=3.2367 USD, billed=0.0000 USD, chargeCount=3045, no unexpected billed usage observed. |
-| gcp-cloud-run | cli | checked | normal | Cloud Run ai-engine stayed within free-tier guardrails: cpu=1, memory=512Mi, latestReadyRevision ai-engine-00598-pqc at 100% traffic; /health returned status ok and version 8.12.100. |
+| vercel | cli | checked | normal | Current billing period checked after Vercel production Playwright MCP and AI QA; effective=3.2367 USD, billed=0.0000 USD, chargeCount=3045, no unexpected billed usage observed. |
+| gcp-cloud-run | http | checked | normal | Production /api/health?service=ai&soft=true returned status ok, backend Cloud Run, service ai-engine, version 8.12.100, latency 98ms. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-05T15:25:12.210Z -> 2026-06-06T15:25:12.210Z (24h)
-- Runs with observations: 2 recorded / 2 counted
-- Samples: 4
+- Window: 2026-06-05T16:01:05.302Z -> 2026-06-06T16:01:05.302Z (24h)
+- Runs with observations: 3 recorded / 3 counted
+- Samples: 7
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| Analyst Agent | mistral | 3 | 5770ms | 7677ms | - | - | - | - | QA-20260607-0667 |
 | CapacityForecast | groq | 1 | 3500ms | 3500ms | - | - | - | - | QA-20260606-0665 |
-| Analyst Agent | mistral | 1 | 2032ms | 2032ms | - | - | - | - | QA-20260606-0665 |
+| Metrics Query Agent | deterministic | 2 | 115ms | 204ms | - | - | - | - | QA-20260607-0667 |
 | MetricsQuery | deterministic | 1 | 120ms | 120ms | - | - | - | - | QA-20260606-0665 |
-| Metrics Query Agent | deterministic | 1 | 25ms | 25ms | - | - | - | - | QA-20260607-0666 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-05T15:25:12.210Z -> 2026-06-06T15:25:12.210Z (24h)
+- Window: 2026-06-05T16:01:05.302Z -> 2026-06-06T16:01:05.302Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -74,31 +76,36 @@ Latest run: QA-20260607-0666 (2026-06-06T15:25:12.210Z)
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
+- Scope: broad
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_8gGRNXZ1heoCMtiHCNNKhGdVhyJv / SHA 176d4b62
-- Coverage Packs: core-routes-smoke, ai-advanced-surface, observability-pack
-- Covered Surfaces: GitLab semver tag release pipeline v8.12.100 completed successfully (pipeline 2581738367, commit 176d4b621bdc1401cff6a6c9393f64d26805d470), Frontend deploy, AI Engine deploy, post_deploy_smoke, and post_deploy_ai_engine_smoke jobs all succeeded, Vercel production /, /login, and /api/version smoke passed with expected version 8.12.100, Vercel /api/version returned version 8.12.100, releaseTag v8.12.100, commitSha 176d4b621bdc1401cff6a6c9393f64d26805d470, and pipelineUrl 2581738367, Cloud Run ai-engine /health returned status ok, version 8.12.100, configured providers, and routesReady=true, Cloud Run latestReadyRevision ai-engine-00598-pqc receives 100% traffic with cpu=1 and memory=512Mi, P25 production direct supervisor query returned deterministic monitoring-server-health evidence for '가장 위험한 서버와 가장 안정적인 서버를 같이 알려줘', P25 response included both risky and stable server sections: db-mysql-dc1-primary as most risky and lb-haproxy-dc1-03 as most stable, P25 metadata returned provider=deterministic, modelId=monitoring-server-health, toolsCalled=[monitoring-server-health], evidenceAvailable=true, latency=25ms
-- Skipped Surfaces: Full Playwright UI conversational matrix was not repeated because this targeted run verifies the changed Cloud Run deterministic evidence path directly, Artifact BFF LLM classifier and Vision image upload surfaces were not in scope
+- Deployment: SHA 2df8a6aa
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface, observability-pack
+- Covered Surfaces: Planning state: reports/planning/TODO.md Active Tasks and Backlog were empty; only On Hold/Not Actionable items remain, Planning state: reports/planning/ai-assistant-improvement-plan-2026-06.md implementation tasks are complete; D-2 remains conditional and not triggered, QA state: npm run qa:status reported latest QA-20260607-0666, active gate warnings 0, pending/deferred improvements 0, expert open gaps 0, Evidence integrity: npm run qa:evidence:audit reported orphan durable evidence 0 and recent missing durable artifact refs 0, Docs gates: npm run docs:budget and npm run docs:ai-consistency passed, Contract gate: npm run test:contract passed 24/24 tests, Vercel production / rendered OpenManager AI v8.12.100 and login affordance, Guest PIN login reached authenticated landing state and dashboard start, Vercel dashboard rendered 18 total servers, 17 online, 1 warning, and AI engine Ready state, AI sidebar P25 query '위험한 서버와 안정적인 서버를 동시에 알려줘' returned both risky TOP 3 and stable BOTTOM 3 sections, AI sidebar P25 evidence card showed monitoring-server-health tool evidence and Cloud Run AI/source metadata, AI sidebar Analyst query '현재 이상 징후가 감지된 서버 있어? 분석해줘' returned server summary, warning server, trend, and recommendation, Playwright console check found 0 warning/error messages, Playwright network check found AI health, guest-login, wake-up, artifact-intent, supervisor stream, NLQ entity extraction, and AI jobs requests all succeeded with 200/201 statuses, Langfuse current trace check found 2026-06-07 00:55:07 KST supervisor-execution, provider=mistral, agent=Analyst Agent, status=ok, latency=7.6s, Langfuse recent supervisor trace sample had fallback 0 and current-run Analyst status ok, Production /api/version returned version 8.12.100, releaseTag v8.12.100, commitSha 176d4b621bdc1401cff6a6c9393f64d26805d470, pipeline 2581738367, Production AI health returned Cloud Run backend ok, version 8.12.100, latency 98ms, Vercel usage guard reported effective=3.2367 USD, billed=0.0000 USD, chargeCount=3045
+- Skipped Surfaces: OAuth provider end-to-end login was not repeated; guest PIN flow is the production QA path for this run, Artifact BFF image upload and report generation were outside this closure check, Exact P25 deterministic UI query was not used as the Langfuse proof because the current Langfuse proof is the subsequent Analyst trace that appeared after ingestion delay
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | GitLab v8.12.100 release pipeline | [GitLab v8.12.100 release pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2581738367) | - |
-| monitoring | Cloud Run ai-engine health | [Cloud Run ai-engine health](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
+| monitoring | Langfuse project dashboard | [Langfuse project dashboard](https://us.cloud.langfuse.com/project) | - |
 | vercel-deployment | Vercel production deployment dpl_8gGRNXZ1heoCMtiHCNNKhGdVhyJv | [Vercel production deployment dpl_8gGRNXZ1heoCMtiHCNNKhGdVhyJv](https://openmanager-82ndsftih-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | GitLab v8.12.100 release pipeline | [GitLab v8.12.100 release pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2581738367) | - |
-| playwright-report | Vercel v8.12.100 production deployment | [Vercel v8.12.100 production deployment](https://openmanager-82ndsftih-skyasus-projects.vercel.app/) | - |
+| playwright-screenshot | P25 AI sidebar TOP+BOTTOM production response | `reports/qa/evidence/2026/qa-20260607-0667/qa-20260607-v812100-p25-ai-assistant.png` | - |
+| playwright-screenshot | AI sidebar anomaly Analyst production response | `reports/qa/evidence/2026/qa-20260607-0667/qa-20260607-v812100-ai-anomaly-response.png` | - |
+| playwright-console | Playwright console warning/error final log | `reports/qa/evidence/2026/qa-20260607-0667/qa-20260607-console-warning-final.txt` | - |
+| playwright-network | Playwright AI network final log | `reports/qa/evidence/2026/qa-20260607-0667/qa-20260607-network-ai-final.txt` | - |
+| playwright-console | Playwright console warning/error initial log | `reports/qa/evidence/2026/qa-20260607-0667/qa-20260607-console-warning-initial.txt` | - |
+| playwright-network | Playwright AI network initial log | `reports/qa/evidence/2026/qa-20260607-0667/qa-20260607-network-ai-initial.txt` | - |
+| playwright-report | Langfuse current Analyst trace | [Langfuse current Analyst trace](https://us.cloud.langfuse.com/project) | - |
 | playwright-network | Vercel /api/version v8.12.100 | [Vercel /api/version v8.12.100](https://openmanager-ai.vercel.app/api/version) | - |
-| playwright-network | Cloud Run /health ai-engine 8.12.100 | [Cloud Run /health ai-engine 8.12.100](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
-| playwright-network | Cloud Run P25 direct supervisor POST | [Cloud Run P25 direct supervisor POST](https://ai-engine-jdhrhws7ia-an.a.run.app/api/ai/supervisor) | - |
+| playwright-network | Vercel AI health v8.12.100 | [Vercel AI health v8.12.100](https://openmanager-ai.vercel.app/api/health?service=ai&soft=true) | - |
+| playwright-report | GitLab v8.12.100 release pipeline | [GitLab v8.12.100 release pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2581738367) | - |
 
 ## Expert Domain Open Gaps
 
@@ -191,18 +198,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 768 items completed (full list in qa-tracker.json)
+- Total: 770 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - p25-top-bottom-dual-query-ui-confirmed: P25 TOP+BOTTOM dual server query production UI confirmation (last QA-20260607-0667)
+  - production-ai-observability-final-check: Production AI assistant Langfuse current-run trace confirmation (last QA-20260607-0667)
   - p25-top-bottom-dual-query: P25: 가장 위험한 서버 + 가장 안정적인 서버 동시 질의 deterministic evidence 처리 (last QA-20260607-0666)
   - p24-all-scope-average: P24: 전체 서버 all-scope 단일 메트릭 평균 집계 수정 완료 (last QA-20260606-0665)
   - routing-regression-check-v81299-production-released: routing regression check tooling and baseline released with v8.12.99 (last QA-20260606-0664)
-  - security-audit-logs-retention-v81299-production-deployed: security_audit_logs 90-day app-level retention cleanup deployed to production in v8.12.99 (last QA-20260606-0664)
-  - landing-ai-example-question-cards-v81298-production-deployed: Landing AI example question cards moved to SystemStartSection and verified in production v8.12.98 (last QA-20260606-0663)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260607-0667 | 2026-06-06T16:01:05.302Z | broad | yes | yes | Vercel Playwright MCP + Langfuse Final QA - v8.12.100 improvement closure check | 19 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260607-0666 | 2026-06-06T15:25:12.210Z | targeted | yes | yes | Cloud Run Production Targeted QA - v8.12.100 P25 TOP+BOTTOM dual server query fix | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260606-0665 | 2026-06-06T14:36:04.907Z | targeted | no | yes | Vercel Production Playwright MCP - 24차 AI 어시스턴트 평가 (v8.12.99) | 7 | 1 | 0 | 0 | 1 | 0 |
 | QA-20260606-0664 | 2026-06-06T13:25:18.055Z | smoke | yes | yes | GitLab Release Deploy Smoke - v8.12.99 auth retention and QA tooling release | 10 | 2 | 0 | 0 | 0 | 0 |
@@ -222,4 +230,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260605-0650 | 2026-06-04T15:37:32.012Z | targeted | yes | yes | Vercel Production Targeted QA - Free Tier and Two-Week Direction Review | 12 | 2 | 0 | 0 | 1 | 0 |
 | QA-20260605-0649 | 2026-06-04T15:08:53.658Z | targeted | yes | yes | Cloud Run Production Targeted QA - v8.12.89 Off-Domain Warn Metadata | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260604-0648 | 2026-06-04T14:12:58.111Z | targeted | yes | yes | Cloud Run Production Targeted QA - v8.12.88 Off-Domain Guardrail | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260530-0647 | 2026-05-30T13:45:31.747Z | targeted | yes | yes | Vercel Release Smoke - v8.12.87 Parallel Deploy Verification | 10 | 1 | 0 | 0 | 0 | 0 |

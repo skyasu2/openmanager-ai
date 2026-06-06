@@ -1,0 +1,249 @@
+{
+  "runTitle": "Vercel Playwright MCP + Langfuse Final QA - v8.12.100 improvement closure check",
+  "owner": "codex",
+  "source": "playwright-mcp-langfuse",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_8gGRNXZ1heoCMtiHCNNKhGdVhyJv",
+    "deploymentUrl": "https://openmanager-82ndsftih-skyasus-projects.vercel.app",
+    "commitSha": "176d4b621bdc1401cff6a6c9393f64d26805d470"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Planning state: reports/planning/TODO.md Active Tasks and Backlog were empty; only On Hold/Not Actionable items remain",
+    "Planning state: reports/planning/ai-assistant-improvement-plan-2026-06.md implementation tasks are complete; D-2 remains conditional and not triggered",
+    "QA state: npm run qa:status reported latest QA-20260607-0666, active gate warnings 0, pending/deferred improvements 0, expert open gaps 0",
+    "Evidence integrity: npm run qa:evidence:audit reported orphan durable evidence 0 and recent missing durable artifact refs 0",
+    "Docs gates: npm run docs:budget and npm run docs:ai-consistency passed",
+    "Contract gate: npm run test:contract passed 24/24 tests",
+    "Vercel production / rendered OpenManager AI v8.12.100 and login affordance",
+    "Guest PIN login reached authenticated landing state and dashboard start",
+    "Vercel dashboard rendered 18 total servers, 17 online, 1 warning, and AI engine Ready state",
+    "AI sidebar P25 query '위험한 서버와 안정적인 서버를 동시에 알려줘' returned both risky TOP 3 and stable BOTTOM 3 sections",
+    "AI sidebar P25 evidence card showed monitoring-server-health tool evidence and Cloud Run AI/source metadata",
+    "AI sidebar Analyst query '현재 이상 징후가 감지된 서버 있어? 분석해줘' returned server summary, warning server, trend, and recommendation",
+    "Playwright console check found 0 warning/error messages",
+    "Playwright network check found AI health, guest-login, wake-up, artifact-intent, supervisor stream, NLQ entity extraction, and AI jobs requests all succeeded with 200/201 statuses",
+    "Langfuse current trace check found 2026-06-07 00:55:07 KST supervisor-execution, provider=mistral, agent=Analyst Agent, status=ok, latency=7.6s",
+    "Langfuse recent supervisor trace sample had fallback 0 and current-run Analyst status ok",
+    "Production /api/version returned version 8.12.100, releaseTag v8.12.100, commitSha 176d4b621bdc1401cff6a6c9393f64d26805d470, pipeline 2581738367",
+    "Production AI health returned Cloud Run backend ok, version 8.12.100, latency 98ms",
+    "Vercel usage guard reported effective=3.2367 USD, billed=0.0000 USD, chargeCount=3045"
+  ],
+  "skippedSurfaces": [
+    "OAuth provider end-to-end login was not repeated; guest PIN flow is the production QA path for this run",
+    "Artifact BFF image upload and report generation were outside this closure check",
+    "Exact P25 deterministic UI query was not used as the Langfuse proof because the current Langfuse proof is the subsequent Analyst trace that appeared after ingestion delay"
+  ],
+  "checks": {
+    "total": 19,
+    "passed": 19,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "P25 dual risky/stable server query in AI sidebar",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-server-health",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP screenshot and assistant metadata",
+      "latencyMs": 204
+    },
+    {
+      "surface": "Current anomaly detection query in AI sidebar",
+      "agent": "Analyst Agent",
+      "provider": "mistral",
+      "model": "mistral-large-latest",
+      "route": "/api/ai/jobs",
+      "source": "Playwright MCP screenshot + Langfuse supervisor trace",
+      "latencyMs": 7677
+    },
+    {
+      "surface": "Current anomaly detection query in Langfuse",
+      "agent": "Analyst Agent",
+      "provider": "mistral",
+      "model": "mistral-large-latest",
+      "route": "supervisor-execution",
+      "source": "npm run langfuse:check -- --limit 20 --q supervisor",
+      "latencyMs": 7600
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "P25 TOP+BOTTOM dual-intent query now renders both risky and stable server sections in production UI, and a current Analyst trace is visible in Langfuse with status ok.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Recent Langfuse supervisor traces show current Analyst status ok, fallback 0, and Playwright network/console evidence shows no browser-side API or runtime errors.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production version, Cloud Run AI health, Vercel usage guard, and previous GitLab release pipeline evidence are consistent with v8.12.100.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Manual Playwright MCP browser QA was backed by durable screenshots, console logs, network logs, docs checks, evidence audit, and contract test results.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-07T00:57:25+09:00",
+      "summary": "Current billing period checked after Vercel production Playwright MCP and AI QA; effective=3.2367 USD, billed=0.0000 USD, chargeCount=3045, no unexpected billed usage observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "gcp-cloud-run",
+      "method": "http",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-07T00:57:23+09:00",
+      "summary": "Production /api/health?service=ai&soft=true returned status ok, backend Cloud Run, service ai-engine, version 8.12.100, latency 98ms.",
+      "evidence": "curl -sS https://openmanager-ai.vercel.app/api/health?service=ai&soft=true",
+      "url": "https://openmanager-ai.vercel.app/api/health?service=ai&soft=true"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "P25 AI sidebar TOP+BOTTOM production response",
+      "path": "reports/qa/evidence/2026/qa-20260607-0667/qa-20260607-v812100-p25-ai-assistant.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI sidebar anomaly Analyst production response",
+      "path": "reports/qa/evidence/2026/qa-20260607-0667/qa-20260607-v812100-ai-anomaly-response.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Playwright console warning/error final log",
+      "path": "reports/qa/evidence/2026/qa-20260607-0667/qa-20260607-console-warning-final.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Playwright AI network final log",
+      "path": "reports/qa/evidence/2026/qa-20260607-0667/qa-20260607-network-ai-final.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Playwright console warning/error initial log",
+      "path": "reports/qa/evidence/2026/qa-20260607-0667/qa-20260607-console-warning-initial.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Playwright AI network initial log",
+      "path": "reports/qa/evidence/2026/qa-20260607-0667/qa-20260607-network-ai-initial.txt"
+    },
+    {
+      "type": "playwright-report",
+      "label": "Langfuse current Analyst trace",
+      "url": "https://us.cloud.langfuse.com/project",
+      "note": "npm run langfuse:check -- --limit 20 --q supervisor -> 2026-06-07 00:55:07 KST supervisor-execution, mistral, Analyst Agent, ok, 7.6s"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Vercel /api/version v8.12.100",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Vercel AI health v8.12.100",
+      "url": "https://openmanager-ai.vercel.app/api/health?service=ai&soft=true"
+    },
+    {
+      "type": "playwright-report",
+      "label": "GitLab v8.12.100 release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2581738367"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "p25-top-bottom-dual-query-ui-confirmed",
+      "title": "P25 TOP+BOTTOM dual server query production UI confirmation",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP production UI screenshot shows risky TOP 3 and stable BOTTOM 3 sections in the same AI response.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "production-ai-observability-final-check",
+      "title": "Production AI assistant Langfuse current-run trace confirmation",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Langfuse current supervisor trace at 2026-06-07 00:55:07 KST: mistral, Analyst Agent, ok, 7.6s.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run confirms that the current improvement scope is closed from planning, docs/tests, production UI, deployment, and Langfuse observability perspectives.",
+    "The 100-trace JSON Langfuse query timed out earlier in the session, but smaller recent-trace checks succeeded; no current production AI failure was found.",
+    "Exact deterministic P25 UI response did not appear as the Langfuse proof during the short polling window; the current Langfuse proof is the subsequent Analyst trace, while P25 itself is covered by Playwright screenshot and network evidence.",
+    "Open On Hold planning items remain B-2 Langfuse score auto-record, D-1 weekly Langfuse aggregation, and conditional D-2 maxSteps 5 to 4; none is an active blocker for v8.12.100 closure."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.12.100 release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2581738367"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_8gGRNXZ1heoCMtiHCNNKhGdVhyJv",
+      "url": "https://openmanager-82ndsftih-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "monitoring",
+      "label": "Langfuse project dashboard",
+      "url": "https://us.cloud.langfuse.com/project"
+    }
+  ]
+}
