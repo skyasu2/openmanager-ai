@@ -5,15 +5,20 @@
 import { NextRequest } from 'next/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { mockInsert, mockLogger } = vi.hoisted(() => ({
-  mockInsert: vi.fn(),
-  mockLogger: {
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
-    debug: vi.fn(),
-  },
-}));
+const { mockDelete, mockFrom, mockInsert, mockLogger, mockLt } = vi.hoisted(
+  () => ({
+    mockDelete: vi.fn(),
+    mockFrom: vi.fn(),
+    mockInsert: vi.fn(),
+    mockLogger: {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+    },
+    mockLt: vi.fn(),
+  })
+);
 
 vi.mock('server-only', () => ({}));
 
@@ -26,7 +31,7 @@ vi.mock('./guest-region-policy', () => ({
 }));
 vi.mock('@/lib/supabase/admin', () => ({
   supabaseAdmin: {
-    from: vi.fn(() => ({ insert: mockInsert })),
+    from: mockFrom,
   },
 }));
 
@@ -42,6 +47,12 @@ describe('login-audit', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     resetLoginAuditRuntimeStateForTests();
+    mockFrom.mockReturnValue({
+      delete: mockDelete,
+      insert: mockInsert,
+    });
+    mockDelete.mockReturnValue({ lt: mockLt });
+    mockLt.mockResolvedValue({ error: null });
     process.env = {
       ...originalEnv,
       SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
@@ -50,6 +61,7 @@ describe('login-audit', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     process.env = originalEnv;
   });
 
@@ -272,6 +284,50 @@ describe('login-audit', () => {
 
       expect(result).toBe(true);
       expect(mockInsert).toHaveBeenCalledOnce();
+    });
+
+    it('성공한 감사 로그 기록 후 90일 초과 row를 정리한다', async () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-06-06T12:00:00.000Z'));
+      mockInsert.mockResolvedValue({ error: null });
+      const request = new NextRequest('http://localhost:3000/api/auth/login');
+
+      const result = await recordLoginEvent({
+        request,
+        provider: 'guest',
+        success: true,
+      });
+
+      expect(result).toBe(true);
+      expect(mockFrom).toHaveBeenCalledWith('security_audit_logs');
+      expect(mockDelete).toHaveBeenCalledOnce();
+      expect(mockLt).toHaveBeenCalledWith(
+        'created_at',
+        '2026-03-08T12:00:00.000Z'
+      );
+    });
+
+    it('같은 프로세스에서는 감사 로그 retention cleanup을 하루에 한 번만 실행한다', async () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-06-06T12:00:00.000Z'));
+      mockInsert.mockResolvedValue({ error: null });
+      const request = new NextRequest('http://localhost:3000/api/auth/login');
+
+      await recordLoginEvent({
+        request,
+        provider: 'guest',
+        success: true,
+      });
+      vi.setSystemTime(new Date('2026-06-06T12:10:00.000Z'));
+      await recordLoginEvent({
+        request,
+        provider: 'guest',
+        success: true,
+      });
+
+      expect(mockInsert).toHaveBeenCalledTimes(2);
+      expect(mockDelete).toHaveBeenCalledOnce();
+      expect(mockLt).toHaveBeenCalledOnce();
     });
   });
 });
