@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-07 21:31:57 KST
+> Generated at: 2026-06-07 22:07:25 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 683 |
-| Total Runs (Counted) | 526 |
+| Total Recorded Runs | 684 |
+| Total Runs (Counted) | 527 |
 | Non-counted Runs | 157 |
-| Total Checks | 4670 |
-| Passed | 4463 |
-| Failed | 162 |
+| Total Checks | 4676 |
+| Passed | 4465 |
+| Failed | 166 |
 | Completed Items | 789 |
-| Pending Items | 0 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 28 |
 | Expert Domains Tracked | 21 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260607-0677 (2026-06-07T09:10:18.387Z) |
-| Latest Recorded Run | QA-20260607-0685 (2026-06-07T12:31:57.296Z) |
+| Expert Open Gaps | 1 |
+| Completion Rate | 99.87% |
+| Last Counted Run | QA-20260607-0686 (2026-06-07T13:07:25.133Z) |
+| Latest Recorded Run | QA-20260607-0686 (2026-06-07T13:07:25.133Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,22 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260607-0685 (2026-06-07T12:31:57.296Z)
+Latest run: QA-20260607-0686 (2026-06-07T13:07:25.133Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | After deployment, rerun the inverse-status and boundary prompts through Cloud Run direct API and confirm Langfuse routing metadata. |
+| AI Quality Assurance Specialist | appropriate | yes | Allow deterministic_clarification in supervisor deterministic evidence handling, add direct/stream entrypoint regressions, redeploy, and rerun direct API boundary prompts. |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| gcp-cloud-run | gcloud | checked | normal | Cloud Run ai-engine resource limits remained cpu=1 and memory=512Mi after deployment. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-06T12:31:57.296Z -> 2026-06-07T12:31:57.296Z (24h)
+- Window: 2026-06-06T13:07:25.133Z -> 2026-06-07T13:07:25.133Z (24h)
 - Runs with observations: 13 recorded / 7 counted
 - Samples: 45
 
@@ -73,44 +74,46 @@ Latest run: QA-20260607-0685 (2026-06-07T12:31:57.296Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-06T12:31:57.296Z -> 2026-06-07T12:31:57.296Z (24h)
-- Runs with observations: 0 recorded / 0 counted
-- Samples: 0
-- Drift rate: 0%
+- Window: 2026-06-06T13:07:25.133Z -> 2026-06-07T13:07:25.133Z (24h)
+- Runs with observations: 1 recorded / 1 counted
+- Samples: 2
+- Drift rate: 100%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| - | - | 0 | 0% | - | - | - |
+| /api/ai/supervisor | deterministic | 1 | 100% | 0ms | 0ms | QA-20260607-0686 |
+| /api/ai/supervisor | single-agent | 1 | 100% | 0ms | 0ms | QA-20260607-0686 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA 808dfab3
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: gitlab-pipeline-2582927769 / SHA 6dbe317e
 - Coverage Packs: ai-core
-- Covered Surfaces: review fix: inverse status queries such as “이상 없는 서버 목록” stay on deterministic Metrics Query and do not trigger LLM reclassification, review fix: prefilter LLM result cannot override deterministic routing when its confidence is lower than the deterministic result, review fix: when Router model selection returns null, LLM classification is skipped so classifyRoutingIntentWithLLM cannot fall back to direct Groq model creation, review fix: Router model-selection failure restores the round-robin cursor before returning deterministic fallback, targeted orchestrator regression: cd cloud-run/ai-engine && npm test -- orchestrator-context.test.ts passed (1 file / 35 tests), AI Engine validation: type-check and full Vitest passed (160 files / 1671 tests), root pre-commit gates: test:quick, type-check, lint, and test:contract passed, line and patch hygiene: AI Engine line-guard, current-metrics <=800 line check, and git diff --check passed
-- Skipped Surfaces: Production Cloud Run API was not rerun because this is a local pre-commit routing fix validation, Browser AI sidebar and Vercel UI QA were not repeated because no frontend runtime surface changed, Langfuse trace proof remains deployment-stage verification after this commit is deployed
+- Covered Surfaces: Cloud Run /health returned version 8.12.108 after GitLab tag pipeline 2582927769 succeeded, Cloud Run service resource limits remained free-tier aligned at cpu=1 and memory=512Mi, Cloud Run /monitoring unauthenticated boundary returned 403 as expected, direct API network-ranking prompt returned deterministic monitoring-metric-ranking response, direct API contextual follow-up prompt returned deterministic metric ranking response, direct API unsupported GPU metric prompt returned HTTP 500 instead of deterministic unsupported-metric clarification, direct API explicit unknown server prompt returned HTTP 500 or LLM fallback instead of deterministic not-found clarification, direct API ambiguous single-server prompt returned LLM clarification instead of deterministic boundary guard, direct API inverse-status prompt returned correct deterministic content but metadata still reported Analyst Agent
+- Skipped Surfaces: Browser AI sidebar was not repeated because this deployment-stage check isolated Cloud Run direct supervisor behavior, Langfuse trace deep-dive was deferred until the follow-up fix deployment
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | v8.12.108 GitLab tag pipeline | [v8.12.108 GitLab tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582927769) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-report | v8.12.108 Cloud Run direct API boundary post-deploy failure evidence | `reports/qa/evidence/qa-20260607-v812108-boundary-postdeploy-fail.md` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260607-0686)
+  next: Allow deterministic_clarification in supervisor deterministic evidence handling, add direct/stream entrypoint regressions, redeploy, and rerun direct API boundary prompts.
 
 ## Pending Improvements
 
-- None
+- [P1] ai-engine-boundary-clarification-short-circuit-v812108: Cloud Run direct supervisor must short-circuit deterministic boundary clarifications (seen 1회, last QA-20260607-0686)
 
 ## Deferred Improvements
 
@@ -203,6 +206,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260607-0686 | 2026-06-07T13:07:25.133Z | targeted | yes | yes | Production Cloud Run direct API post-deploy QA - v8.12.108 boundary guard regression | 6 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260607-0685 | 2026-06-07T12:31:57.296Z | targeted | no | no | AI Engine pre-commit review validation - LLM prefilter routing guards | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260607-0684 | 2026-06-07T12:21:48.095Z | targeted | no | no | AI Engine pre-commit review validation - boundary guard and current metrics split | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260607-0683 | 2026-06-07T12:11:29.710Z | targeted | no | no | AI Engine local test refactor - current metrics evidence test split | 6 | 0 | 0 | 0 | 0 | 0 |
@@ -222,4 +226,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260607-0669 | 2026-06-06T23:59:04.960Z | targeted | no | yes | Cloud Run Production Direct API - v8.12.102 AI assistant advanced metric filter regression validation | 10 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260607-0668 | 2026-06-06T16:45:34.002Z | targeted | no | yes | Vercel Production Playwright MCP - 25차 AI 어시스턴트 평가 (v8.12.100) | 6 | 1 | 0 | 0 | 2 | 0 |
 | QA-20260607-0667 | 2026-06-06T16:01:05.302Z | broad | yes | yes | Vercel Playwright MCP + Langfuse Final QA - v8.12.100 improvement closure check | 19 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260607-0666 | 2026-06-06T15:25:12.210Z | targeted | yes | yes | Cloud Run Production Targeted QA - v8.12.100 P25 TOP+BOTTOM dual server query fix | 10 | 1 | 0 | 0 | 0 | 0 |

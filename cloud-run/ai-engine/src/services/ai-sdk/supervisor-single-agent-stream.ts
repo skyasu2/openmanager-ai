@@ -42,6 +42,7 @@ import {
 } from './supervisor-stream-messages';
 import { buildWebCitationAppendix } from './supervisor-stream-citations';
 import { resolveDomainEvidenceForStream } from './supervisor-domain-evidence';
+import { shouldUseDeterministicDomainEvidenceAnswer } from './supervisor-domain-evidence-response';
 import { shouldRefuseInternalImplementationPathRequest } from './internal-disclosure-policy';
 import {
   appendSupervisorContextPrompt,
@@ -147,8 +148,7 @@ export async function* streamSingleAgent(
     }));
   if (
     domainEvidence &&
-    String(domainEvidence?.metadata?.responsePolicy ?? '') ===
-    'deterministic_fail_closed'
+    shouldUseDeterministicDomainEvidenceAnswer(domainEvidence)
   ) {
     yield { type: 'text_delta', data: domainEvidence.fallback };
     yield buildSingleAgentDoneEvent({

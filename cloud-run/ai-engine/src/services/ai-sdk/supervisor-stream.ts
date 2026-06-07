@@ -1,5 +1,4 @@
 import './domain-bootstrap';
-import type { DomainEvidenceResult } from '../../core/assistant-runtime';
 import { logger } from '../../lib/logger';
 import { isSingleModeAllowed } from '../../lib/config-parser';
 import { executeMultiAgentStream } from './agents';
@@ -26,6 +25,7 @@ import {
   shouldRefuseInternalImplementationPathRequest,
 } from './internal-disclosure-policy';
 import { buildServiceCommandGuidanceAnswer } from '../../tools-ai-sdk/reporter-tools/knowledge-command-catalog';
+import { shouldUseDeterministicDomainEvidenceAnswer } from './supervisor-domain-evidence-response';
 import {
   appendSupervisorContextPrompt,
   buildSupervisorLogContextPrompt,
@@ -80,16 +80,6 @@ async function* appendSuffixBeforeDone(
     }
     yield event;
   }
-}
-
-function shouldUseDeterministicDomainEvidenceAnswer(
-  domainEvidence: DomainEvidenceResult | undefined
-): boolean {
-  return [
-    'deterministic_answer',
-    'deterministic_read_only_advice',
-    'deterministic_fail_closed',
-  ].includes(String(domainEvidence?.metadata?.responsePolicy ?? ''));
 }
 
 export async function* executeSupervisorStream(

@@ -734,6 +734,118 @@ describe('supervisor domain wiring contract', () => {
     }
   );
 
+  it.each([
+    {
+      query: 'GPU 사용률이 가장 높은 서버 3대 알려줘',
+      reason: 'unsupported_metric',
+      expectedText: '지원하지 않는 지표',
+    },
+    {
+      query: 'web-nginx-dc9-99 상태 알려줘',
+      reason: 'unknown_server',
+      expectedText: '서버를 찾지 못했습니다',
+    },
+    {
+      query: '서버 하나만 자세히 알려줘',
+      reason: 'ambiguous_single_server',
+      expectedText: '어떤 서버를 볼지 지정해 주세요',
+    },
+  ])(
+    'short-circuits deterministic boundary clarification in the non-stream supervisor entrypoint: $reason',
+    async ({ query, reason, expectedText }) => {
+      const runtimeHost = createMonitoringAssistantRuntimeHost();
+
+      const result = await executeSupervisor({
+        mode: 'auto',
+        messages: [{ role: 'user', content: query }],
+        sessionId: `session-boundary-${reason}`,
+        enableRAG: false,
+        enableWebSearch: false,
+        runtimeHost,
+      });
+
+      expect(mockGenerateText).not.toHaveBeenCalled();
+      expect(mockExecuteMultiAgent).not.toHaveBeenCalled();
+      expect(result).toMatchObject({
+        success: true,
+        toolsCalled: ['monitoring-boundary-guard'],
+        usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+        metadata: {
+          provider: 'deterministic',
+          modelId: 'monitoring-boundary-guard',
+          domainEvidence: {
+            id: 'monitoring-boundary-guard',
+            responsePolicy: 'deterministic_clarification',
+          },
+        },
+      });
+      expect('response' in result ? result.response : '').toContain(
+        expectedText
+      );
+    }
+  );
+
+  it.each([
+    {
+      query: 'GPU 사용률이 가장 높은 서버 3대 알려줘',
+      reason: 'unsupported_metric',
+      expectedText: '지원하지 않는 지표',
+    },
+    {
+      query: 'web-nginx-dc9-99 상태 알려줘',
+      reason: 'unknown_server',
+      expectedText: '서버를 찾지 못했습니다',
+    },
+    {
+      query: '서버 하나만 자세히 알려줘',
+      reason: 'ambiguous_single_server',
+      expectedText: '어떤 서버를 볼지 지정해 주세요',
+    },
+  ])(
+    'short-circuits deterministic boundary clarification in the stream supervisor entrypoint: $reason',
+    async ({ query, expectedText }) => {
+      const runtimeHost = createMonitoringAssistantRuntimeHost();
+      const events = [];
+
+      for await (const event of executeSupervisorStream({
+        mode: 'auto',
+        messages: [{ role: 'user', content: query }],
+        sessionId: 'session-boundary-stream',
+        enableRAG: false,
+        enableWebSearch: false,
+        runtimeHost,
+      })) {
+        events.push(event);
+      }
+
+      const streamedText = events
+        .filter((event) => event.type === 'text_delta')
+        .map((event) => String(event.data))
+        .join('');
+      const doneEvent = events.find((event) => event.type === 'done');
+
+      expect(mockStreamText).not.toHaveBeenCalled();
+      expect(mockExecuteMultiAgentStream).not.toHaveBeenCalled();
+      expect(streamedText).toContain(expectedText);
+      expect(doneEvent).toMatchObject({
+        type: 'done',
+        data: {
+          success: true,
+          toolsCalled: ['monitoring-boundary-guard'],
+          usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+          metadata: {
+            provider: 'deterministic',
+            modelId: 'monitoring-boundary-guard',
+            domainEvidence: {
+              id: 'monitoring-boundary-guard',
+              responsePolicy: 'deterministic_clarification',
+            },
+          },
+        },
+      });
+    }
+  );
+
   it('short-circuits Q-NEW72 metric risk comparison in the non-stream supervisor entrypoint', async () => {
     const runtimeHost = createMonitoringAssistantRuntimeHost();
 

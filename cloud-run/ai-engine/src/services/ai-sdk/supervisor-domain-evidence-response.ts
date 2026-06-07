@@ -22,6 +22,7 @@ export function shouldUseDeterministicDomainEvidenceAnswer(
 ): boolean {
   return [
     'deterministic_answer',
+    'deterministic_clarification',
     'deterministic_read_only_advice',
     'deterministic_fail_closed',
   ].includes(String(domainEvidence?.metadata?.responsePolicy ?? ''));
