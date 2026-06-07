@@ -19,6 +19,7 @@ import {
   GROUP_HEALTH_COMPARISON_PATTERN,
   METRIC_RISK_COMPARISON_PATTERN,
   METRIC_TREND_RANKING_PATTERN,
+  RANKING_CROSS_METRIC_PATTERN,
 } from './current-metrics-evidence-patterns';
 import {
   extractContextualServerTargetsFromMessages,
@@ -262,6 +263,45 @@ export function buildCrossMetricConditionAggregateRequest(params: {
     metric: aggregateMetric,
     filterConditions,
     filterOperator: 'AND',
+    ...(params.targets.length > 0 && { targets: params.targets }),
+  };
+}
+
+export function buildRankingCrossMetricRequest(params: {
+  message: string;
+  targets: string[];
+}): ParsedCurrentMetricsEvidenceRequest | null {
+  if (!RANKING_CROSS_METRIC_PATTERN.test(params.message)) return null;
+
+  const mentions = extractMetricMentions(params.message);
+  if (mentions.length < 2) return null;
+
+  const sourceMetric = mentions[0]?.metric;
+  const targetMetric = mentions.at(-1)?.metric;
+  if (!sourceMetric || !targetMetric || sourceMetric === targetMetric) {
+    return null;
+  }
+
+  const rankOrder = /하위|낮|적|bottom|lowest|least/i.test(params.message)
+    ? 'asc'
+    : 'desc';
+  const explicitRankCount =
+    params.message.match(/(?:상위|하위|top|bottom)\s*(\d{1,2})/i)?.[1] ??
+    params.message.match(/(\d{1,2})\s*(?:개|대|위)/)?.[1];
+  const rankCount =
+    explicitRankCount !== undefined
+      ? normalizeRankCount(Number(explicitRankCount))
+      : normalizeMetricRankingCount(params.message, undefined);
+
+  return {
+    intent: 'metric_current',
+    capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+    sourceIntent: 'ranking-cross-metric',
+    answerQuery: params.message,
+    metric: targetMetric,
+    sourceMetric,
+    rankCount,
+    rankOrder,
     ...(params.targets.length > 0 && { targets: params.targets }),
   };
 }

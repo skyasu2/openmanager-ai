@@ -56,6 +56,21 @@ function splitSentences(text: string): string[] {
     .filter(Boolean);
 }
 
+function normalizeSummaryCandidateText(text: string): string {
+  return text
+    .split(/\r?\n/)
+    .map((line) => {
+      const trimmed = line.trim();
+      if (/^```/.test(trimmed)) return null;
+      if (/^(?:---+|\*\*\*+|___+)$/.test(trimmed)) return null;
+      const heading = trimmed.match(/^#{1,6}\s+(.+)$/);
+      return heading?.[1]?.trim() ?? line;
+    })
+    .filter((line): line is string => line !== null && line.trim().length > 0)
+    .join('\n')
+    .trim();
+}
+
 function createAssistantResponseSummary(content: string): AssistantResponseSummary {
   const normalized = typeof content === 'string' ? content.trim() : '';
   if (!normalized) {
@@ -84,19 +99,20 @@ function createAssistantResponseSummary(content: string): AssistantResponseSumma
       return { summary: normalized, details: null, shouldCollapse: false };
     }
 
-    let summary = firstParagraph;
+    let summary = normalizeSummaryCandidateText(firstParagraph);
     let detailsStartIndex = 1;
 
     const isHeadingOnly =
-      /^#{1,3}\s.+$/m.test(summary) && summary.length <= 80;
+      /^#{1,3}\s.+$/m.test(firstParagraph) && firstParagraph.length <= 80;
     const secondParagraph = paragraphs[1];
     if (isHeadingOnly && secondParagraph) {
-      summary = `${summary}\n\n${secondParagraph}`;
+      const secondSummary = normalizeSummaryCandidateText(secondParagraph);
+      summary = [summary, secondSummary].filter(Boolean).join('\n\n');
       detailsStartIndex = 2;
     }
 
     const details = paragraphs.slice(detailsStartIndex).join('\n\n').trim();
-    if (details.length > 0) {
+    if (summary && details.length > 0) {
       return {
         summary,
         details,
@@ -107,7 +123,9 @@ function createAssistantResponseSummary(content: string): AssistantResponseSumma
 
   const sentences = splitSentences(normalized);
   if (sentences.length >= 3) {
-    const summary = sentences.slice(0, 2).join(' ').trim();
+    const summary = normalizeSummaryCandidateText(
+      sentences.slice(0, 2).join(' ').trim()
+    );
     const details = sentences.slice(2).join(' ').trim();
     if (summary && details) {
       return {

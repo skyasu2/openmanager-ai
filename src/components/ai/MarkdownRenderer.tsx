@@ -13,6 +13,7 @@ import 'highlight.js/styles/github-dark.css';
 interface MarkdownRendererProps {
   content: string;
   className?: string;
+  orderedListStart?: number;
 }
 
 const STANDALONE_HANDOFF_PATTERN =
@@ -147,7 +148,10 @@ const CodeBlock = memo(function CodeBlock({
 export const MarkdownRenderer = memo(function MarkdownRenderer({
   content,
   className = '',
+  orderedListStart,
 }: MarkdownRendererProps) {
+  let orderedListRenderIndex = 0;
+
   return (
     <div className={`markdown-content min-w-0 ${className}`}>
       <ReactMarkdown
@@ -201,11 +205,21 @@ export const MarkdownRenderer = memo(function MarkdownRenderer({
               {children}
             </ul>
           ),
-          ol: ({ children }) => (
-            <ol className="list-decimal list-inside my-2 space-y-1 text-gray-700">
-              {children}
-            </ol>
-          ),
+          ol: ({ children, start }) => {
+            orderedListRenderIndex += 1;
+            const resolvedStart =
+              orderedListRenderIndex === 1
+                ? (orderedListStart ?? start)
+                : start;
+            return (
+              <ol
+                start={resolvedStart}
+                className="list-decimal list-inside my-2 space-y-1 text-gray-700"
+              >
+                {children}
+              </ol>
+            );
+          },
           li: ({ children }) => <li className="leading-relaxed">{children}</li>,
           // 테이블
           table: ({ children }) => (

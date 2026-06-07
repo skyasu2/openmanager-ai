@@ -59,6 +59,7 @@ import {
   buildGroupHealthCompareRequest,
   buildCrossMetricConditionAggregateRequest,
   buildMetricRiskComparisonRequest,
+  buildRankingCrossMetricRequest,
   buildTrendRequestOptions,
   buildTrendThresholdOptions,
   extractMentionedMetrics,
@@ -88,6 +89,7 @@ export interface ParsedCurrentMetricsEvidenceRequest {
   contextualTargets?: boolean;
   groupTargets?: string[];
   metric?: SupportedMetric;
+  sourceMetric?: SupportedMetric;
   metrics?: SupportedMetric[];
   threshold?: number;
   thresholdOperator?: QueryOperator;
@@ -450,6 +452,12 @@ function parseCurrentMetricsFrame(
     (capabilityId === undefined ||
       capabilityId === MONITORING_METRIC_RANKING_CAPABILITY_ID)
   ) {
+    const rankingCrossMetric = buildRankingCrossMetricRequest({
+      message: request.message,
+      targets,
+    });
+    if (rankingCrossMetric) return rankingCrossMetric;
+
     const rankCount = normalizeRankCount(frame.topN);
     const rankOrder = normalizeRankOrder(frame, request.message);
     const rankRange = inferMetricRankingRange(request.message);
@@ -656,6 +664,12 @@ function parseCurrentMetricsMessage(
     statusFilter,
   });
   if (crossMetricAggregate) return crossMetricAggregate;
+
+  const rankingCrossMetric = buildRankingCrossMetricRequest({
+    message,
+    targets: metricTargets,
+  });
+  if (rankingCrossMetric) return rankingCrossMetric;
 
   // P24: all-scope 평균 집계 — "전체 서버 평균 CPU"처럼 그룹/서버 타깃이 없는
   // 단일 메트릭 평균 질의. buildMetricCurrentAnswer는 targets 미지정 시

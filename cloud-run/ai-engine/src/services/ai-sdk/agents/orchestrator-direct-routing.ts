@@ -28,6 +28,7 @@ export interface DirectRoutingTarget {
   confidence: number;
   source: DirectRoutingSource;
   reason: string;
+  provider?: 'deterministic';
 }
 
 export interface DirectRoutingContext {
@@ -73,6 +74,29 @@ function resolveSemanticFrameAgent(
   }
 
   return resolveMonitoringSemanticFrameRoute(intentFrame)?.agentName;
+}
+
+function readStringSlot(
+  intentFrame: DomainIntentFrame | undefined,
+  key: string
+): string | undefined {
+  const value = intentFrame?.slots?.[key];
+  return typeof value === 'string' && value.trim().length > 0
+    ? value.trim()
+    : undefined;
+}
+
+function isDeterministicServerComparisonFrame(
+  intentFrame: DomainIntentFrame | undefined
+): boolean {
+  if (!intentFrame) return false;
+  return (
+    intentFrame.intent === 'metric_current' &&
+    intentFrame.capabilityId === 'monitoring.metric_current' &&
+    intentFrame.targets.length >= 2 &&
+    (readStringSlot(intentFrame, 'sourceIntent') === 'server-compare' ||
+      intentFrame.aggregation === 'compare')
+  );
 }
 
 function isExplicitAdvisorPreFilter(preFilterResult: PreFilterResult): boolean {
@@ -127,6 +151,16 @@ export function resolveDirectRoutingTarget(
   context: DirectRoutingContext = {}
 ): DirectRoutingTarget {
   const policy = resolveRoutingOverridePolicy(context.domain);
+  if (isDeterministicServerComparisonFrame(context.intentFrame)) {
+    return {
+      agentName: policy.defaultDirectRoutingAgent,
+      confidence: normalizeConfidence(context.intentFrame?.confidence),
+      source: 'deterministic_fallback',
+      reason: 'Direct routing (deterministic server comparison)',
+      provider: 'deterministic',
+    };
+  }
+
   const semanticAgent = resolveSemanticFrameAgent(context.intentFrame, policy);
   if (semanticAgent) {
     if (

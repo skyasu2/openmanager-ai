@@ -97,7 +97,7 @@ export function buildCompositeLoadRankingAnswer(params: {
     ...rows.map(
       (row, index) =>
         rankOrder === 'asc'
-          ? `${index + 1}. ${row.server.id}: 낮은 부하 서버는 배치/트래픽 이동 후보입니다. 배포 전 역할, AZ, 의존 서비스, 최근 에러 로그를 함께 확인하세요.`
+          ? `${index + 1}. ${row.server.id}: 안정적 수치의 낮은 부하 서버입니다. 현재 역할, AZ, 의존 서비스 기준선이 유지되는지 확인하세요.`
           : `${index + 1}. ${row.server.id}: 압박 점수가 높은 서버입니다. 지배 지표(CPU/메모리/디스크), 같은 계층 서버 편차, 최근 에러 로그를 우선 대조하세요.`
     ),
   ].join('\n');
@@ -109,7 +109,7 @@ function buildMetricRankingCheckItem(params: {
   server: SnapshotServer;
 }): string {
   if (params.rankOrder === 'asc') {
-    return `${params.server.id}: 낮은 ${getMetricLabel(params.metric)} 서버입니다. 역할, 트래픽 분산, 유휴/예비 용도 여부를 확인하세요.`;
+    return `${params.server.id}: ${getMetricLabel(params.metric)}가 낮은 안정적 수치입니다. 현재 역할과 평소 기준선 범위에서 유지되는지 확인하세요.`;
   }
   return `${params.server.id}: 높은 ${getMetricLabel(params.metric)} 서버입니다. 같은 그룹 내 편차, 최근 배포/배치, 관련 로그를 우선 확인하세요.`;
 }

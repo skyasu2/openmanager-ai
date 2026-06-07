@@ -5,11 +5,13 @@ const {
   mockGenerateObjectWithFallback,
   mockExecuteVisionOrFallback,
   mockExecuteAgentStream,
+  mockResolveDomainEvidenceSupport,
 } = vi.hoisted(() => ({
   mockExecuteForcedRouting: vi.fn(),
   mockGenerateObjectWithFallback: vi.fn(),
   mockExecuteVisionOrFallback: vi.fn(),
   mockExecuteAgentStream: vi.fn(),
+  mockResolveDomainEvidenceSupport: vi.fn(),
 }));
 
 vi.mock('./schemas', () => ({
@@ -123,6 +125,11 @@ vi.mock('./orchestrator-agent-stream', () => ({
   executeAgentStream: (...args: unknown[]) => mockExecuteAgentStream(...args),
 }));
 
+vi.mock('../supervisor-domain-evidence', () => ({
+  resolveDomainEvidenceSupport: (...args: unknown[]) =>
+    mockResolveDomainEvidenceSupport(...args),
+}));
+
 vi.mock('./orchestrator-object-fallback', () => ({
   generateStructuredOutputWithFallback: (...args: unknown[]) =>
     mockGenerateObjectWithFallback(...args),
@@ -161,6 +168,7 @@ describe('executeMultiAgent direct routing contract', () => {
         };
       }
     );
+    mockResolveDomainEvidenceSupport.mockResolvedValue(null);
   });
 
   it('direct-routes the suggested agent without non-stream Orchestrator LLM routing', async () => {
@@ -270,6 +278,75 @@ describe('executeMultiAgent direct routing contract', () => {
         },
       ]);
     }
+  });
+
+  it('short-circuits server comparisons to deterministic evidence before forced routing', async () => {
+    const contextModule = await import('./orchestrator-context');
+    vi.mocked(contextModule.preFilterQueryWithLLM).mockReturnValueOnce({
+      shouldHandoff: true,
+      suggestedAgent: 'Reporter Agent',
+      confidence: 0.88,
+    });
+    mockResolveDomainEvidenceSupport.mockResolvedValueOnce({
+      id: 'monitoring-metric-current',
+      prompt: 'deterministic prompt',
+      fallback: 'api-was-dc1-01과 api-was-dc1-02의 CPU 비교입니다.',
+      metadata: {
+        responsePolicy: 'deterministic_answer',
+      },
+    });
+
+    const result = await executeMultiAgent({
+      messages: [
+        {
+          role: 'user',
+          content: 'api-was-dc1-01과 api-was-dc1-02 CPU 비교해줘',
+        },
+      ],
+      sessionId: 'server-compare-deterministic',
+      domain: {
+        routingOverridePolicy: {
+          defaultDirectRoutingAgent: 'Metrics Query Agent',
+          semanticConfidenceThreshold: 0.65,
+          analystOverrideCapabilities: [],
+          analystOverrideIntents: [],
+        },
+      } as never,
+      metadata: {
+        intentFrame: {
+          domainId: 'openmanager-monitoring',
+          intent: 'metric_current',
+          capabilityId: 'monitoring.metric_current',
+          scope: 'entity',
+          targets: ['api-was-dc1-01', 'api-was-dc1-02'],
+          metric: 'cpu',
+          timeWindow: 'current',
+          aggregation: 'summary',
+          ambiguity: 'low',
+          executionMode: 'single',
+          confidence: 0.93,
+          slots: { sourceIntent: 'server-compare' },
+        },
+      },
+    });
+
+    expect(mockExecuteForcedRouting).not.toHaveBeenCalled();
+    expect(mockResolveDomainEvidenceSupport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: 'api-was-dc1-01과 api-was-dc1-02 CPU 비교해줘',
+        sessionId: 'server-compare-deterministic',
+      })
+    );
+    expect(result).toMatchObject({
+      success: true,
+      response: 'api-was-dc1-01과 api-was-dc1-02의 CPU 비교입니다.',
+      finalAgent: 'Metrics Query Agent',
+      toolsCalled: ['monitoring-metric-current'],
+      metadata: {
+        provider: 'deterministic',
+        modelId: 'monitoring-metric-current',
+      },
+    });
   });
 
   it('routes Vision forced-stream fallback to Analyst Agent when vision provider is unavailable', async () => {

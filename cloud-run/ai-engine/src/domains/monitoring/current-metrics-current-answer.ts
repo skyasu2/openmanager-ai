@@ -13,6 +13,7 @@ import {
   getServerTypeKoreanLabel,
   getThresholdOperatorLabel,
   getThresholdOperatorSymbol,
+  normalizeRankCount,
   removeTargetCountSuffix,
   round1,
 } from './current-metrics-answer-utils';
@@ -129,6 +130,21 @@ function formatFilteredAggregateLine(params: {
     .join(', ');
   const conditionSuffix = conditionValues ? `, ${conditionValues}` : '';
   return `**${params.server.id}**: ${params.metricLabel} ${formatMetricPercent(params.value)}${conditionSuffix} (상태 ${formatServerStatus(params.server)})`;
+}
+
+function buildRankingCrossMetricTitle(
+  parsed: ParsedCurrentMetricsEvidenceRequest,
+  metricLabel: string,
+  fallbackTargetLabel: string
+): string {
+  if (parsed.sourceIntent !== 'ranking-cross-metric' || !parsed.sourceMetric) {
+    return `${fallbackTargetLabel} ${metricLabel} 현황`;
+  }
+
+  const sourceLabel = getMetricLabel(parsed.sourceMetric);
+  const orderLabel = parsed.rankOrder === 'asc' ? '하위' : '상위';
+  const rankCount = normalizeRankCount(parsed.rankCount);
+  return `${sourceLabel} ${orderLabel} ${rankCount}대 서버의 ${metricLabel} 현황`;
 }
 
 function buildMetricRiskComparisonAnswer(params: {
@@ -340,9 +356,14 @@ export function buildMetricCurrentAnswer(params: {
   const min = rows[rows.length - 1];
   const metricLabel = getMetricLabel(metric);
   const timeLabel = readSnapshotTimeLabel(params.snapshot);
+  const title = buildRankingCrossMetricTitle(
+    params.parsed,
+    metricLabel,
+    filteredTargetLabel
+  );
 
   return [
-    `📊 **${filteredTargetLabel} ${metricLabel} 현황**`,
+    `📊 **${title}**`,
     ...conditionLines,
     `• 대상: ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
     `• 평균 ${metricLabel}: ${formatMetricPercent(avg)} · 최고 ${max.server.id} ${formatMetricPercent(max.value)} · 최저 ${min.server.id} ${formatMetricPercent(min.value)}`,

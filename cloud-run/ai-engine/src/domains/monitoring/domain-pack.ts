@@ -360,6 +360,7 @@ export const monitoringIntentParser: DomainIntentParser = {
       ...(currentMetricsFrame.rankCount && {
         topN: currentMetricsFrame.rankCount,
       }),
+      slots: { sourceIntent: currentMetricsFrame.sourceIntent },
       ambiguity: 'low',
       confidence: 0.9,
     };

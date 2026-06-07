@@ -17,6 +17,11 @@ import {
   buildMetricTrendAnswer,
   buildTopBottomServerHealthAnswer,
 } from './current-metrics-evidence-answers';
+import {
+  filterSnapshotServers,
+  getMetricValue,
+  normalizeRankCount,
+} from './current-metrics-answer-utils';
 import { buildDirectionalMultiMetricFilterAnswer } from './current-metrics-directional-answer';
 import {
   parseCurrentMetricsEvidenceRequest,
@@ -25,6 +30,7 @@ import {
 } from './current-metrics-evidence-request';
 import {
   readSnapshotSlotIndex,
+  readSnapshotServers,
   readSnapshotTimeLabel,
 } from './snapshot-utils';
 
@@ -62,6 +68,46 @@ function buildCurrentMetricsPrompt(params: {
   ].join('\n');
 }
 
+function resolveRankingCrossMetricTargets(params: {
+  parsed: ParsedCurrentMetricsEvidenceRequest;
+  snapshot: DomainSnapshot;
+}): ParsedCurrentMetricsEvidenceRequest {
+  if (
+    params.parsed.sourceIntent !== 'ranking-cross-metric' ||
+    !params.parsed.sourceMetric
+  ) {
+    return params.parsed;
+  }
+
+  const sourceMetric = params.parsed.sourceMetric;
+  const allServers = readSnapshotServers(params.snapshot);
+  const { servers } = filterSnapshotServers(allServers, params.parsed.targets);
+  const rankOrder = params.parsed.rankOrder ?? 'desc';
+  const rankedTargets = servers
+    .filter((server) => server.status !== 'offline')
+    .map((server) => ({
+      server,
+      value: getMetricValue(server, sourceMetric),
+    }))
+    .filter(
+      (row): row is { server: (typeof servers)[number]; value: number } =>
+        row.value !== null
+    )
+    .sort((left, right) =>
+      rankOrder === 'asc' ? left.value - right.value : right.value - left.value
+    )
+    .slice(0, normalizeRankCount(params.parsed.rankCount))
+    .map((row) => row.server.id);
+
+  if (rankedTargets.length === 0) return params.parsed;
+
+  return {
+    ...params.parsed,
+    targets: rankedTargets,
+    contextualTargets: false,
+  };
+}
+
 async function resolveCurrentMetricsEvidence(
   request: DomainEvidenceRequest,
   expectedIntent: CurrentMetricsEvidenceIntent,
@@ -73,49 +119,52 @@ async function resolveCurrentMetricsEvidence(
   const snapshot = await resolveCurrentSnapshot(request);
   if (!snapshot) return null;
 
+  const parsedForAnswer = resolveRankingCrossMetricTargets({ parsed, snapshot });
+
   let answer: string | null;
-  if (parsed.intent === 'metric_current') {
+  if (parsedForAnswer.intent === 'metric_current') {
     answer =
-      parsed.metricConditions && parsed.metricConditions.length > 0
+      parsedForAnswer.metricConditions &&
+      parsedForAnswer.metricConditions.length > 0
         ? buildDirectionalMultiMetricFilterAnswer({
-            metricConditions: parsed.metricConditions,
-            parsed,
+            metricConditions: parsedForAnswer.metricConditions,
+            parsed: parsedForAnswer,
             snapshot,
           })
-        : buildMetricCurrentAnswer({ parsed, snapshot });
-  } else if (parsed.intent === 'metric_trend') {
-    answer = buildMetricTrendAnswer({ parsed, snapshot });
+        : buildMetricCurrentAnswer({ parsed: parsedForAnswer, snapshot });
+  } else if (parsedForAnswer.intent === 'metric_trend') {
+    answer = buildMetricTrendAnswer({ parsed: parsedForAnswer, snapshot });
   } else if (
-    parsed.intent === 'metric_ranking' &&
-    parsed.rankBasis === 'composite-load'
+    parsedForAnswer.intent === 'metric_ranking' &&
+    parsedForAnswer.rankBasis === 'composite-load'
   ) {
-    answer = buildCompositeLoadRankingAnswer({ parsed, snapshot });
-  } else if (parsed.intent === 'metric_ranking') {
-    answer = buildMetricRankingAnswer({ parsed, snapshot });
+    answer = buildCompositeLoadRankingAnswer({ parsed: parsedForAnswer, snapshot });
+  } else if (parsedForAnswer.intent === 'metric_ranking') {
+    answer = buildMetricRankingAnswer({ parsed: parsedForAnswer, snapshot });
   } else if (
-    parsed.intent === 'server_health' &&
-    parsed.sourceIntent === 'group-health-compare'
+    parsedForAnswer.intent === 'server_health' &&
+    parsedForAnswer.sourceIntent === 'group-health-compare'
   ) {
-    answer = buildGroupHealthCompareAnswer({ parsed, snapshot });
+    answer = buildGroupHealthCompareAnswer({ parsed: parsedForAnswer, snapshot });
   } else if (
-    parsed.intent === 'server_health' &&
-    parsed.sourceIntent === 'top-bottom-health'
+    parsedForAnswer.intent === 'server_health' &&
+    parsedForAnswer.sourceIntent === 'top-bottom-health'
   ) {
-    answer = buildTopBottomServerHealthAnswer({ parsed, snapshot });
+    answer = buildTopBottomServerHealthAnswer({ parsed: parsedForAnswer, snapshot });
   } else if (
-    parsed.intent === 'server_health' &&
-    parsed.sourceIntent === 'group-server-list'
+    parsedForAnswer.intent === 'server_health' &&
+    parsedForAnswer.sourceIntent === 'group-server-list'
   ) {
-    answer = buildGroupServerHealthAnswer({ parsed, snapshot });
+    answer = buildGroupServerHealthAnswer({ parsed: parsedForAnswer, snapshot });
   } else if (
-    parsed.intent === 'server_health' &&
-    parsed.statusFilter === 'healthy-only'
+    parsedForAnswer.intent === 'server_health' &&
+    parsedForAnswer.statusFilter === 'healthy-only'
   ) {
-    answer = buildHealthyOnlyServerAnswer({ parsed, snapshot });
+    answer = buildHealthyOnlyServerAnswer({ parsed: parsedForAnswer, snapshot });
   } else {
     answer =
       buildDeterministicSummaryFromCurrentState(
-        parsed.answerQuery,
+        parsedForAnswer.answerQuery,
         METRICS_QUERY_AGENT_NAME,
         snapshot.data
       ) ??
@@ -130,13 +179,13 @@ async function resolveCurrentMetricsEvidence(
 
   return {
     id: evidenceId,
-    prompt: buildCurrentMetricsPrompt({ parsed, snapshot, answer }),
+    prompt: buildCurrentMetricsPrompt({ parsed: parsedForAnswer, snapshot, answer }),
     fallback: answer,
     metadata: {
       responsePolicy: 'deterministic_answer',
-      capabilityId: parsed.capabilityId,
-      intent: parsed.intent,
-      sourceIntent: parsed.sourceIntent,
+      capabilityId: parsedForAnswer.capabilityId,
+      intent: parsedForAnswer.intent,
+      sourceIntent: parsedForAnswer.sourceIntent,
       timestamp: snapshot.timestamp,
       ...(readSnapshotSlotIndex(snapshot) !== undefined && {
         slotIndex: readSnapshotSlotIndex(snapshot),
@@ -144,30 +193,43 @@ async function resolveCurrentMetricsEvidence(
       ...(readSnapshotTimeLabel(snapshot) && {
         timeLabel: readSnapshotTimeLabel(snapshot),
       }),
-      ...(parsed.targets && { targets: parsed.targets }),
-      ...(parsed.groupTargets && { groupTargets: parsed.groupTargets }),
-      ...(parsed.metric && { metric: parsed.metric }),
-      ...(parsed.metrics && { metrics: parsed.metrics }),
-      ...(parsed.threshold !== undefined && { threshold: parsed.threshold }),
-      ...(parsed.thresholdOperator && {
-        thresholdOperator: parsed.thresholdOperator,
+      ...(parsedForAnswer.targets && { targets: parsedForAnswer.targets }),
+      ...(parsedForAnswer.groupTargets && {
+        groupTargets: parsedForAnswer.groupTargets,
       }),
-      ...(parsed.filterOperator && { filterOperator: parsed.filterOperator }),
-      ...(parsed.metricConditions && {
-        metricConditions: parsed.metricConditions,
+      ...(parsedForAnswer.metric && { metric: parsedForAnswer.metric }),
+      ...(parsedForAnswer.sourceMetric && {
+        sourceMetric: parsedForAnswer.sourceMetric,
       }),
-      ...(parsed.filterConditions && {
-        filterConditions: parsed.filterConditions,
+      ...(parsedForAnswer.metrics && { metrics: parsedForAnswer.metrics }),
+      ...(parsedForAnswer.threshold !== undefined && {
+        threshold: parsedForAnswer.threshold,
       }),
-      ...(parsed.rankCount && { rankCount: parsed.rankCount }),
-      ...(parsed.rankOrder && { rankOrder: parsed.rankOrder }),
-      ...(parsed.rankRange && { rankRange: parsed.rankRange }),
-      ...(parsed.rankBasis && { rankBasis: parsed.rankBasis }),
-      ...(parsed.statusFilter && { statusFilter: parsed.statusFilter }),
-      ...(parsed.trendDirection && {
-        trendDirection: parsed.trendDirection,
+      ...(parsedForAnswer.thresholdOperator && {
+        thresholdOperator: parsedForAnswer.thresholdOperator,
       }),
-      ...(parsed.trendRankBy && { trendRankBy: parsed.trendRankBy }),
+      ...(parsedForAnswer.filterOperator && {
+        filterOperator: parsedForAnswer.filterOperator,
+      }),
+      ...(parsedForAnswer.metricConditions && {
+        metricConditions: parsedForAnswer.metricConditions,
+      }),
+      ...(parsedForAnswer.filterConditions && {
+        filterConditions: parsedForAnswer.filterConditions,
+      }),
+      ...(parsedForAnswer.rankCount && { rankCount: parsedForAnswer.rankCount }),
+      ...(parsedForAnswer.rankOrder && { rankOrder: parsedForAnswer.rankOrder }),
+      ...(parsedForAnswer.rankRange && { rankRange: parsedForAnswer.rankRange }),
+      ...(parsedForAnswer.rankBasis && { rankBasis: parsedForAnswer.rankBasis }),
+      ...(parsedForAnswer.statusFilter && {
+        statusFilter: parsedForAnswer.statusFilter,
+      }),
+      ...(parsedForAnswer.trendDirection && {
+        trendDirection: parsedForAnswer.trendDirection,
+      }),
+      ...(parsedForAnswer.trendRankBy && {
+        trendRankBy: parsedForAnswer.trendRankBy,
+      }),
     },
   };
 }

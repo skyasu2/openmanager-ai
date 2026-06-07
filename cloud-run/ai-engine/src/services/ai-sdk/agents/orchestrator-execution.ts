@@ -44,8 +44,13 @@ import {
 import {
   createSupervisorTrace,
 } from '../../observability/langfuse';
+import { resolveDomainEvidenceSupport } from '../supervisor-domain-evidence';
+import {
+  shouldUseDeterministicDomainEvidenceAnswer,
+} from '../supervisor-domain-evidence-response';
 import {
   createDirectAgentDecision,
+  type DirectRoutingTarget,
   resolveDirectRoutingTarget,
 } from './orchestrator-direct-routing';
 import {
@@ -65,6 +70,56 @@ function attachRoutingDecisionTrace(
     metadata: {
       ...response.metadata,
       routingDecisionTrace: sanitizeRoutingDecisionTrace(routingTrace),
+    },
+  };
+}
+
+async function buildDeterministicDirectResponse(params: {
+  request: MultiAgentRequest;
+  query: string;
+  directTarget: DirectRoutingTarget;
+  startTime: number;
+}): Promise<MultiAgentResponse | null> {
+  if (params.directTarget.provider !== 'deterministic' || !params.request.domain) {
+    return null;
+  }
+
+  const domainEvidence = await resolveDomainEvidenceSupport({
+    query: params.query,
+    domain: params.request.domain,
+    messages: params.request.messages,
+    sessionId: params.request.sessionId,
+    traceId: params.request.traceId,
+    metadata: params.request.metadata,
+  });
+  if (
+    !domainEvidence ||
+    !shouldUseDeterministicDomainEvidenceAnswer(domainEvidence)
+  ) {
+    return null;
+  }
+
+  const durationMs = Date.now() - params.startTime;
+  return {
+    success: true,
+    response: domainEvidence.fallback,
+    handoffs: [
+      {
+        from: 'Direct Router',
+        to: params.directTarget.agentName,
+        reason: params.directTarget.reason,
+      },
+    ],
+    finalAgent: params.directTarget.agentName,
+    toolsCalled: [domainEvidence.id],
+    usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+    metadata: {
+      provider: 'deterministic',
+      modelId: domainEvidence.id,
+      totalRounds: 0,
+      handoffCount: 0,
+      durationMs,
+      responseChars: domainEvidence.fallback.length,
     },
   };
 }
@@ -141,6 +196,28 @@ export async function executeMultiAgent(
   );
 
   try {
+    const deterministicResponse = await buildDeterministicDirectResponse({
+      request,
+      query,
+      directTarget,
+      startTime,
+    });
+    if (deterministicResponse) {
+      routingTrace = attachAgentDecision(
+        routingTrace,
+        createDirectAgentDecision(directTarget)
+      );
+      await saveAgentFindingsToContext(
+        request.sessionId,
+        directTarget.agentName,
+        deterministicResponse.response
+      );
+      return finalizeMultiAgentResponse(
+        trace,
+        attachRoutingDecisionTrace(deterministicResponse, routingTrace)
+      );
+    }
+
     const agentResult =
       directTarget.agentName === 'Vision Agent'
         ? await executeVisionOrFallback(query, startTime, webSearchEnabled, ragEnabled, request.images, request.files, request.dataSource, request.domainId, request.internalDisclosureMode)

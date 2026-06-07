@@ -30,6 +30,8 @@ export const COMPOSITE_PRESSURE_RANKING_PATTERN =
   /(?:리소스|자원|resource|resources?|메트릭|지표|metric|metrics?|부하|로드|\bload\b).{0,40}(?:압박|부담|포화|심한|높|많|상위|순위|랭킹|ranking|rank|top|pressure|stress|saturation)|(?:압박|부담|포화|pressure|stress|saturation).{0,40}(?:리소스|자원|resource|resources?|서버|호스트|상위|순위|랭킹|ranking|rank|top)|(?:가장\s*)?(?:버거운|힘든).{0,24}(?:서버|호스트|대상)/i;
 export const METRIC_RISK_COMPARISON_PATTERN =
   /(?:cpu|씨피유|메모리|mem|memory|디스크|disk|네트워크|network).{0,80}(?:중|among|between).{0,48}(?:(?:어느|어떤|무엇|뭐|which).{0,16})?(?:가장|제일)?\s*(?:위험|심각|나쁜|높은|높|critical|risky)(?:.{0,48}(?:메트릭|지표|리소스|자원|metric|metrics?|resource))?|(?:가장|제일)?\s*(?:위험|심각|나쁜|critical|risky).{0,48}(?:메트릭|지표|리소스|자원|metric|metrics?|resource)/i;
+export const RANKING_CROSS_METRIC_PATTERN =
+  /(?:cpu|씨피유|메모리|mem|memory|디스크|disk|스토리지|storage|네트워크|network).{0,48}(?:상위|하위|높|낮|많|적|top|bottom|highest|lowest|most|least).{0,48}(?:서버|호스트|대상|server|host|node)s?.{0,48}(?:cpu|씨피유|메모리|mem|memory|디스크|disk|스토리지|storage|네트워크|network)|(?:상위|하위|top|bottom)\s*\d{0,2}.{0,48}(?:서버|호스트|대상|server|host|node)s?.{0,48}(?:cpu|씨피유|메모리|mem|memory|디스크|disk|스토리지|storage|네트워크|network)/i;
 export const CURRENT_METRIC_GROUP_PATTERN =
   /(?:\b(?:db|database|web|cache|storage|lb|loadbalancer|mysql|redis|nfs|was|api|app|application|backend)\b|로드\s*밸런서|캐시|스토리지|저장소|웹|디비|데이터베이스|애플리케이션)\s*(서버|그룹)?/i;
 /**
