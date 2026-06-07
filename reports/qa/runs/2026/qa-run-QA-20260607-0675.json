@@ -1,0 +1,66 @@
+{
+  "runId": "QA-20260607-0675",
+  "recordedAt": "2026-06-07T07:33:22.074Z",
+  "recordedAtKst": "2026-06-07 16:33:22 KST",
+  "runTitle": "Vercel Production Playwright MCP - 29차 AI 어시스턴트 평가 (v8.12.106)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "c998cc7b8ad6b9faaf3d0eac26705ec4a8c38153"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "Q-NEW107: 메모리 상위 3개 서버의 디스크 사용량 → 상위 3대 식별 후 디스크 57%/41%/22% 반환. deterministic/monitoring-metric-current (PASS)",
+    "Q-NEW108: 가장 안정적인 서버 3대 → 하위 3대 반환. 확인 항목이 안정적 수치 긍정 문구로 교체됨. deterministic/monitoring-metric-ranking (PASS)",
+    "Q-NEW109: web-nginx-dc1-01과 api-was-dc1-01 CPU·메모리·디스크 비교 → 3개 메트릭 모두 표시. deterministic/monitoring-metric-current (PASS)",
+    "Q-NEW110: lb 서버들 중 메모리 가장 높은 서버 → peak-metric 전체 서버 상위 반환, lb 그룹 필터 미적용. 신규 P31 발견 (FAIL)",
+    "Q-NEW111: CPU와 메모리 둘 다 40% 이하인 서버 몇 대 → 7대 정확 반환. 이하 AND 조건 + 카운트. deterministic/monitoring-metric-current (PASS)",
+    "Q-NEW112: cache 서버들 중 CPU 가장 낮은 서버 → cache-redis-dc1-02 23% 정확. 그룹+MIN 랭킹. deterministic/monitoring-metric-ranking (PASS)",
+    "Q-NEW113: api-was 서버들 평균 디스크 사용량 → 28.3% 정확. 단일 그룹 집계. deterministic/monitoring-metric-current (PASS)"
+  ],
+  "skippedSurfaces": [
+    "Fix2(numbered-list-accordion-split) 별도 UI 검증 필요 — Codex QA-0674에서 PASS 확인됨"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 6,
+    "failed": 1
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "q-new100-group-filtered-peak-metric",
+      "title": "Q-NEW100: 그룹 필터된 peak metric 스토리지 필터 누락",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "QA-20260607-0675 Q-NEW110: lb 서버들 중 메모리 가장 높은 서버 질의가 deterministic monitoring-peak-metric 경로에서 전체 서버 상위를 반환해 lb 그룹 필터 미적용을 재현.",
+      "note": "P31 신규 재현은 기존 q-new100-group-filtered-peak-metric 계열로 묶어 추적; release-facing blocker 아님.",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "P31 신규 재현은 기존 q-new100-group-filtered-peak-metric 계열로 묶어 추적; release-facing blocker 아님."
+  ],
+  "links": []
+}
