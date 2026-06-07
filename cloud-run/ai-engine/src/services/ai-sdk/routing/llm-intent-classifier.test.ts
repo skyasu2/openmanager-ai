@@ -108,4 +108,40 @@ describe('classifyRoutingIntentWithLLM', () => {
       classifyRoutingIntentWithLLM('신규 라우팅 표현', { timeoutMs: 100 })
     ).resolves.toBeNull();
   });
+
+  describe('prompt content contract', () => {
+    async function capturePrompt(query: string): Promise<string> {
+      mockGenerateObject.mockResolvedValueOnce({
+        object: { agent: 'metrics_query', confidence: 0.9 },
+      });
+      await classifyRoutingIntentWithLLM(query, { timeoutMs: 100 });
+      return mockGenerateObject.mock.calls[0]?.[0]?.prompt as string;
+    }
+
+    it('includes inverse-filter examples so "이상 없는 서버" maps to metrics_query not analyst', async () => {
+      const prompt = await capturePrompt('이상 없는 서버 목록');
+      expect(prompt).toContain('이상 없는 서버 목록 -> metrics_query');
+      expect(prompt).toContain('정상 서버만 보여줘 -> metrics_query');
+    });
+
+    it('includes group-comparison examples for DB vs cache warning-count queries', async () => {
+      const prompt = await capturePrompt('DB 서버와 cache 서버 경고 수 비교');
+      expect(prompt).toContain('DB 서버와 cache 서버 중 경고 수가 더 많은 쪽은? -> metrics_query');
+    });
+
+    it('includes multi-metric AND threshold example for complex filter queries', async () => {
+      const prompt = await capturePrompt('CPU 메모리 디스크 모두 50% 미만 서버');
+      expect(prompt).toContain('CPU, 메모리, 디스크 모두 50% 미만인 서버 -> metrics_query');
+    });
+
+    it('includes saturation forecast example so prediction queries map to analyst', async () => {
+      const prompt = await capturePrompt('어느 서버가 먼저 포화될 것 같아?');
+      expect(prompt).toContain('어느 서버가 먼저 포화될 것 같아? -> analyst');
+    });
+
+    it('includes short-query example for ambiguous monitoring questions', async () => {
+      const prompt = await capturePrompt('상태 어때?');
+      expect(prompt).toContain('상태 어때? -> metrics_query');
+    });
+  });
 });
