@@ -3596,5 +3596,143 @@ describe('current metrics domain evidence providers', () => {
       expect(evidence?.fallback).not.toContain('storage-nfs-dc1-01');
       expect(evidence?.fallback).not.toContain('합산 내림차순');
     });
+
+    it('P28: filters by one metric warning threshold before averaging another metric', async () => {
+      const snapshot = {
+        timeLabel: '01:30',
+        servers: [
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'warning',
+            cpu: 82,
+            memory: 60,
+            disk: 50,
+          },
+          {
+            id: 'api-was-dc1-02',
+            type: 'application',
+            status: 'online',
+            cpu: 88,
+            memory: 55,
+            disk: 70,
+          },
+          {
+            id: 'storage-nfs-dc1-01',
+            type: 'storage',
+            status: 'warning',
+            cpu: 35,
+            memory: 45,
+            disk: 90,
+          },
+        ],
+      };
+
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('CPU 경고 서버들의 평균 디스크는?', snapshot)
+      );
+      expect(parsed).toMatchObject({
+        intent: 'metric_current',
+        sourceIntent: 'cross-metric-condition-aggregate',
+        metric: 'disk',
+        filterConditions: [
+          {
+            metric: 'cpu',
+            operator: '>=',
+            threshold: 80,
+            inferredThreshold: true,
+          },
+        ],
+      });
+
+      const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
+        createEvidenceRequest('CPU 경고 서버들의 평균 디스크는?', snapshot)
+      );
+      expect(evidence?.fallback).toContain('CPU >= 80%');
+      expect(evidence?.fallback).toContain('평균 디스크: 60%');
+      expect(evidence?.fallback).toContain('api-was-dc1-01');
+      expect(evidence?.fallback).toContain('api-was-dc1-02');
+      expect(evidence?.fallback).not.toContain('storage-nfs-dc1-01');
+    });
+
+    it('P29: returns both top and bottom metric rankings in one deterministic answer', async () => {
+      const snapshot = {
+        timeLabel: '01:30',
+        servers: [
+          {
+            id: 'storage-nfs-dc1-01',
+            type: 'storage',
+            status: 'warning',
+            cpu: 20,
+            memory: 40,
+            disk: 91,
+          },
+          {
+            id: 'db-mysql-dc1-primary',
+            type: 'database',
+            status: 'online',
+            cpu: 40,
+            memory: 60,
+            disk: 82,
+          },
+          {
+            id: 'backup-dc1-01',
+            type: 'backup',
+            status: 'online',
+            cpu: 30,
+            memory: 50,
+            disk: 73,
+          },
+          {
+            id: 'web-nginx-dc1-01',
+            type: 'web',
+            status: 'online',
+            cpu: 15,
+            memory: 35,
+            disk: 20,
+          },
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'online',
+            cpu: 50,
+            memory: 55,
+            disk: 34,
+          },
+          {
+            id: 'cache-redis-dc1-01',
+            type: 'cache',
+            status: 'online',
+            cpu: 25,
+            memory: 45,
+            disk: 41,
+          },
+        ],
+      };
+
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('디스크 기준 상위3+하위3 서버 알려줘', snapshot)
+      );
+      expect(parsed).toMatchObject({
+        intent: 'metric_ranking',
+        sourceIntent: 'data-ranking',
+        metric: 'disk',
+        rankCount: 3,
+        rankRange: 'top-bottom',
+      });
+
+      const evidence = await monitoringMetricRankingEvidenceProvider.resolve(
+        createEvidenceRequest('디스크 기준 상위3+하위3 서버 알려줘', snapshot)
+      );
+      expect(evidence?.fallback).toContain('디스크 사용률 상위 3대 + 하위 3대');
+      expect(evidence?.fallback).toContain('디스크 상위 3대');
+      expect(evidence?.fallback).toContain('디스크 하위 3대');
+      expect(evidence?.fallback).toContain('storage-nfs-dc1-01');
+      expect(evidence?.fallback).toContain('db-mysql-dc1-primary');
+      expect(evidence?.fallback).toContain('backup-dc1-01');
+      expect(evidence?.fallback).toContain('web-nginx-dc1-01');
+      expect(evidence?.fallback).toContain('api-was-dc1-01');
+      expect(evidence?.fallback).toContain('cache-redis-dc1-01');
+    });
   });
 });

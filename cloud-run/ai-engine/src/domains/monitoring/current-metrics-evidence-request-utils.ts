@@ -2,7 +2,11 @@ import type {
   DomainEvidenceRequest,
   DomainIntentFrame,
 } from '../../core/assistant-runtime';
-import type { QueryStatus } from '../../services/ai-sdk/agents/orchestrator-query-intent';
+import { STATUS_THRESHOLDS } from '../../config/status-thresholds';
+import type {
+  QueryOperator,
+  QueryStatus,
+} from '../../services/ai-sdk/agents/orchestrator-query-intent';
 import type { classifyQueryIntent } from '../../services/ai-sdk/agents/orchestrator-query-intent';
 import {
   MONITORING_METRIC_CURRENT_CAPABILITY_ID,
@@ -22,6 +26,7 @@ import {
   normalizeRankCount,
 } from './current-metrics-request-helpers';
 import type {
+  MetricCondition,
   ParsedCurrentMetricsEvidenceRequest,
   SupportedMetric,
   TrendDirection,
@@ -49,6 +54,219 @@ export function extractMentionedMetrics(message: string): SupportedMetric[] {
   }
   if (/네트워크|\bnetwork\b|\bnet\b/i.test(message)) metrics.push('network');
   return metrics;
+}
+
+type MetricMention = {
+  metric: SupportedMetric;
+  startIndex: number;
+  endIndex: number;
+};
+
+const METRIC_MENTION_PATTERNS: Array<[SupportedMetric, RegExp]> = [
+  ['cpu', /\bcpu\b|씨피유/gi],
+  ['memory', /메모리|\bmem\b|\bmemory\b|\bmemori\b|\bmemroy\b/gi],
+  ['disk', /디스크|\bdisk\b|스토리지|\bstorage\b/gi],
+  ['network', /네트워크|\bnetwork\b|\bnet\b/gi],
+];
+
+const LOW_THRESHOLD_BY_METRIC: Record<SupportedMetric, number> = {
+  cpu: 50,
+  memory: 50,
+  disk: 50,
+  network: 30,
+};
+
+function extractMetricMentions(message: string): MetricMention[] {
+  const mentions: MetricMention[] = [];
+  for (const [metric, pattern] of METRIC_MENTION_PATTERNS) {
+    for (const match of message.matchAll(pattern)) {
+      const value = match[0];
+      if (match.index === undefined || !value) continue;
+      mentions.push({
+        metric,
+        startIndex: match.index,
+        endIndex: match.index + value.length,
+      });
+    }
+  }
+
+  const seenMetrics = new Set<SupportedMetric>();
+  return mentions
+    .sort((left, right) => left.startIndex - right.startIndex)
+    .filter((mention) => {
+      if (seenMetrics.has(mention.metric)) return false;
+      seenMetrics.add(mention.metric);
+      return true;
+    });
+}
+
+function findAverageKeywordIndex(message: string): number | null {
+  const match = message.match(/평균|average|avg/i);
+  return match?.index ?? null;
+}
+
+function inferAggregateMetricFromAveragePhrase(
+  message: string,
+  mentions: MetricMention[]
+): SupportedMetric | null {
+  const averageIndex = findAverageKeywordIndex(message);
+  if (averageIndex === null || mentions.length === 0) return null;
+
+  const byDistance = [...mentions].sort((left, right) => {
+    const leftDistance =
+      left.startIndex >= averageIndex
+        ? left.startIndex - averageIndex
+        : averageIndex - left.endIndex;
+    const rightDistance =
+      right.startIndex >= averageIndex
+        ? right.startIndex - averageIndex
+        : averageIndex - right.endIndex;
+    return leftDistance - rightDistance;
+  });
+
+  return byDistance[0]?.metric ?? null;
+}
+
+function normalizeFilterOperator(raw: string | undefined): QueryOperator {
+  if (!raw) return '>=';
+  const value = raw.trim().toLowerCase();
+  if (value === '이상') return '>=';
+  if (value === '초과' || value.startsWith('넘')) return '>';
+  if (value === '이하') return '<=';
+  if (value === '미만') return '<';
+  return value as QueryOperator;
+}
+
+function parseLocalThresholdCondition(text: string): Pick<
+  MetricCondition,
+  'operator' | 'threshold'
+> | null {
+  const patterns: Array<RegExp> = [
+    /(\d{1,3})\s*%?\s*(>=|<=|>|<|이상|초과|이하|미만|넘(?:는|은)?)/i,
+    /(>=|<=|>|<|이상|초과|이하|미만|넘(?:는|은)?)\s*(\d{1,3})\s*%?/i,
+  ];
+
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (!match) continue;
+
+    const first = match[1] ?? '';
+    const second = match[2] ?? '';
+    const firstNumber = Number(first);
+    const secondNumber = Number(second);
+    const threshold = Number.isFinite(firstNumber) ? firstNumber : secondNumber;
+    const operatorRaw = Number.isFinite(firstNumber) ? second : first;
+
+    if (Number.isFinite(threshold) && threshold >= 0 && threshold <= 100) {
+      return {
+        operator: normalizeFilterOperator(operatorRaw),
+        threshold,
+      };
+    }
+  }
+
+  return null;
+}
+
+function buildMetricFilterCondition(
+  message: string,
+  mention: MetricMention
+): MetricCondition | null {
+  const before = message.slice(Math.max(0, mention.startIndex - 16), mention.startIndex);
+  const after = message.slice(mention.endIndex, Math.min(message.length, mention.endIndex + 32));
+  const context = `${before} ${after}`;
+  const explicitThreshold = parseLocalThresholdCondition(context);
+  if (explicitThreshold) {
+    return {
+      metric: mention.metric,
+      operator: explicitThreshold.operator,
+      threshold: explicitThreshold.threshold,
+    };
+  }
+
+  if (/critical|위험|심각/i.test(context)) {
+    return {
+      metric: mention.metric,
+      operator: '>=',
+      threshold: STATUS_THRESHOLDS[mention.metric].critical,
+      inferredThreshold: true,
+    };
+  }
+
+  if (/warning|경고|문제|이상|높|많|과다|포화|high|heavy|elevated/i.test(context)) {
+    return {
+      metric: mention.metric,
+      operator: '>=',
+      threshold: STATUS_THRESHOLDS[mention.metric].warning,
+      inferredThreshold: true,
+    };
+  }
+
+  if (/낮|적|여유|한가|low|idle|under/i.test(context)) {
+    return {
+      metric: mention.metric,
+      operator: '<=',
+      threshold: LOW_THRESHOLD_BY_METRIC[mention.metric],
+      inferredThreshold: true,
+    };
+  }
+
+  return null;
+}
+
+export function buildCrossMetricConditionAggregateRequest(params: {
+  message: string;
+  targets: string[];
+  statusFilter?: QueryStatus;
+}): ParsedCurrentMetricsEvidenceRequest | null {
+  if (
+    params.statusFilter &&
+    /상태|status/i.test(params.message)
+  ) {
+    return null;
+  }
+
+  if (!/평균|average|avg/i.test(params.message)) return null;
+
+  const mentions = extractMetricMentions(params.message);
+  if (mentions.length < 2) return null;
+
+  const aggregateMetric = inferAggregateMetricFromAveragePhrase(
+    params.message,
+    mentions
+  );
+  if (!aggregateMetric) return null;
+
+  const filterConditions = mentions
+    .filter((mention) => mention.metric !== aggregateMetric)
+    .map((mention) => buildMetricFilterCondition(params.message, mention))
+    .filter(
+      (condition): condition is MetricCondition => condition !== null
+    );
+  if (filterConditions.length === 0) return null;
+
+  return {
+    intent: 'metric_current',
+    capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+    sourceIntent: 'cross-metric-condition-aggregate',
+    answerQuery: params.message,
+    metric: aggregateMetric,
+    filterConditions,
+    filterOperator: 'AND',
+    ...(params.targets.length > 0 && { targets: params.targets }),
+  };
+}
+
+export function inferMetricRankingRange(
+  message: string
+): ParsedCurrentMetricsEvidenceRequest['rankRange'] {
+  const hasTop =
+    /상위|top|최고|가장\s*(?:높|많)|highest|most/i.test(message);
+  const hasBottom =
+    /하위|bottom|최저|가장\s*(?:낮|적)|lowest|least/i.test(message);
+  const hasConnector =
+    /\+|와|과|및|그리고|함께|동시|둘\s*다|모두|both|\band\b/i.test(message);
+  return hasTop && hasBottom && hasConnector ? 'top-bottom' : undefined;
 }
 
 export function resolveTrendMetrics(

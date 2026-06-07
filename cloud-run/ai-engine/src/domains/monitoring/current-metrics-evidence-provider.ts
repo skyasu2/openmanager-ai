@@ -156,8 +156,12 @@ async function resolveCurrentMetricsEvidence(
       ...(parsed.metricConditions && {
         metricConditions: parsed.metricConditions,
       }),
+      ...(parsed.filterConditions && {
+        filterConditions: parsed.filterConditions,
+      }),
       ...(parsed.rankCount && { rankCount: parsed.rankCount }),
       ...(parsed.rankOrder && { rankOrder: parsed.rankOrder }),
+      ...(parsed.rankRange && { rankRange: parsed.rankRange }),
       ...(parsed.rankBasis && { rankBasis: parsed.rankBasis }),
       ...(parsed.statusFilter && { statusFilter: parsed.statusFilter }),
       ...(parsed.trendDirection && {

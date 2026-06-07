@@ -54,6 +54,83 @@ function applyMetricStatusFilter(params: {
   };
 }
 
+function formatMetricCondition(condition: {
+  metric: SupportedMetric;
+  operator: ParsedCurrentMetricsEvidenceRequest['thresholdOperator'];
+  threshold: number;
+}): string {
+  return `${getMetricLabel(condition.metric)} ${getThresholdOperatorSymbol(condition.operator)} ${condition.threshold}%`;
+}
+
+function applyMetricConditionFilters(params: {
+  servers: SnapshotServer[];
+  targetLabel: string;
+  filterConditions: ParsedCurrentMetricsEvidenceRequest['filterConditions'];
+  filterOperator: ParsedCurrentMetricsEvidenceRequest['filterOperator'];
+}): { servers: SnapshotServer[]; targetLabel: string } {
+  const conditions = params.filterConditions ?? [];
+  if (conditions.length === 0) {
+    return { servers: params.servers, targetLabel: params.targetLabel };
+  }
+
+  const rows = params.servers.filter((server) => {
+    const matches = conditions.map((condition) => {
+      const value = getMetricValue(server, condition.metric);
+      return (
+        value !== null &&
+        compareMetricValue(value, condition.operator, condition.threshold)
+      );
+    });
+
+    return params.filterOperator === 'OR'
+      ? matches.some(Boolean)
+      : matches.every(Boolean);
+  });
+
+  const conditionText = conditions.map(formatMetricCondition).join(
+    params.filterOperator === 'OR' ? ' OR ' : ' AND '
+  );
+  return {
+    servers: rows,
+    targetLabel: `${removeTargetCountSuffix(params.targetLabel)} 중 ${conditionText} 조건 ${rows.length}대`,
+  };
+}
+
+function buildMetricConditionLines(
+  parsed: ParsedCurrentMetricsEvidenceRequest
+): string[] {
+  const conditions = parsed.filterConditions ?? [];
+  if (conditions.length === 0) return [];
+  const conditionText = conditions.map(formatMetricCondition).join(
+    parsed.filterOperator === 'OR' ? ' OR ' : ' AND '
+  );
+  return [`• 필터: ${conditionText}`];
+}
+
+function hasMetricConditionFilter(
+  parsed: ParsedCurrentMetricsEvidenceRequest
+): boolean {
+  return (parsed.filterConditions?.length ?? 0) > 0;
+}
+
+function formatFilteredAggregateLine(params: {
+  server: SnapshotServer;
+  metricLabel: string;
+  value: number;
+  filterConditions: ParsedCurrentMetricsEvidenceRequest['filterConditions'];
+}): string {
+  const conditionValues = (params.filterConditions ?? [])
+    .map((condition) => {
+      const value = getMetricValue(params.server, condition.metric);
+      if (value === null) return null;
+      return `${getMetricLabel(condition.metric)} ${formatMetricPercent(value)}`;
+    })
+    .filter((value): value is string => value !== null)
+    .join(', ');
+  const conditionSuffix = conditionValues ? `, ${conditionValues}` : '';
+  return `**${params.server.id}**: ${params.metricLabel} ${formatMetricPercent(params.value)}${conditionSuffix} (상태 ${formatServerStatus(params.server)})`;
+}
+
 function buildMetricRiskComparisonAnswer(params: {
   parsed: ParsedCurrentMetricsEvidenceRequest;
   snapshot: DomainSnapshot;
@@ -166,20 +243,30 @@ export function buildMetricCurrentAnswer(params: {
     ...target,
     statusFilter: params.parsed.statusFilter,
   });
-  if (servers.length === 0) {
+  const filteredTarget = applyMetricConditionFilters({
+    servers,
+    targetLabel,
+    filterConditions: params.parsed.filterConditions,
+    filterOperator: params.parsed.filterOperator,
+  });
+  const conditionLines = buildMetricConditionLines(params.parsed);
+  const filteredServers = filteredTarget.servers;
+  const filteredTargetLabel = filteredTarget.targetLabel;
+  if (filteredServers.length === 0) {
     const statusFilter = getMetricStatusFilter(params.parsed.statusFilter);
-    if (statusFilter) {
+    if (statusFilter || hasMetricConditionFilter(params.parsed)) {
       const timeLabel = readSnapshotTimeLabel(params.snapshot);
       return [
-        `📊 **${targetLabel} ${getMetricLabel(metric)} 현황**`,
-        `• 대상: ${targetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+        `📊 **${filteredTargetLabel} ${getMetricLabel(metric)} 현황**`,
+        ...conditionLines,
+        `• 대상: ${filteredTargetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
         '• 결과: 현재 조건을 만족하는 서버는 없습니다.',
       ].join('\n');
     }
     return null;
   }
 
-  const rawRows = servers
+  const rawRows = filteredServers
     .map((server) => ({
       server,
       value: getMetricValue(server, metric),
@@ -190,10 +277,12 @@ export function buildMetricCurrentAnswer(params: {
     );
   if (rawRows.length === 0) {
     const statusFilter = getMetricStatusFilter(params.parsed.statusFilter);
-    if (statusFilter) {
+    if (statusFilter || hasMetricConditionFilter(params.parsed)) {
+      const timeLabel = readSnapshotTimeLabel(params.snapshot);
       return [
-        `📊 **${targetLabel} ${getMetricLabel(metric)} 현황**`,
-        `• 대상: ${targetLabel}${readSnapshotTimeLabel(params.snapshot) ? ` · 데이터 슬롯 ${readSnapshotTimeLabel(params.snapshot)} KST` : ''}`,
+        `📊 **${filteredTargetLabel} ${getMetricLabel(metric)} 현황**`,
+        ...conditionLines,
+        `• 대상: ${filteredTargetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
         '• 결과: 현재 조건을 만족하는 서버는 없습니다.',
       ].join('\n');
     }
@@ -214,21 +303,23 @@ export function buildMetricCurrentAnswer(params: {
     const operatorLabel = getThresholdOperatorLabel(operator);
     const operatorSymbol = getThresholdOperatorSymbol(operator);
     const timeLabel = readSnapshotTimeLabel(params.snapshot);
-    const title = `${removeTargetCountSuffix(targetLabel)} ${metricLabel} ${threshold}% ${operatorLabel} 서버`;
+    const title = `${removeTargetCountSuffix(filteredTargetLabel)} ${metricLabel} ${threshold}% ${operatorLabel} 서버`;
 
     if (rows.length === 0) {
       return [
         `📊 **${title}**`,
+        ...conditionLines,
         `• 조건: ${metricLabel} ${operatorSymbol} ${threshold}%`,
-        `• 대상: ${targetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+        `• 대상: ${filteredTargetLabel}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
         '• 결과: 현재 조건을 만족하는 서버는 없습니다.',
       ].join('\n');
     }
 
     return [
       `📊 **${title}**`,
+      ...conditionLines,
       `• 조건: ${metricLabel} ${operatorSymbol} ${threshold}%`,
-      `• 대상: ${targetLabel} 중 ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+      `• 대상: ${filteredTargetLabel} 중 ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
       ...buildNumberedServerSection(
         '서버별 현황',
         rows.map((row) =>
@@ -251,13 +342,21 @@ export function buildMetricCurrentAnswer(params: {
   const timeLabel = readSnapshotTimeLabel(params.snapshot);
 
   return [
-    `📊 **${targetLabel} ${metricLabel} 현황**`,
+    `📊 **${filteredTargetLabel} ${metricLabel} 현황**`,
+    ...conditionLines,
     `• 대상: ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
     `• 평균 ${metricLabel}: ${formatMetricPercent(avg)} · 최고 ${max.server.id} ${formatMetricPercent(max.value)} · 최저 ${min.server.id} ${formatMetricPercent(min.value)}`,
     ...buildNumberedServerSection(
       '서버별 현황',
       rows.map((row) =>
-        formatServerMetricLine(row.server, metricLabel, row.value)
+        hasMetricConditionFilter(params.parsed)
+          ? formatFilteredAggregateLine({
+              server: row.server,
+              metricLabel,
+              value: row.value,
+              filterConditions: params.parsed.filterConditions,
+            })
+          : formatServerMetricLine(row.server, metricLabel, row.value)
       )
     ),
   ].join('\n');

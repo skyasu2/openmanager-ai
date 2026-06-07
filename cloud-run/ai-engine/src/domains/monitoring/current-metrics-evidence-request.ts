@@ -57,10 +57,12 @@ import {
 } from './current-metrics-request-helpers';
 import {
   buildGroupHealthCompareRequest,
+  buildCrossMetricConditionAggregateRequest,
   buildMetricRiskComparisonRequest,
   buildTrendRequestOptions,
   buildTrendThresholdOptions,
   extractMentionedMetrics,
+  inferMetricRankingRange,
   isAndMetricFilterMessage,
   isMetricRankingFrame,
   normalizeMetricRankingCount,
@@ -91,8 +93,10 @@ export interface ParsedCurrentMetricsEvidenceRequest {
   thresholdOperator?: QueryOperator;
   filterOperator?: 'AND' | 'OR';
   metricConditions?: MetricCondition[];
+  filterConditions?: MetricCondition[];
   rankCount?: number;
   rankOrder?: QueryRankOrder;
+  rankRange?: 'top-bottom';
   rankBasis?: 'composite-load';
   statusFilter?: 'healthy-only' | QueryStatus;
   trendDirection?: TrendDirection;
@@ -361,6 +365,13 @@ function parseCurrentMetricsFrame(
     }
 
     const groupTargetsForFrame = extractGroupTargetsFromMessage(request.message);
+    const crossMetricAggregate = buildCrossMetricConditionAggregateRequest({
+      message: request.message,
+      targets,
+      statusFilter,
+    });
+    if (crossMetricAggregate) return crossMetricAggregate;
+
     const isExplicitServerCompare =
       explicitServerTargets.length >= 2 &&
       isCurrentServerComparisonMessage(request.message);
@@ -441,14 +452,19 @@ function parseCurrentMetricsFrame(
   ) {
     const rankCount = normalizeRankCount(frame.topN);
     const rankOrder = normalizeRankOrder(frame, request.message);
+    const rankRange = inferMetricRankingRange(request.message);
     return {
       intent: 'metric_ranking',
       capabilityId: MONITORING_METRIC_RANKING_CAPABILITY_ID,
       sourceIntent: frame.intent,
-      answerQuery: `${metric} ${rankOrder === 'asc' ? '하위' : '상위'} ${rankCount}개 서버 알려줘`,
+      answerQuery:
+        rankRange === 'top-bottom'
+          ? request.message
+          : `${metric} ${rankOrder === 'asc' ? '하위' : '상위'} ${rankCount}개 서버 알려줘`,
       metric,
       rankCount,
       rankOrder,
+      ...(rankRange && { rankRange }),
       ...(targets.length > 0 && { targets }),
     };
   }
@@ -634,6 +650,13 @@ function parseCurrentMetricsMessage(
     };
   }
 
+  const crossMetricAggregate = buildCrossMetricConditionAggregateRequest({
+    message,
+    targets: metricTargets,
+    statusFilter,
+  });
+  if (crossMetricAggregate) return crossMetricAggregate;
+
   // P24: all-scope 평균 집계 — "전체 서버 평균 CPU"처럼 그룹/서버 타깃이 없는
   // 단일 메트릭 평균 질의. buildMetricCurrentAnswer는 targets 미지정 시
   // filterSnapshotServers(allServers, undefined)로 전체 서버(label '전체 서버')의
@@ -818,6 +841,7 @@ function parseCurrentMetricsMessage(
     metric &&
     !HISTORICAL_OR_TREND_PATTERN.test(message)
   ) {
+    const rankRange = inferMetricRankingRange(message);
     return {
       intent: 'metric_ranking',
       capabilityId: MONITORING_METRIC_RANKING_CAPABILITY_ID,
@@ -826,6 +850,7 @@ function parseCurrentMetricsMessage(
       metric,
       rankCount: normalizeMetricRankingCount(message, classification.rankCount),
       rankOrder: classification.rankOrder ?? 'desc',
+      ...(rankRange && { rankRange }),
       ...(metricTargets.length > 0 && { targets: metricTargets }),
     };
   }
