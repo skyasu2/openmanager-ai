@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-07T02:33:52.729Z"
+    "updatedAt": "2026-06-07T03:00:04.368Z"
   },
   "sequence": {
-    "nextRunNumber": 673
+    "nextRunNumber": 674
   },
   "summary": {
-    "totalRecordedRuns": 670,
+    "totalRecordedRuns": 671,
     "totalRuns": 524,
-    "excludedRuns": 146,
+    "excludedRuns": 147,
     "totalChecks": 4661,
     "totalPassed": 4454,
     "totalFailed": 162,
     "completionRate": 100,
-    "completedItems": 779,
+    "completedItems": 781,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 34,
+    "wontFixItems": 32,
     "expertDomainsTracked": 21,
-    "expertDomainsOpenGaps": 1,
+    "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260607-0671",
     "lastRecordedAt": "2026-06-07T01:58:28.781Z",
-    "latestRecordedRunId": "QA-20260607-0672",
-    "latestRecordedAt": "2026-06-07T02:33:52.729Z"
+    "latestRecordedRunId": "QA-20260607-0673",
+    "latestRecordedAt": "2026-06-07T03:00:04.368Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -19127,27 +19127,27 @@
     },
     "p28-cpu-warning-filter-disk-aggregation": {
       "id": "p28-cpu-warning-filter-disk-aggregation",
-      "title": "P28: CPU 경고 상태 필터 + 이종 메트릭(디스크) 집계 UI 경로 여전히 FAIL",
+      "title": "P28: CPU 경고 상태 필터 + 이종 메트릭(디스크) 집계 PASS",
       "priority": "P2",
-      "status": "wont-fix",
+      "status": "completed",
       "firstSeenRunId": "QA-20260607-0670",
       "firstSeenAt": "2026-06-07T01:13:44.615Z",
-      "lastSeenRunId": "QA-20260607-0672",
-      "lastSeenAt": "2026-06-07T02:33:52.729Z",
-      "seenCount": 3,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260607-0673",
+      "lastSeenAt": "2026-06-07T03:00:04.368Z",
+      "seenCount": 4,
+      "completedCount": 2,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 2,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "v8.12.103 production direct API: 'CPU 경고 서버들의 평균 디스크는?' returns CPU >= 80% condition subset and average disk, not CPU-only current metric",
+      "lastEvidence": "v8.12.104 production UI: CPU >= 80% 필터 후 디스크 33% 반환. pipeline 2582438176 success",
       "lastNote": "Codex 직접 API에서는 PASS 선언했으나 UI 자연어 파싱 경로에서 여전히 미작동. v8.12.103 기준. 재수정 필요.",
       "isBlocking": false,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
-      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastStatusChangeAt": "2026-06-07T02:33:52.729Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-07T03:00:04.368Z"
     },
     "p29-metric-ranking-top-bottom-dual": {
       "id": "p29-metric-ranking-top-bottom-dual",
@@ -19199,27 +19199,27 @@
     },
     "p30-warning-filter-multi-metric-aggregation": {
       "id": "p30-warning-filter-multi-metric-aggregation",
-      "title": "P30: 경고 상태 필터 + 복수 메트릭 동시 집계 미처리",
+      "title": "P30: 경고 상태 필터 + 복수 메트릭 동시 집계 PASS",
       "priority": "P2",
-      "status": "wont-fix",
+      "status": "completed",
       "firstSeenRunId": "QA-20260607-0672",
       "firstSeenAt": "2026-06-07T02:33:52.729Z",
-      "lastSeenRunId": "QA-20260607-0672",
-      "lastSeenAt": "2026-06-07T02:33:52.729Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260607-0673",
+      "lastSeenAt": "2026-06-07T03:00:04.368Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "v8.12.104 production UI: warning 1대 필터 후 평균 메모리 76% + 디스크 33% 동시 반환",
       "lastNote": "경고 상태 서버들의 평균 메모리+평균 디스크 동시 요청 시 monitoring-metric-trend 오분기. 2개 메트릭 동시 집계 경로 미지원.",
       "isBlocking": false,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
-      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastStatusChangeAt": "2026-06-07T02:33:52.729Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-07T03:00:04.368Z"
     },
     "q-new106-ranking-cross-metric": {
       "id": "q-new106-ranking-cross-metric",
@@ -41973,6 +41973,97 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 4
+    },
+    {
+      "runId": "QA-20260607-0673",
+      "recordedAt": "2026-06-07T03:00:04.368Z",
+      "recordedAtKst": "2026-06-07 12:00:04 KST",
+      "title": "Production Playwright MCP - v8.12.104 P28/P30 fix validation",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260607-0673.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "029d7474d"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "P28 재검증: CPU 경고 상태인 서버들의 평균 디스크 사용률은? => CPU >= 80% 필터(api-was-dc1-01) 후 디스크 33% 반환. monitoring-metric-current. OTel 일치 (PASS)",
+        "P30 재검증: 경고 상태 서버들의 평균 메모리와 평균 디스크는? => warning 상태 1대 필터 후 평균 메모리 76% + 평균 디스크 33% 동시 반환. monitoring-metric-current. OTel 일치 (PASS)"
+      ],
+      "skippedSurfaces": [
+        "Q-NEW106(메모리 상위N 서버의 이종 메트릭) 미재검증 - P28/P30 우선 검증"
+      ],
+      "checks": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "P28 CPU 경고 → 디스크 집계",
+          "agent": "monitoring-metric-current",
+          "provider": "deterministic",
+          "model": "monitoring-metric-current",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "UI 라우팅 레이블",
+          "latencyMs": 28
+        },
+        {
+          "surface": "P30 경고 상태 multi-metric 평균",
+          "agent": "monitoring-metric-current",
+          "provider": "deterministic",
+          "model": "monitoring-metric-current",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "UI 라우팅 레이블",
+          "latencyMs": 26
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "P28/P30 모두 production UI 자연어 경로에서 PASS. buildCrossMetricConditionAggregateRequest bail-out 제거 및 P30 status-filter-multi-metric-aggregate 경로 추가로 해결.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "P28/P30 production 검증",
+          "url": "https://openmanager-ai.vercel.app/dashboard/ai-assistant",
+          "note": "v8.12.104 pipeline 2582438176 success"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline 2582438176",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582438176",
+          "note": "success"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -41981,17 +42072,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 368,
-      "appropriateCount": 317,
+      "seenCount": 369,
+      "appropriateCount": 318,
       "partialCount": 51,
       "inappropriateCount": 0,
       "improvementNeededCount": 72,
-      "lastRunId": "QA-20260607-0672",
-      "lastSeenAt": "2026-06-07T02:33:52.729Z",
+      "lastRunId": "QA-20260607-0673",
+      "lastSeenAt": "2026-06-07T03:00:04.368Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "P29 fix PASS 확인. P28은 Codex 직접 API 검증과 달리 UI 자연어 경로에서 여전히 FAIL. 신규 P30(경고 상태 필터+복수 메트릭 동시 집계 미처리, trend 오분기) 발견.",
-      "lastNextAction": "P28 UI 자연어 파싱 경로 재수정 필요. P30 Codex 위임. Q-NEW100/106은 wont-fix 검토."
+      "lastImprovementNeeded": false,
+      "lastRationale": "P28/P30 모두 production UI 자연어 경로에서 PASS. buildCrossMetricConditionAggregateRequest bail-out 제거 및 P30 status-filter-multi-metric-aggregate 경로 추가로 해결.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",

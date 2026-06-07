@@ -1,0 +1,116 @@
+{
+  "runId": "QA-20260607-0673",
+  "recordedAt": "2026-06-07T03:00:04.368Z",
+  "recordedAtKst": "2026-06-07 12:00:04 KST",
+  "runTitle": "Production Playwright MCP - v8.12.104 P28/P30 fix validation",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "029d7474d"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "P28 재검증: CPU 경고 상태인 서버들의 평균 디스크 사용률은? => CPU >= 80% 필터(api-was-dc1-01) 후 디스크 33% 반환. monitoring-metric-current. OTel 일치 (PASS)",
+    "P30 재검증: 경고 상태 서버들의 평균 메모리와 평균 디스크는? => warning 상태 1대 필터 후 평균 메모리 76% + 평균 디스크 33% 동시 반환. monitoring-metric-current. OTel 일치 (PASS)"
+  ],
+  "skippedSurfaces": [
+    "Q-NEW106(메모리 상위N 서버의 이종 메트릭) 미재검증 - P28/P30 우선 검증"
+  ],
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "P28 CPU 경고 → 디스크 집계",
+      "agent": "monitoring-metric-current",
+      "provider": "deterministic",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "UI 라우팅 레이블",
+      "latencyMs": 28
+    },
+    {
+      "surface": "P30 경고 상태 multi-metric 평균",
+      "agent": "monitoring-metric-current",
+      "provider": "deterministic",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "UI 라우팅 레이블",
+      "latencyMs": 26
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "P28/P30 모두 production UI 자연어 경로에서 PASS. buildCrossMetricConditionAggregateRequest bail-out 제거 및 P30 status-filter-multi-metric-aggregate 경로 추가로 해결.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "P28/P30 production 검증",
+      "url": "https://openmanager-ai.vercel.app/dashboard/ai-assistant",
+      "note": "v8.12.104 pipeline 2582438176 success"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "p28-cpu-warning-filter-disk-aggregation",
+      "title": "P28: CPU 경고 상태 필터 + 이종 메트릭(디스크) 집계 PASS",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.12.104 production UI: CPU >= 80% 필터 후 디스크 33% 반환. pipeline 2582438176 success",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "p30-warning-filter-multi-metric-aggregation",
+      "title": "P30: 경고 상태 필터 + 복수 메트릭 동시 집계 PASS",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.12.104 production UI: warning 1대 필터 후 평균 메모리 76% + 디스크 33% 동시 반환",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline 2582438176",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582438176",
+      "note": "success"
+    }
+  ]
+}
