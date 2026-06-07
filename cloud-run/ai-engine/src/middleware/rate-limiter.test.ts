@@ -283,7 +283,7 @@ describe('cloud run daily semantics', () => {
     expect(blocked.headers.get('X-RateLimit-Limit')).toBe('10');
   });
 
-  it('blocks supervisor requests on the 101st request with daily metadata after minute windows reset', async () => {
+  it('blocks supervisor requests on the 501st request with daily metadata after minute windows reset', async () => {
     vi.useFakeTimers();
 
     const app = new Hono();
@@ -291,11 +291,11 @@ describe('cloud run daily semantics', () => {
     app.post('/api/ai/supervisor/stream/v2', (c) => c.json({ ok: true }));
 
     const headers = {
-      [RATE_LIMIT_IDENTITY_HEADER]: 'test:supervisor-daily-101',
+      [RATE_LIMIT_IDENTITY_HEADER]: 'test:supervisor-daily-501',
       'X-API-Key': 'shared-service-secret',
     };
 
-    for (let batch = 0; batch < 10; batch += 1) {
+    for (let batch = 0; batch < 50; batch += 1) {
       for (let index = 0; index < 10; index += 1) {
         const res = await app.request('/api/ai/supervisor/stream/v2', {
           method: 'POST',
@@ -313,14 +313,14 @@ describe('cloud run daily semantics', () => {
     });
 
     expect(blocked.status).toBe(429);
-    expect(blocked.headers.get('X-RateLimit-Daily-Limit')).toBe('100');
+    expect(blocked.headers.get('X-RateLimit-Daily-Limit')).toBe('500');
     expect(blocked.headers.get('X-RateLimit-Daily-Remaining')).toBe('0');
-    expect(blocked.headers.get('Retry-After')).toBe('85800');
+    expect(blocked.headers.get('Retry-After')).toBe('83400');
 
     const body = await blocked.json();
     expect(body.limitScope).toBe('daily');
     expect(body.dailyLimitExceeded).toBe(true);
-    expect(body.retryAfter).toBe(85800);
+    expect(body.retryAfter).toBe(83400);
   });
 });
 

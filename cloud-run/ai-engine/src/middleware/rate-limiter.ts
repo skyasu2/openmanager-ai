@@ -359,7 +359,7 @@ const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
   supervisor: {
     maxRequests: 10,
     windowMs: 60 * 1000, // 1분에 10회
-    dailyLimit: 100,
+    dailyLimit: 500,     // Cloud Run vCPU 17%/월, LLM provider Cerebras 38회/day (무료 한도 3.8%)
     maxInFlight: 4,
     keyPrefix: 'rl:supervisor',
   },
@@ -371,7 +371,7 @@ const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
   jobsWrite: {
     maxRequests: 5,
     windowMs: 60 * 1000, // 1분에 5회 (job creation / processing)
-    dailyLimit: 100,
+    dailyLimit: 500,
     maxInFlight: 2,
     keyPrefix: 'rl:jobs:write',
   },
