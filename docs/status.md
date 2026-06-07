@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-06-08 | **현재 버전 스냅샷**: v8.12.111
+**상태 스냅샷 기준일**: 2026-06-08 | **현재 버전 스냅샷**: v8.12.112
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.112** (2026-06-08) — Features: ai-engine: add LLM semantic fallback for evidence intent classification
 - **v8.12.111** (2026-06-08) — Features: ai-engine: raise supervisor daily rate limit 100 → 500; Features: ai-engine: raise supervisor daily rate limit 100 → 500; Features: ai-engine: enrich LLM intent classifier prompt with edge-case examples
 - **v8.12.110** (2026-06-07) — Bug Fixes: ai-engine: classify inverse healthy status as metrics
 - **v8.12.109** (2026-06-07) — Bug Fixes: ai-engine: short-circuit boundary clarifications
 - **v8.12.108** (2026-06-07) — Bug Fixes: ai-engine: harden monitoring boundary routing; Bug Fixes: ai-engine: use round-robin provider and widen LLM prefilter condition; Tests: qa: record 30th/31st AI assistant evaluation + add Q-NEW128 wont-fix
-- **v8.12.107** (2026-06-07) — Bug Fixes: ai-engine: route advanced metric QA queries deterministically; Tests: qa: record 29th AI assistant direct API follow-up; Tests: qa: record 29th AI assistant evaluation
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
