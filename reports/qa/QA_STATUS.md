@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-07 16:40:21 KST
+> Generated at: 2026-06-07 17:24:40 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 673 |
+| Total Recorded Runs | 674 |
 | Total Runs (Counted) | 525 |
-| Non-counted Runs | 148 |
+| Non-counted Runs | 149 |
 | Total Checks | 4667 |
 | Passed | 4460 |
 | Failed | 162 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260607-0674 (2026-06-07T05:19:01.995Z) |
-| Latest Recorded Run | QA-20260607-0675 (2026-06-07T07:33:22.074Z) |
+| Latest Recorded Run | QA-20260607-0676 (2026-06-07T08:24:40.249Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260607-0675 (2026-06-07T07:33:22.074Z)
+Latest run: QA-20260607-0676 (2026-06-07T08:24:40.249Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -48,7 +48,7 @@ Latest run: QA-20260607-0675 (2026-06-07T07:33:22.074Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-06T07:33:22.074Z -> 2026-06-07T07:33:22.074Z (24h)
+- Window: 2026-06-06T08:24:40.249Z -> 2026-06-07T08:24:40.249Z (24h)
 - Runs with observations: 9 recorded / 6 counted
 - Samples: 26
 
@@ -66,7 +66,7 @@ Latest run: QA-20260607-0675 (2026-06-07T07:33:22.074Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-06T07:33:22.074Z -> 2026-06-07T07:33:22.074Z (24h)
+- Window: 2026-06-06T08:24:40.249Z -> 2026-06-07T08:24:40.249Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -81,8 +81,8 @@ Latest run: QA-20260607-0675 (2026-06-07T07:33:22.074Z)
 - Release-Facing: no
 - Counts Toward Summary: no
 - Deployment: SHA c998cc7b
-- Covered Surfaces: Q-NEW107: 메모리 상위 3개 서버의 디스크 사용량 → 상위 3대 식별 후 디스크 57%/41%/22% 반환. deterministic/monitoring-metric-current (PASS), Q-NEW108: 가장 안정적인 서버 3대 → 하위 3대 반환. 확인 항목이 안정적 수치 긍정 문구로 교체됨. deterministic/monitoring-metric-ranking (PASS), Q-NEW109: web-nginx-dc1-01과 api-was-dc1-01 CPU·메모리·디스크 비교 → 3개 메트릭 모두 표시. deterministic/monitoring-metric-current (PASS), Q-NEW110: lb 서버들 중 메모리 가장 높은 서버 → peak-metric 전체 서버 상위 반환, lb 그룹 필터 미적용. 신규 P31 발견 (FAIL), Q-NEW111: CPU와 메모리 둘 다 40% 이하인 서버 몇 대 → 7대 정확 반환. 이하 AND 조건 + 카운트. deterministic/monitoring-metric-current (PASS), Q-NEW112: cache 서버들 중 CPU 가장 낮은 서버 → cache-redis-dc1-02 23% 정확. 그룹+MIN 랭킹. deterministic/monitoring-metric-ranking (PASS), Q-NEW113: api-was 서버들 평균 디스크 사용량 → 28.3% 정확. 단일 그룹 집계. deterministic/monitoring-metric-current (PASS)
-- Skipped Surfaces: Fix2(numbered-list-accordion-split) 별도 UI 검증 필요 — Codex QA-0674에서 PASS 확인됨
+- Covered Surfaces: Q-NEW114: storage 그룹 평균 CPU → 24.5% 정확 (PASS), Q-NEW115: web 그룹+MAX 메모리 → web-nginx-dc1-01 44% 정확, monitoring-metric-ranking 그룹 필터 정상 (PASS), Q-NEW116: online 상태 서버 평균 디스크 → 17대 필터 후 36.2% 반환 (PASS), Q-NEW117: lb 그룹+MAX 메모리 → lb-haproxy-dc1-01 34%, monitoring-metric-ranking 정상. P31 브라우저 히스토리 의존적으로 재분류 (PASS), Q-NEW118: 경고 상태 서버 평균 CPU → warning 1대 필터 후 63%, 상태 필터 정상 (PASS), Q-NEW119: 전체 평균 메모리+디스크 동시 요청 → 메모리 46% 있으나 디스크 N/A, LLM fallback (PARTIAL), Q-NEW120: 메모리 경고 상태 서버 평균 CPU — P26 원본 재현 → warning 1대 필터 후 CPU 69% 정확. P26 수정 확인 (PASS), Q-NEW121: 디스크 증가율 가장 빠른 서버 → metric-trend 미매칭 Analyst LLM fallback 3500ms, 5대만 응답 (FAIL), Q-NEW122: DB vs cache 그룹 경고 수 비교 → zai LLM fallback 8초, generic summary, 경고 수 직접 비교 미처리 (FAIL)
+- Skipped Surfaces: numbered-list-accordion-split (UI 전용), summary-markdown (UI 전용)
 
 ## Links (Latest Run)
 
@@ -193,6 +193,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260607-0676 | 2026-06-07T08:24:40.249Z | targeted | no | no | Cloud Run Direct API - 29차 추가 평가 (v8.12.106) | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260607-0675 | 2026-06-07T07:33:22.074Z | targeted | no | no | Vercel Production Playwright MCP - 29차 AI 어시스턴트 평가 (v8.12.106) | 7 | 0 | 0 | 0 | 1 | 0 |
 | QA-20260607-0674 | 2026-06-07T05:19:01.995Z | targeted | yes | yes | Vercel Production Playwright MCP - v8.12.106 WONT-FIX remediation release QA | 6 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260607-0673 | 2026-06-07T03:00:04.368Z | targeted | no | no | Production Playwright MCP - v8.12.104 P28/P30 fix validation | 2 | 2 | 0 | 0 | 0 | 0 |
@@ -212,4 +213,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260605-0659 | 2026-06-05T12:41:09.056Z | targeted | yes | yes | Vercel Production Playwright MCP - Artifact BFF LLM Fallback Activation QA (v8.12.94) | 20 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260605-0658 | 2026-06-05T11:03:39.705Z | targeted | no | no | Cloud Run Observability Check - Langfuse 100% Sampling Baseline Start (v8.12.92) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260605-0657 | 2026-06-05T06:56:30.699Z | targeted | yes | yes | Vercel Production Playwright MCP - Artifact Intent BFF Release QA (v8.12.92) | 20 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260605-0656 | 2026-06-05T03:33:51.856Z | targeted | yes | yes | Vercel Production Playwright MCP - Recent Two-Week Improvements Applied Recheck (v8.12.91) | 13 | 1 | 0 | 0 | 0 | 0 |

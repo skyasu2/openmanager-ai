@@ -1,0 +1,53 @@
+{
+  "runId": "QA-20260607-0676",
+  "recordedAt": "2026-06-07T08:24:40.249Z",
+  "recordedAtKst": "2026-06-07 17:24:40 KST",
+  "runTitle": "Cloud Run Direct API - 29차 추가 평가 (v8.12.106)",
+  "owner": "claude",
+  "source": "direct-api",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-490817238363.asia-northeast1.run.app",
+    "frontend": "Cloud Run Direct API",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "c998cc7b8ad6b9faaf3d0eac26705ec4a8c38153"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "Q-NEW114: storage 그룹 평균 CPU → 24.5% 정확 (PASS)",
+    "Q-NEW115: web 그룹+MAX 메모리 → web-nginx-dc1-01 44% 정확, monitoring-metric-ranking 그룹 필터 정상 (PASS)",
+    "Q-NEW116: online 상태 서버 평균 디스크 → 17대 필터 후 36.2% 반환 (PASS)",
+    "Q-NEW117: lb 그룹+MAX 메모리 → lb-haproxy-dc1-01 34%, monitoring-metric-ranking 정상. P31 브라우저 히스토리 의존적으로 재분류 (PASS)",
+    "Q-NEW118: 경고 상태 서버 평균 CPU → warning 1대 필터 후 63%, 상태 필터 정상 (PASS)",
+    "Q-NEW119: 전체 평균 메모리+디스크 동시 요청 → 메모리 46% 있으나 디스크 N/A, LLM fallback (PARTIAL)",
+    "Q-NEW120: 메모리 경고 상태 서버 평균 CPU — P26 원본 재현 → warning 1대 필터 후 CPU 69% 정확. P26 수정 확인 (PASS)",
+    "Q-NEW121: 디스크 증가율 가장 빠른 서버 → metric-trend 미매칭 Analyst LLM fallback 3500ms, 5대만 응답 (FAIL)",
+    "Q-NEW122: DB vs cache 그룹 경고 수 비교 → zai LLM fallback 8초, generic summary, 경고 수 직접 비교 미처리 (FAIL)"
+  ],
+  "skippedSurfaces": [
+    "numbered-list-accordion-split (UI 전용)",
+    "summary-markdown (UI 전용)"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 6,
+    "failed": 3
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
