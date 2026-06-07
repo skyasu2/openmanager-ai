@@ -32,7 +32,7 @@ import type {
   SupportedMetric,
   TrendDirection,
   TrendRankBy,
-} from './current-metrics-evidence-request';
+} from './current-metrics-evidence-request-types';
 
 export function normalizeSupportedMetric(
   metric: string | undefined

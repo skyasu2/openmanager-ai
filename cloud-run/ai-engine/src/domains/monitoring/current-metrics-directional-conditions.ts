@@ -1,5 +1,5 @@
 import type { QueryOperator } from '../../services/ai-sdk/agents/orchestrator-query-intent';
-import type { SupportedMetric } from './current-metrics-evidence-request';
+import type { SupportedMetric } from './current-metrics-evidence-request-types';
 
 export interface MetricCondition {
   metric: SupportedMetric;

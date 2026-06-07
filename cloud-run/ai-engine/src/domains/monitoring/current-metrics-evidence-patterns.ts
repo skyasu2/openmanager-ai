@@ -1,4 +1,4 @@
-import type { SupportedMetric } from './current-metrics-evidence-request';
+import type { SupportedMetric } from './current-metrics-evidence-request-types';
 
 export const HISTORICAL_OR_TREND_PATTERN =
   /(지난\s*\d|최근\s*\d|24\s*(?:시간|h)|하루|어제|last\s+\d|last24h|past\s+\d|평균|avg|추세|트렌드|trend|예측|forecast|비교|대비|변화|compare)/i;

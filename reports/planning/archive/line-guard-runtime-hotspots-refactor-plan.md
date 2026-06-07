@@ -1,14 +1,14 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-06-07
 > Tags: refactor,line-guard,ai-engine,large-files
 
 # Line Guard Runtime Hotspots Refactor Plan
 
-- 상태: In Progress
+- 상태: Completed
 - 작성일: 2026-06-07
-- TODO.md 연결: Backlog > Line guard runtime hotspot refactor
+- TODO.md 연결: 완료 후 archive 이동
 - 기준 게이트: `npm run line-guard`
 
 ## 목표
@@ -35,6 +35,39 @@ fail:
   - cloud-run/ai-engine/src/domains/monitoring/current-metrics-evidence-request.ts (991)
   - cloud-run/ai-engine/src/services/ai-sdk/supervisor-single-agent.ts (830)
 ```
+
+## 2026-06-07 완료 결과
+
+`npm run line-guard` fail 2건을 모두 해소했다.
+
+```text
+npm run line-guard (final, 2026-06-07)
+  result: PASS
+  fail files: 0
+  warning files: 47
+
+touched runtime source line counts:
+  - cloud-run/ai-engine/src/domains/monitoring/current-metrics-evidence-request.ts (47)
+  - cloud-run/ai-engine/src/domains/monitoring/current-metrics-evidence-frame-parser.ts (398)
+  - cloud-run/ai-engine/src/domains/monitoring/current-metrics-evidence-message-parser.ts (544)
+  - cloud-run/ai-engine/src/domains/monitoring/current-metrics-evidence-status.ts (35)
+  - cloud-run/ai-engine/src/domains/monitoring/current-metrics-evidence-request-types.ts (43)
+  - cloud-run/ai-engine/src/services/ai-sdk/supervisor-single-agent.ts (271)
+  - cloud-run/ai-engine/src/services/ai-sdk/supervisor-multi-agent-mode.ts (146)
+  - cloud-run/ai-engine/src/services/ai-sdk/supervisor-single-agent-mode.ts (102)
+  - cloud-run/ai-engine/src/services/ai-sdk/supervisor-single-agent-attempt.ts (422)
+```
+
+검증:
+
+- `cd cloud-run/ai-engine && npm test -- src/domains/monitoring/current-metrics-evidence-provider.test.ts` PASS (101 tests)
+- `cd cloud-run/ai-engine && npm test -- src/services/ai-sdk/supervisor-multi-fallback.test.ts src/services/ai-sdk/supervisor-domain-wiring.contract.test.ts` PASS (39 tests)
+- `cd cloud-run/ai-engine && npm test -- src/services/ai-sdk/supervisor-no-provider-fallback.test.ts src/services/ai-sdk/supervisor-quality-retry.test.ts src/services/ai-sdk/assistant-runtime-host.contract.test.ts src/services/ai-sdk/supervisor-stream-response.test.ts` PASS (28 tests)
+- `cd cloud-run/ai-engine && npm test -- src/domains/monitoring/current-metrics-evidence-provider.test.ts src/services/ai-sdk/supervisor-domain-evidence.test.ts` PASS (140 tests)
+- `cd cloud-run/ai-engine && npm run type-check` PASS
+- `cd cloud-run/ai-engine && npm run test` PASS (148 files / 1655 tests)
+- `npm run line-guard` PASS
+- `npm run lint` PASS
 
 ### 800줄 초과 tracked text 파일 분류
 
@@ -96,7 +129,7 @@ fail:
 | `supervisor-multi-agent-mode.ts` | `executeMultiAgentMode()`와 degraded single fallback 연결 |
 | `supervisor-single-agent-mode.ts` | retry loop, quality retry, degraded metadata 적용 |
 | `supervisor-single-agent-attempt.ts` | provider 선택, circuit breaker, runtime host LLM generate 호출 |
-| `supervisor-single-agent-results.ts` | tool result collection, RAG source extraction, deterministic summary fallback, enrichment metadata 조립 |
+| `supervisor-single-agent-results.ts` | 후속 후보. 이번 구현에서는 tool result collection과 response metadata 조립을 `supervisor-single-agent-attempt.ts` 내부로 이동해 public facade에서 분리 |
 
 완료 기준:
 
@@ -146,7 +179,7 @@ fail:
 - 신규 후보: `cloud-run/ai-engine/src/services/ai-sdk/supervisor-multi-agent-mode.ts`
 - 신규 후보: `cloud-run/ai-engine/src/services/ai-sdk/supervisor-single-agent-mode.ts`
 - 신규 후보: `cloud-run/ai-engine/src/services/ai-sdk/supervisor-single-agent-attempt.ts`
-- 신규 후보: `cloud-run/ai-engine/src/services/ai-sdk/supervisor-single-agent-results.ts`
+- 후속 후보: `cloud-run/ai-engine/src/services/ai-sdk/supervisor-single-agent-results.ts`
 
 ### 입출력 계약
 
@@ -169,13 +202,13 @@ fail:
 
 ### 테스트 시나리오
 
-- [ ] `line-guard baseline`: 현재 fail 2건이 계획에 기록되어 있다.
-- [ ] `current metrics parser parity`: `parseCurrentMetricsEvidenceRequest()` 관련 기존 provider tests가 동일하게 통과한다.
-- [ ] `ranking/current/trend/health grammar parity`: P28/P29/G-1 보강 케이스가 sourceIntent와 request shape를 유지한다.
-- [ ] `supervisor deterministic shortcut parity`: deterministic domain evidence 응답이 provider `deterministic` metadata를 유지한다.
-- [ ] `supervisor degraded fallback parity`: multi-agent 실패 후 single fallback 정책과 metadata가 유지된다.
-- [ ] `supervisor provider attempt parity`: no-provider, circuit-open, tool result collection, RAG source extraction 동작이 유지된다.
-- [ ] `line-guard final`: 800줄 이상 fail 0건, 새 runtime source 파일 800줄 이상 0건.
+- [x] `line-guard baseline`: 현재 fail 2건이 계획에 기록되어 있다.
+- [x] `current metrics parser parity`: `parseCurrentMetricsEvidenceRequest()` 관련 기존 provider tests가 동일하게 통과한다.
+- [x] `ranking/current/trend/health grammar parity`: P28/P29/G-1 보강 케이스가 sourceIntent와 request shape를 유지한다.
+- [x] `supervisor deterministic shortcut parity`: deterministic domain evidence 응답이 provider `deterministic` metadata를 유지한다.
+- [x] `supervisor degraded fallback parity`: multi-agent 실패 후 single fallback 정책과 metadata가 유지된다.
+- [x] `supervisor provider attempt parity`: no-provider, circuit-open, tool result collection, RAG source extraction 동작이 유지된다.
+- [x] `line-guard final`: 800줄 이상 fail 0건, 새 runtime source 파일 800줄 이상 0건.
 
 ## Task 목록
 
@@ -187,24 +220,24 @@ fail:
   - targeted test 명령 확정
   - 권장 커밋: `test(spec): line guard runtime hotspots baseline`
 
-- [ ] Task 1 — current metrics request parser 분리
+- [x] Task 1 — current metrics request parser 분리
   - frame parser와 message parser를 별도 파일로 이동
   - status/health helper를 작은 모듈로 분리
   - `current-metrics-evidence-request.ts`를 facade로 축소
   - 완료 기준: parser targeted tests와 AI Engine type-check 통과
 
-- [ ] Task 2 — supervisor single-agent execution 분리
+- [x] Task 2 — supervisor single-agent execution 분리
   - multi-agent mode wrapper 분리
   - single-agent retry loop와 provider attempt 분리
-  - tool result/result metadata builder 분리
+  - tool result/result metadata 조립을 provider attempt helper로 이동
   - 완료 기준: supervisor targeted tests와 AI Engine type-check 통과
 
-- [ ] Task 3 — 테스트 ownership 정리 여부 판단
+- [x] Task 3 — 테스트 ownership 정리 여부 판단
   - Task 1 이후 `current-metrics-evidence-provider.test.ts`가 새 모듈 경계와 심하게 어긋나는지 확인
   - 필요 시 parser/ranking/current/trend/health describe 단위만 분리
   - 불필요하면 현 상태 유지로 명시
 
-- [ ] Task 4 — 최종 검증과 문서 정리
+- [x] Task 4 — 최종 검증과 문서 정리
   - `npm run line-guard` PASS
   - AI Engine 필수 검증 PASS
   - plan/TODO 상태 갱신
@@ -261,12 +294,12 @@ npm run test:contract
 
 ## 완료 기준
 
-- [ ] `npm run line-guard` fail 0
-- [ ] `current-metrics-evidence-request.ts` 450줄 이하
-- [ ] `supervisor-single-agent.ts` 450줄 이하
-- [ ] 신규 runtime source 파일 800줄 이상 없음
-- [ ] AI Engine type-check 통과
-- [ ] 관련 targeted tests 통과
-- [ ] AI Engine 전체 test 통과
-- [ ] docs guard와 `git diff --check` 통과
-- [ ] TODO.md와 plan status 갱신
+- [x] `npm run line-guard` fail 0
+- [x] `current-metrics-evidence-request.ts` 450줄 이하
+- [x] `supervisor-single-agent.ts` 450줄 이하
+- [x] 신규 runtime source 파일 800줄 이상 없음
+- [x] AI Engine type-check 통과
+- [x] 관련 targeted tests 통과
+- [x] AI Engine 전체 test 통과
+- [x] docs guard와 `git diff --check` 통과
+- [x] TODO.md와 plan status 갱신
