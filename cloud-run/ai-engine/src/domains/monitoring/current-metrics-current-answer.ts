@@ -503,9 +503,12 @@ function buildMultiMetricFilterAnswer(params: {
     });
     if (servers.length === 0) return null;
 
-    // P30: status-filter-multi-metric-aggregate → 메트릭별 평균 표시
+    // P30/Q-NEW119: multi-metric aggregate → 메트릭별 평균 표시
     // e.g., "경고 상태 서버들의 평균 메모리와 평균 디스크는?"
-    if (params.parsed.sourceIntent === 'status-filter-multi-metric-aggregate') {
+    if (
+      params.parsed.sourceIntent === 'status-filter-multi-metric-aggregate' ||
+      params.parsed.sourceIntent === 'multi-metric-aggregate'
+    ) {
       const timeLabel = readSnapshotTimeLabel(params.snapshot);
       const metricAverages = metrics.map((metric) => {
         const values = servers

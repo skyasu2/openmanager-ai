@@ -47,9 +47,9 @@ export const NEAR_THRESHOLD_PATTERN =
 export const NEAR_THRESHOLD_INFERRED_VALUE = 55;
 
 export const METRIC_TREND_PATTERN =
-  /추이|추세|트렌드|trend|변화|변동|24\s*h|(?:계속|지속|꾸준히|점점|많이).{0,20}(?:올라|내려|높아|낮아|증가|감소|상승|하락|늘어|줄어)|(?:올라가|내려가).{0,8}(?:고\s*있|는\s*서버)|(?:상승|하락|증가|감소)\s*(?:중|추세|경향|한|한\s*서버|했|된)|증가율|상승률|성장률|growth\s*rate/i;
+  /추이|추세|트렌드|trend|변화|변동|24\s*h|(?:계속|지속|꾸준히|점점|많이|빠르게|가파르게).{0,20}(?:올라|내려|높아|낮아|증가|감소|상승|하락|늘어|줄어)|(?:올라가|내려가).{0,8}(?:고\s*있|는\s*서버)|(?:상승|하락|증가|감소)\s*(?:중|추세|경향|한|한\s*서버|했|된)|증가율|상승률|성장률|growth\s*rate/i;
 export const METRIC_TREND_RANKING_PATTERN =
-  /증가율|상승률|성장률|증가폭|상승폭|변화량|delta|growth\s*rate|increase\s*rate|change\s*rate|(?:가장|제일|상위|top).{0,24}(?:많이\s*)?(?:증가|상승|늘어|올라)|(?:증가|상승|늘어|올라).{0,24}(?:가장|제일|많이|큰|높|상위|top)/i;
+  /증가율|상승률|성장률|증가폭|상승폭|변화량|delta|growth\s*rate|increase\s*rate|change\s*rate|(?:가장|제일|상위|top).{0,24}(?:많이\s*)?(?:증가|상승|늘어|올라)|(?:빠르게|가파르게).{0,24}(?:증가|상승|늘어|올라)|(?:증가|상승|늘어|올라).{0,24}(?:가장|제일|많이|큰|높|상위|top|빠르|가파르)/i;
 export const GENERIC_METRIC_TREND_PATTERN =
   /메트릭|지표|리소스|resource|metrics?/i;
 export const GROUP_SERVER_LIST_PATTERN =
@@ -69,7 +69,7 @@ export const SERVER_COMPARISON_CONNECTOR_PATTERN =
 export const TIME_SERIES_COMPARISON_PATTERN =
   /(지난\s*\d|최근\s*\d|24\s*시간|하루|어제|last\s+\d|last24h|past\s+\d|추세|트렌드|trend|예측|forecast|변화)/i;
 export const GROUP_HEALTH_COMPARISON_PATTERN =
-  /불안정|안정|위험|문제|비정상|상태|health|unstable|stability|risk/i;
+  /불안정|안정|위험|문제|비정상|상태|경고|warning|critical|offline|health|unstable|stability|risk/i;
 export const DEFAULT_TREND_METRICS: SupportedMetric[] = [
   'cpu',
   'memory',

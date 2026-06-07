@@ -22,6 +22,7 @@ import {
   HISTORICAL_OR_TREND_PATTERN,
   METRIC_RISK_COMPARISON_PATTERN,
   METRIC_TREND_PATTERN,
+  METRIC_TREND_RANKING_PATTERN,
   NEAR_THRESHOLD_PATTERN,
   NEAR_THRESHOLD_INFERRED_VALUE,
   SERVER_HEALTH_EXCLUSION_PATTERN,
@@ -408,6 +409,18 @@ export function parseCurrentMetricsMessage(
       thresholdOperator: classification.operator ?? '>=',
       ...(metricTargets.length > 0 && { targets: metricTargets }),
       ...(statusFilter && { statusFilter }),
+    };
+  }
+
+  if (metric && METRIC_TREND_RANKING_PATTERN.test(message)) {
+    return {
+      intent: 'metric_trend',
+      capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+      sourceIntent: 'ranking-trend',
+      answerQuery: message,
+      metric,
+      ...buildTrendRequestOptions(message),
+      ...(metricTargets.length > 0 && { targets: metricTargets }),
     };
   }
 

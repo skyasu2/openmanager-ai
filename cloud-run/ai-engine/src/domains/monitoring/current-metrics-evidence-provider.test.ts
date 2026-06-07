@@ -3425,6 +3425,49 @@ describe('current metrics domain evidence providers', () => {
         metric: 'memory',
       });
     });
+
+    it('Q-NEW119: resolves all-scope multi-metric averages deterministically', async () => {
+      const snapshot = {
+        timeLabel: '01:30',
+        servers: [
+          {
+            id: 'web-nginx-dc1-01',
+            type: 'web',
+            status: 'online',
+            cpu: 10,
+            memory: 40,
+            disk: 20,
+          },
+          {
+            id: 'api-was-dc1-01',
+            type: 'application',
+            status: 'online',
+            cpu: 20,
+            memory: 60,
+            disk: 50,
+          },
+        ],
+      };
+
+      const request = createEvidenceRequest(
+        '지금 모든 서버 평균 메모리와 평균 디스크를 동시에 알려줘',
+        snapshot
+      );
+      const parsed = parseCurrentMetricsEvidenceRequest(request);
+      expect(parsed).toMatchObject({
+        intent: 'metric_current',
+        sourceIntent: 'multi-metric-aggregate',
+        metrics: ['memory', 'disk'],
+      });
+      expect(parsed?.targets).toBeUndefined();
+      expect(parsed?.statusFilter).toBeUndefined();
+
+      const evidence =
+        await monitoringMetricCurrentEvidenceProvider.resolve(request);
+      expect(evidence?.fallback).toContain('평균 메모리: 50%');
+      expect(evidence?.fallback).toContain('평균 디스크: 35%');
+      expect(evidence?.fallback).not.toContain('N/A');
+    });
   });
 
   describe('25차 QA follow-up regressions: status filters and low-threshold AND filters', () => {
@@ -3598,6 +3641,78 @@ describe('current metrics domain evidence providers', () => {
         '캐시 서버가 DB 서버보다 warning 상태 서버가 1대 더 많습니다.'
       );
       expect(evidence?.fallback).not.toContain('위험 신호');
+    });
+
+    it('Q-NEW121: routes fast-growing disk questions to deterministic trend ranking', async () => {
+      const parsed = parseCurrentMetricsEvidenceRequest(
+        createEvidenceRequest('디스크 사용률이 가장 빠르게 증가하고 있는 서버는?')
+      );
+
+      expect(parsed).toMatchObject({
+        intent: 'metric_trend',
+        capabilityId: MONITORING_METRIC_TREND_CAPABILITY_ID,
+        sourceIntent: 'ranking-trend',
+        metric: 'disk',
+        trendRankBy: 'delta',
+      });
+    });
+
+    it('Q-NEW122: compares warning counts for DB and cache groups even when status is classified as a metric', async () => {
+      const snapshot = {
+        timeLabel: '01:30',
+        servers: [
+          {
+            id: 'db-mysql-dc1-primary',
+            type: 'database',
+            status: 'warning',
+            cpu: 70,
+            memory: 65,
+            disk: 82,
+          },
+          {
+            id: 'db-mysql-dc1-replica',
+            type: 'database',
+            status: 'online',
+            cpu: 30,
+            memory: 35,
+            disk: 40,
+          },
+          {
+            id: 'cache-redis-dc1-01',
+            type: 'cache',
+            status: 'warning',
+            cpu: 25,
+            memory: 83,
+            disk: 20,
+          },
+          {
+            id: 'cache-redis-dc1-02',
+            type: 'cache',
+            status: 'warning',
+            cpu: 28,
+            memory: 81,
+            disk: 22,
+          },
+        ],
+      };
+
+      const request = createEvidenceRequest(
+        'DB 서버 그룹과 cache 서버 그룹 중 어느 쪽에 경고가 더 많아?',
+        snapshot
+      );
+      const parsed = parseCurrentMetricsEvidenceRequest(request);
+      expect(parsed).toMatchObject({
+        intent: 'server_health',
+        sourceIntent: 'group-health-compare',
+        statusFilter: 'warning',
+        groupTargets: expect.arrayContaining(['database', 'cache']),
+      });
+
+      const evidence =
+        await monitoringServerHealthEvidenceProvider.resolve(request);
+      expect(evidence?.fallback).toContain('warning 상태 서버 수 비교');
+      expect(evidence?.fallback).toContain('DB 서버 1대');
+      expect(evidence?.fallback).toContain('캐시 서버 2대');
     });
 
     it('P27: preserves the < operator for multi-metric AND threshold filters', async () => {

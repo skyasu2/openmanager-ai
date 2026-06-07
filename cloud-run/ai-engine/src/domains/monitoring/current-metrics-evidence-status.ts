@@ -6,11 +6,7 @@ export function resolveExplicitStatusFilter(
 ): QueryStatus | undefined {
   const explicitStatus = statusValue ?? inferExplicitStatusValue(message);
   if (!explicitStatus) return undefined;
-  return /(?:상태|status).{0,16}(?:online|warning|critical|offline|온라인|정상|경고|위험|오프라인)|(?:online|warning|critical|offline|온라인|정상|경고|위험|오프라인).{0,16}(?:상태|status|서버|server)/i.test(
-    message
-  )
-    ? explicitStatus
-    : undefined;
+  return hasExplicitStatusContext(message) ? explicitStatus : undefined;
 }
 
 function inferExplicitStatusValue(message: string): QueryStatus | undefined {
@@ -19,6 +15,22 @@ function inferExplicitStatusValue(message: string): QueryStatus | undefined {
   if (/warning|경고/i.test(message)) return 'warning';
   if (/online|온라인|정상/i.test(message)) return 'online';
   return undefined;
+}
+
+function hasExplicitStatusContext(message: string): boolean {
+  const statusToken =
+    '(?:online|warning|critical|offline|온라인|정상|경고|위험|오프라인)';
+  const statusWordContext = new RegExp(
+    `(?:상태|status).{0,16}${statusToken}|${statusToken}.{0,16}(?:상태|status|서버|server)`,
+    'i'
+  );
+  if (statusWordContext.test(message)) return true;
+
+  const countComparisonContext = new RegExp(
+    `${statusToken}.{0,20}(?:수|개수|몇|많|적|카운트|count)|(?:수|개수|몇|많|적|카운트|count).{0,20}${statusToken}`,
+    'i'
+  );
+  return countComparisonContext.test(message);
 }
 
 export function isTopBottomServerHealthMessage(message: string): boolean {
