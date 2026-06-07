@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-06T16:45:34.002Z"
+    "updatedAt": "2026-06-06T23:59:04.960Z"
   },
   "sequence": {
-    "nextRunNumber": 669
+    "nextRunNumber": 670
   },
   "summary": {
-    "totalRecordedRuns": 666,
-    "totalRuns": 522,
+    "totalRecordedRuns": 667,
+    "totalRuns": 523,
     "excludedRuns": 144,
-    "totalChecks": 4645,
-    "totalPassed": 4438,
+    "totalChecks": 4655,
+    "totalPassed": 4448,
     "totalFailed": 162,
     "completionRate": 100,
-    "completedItems": 770,
+    "completedItems": 774,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 32,
+    "wontFixItems": 30,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260607-0668",
-    "lastRecordedAt": "2026-06-06T16:45:34.002Z",
-    "latestRecordedRunId": "QA-20260607-0668",
-    "latestRecordedAt": "2026-06-06T16:45:34.002Z"
+    "lastRunId": "QA-20260607-0669",
+    "lastRecordedAt": "2026-06-06T23:59:04.960Z",
+    "latestRecordedRunId": "QA-20260607-0669",
+    "latestRecordedAt": "2026-06-06T23:59:04.960Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18935,51 +18935,99 @@
     },
     "p26-status-filter-cross-metric-aggregate": {
       "id": "p26-status-filter-cross-metric-aggregate",
-      "title": "P26: 상태 필터 + 다른 메트릭 집계 복합 의도 미처리",
+      "title": "P26: 상태 필터 + 다른 메트릭 집계 복합 의도 처리",
       "priority": "P3",
-      "status": "wont-fix",
+      "status": "completed",
       "firstSeenRunId": "QA-20260607-0668",
       "firstSeenAt": "2026-06-06T16:45:34.002Z",
-      "lastSeenRunId": "QA-20260607-0668",
-      "lastSeenAt": "2026-06-06T16:45:34.002Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260607-0669",
+      "lastSeenAt": "2026-06-06T23:59:04.960Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "v8.12.102 production direct API: '메모리 경고 상태인 서버들의 평균 CPU는?' returns warning 상태 subset average CPU, not whole-fleet CPU",
       "lastNote": "'메모리 경고 상태인 서버들의 평균 CPU' => 상태 필터(warning) 무시하고 전체 18대 CPU 평균(31.1%) 반환. 상태 조건으로 서버 서브셋 필터 후 다른 메트릭 집계하는 복합 의도 미지원.",
       "isBlocking": false,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastStatusChangeAt": "2026-06-06T16:45:34.002Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-06T23:59:04.960Z"
     },
     "p27-lt-threshold-and-filter-count": {
       "id": "p27-lt-threshold-and-filter-count",
-      "title": "P27: 미만(<) AND 조건 필터 카운트 반전 처리",
+      "title": "P27: 미만(<) AND 조건 필터 카운트 처리",
       "priority": "P3",
-      "status": "wont-fix",
+      "status": "completed",
       "firstSeenRunId": "QA-20260607-0668",
       "firstSeenAt": "2026-06-06T16:45:34.002Z",
-      "lastSeenRunId": "QA-20260607-0668",
-      "lastSeenAt": "2026-06-06T16:45:34.002Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260607-0669",
+      "lastSeenAt": "2026-06-06T23:59:04.960Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "v8.12.102 production direct API: CPU·메모리·디스크 모두 50% 미만 query returns '<' AND filter result and does not show 합산 내림차순",
       "lastNote": "'CPU·메모리·디스크 모두 50% 미만인 서버 몇 대야?' => '상위 부하 내림차순(합산 내림차순)' 반전 처리. 기대: 10대(01:30 KST OTel 기준). 실제: DB/storage 상위 부하 목록 반환. 이전 Q-NEW84 '이상(>=) AND' 처리는 PASS였으나 '미만(<) AND' 방향은 실패.",
       "isBlocking": false,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastStatusChangeAt": "2026-06-06T16:45:34.002Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-06T23:59:04.960Z"
+    },
+    "q-new96-current-near-full-disk-filter": {
+      "id": "q-new96-current-near-full-disk-filter",
+      "title": "Q-NEW96: 시간 창 없는 디스크 거의 꽉 찬 서버 질의 current filter 처리",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260607-0669",
+      "firstSeenAt": "2026-06-06T23:59:04.960Z",
+      "lastSeenRunId": "QA-20260607-0669",
+      "lastSeenAt": "2026-06-06T23:59:04.960Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.12.102 production direct API: '디스크가 거의 꽉 찬 서버 있어?' returns disk >= 80% current filter and does not return capacity forecast wording",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-06T23:59:04.960Z"
+    },
+    "q-new97-status-count-group-compare": {
+      "id": "q-new97-status-count-group-compare",
+      "title": "Q-NEW97: 그룹별 경고 상태 서버 수 비교",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260607-0669",
+      "firstSeenAt": "2026-06-06T23:59:04.960Z",
+      "lastSeenRunId": "QA-20260607-0669",
+      "lastSeenAt": "2026-06-06T23:59:04.960Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.12.102 production direct API: DB vs cache warning status query returns warning 상태 서버 수 비교 and does not use risk-signal comparison",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-06T23:59:04.960Z"
     }
   },
   "runs": [
@@ -41287,6 +41335,88 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 2
+    },
+    {
+      "runId": "QA-20260607-0669",
+      "recordedAt": "2026-06-06T23:59:04.960Z",
+      "recordedAtKst": "2026-06-07 08:59:04 KST",
+      "title": "Cloud Run Production Direct API - v8.12.102 AI assistant advanced metric filter regression validation",
+      "owner": "codex",
+      "source": "gitlab-ci+cloud-run-direct-api+vercel-api",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260607-0669.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "8d0182eeb8c3965cba10f21f37de473ba2a0ed37"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "P26: 상태 필터 + 다른 메트릭 집계 => warning 상태 서버 subset에 평균 CPU 적용 확인",
+        "Q-NEW96: 시간 창 없는 '디스크가 거의 꽉 찬 서버' => capacity forecast가 아닌 current disk >= 80% 필터 확인",
+        "Q-NEW97: DB vs cache 경고 상태 서버 수 비교 => warning 상태 서버 수 비교 경로 확인",
+        "P27: CPU·메모리·디스크 모두 50% 미만 AND 필터 => '<' operator 보존 및 합산 내림차순 미노출 확인",
+        "GitLab release pipeline v8.12.102 success: deploy, deploy_ai_engine, post_deploy_smoke, post_deploy_ai_engine_smoke",
+        "Production /api/version reports 8.12.102",
+        "Production /api/health?service=ai reports Cloud Run ai-engine 8.12.102",
+        "Direct Cloud Run /health reports ai-engine 8.12.102"
+      ],
+      "skippedSurfaces": [
+        "Playwright UI screenshot rerun skipped: defect and fix are deterministic AI Engine evidence-layer behavior, direct production API validation covers the changed route",
+        "Langfuse trace inspection skipped: no LLM routing or provider behavior changed"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "GitLab release pipeline evidence",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582282434",
+          "note": "Durable URL evidence for deploy and smoke success; no local Playwright artifact was produced for this direct API validation"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline 2582282434",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582282434",
+          "note": "success; deploy, deploy_ai_engine, post-deploy smoke jobs passed"
+        },
+        {
+          "type": "general",
+          "label": "Production version endpoint",
+          "url": "https://openmanager-ai.vercel.app/api/version",
+          "note": "version 8.12.102, releaseTag v8.12.102"
+        },
+        {
+          "type": "monitoring",
+          "label": "Production AI health endpoint",
+          "url": "https://openmanager-ai.vercel.app/api/health?service=ai&soft=true",
+          "note": "healthy true, backend cloud-run, ai-engine 8.12.102"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 4,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {

@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-07 01:45:35 KST
+> Generated at: 2026-06-07 08:59:05 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 666 |
-| Total Runs (Counted) | 522 |
+| Total Recorded Runs | 667 |
+| Total Runs (Counted) | 523 |
 | Non-counted Runs | 144 |
-| Total Checks | 4645 |
-| Passed | 4438 |
+| Total Checks | 4655 |
+| Passed | 4448 |
 | Failed | 162 |
-| Completed Items | 770 |
+| Completed Items | 774 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 32 |
+| Wont-Fix Items | 30 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260607-0668 (2026-06-06T16:45:34.002Z) |
-| Latest Recorded Run | QA-20260607-0668 (2026-06-06T16:45:34.002Z) |
+| Last Counted Run | QA-20260607-0669 (2026-06-06T23:59:04.960Z) |
+| Latest Recorded Run | QA-20260607-0669 (2026-06-06T23:59:04.960Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260607-0668 (2026-06-06T16:45:34.002Z)
+Latest run: QA-20260607-0669 (2026-06-06T23:59:04.960Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -48,7 +48,7 @@ Latest run: QA-20260607-0668 (2026-06-06T16:45:34.002Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-05T16:45:34.002Z -> 2026-06-06T16:45:34.002Z (24h)
+- Window: 2026-06-05T23:59:04.960Z -> 2026-06-06T23:59:04.960Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 11
 
@@ -64,7 +64,7 @@ Latest run: QA-20260607-0668 (2026-06-06T16:45:34.002Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-05T16:45:34.002Z -> 2026-06-06T16:45:34.002Z (24h)
+- Window: 2026-06-05T23:59:04.960Z -> 2026-06-06T23:59:04.960Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -78,24 +78,24 @@ Latest run: QA-20260607-0668 (2026-06-06T16:45:34.002Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: SHA 381b80ce
+- Deployment: SHA 8d0182ee
 - Coverage Packs: ai-advanced-surface
-- Covered Surfaces: P25 회귀 확인: TOP+BOTTOM 동시 질의 => deterministic/monitoring-server-health 33ms (FIXED 재확인), Q-NEW95: 메모리 경고 상태인 서버들의 평균 CPU => 전체 18대 CPU 반환 (상태 필터 무시, 신규 P26 발견), Q-NEW96: 디스크가 거의 꽉 찬 서버 있어? => capacity-forecast 29ms (미래 예측으로 해석, PARTIAL), Q-NEW97: DB vs cache 더 많은 서버가 경고 상태? => monitoring-server-health 불안정 점수 비교 (방향 맞으나 카운트 미명시, PARTIAL), Q-NEW98: storage-nfs-dc1-01 vs db-mysql-dc1-primary 디스크 비교 => monitoring-metric-current PASS (DISK 82% vs 53%, 평균 67.5%), Q-NEW99: 전체 서버 중 CPU·메모리·디스크 모두 50% 미만인 서버 몇 대? => '상위 부하 내림차순'으로 반전 처리 (신규 P27 발견), OTel 교차 검증: slot 01:30 KST, CPU avg 31.1%, db-mysql-dc1-primary DISK 82% warning, lb-haproxy-dc1-03 stable
-- Skipped Surfaces: 멀티턴 컨텍스트 팔로업 재검증 미실시, Reporter 에이전트 테스트 미실시, Analyst 에이전트 지연 실측 미실시
+- Covered Surfaces: P26: 상태 필터 + 다른 메트릭 집계 => warning 상태 서버 subset에 평균 CPU 적용 확인, Q-NEW96: 시간 창 없는 '디스크가 거의 꽉 찬 서버' => capacity forecast가 아닌 current disk >= 80% 필터 확인, Q-NEW97: DB vs cache 경고 상태 서버 수 비교 => warning 상태 서버 수 비교 경로 확인, P27: CPU·메모리·디스크 모두 50% 미만 AND 필터 => '<' operator 보존 및 합산 내림차순 미노출 확인, GitLab release pipeline v8.12.102 success: deploy, deploy_ai_engine, post_deploy_smoke, post_deploy_ai_engine_smoke, Production /api/version reports 8.12.102, Production /api/health?service=ai reports Cloud Run ai-engine 8.12.102, Direct Cloud Run /health reports ai-engine 8.12.102
+- Skipped Surfaces: Playwright UI screenshot rerun skipped: defect and fix are deterministic AI Engine evidence-layer behavior, direct production API validation covers the changed route, Langfuse trace inspection skipped: no LLM routing or provider behavior changed
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab pipeline 2582282434 | [GitLab pipeline 2582282434](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582282434) | success; deploy, deploy_ai_engine, post-deploy smoke jobs passed |
+| general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | version 8.12.102, releaseTag v8.12.102 |
+| monitoring | Production AI health endpoint | [Production AI health endpoint](https://openmanager-ai.vercel.app/api/health?service=ai&soft=true) | healthy true, backend cloud-run, ai-engine 8.12.102 |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Q-NEW97: DB vs cache 경고 상태 비교 응답 | `reports/qa/evidence/qa-20260607-q97-db-cache-status-compare.png` | - |
-| playwright-screenshot | Q-NEW98: storage vs db 디스크 비교 응답 (PASS) | `reports/qa/evidence/qa-20260607-q98-storage-db-disk-compare.png` | - |
-| playwright-screenshot | Q-NEW99: 50% 미만 AND 조건 필터 카운트 반전 실패 | `reports/qa/evidence/qa-20260607-q99-lt50-and-filter-fail.png` | - |
+| playwright-report | GitLab release pipeline evidence | [GitLab release pipeline evidence](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582282434) | - |
 
 ## Expert Domain Open Gaps
 
@@ -111,15 +111,15 @@ Latest run: QA-20260607-0668 (2026-06-06T16:45:34.002Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Portfolio Deferral 32
-- Review classes: Verify Before Promotion 13, Future Product Expansion 5, Low-Priority Polish 8, Accepted No-Action 6
+- Reason categories: Portfolio Deferral 30
+- Review classes: Verify Before Promotion 13, Future Product Expansion 5, Low-Priority Polish 8, Accepted No-Action 4
 
 ### Review Classes
 
 - Verify Before Promotion 13: Potentially stale accepted debt. Re-run a targeted QA check before promoting it back to implementation work.
 - Future Product Expansion 5: Valid enhancement only if the portfolio scope expands into a fuller product surface or longer-lived conversational memory.
 - Low-Priority Polish 8: Non-blocking answer, copy, layout, or evidence-label polish. Keep accepted unless it appears in a release-facing regression.
-- Accepted No-Action 6: Accepted no-fix item with no current trigger for implementation work.
+- Accepted No-Action 4: Accepted no-fix item with no current trigger for implementation work.
 
 ### Portfolio Deferral
 
@@ -171,10 +171,6 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] numbered-list-accordion-split: 번호 목록이 핵심 요약/상세 분석 아코디언 경계에서 분리됨 (seen 1회, last QA-20260524-0579)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P3] p26-status-filter-cross-metric-aggregate: P26: 상태 필터 + 다른 메트릭 집계 복합 의도 미처리 (seen 1회, last QA-20260607-0668)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P3] p27-lt-threshold-and-filter-count: P27: 미만(<) AND 조건 필터 카운트 반전 처리 (seen 1회, last QA-20260607-0668)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] q-new11-location-clarification: DC1-AZ1/AZ2 명시에도 clarification 불필요 발동 (seen 1회, last QA-20260525-0584)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] q-new12-network-metric-disclosure: 네트워크 I/O 미보유 시 데이터 부재 미명시 폴백 (seen 1회, last QA-20260525-0584)
@@ -192,18 +188,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 770 items completed (full list in qa-tracker.json)
+- Total: 774 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - p26-status-filter-cross-metric-aggregate: P26: 상태 필터 + 다른 메트릭 집계 복합 의도 처리 (last QA-20260607-0669)
+  - p27-lt-threshold-and-filter-count: P27: 미만(<) AND 조건 필터 카운트 처리 (last QA-20260607-0669)
+  - q-new96-current-near-full-disk-filter: Q-NEW96: 시간 창 없는 디스크 거의 꽉 찬 서버 질의 current filter 처리 (last QA-20260607-0669)
+  - q-new97-status-count-group-compare: Q-NEW97: 그룹별 경고 상태 서버 수 비교 (last QA-20260607-0669)
   - p25-top-bottom-dual-query: P25: TOP+BOTTOM 복합 의도 동시 처리 수정 완료 (v8.12.100) (last QA-20260607-0668)
-  - p25-top-bottom-dual-query-ui-confirmed: P25 TOP+BOTTOM dual server query production UI confirmation (last QA-20260607-0667)
-  - production-ai-observability-final-check: Production AI assistant Langfuse current-run trace confirmation (last QA-20260607-0667)
-  - p24-all-scope-average: P24: 전체 서버 all-scope 단일 메트릭 평균 집계 수정 완료 (last QA-20260606-0665)
-  - routing-regression-check-v81299-production-released: routing regression check tooling and baseline released with v8.12.99 (last QA-20260606-0664)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260607-0669 | 2026-06-06T23:59:04.960Z | targeted | no | yes | Cloud Run Production Direct API - v8.12.102 AI assistant advanced metric filter regression validation | 10 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260607-0668 | 2026-06-06T16:45:34.002Z | targeted | no | yes | Vercel Production Playwright MCP - 25차 AI 어시스턴트 평가 (v8.12.100) | 6 | 1 | 0 | 0 | 2 | 0 |
 | QA-20260607-0667 | 2026-06-06T16:01:05.302Z | broad | yes | yes | Vercel Playwright MCP + Langfuse Final QA - v8.12.100 improvement closure check | 19 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260607-0666 | 2026-06-06T15:25:12.210Z | targeted | yes | yes | Cloud Run Production Targeted QA - v8.12.100 P25 TOP+BOTTOM dual server query fix | 10 | 1 | 0 | 0 | 0 | 0 |
@@ -223,4 +220,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260605-0652 | 2026-06-05T00:05:25.119Z | targeted | no | no | Vercel Production Playwright MCP Recheck - v8.12.90 After GitLab Token Recovery | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260605-0651 | 2026-06-04T16:20:31.104Z | targeted | yes | yes | Vercel Production Targeted QA - v8.12.90 Pre-Auth System Preload Fix | 11 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260605-0650 | 2026-06-04T15:37:32.012Z | targeted | yes | yes | Vercel Production Targeted QA - Free Tier and Two-Week Direction Review | 12 | 2 | 0 | 0 | 1 | 0 |
-| QA-20260605-0649 | 2026-06-04T15:08:53.658Z | targeted | yes | yes | Cloud Run Production Targeted QA - v8.12.89 Off-Domain Warn Metadata | 10 | 1 | 0 | 0 | 0 | 0 |
