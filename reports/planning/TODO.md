@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-06-06 KST (D-2 Analyst maxSteps 하향 조건 미충족 재확인)
+**Last Updated**: 2026-06-07 KST (WONT-FIX targeted remediation 착수)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -15,7 +15,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| _None_ | - | 현재 진행 중인 작업 없음. |
+| AI Assistant WONT-FIX targeted remediation | P1 | In Progress (Codex). `reports/planning/ai-assistant-improvement-plan-2026-06.md` Task G: ranking advice, accordion numbering, ranking cross-metric, server compare deterministic routing, summary markdown cleanup |
 
 ---
 

@@ -121,4 +121,15 @@ describe('MarkdownRenderer', () => {
     expect(code).toHaveTextContent('printf "%s\\n" "done"');
     expect(code).toHaveTextContent('}');
   });
+
+  it('orderedListStart가 있으면 첫 번째 번호 목록의 start 속성을 유지해야 한다', () => {
+    const { container } = render(
+      <MarkdownRenderer
+        content={'1. 세 번째\n2. 네 번째'}
+        orderedListStart={3}
+      />
+    );
+
+    expect(container.querySelector('ol')).toHaveAttribute('start', '3');
+  });
 });

@@ -445,4 +445,67 @@ describe('createSupervisorStreamResponse', () => {
       })
     );
   });
+
+  it('plain-text normalizes markdown block markers before exposing a collapsed summary', async () => {
+    const details = Array.from(
+      { length: 16 },
+      (_, index) => `세부 분석 ${index + 1}: 현재 지표와 근거를 확인했습니다.`
+    ).join('\n');
+    const content = [
+      '### 조치 요약',
+      '---',
+      '```bash',
+      'kubectl get pods',
+      '```',
+      '',
+      details,
+    ].join('\n');
+
+    mockExecuteSupervisorStream.mockReturnValue((async function* () {
+      yield { type: 'text_delta', data: content };
+      yield {
+        type: 'done',
+        data: {
+          success: true,
+          metadata: {
+            mode: 'single',
+            provider: 'groq',
+            modelId: 'groq-model',
+          },
+        },
+      };
+    })());
+
+    const response = createSupervisorStreamResponse({
+      sessionId: 'session-summary-markdown-cleanup',
+      mode: 'auto',
+      messages: [{ role: 'user', content: '현재 상태 요약해줘' }],
+    }) as unknown as {
+      stream: {
+        execute: (args: {
+          writer: { write: (chunk: unknown) => void };
+        }) => Promise<void>;
+      };
+    };
+
+    const writes: unknown[] = [];
+    await response.stream.execute({
+      writer: {
+        write: (chunk: unknown) => {
+          writes.push(chunk);
+        },
+      },
+    });
+
+    const done = writes.find(
+      (write): write is { type: 'data-done'; data: { responseSummary: string } } =>
+        (write as { type?: string }).type === 'data-done'
+    );
+
+    expect(done?.data.responseSummary).toContain('조치 요약');
+    expect(done?.data.responseSummary).toContain('kubectl get pods');
+    expect(done?.data.responseSummary).not.toContain('###');
+    expect(done?.data.responseSummary).not.toContain('---');
+    expect(done?.data.responseSummary).not.toContain('```bash');
+  });
 });

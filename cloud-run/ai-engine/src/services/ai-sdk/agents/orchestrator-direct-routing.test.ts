@@ -235,6 +235,37 @@ describe('resolveDirectRoutingTarget', () => {
     });
   });
 
+  it('forces server comparison frames onto the deterministic provider path', () => {
+    expect(
+      resolveDirectRoutingTarget(
+        {
+          shouldHandoff: true,
+          suggestedAgent: 'Reporter Agent',
+          confidence: 0.88,
+        },
+        {
+          domain: monitoringDomainPack,
+          intentFrame: frame({
+            capabilityId: 'monitoring.metric_current',
+            intent: 'metric_current',
+            scope: 'entity',
+            targets: ['api-was-dc1-01', 'api-was-dc1-02'],
+            metric: 'cpu',
+            aggregation: 'summary',
+            executionMode: 'single',
+            confidence: 0.93,
+            slots: { sourceIntent: 'server-compare' },
+          }),
+        }
+      )
+    ).toMatchObject({
+      agentName: DEFAULT_DIRECT_ROUTING_AGENT,
+      provider: 'deterministic',
+      source: 'deterministic_fallback',
+      reason: 'Direct routing (deterministic server comparison)',
+    });
+  });
+
   it('preserves peak-metric semantic routing even when the wording asks for cause candidates', () => {
     expect(
       resolveDirectRoutingTarget(

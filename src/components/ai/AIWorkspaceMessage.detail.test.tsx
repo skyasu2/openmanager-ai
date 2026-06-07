@@ -12,8 +12,19 @@ vi.mock('./MessageActions', () => ({
 }));
 
 vi.mock('./MarkdownRenderer', () => ({
-  MarkdownRenderer: ({ content }: { content: string }) => (
-    <div data-testid="markdown-renderer">{content}</div>
+  MarkdownRenderer: ({
+    content,
+    orderedListStart,
+  }: {
+    content: string;
+    orderedListStart?: number;
+  }) => (
+    <div
+      data-testid="markdown-renderer"
+      data-ordered-list-start={orderedListStart ?? ''}
+    >
+      {content}
+    </div>
   ),
 }));
 
@@ -159,6 +170,29 @@ describe('AIWorkspaceMessage detail affordance', () => {
     expect(
       screen.queryByRole('button', { name: /상세 분석 보기/i })
     ).not.toBeInTheDocument();
+  });
+
+  it('continues numbered lists when collapsed summary and details render separately', () => {
+    const message: EnhancedChatMessage = {
+      id: 'assistant-list-continuation',
+      role: 'assistant',
+      content: '1. CPU 확인\n2. 메모리 확인',
+      timestamp: new Date('2026-06-07T09:00:00.000Z'),
+      isStreaming: false,
+      metadata: {
+        assistantResponseView: {
+          summary: '1. CPU 확인\n2. 메모리 확인',
+          details: '1. 디스크 확인\n2. 네트워크 확인',
+          shouldCollapse: true,
+        },
+      },
+    };
+
+    render(<AIWorkspaceMessage message={message} isLastMessage={true} />);
+
+    const rendered = screen.getAllByTestId('markdown-renderer');
+    expect(rendered[0]).toHaveAttribute('data-ordered-list-start', '');
+    expect(rendered[1]).toHaveAttribute('data-ordered-list-start', '3');
   });
 
   it('keeps metadata-only assistant messages free of content actions', () => {

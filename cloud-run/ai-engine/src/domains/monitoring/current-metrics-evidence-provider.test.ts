@@ -199,6 +199,8 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).toMatch(
       /1\. web-nginx-dc1-01[\s\S]+2\. cache-redis-dc1-01[\s\S]+3\. api-was-dc1-01/
     );
+    expect(evidence?.fallback).toContain('안정적 수치');
+    expect(evidence?.fallback).not.toMatch(/유휴|예비|트래픽 분산/);
     expect(evidence?.fallback).not.toContain('CPU 사용률 상위');
   });
 
@@ -2044,6 +2046,76 @@ describe('current metrics domain evidence providers', () => {
     expect(evidence?.fallback).toContain('CPU 20%');
     expect(evidence?.fallback).toContain('메모리 30%');
     expect(evidence?.fallback).toContain('디스크 25%');
+    expect(evidence?.fallback).toContain('안정적 수치');
+    expect(evidence?.fallback).not.toContain('배치/트래픽 이동 후보');
+  });
+
+  it('Q-NEW106: resolves cross-metric lookup over ranked source metric servers', async () => {
+    const snapshot = {
+      timeLabel: '09:10',
+      servers: [
+        {
+          id: 'cache-redis-dc1-01',
+          type: 'cache',
+          status: 'warning',
+          cpu: 40,
+          memory: 92,
+          disk: 46,
+        },
+        {
+          id: 'api-was-dc1-01',
+          type: 'application',
+          status: 'online',
+          cpu: 58,
+          memory: 86,
+          disk: 73,
+        },
+        {
+          id: 'storage-nfs-dc1-01',
+          type: 'storage',
+          status: 'critical',
+          cpu: 35,
+          memory: 42,
+          disk: 94,
+        },
+      ],
+    };
+    const request = createEvidenceRequest(
+      '메모리 상위 2개 서버들의 디스크 사용량 알려줘',
+      snapshot
+    );
+
+    expect(parseCurrentMetricsEvidenceRequest(request)).toMatchObject({
+      intent: 'metric_current',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      sourceIntent: 'ranking-cross-metric',
+      sourceMetric: 'memory',
+      metric: 'disk',
+      rankCount: 2,
+      rankOrder: 'desc',
+    });
+
+    const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
+      request
+    );
+
+    expect(evidence?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_answer',
+      capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+      intent: 'metric_current',
+      sourceIntent: 'ranking-cross-metric',
+      sourceMetric: 'memory',
+      metric: 'disk',
+      rankCount: 2,
+      rankOrder: 'desc',
+      targets: ['cache-redis-dc1-01', 'api-was-dc1-01'],
+    });
+    expect(evidence?.fallback).toContain('메모리 상위 2대 서버의 디스크 현황');
+    expect(evidence?.fallback).toContain('cache-redis-dc1-01');
+    expect(evidence?.fallback).toContain('디스크 46%');
+    expect(evidence?.fallback).toContain('api-was-dc1-01');
+    expect(evidence?.fallback).toContain('디스크 73%');
+    expect(evidence?.fallback).not.toContain('storage-nfs-dc1-01');
   });
 
   it('resolves available-server TOP-N queries by composite load ascending', async () => {
