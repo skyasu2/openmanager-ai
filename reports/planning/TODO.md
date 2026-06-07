@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-06-07 KST (line-guard runtime hotspot refactor 완료)
+**Last Updated**: 2026-06-07 KST (AI assistant QA 31차 WONT-FIX 28 반영)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -41,7 +41,7 @@
 | Item | Reason | Next Review |
 |------|--------|-------------|
 | D-2 Analyst maxSteps 하향 | 2026-06-06 `npm run langfuse:check -- --limit 100 --q supervisor --json` 재확인 결과 post-improvement(2026-05-29 이후) Analyst 표본은 `n=1`뿐이며, 해당 trace는 `durationMs=6344`, `toolsCalled=[detectAnomalies, finalAnswer]`로 maxSteps=5 병목 근거가 없음. maxSteps 5→4 변경은 테스트 SSOT 변경과 production 표본 근거가 함께 필요하므로 보류. | post-improvement Analyst 표본 `n>=3`이고 P95/toolsCalled가 재상승할 때만 |
-| QA WONT-FIX 27개 | `QA-20260526-0602`에서 DoD/릴리즈 통과 증거 7개, `QA-20260526-0603`에서 플랫폼/Free Tier/레거시/도구/후보평가 no-action 9개, `QA-20260526-0604`에서 수정 커밋 확인 5개를 completed로 전환했고, `QA-20260529-0642`에서 Q5 오진 메타데이터 1건을 completed로 정정. `QA-20260607-0674`에서 Verify Before Promotion 5개(`ranking-min-advice`, `numbered-list-accordion-split`, `q-new106-ranking-cross-metric`, `server-comparison-deterministic-path`, `summary-block-markdown-heading-hr-code-fence`)를 completed로 전환. 잔여 WONT-FIX는 Portfolio Deferral 27이며 expert open gap은 0. | release blocker로 재분류되거나 Verify Before Promotion 항목을 targeted QA로 승격할 때만 |
+| QA WONT-FIX 28개 | `QA-20260526-0602`에서 DoD/릴리즈 통과 증거 7개, `QA-20260526-0603`에서 플랫폼/Free Tier/레거시/도구/후보평가 no-action 9개, `QA-20260526-0604`에서 수정 커밋 확인 5개를 completed로 전환했고, `QA-20260529-0642`에서 Q5 오진 메타데이터 1건을 completed로 정정. `QA-20260607-0674`에서 Verify Before Promotion 5개(`ranking-min-advice`, `numbered-list-accordion-split`, `q-new106-ranking-cross-metric`, `server-comparison-deterministic-path`, `summary-block-markdown-heading-hr-code-fence`)를 completed로 전환. `QA-20260607-0678`에서 `q-new128-network-io-ranking-fallback`을 Portfolio Deferral로 추가했다. 잔여 WONT-FIX는 Portfolio Deferral 28이며 expert open gap은 0. | release blocker로 재분류되거나 Verify Before Promotion 항목을 targeted QA로 승격할 때만 |
 | Historical gate-window warning | `QA-20260519-0535` broad 회귀가 rolling window에 남은 historical context. active gate warning은 없음. | clean gate run이 window를 대체하면 자동 해소 |
 | 최근 non-evidence artifact refs | 2026-06-06 audit 기준 recent non-evidence artifact refs 0. counted/release-facing run의 비-durable evidence drift 없음. | 같은 유형이 counted/release-facing run에 생길 때만 |
 | QA evidence cleanup batch | 2026-06-06 audit: orphan durable evidence 0, recent missing durable artifact refs 0, recent counted runs without artifacts 0, acknowledged artifact debt 2 in the recent window, archive candidate 0, storage warning 0. 즉시 정리 불필요. | `reports/qa` 90MiB 초과 또는 orphan/missing 발생 시 |
