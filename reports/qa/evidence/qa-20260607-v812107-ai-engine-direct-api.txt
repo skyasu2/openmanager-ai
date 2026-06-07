@@ -1,0 +1,20 @@
+Cloud Run Direct API evidence - v8.12.107 Q-NEW119/121/122
+
+Target
+- URL: https://ai-engine-jdhrhws7ia-an.a.run.app/api/ai/supervisor
+- Revision: ai-engine-00604-6n2
+- Commit: 704fcd6e4383f03a102cd3d8120f58c9425457b7
+- Method: authenticated POST with X-API-Key, enableWebSearch=false
+
+Results
+- Q-NEW119 PASS, 294ms, provider=deterministic, modelId=monitoring-metric-current
+  Response: 전체 서버 메모리 + 디스크 현황, 대상 18대, 데이터 슬롯 18:00 KST, 평균 메모리 46.4%, 평균 디스크 35.6%, N/A 없음.
+- Q-NEW121 PASS, 146ms, provider=deterministic, modelId=monitoring-metric-trend
+  Response: 전체 서버 디스크 추이, 24h 평균 대비 상승 조건, 대체 기준으로 디스크 증가폭 상위 5대 반환.
+- Q-NEW122 PASS, 62ms, provider=deterministic, modelId=monitoring-server-health
+  Response: DB 서버 vs 캐시 서버 warning 상태 서버 수 비교, DB 0대, 캐시 1대, 캐시 서버가 1대 더 많다는 결론 반환.
+
+Usage check
+- npm run check:usage PASS
+- Cloud Run guardrails: maxScale=1, concurrency=16, timeoutSeconds=300, cpu=1, memory=512Mi, cpu-throttling=true
+- Vercel billing: effective=3.8906 USD, billed=0.0000 USD, chargeCount=3654

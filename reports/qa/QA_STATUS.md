@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-07 17:24:40 KST
+> Generated at: 2026-06-07 18:10:18 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 674 |
-| Total Runs (Counted) | 525 |
+| Total Recorded Runs | 675 |
+| Total Runs (Counted) | 526 |
 | Non-counted Runs | 149 |
-| Total Checks | 4667 |
-| Passed | 4460 |
+| Total Checks | 4670 |
+| Passed | 4463 |
 | Failed | 162 |
-| Completed Items | 786 |
+| Completed Items | 789 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 27 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260607-0674 (2026-06-07T05:19:01.995Z) |
-| Latest Recorded Run | QA-20260607-0676 (2026-06-07T08:24:40.249Z) |
+| Last Counted Run | QA-20260607-0677 (2026-06-07T09:10:18.387Z) |
+| Latest Recorded Run | QA-20260607-0677 (2026-06-07T09:10:18.387Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,23 +34,26 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260607-0676 (2026-06-07T08:24:40.249Z)
+Latest run: QA-20260607-0677 (2026-06-07T09:10:18.387Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| Data Quality & Metrics Analyst | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| cloud-run | cli | checked | normal | Cloud Run free-tier guardrails intact after v8.12.107 deploy: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00604-6n2. |
+| vercel | cli | checked | normal | Current billing period checked after v8.12.107 QA; effective=3.8906 USD, billed=0.0000 USD, chargeCount=3654. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-06T08:24:40.249Z -> 2026-06-07T08:24:40.249Z (24h)
-- Runs with observations: 9 recorded / 6 counted
-- Samples: 26
+- Window: 2026-06-06T09:10:18.387Z -> 2026-06-07T09:10:18.387Z (24h)
+- Runs with observations: 10 recorded / 7 counted
+- Samples: 29
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
@@ -59,14 +62,14 @@ Latest run: QA-20260607-0676 (2026-06-07T08:24:40.249Z)
 | llama-4-scout | groq | 2 | 2050ms | 2300ms | - | - | - | - | QA-20260607-0672 |
 | monitoring-metric-current | deterministic | 10 | 250ms | 1352ms | - | - | - | - | QA-20260607-0674 |
 | monitoring-metric-ranking | deterministic | 2 | 434ms | 838ms | - | - | - | - | QA-20260607-0674 |
-| Metrics Query Agent | deterministic | 4 | 79ms | 204ms | - | - | - | - | QA-20260607-0671 |
+| Metrics Query Agent | deterministic | 7 | 117ms | 294ms | - | - | - | - | QA-20260607-0677 |
 | MetricsQuery | deterministic | 1 | 120ms | 120ms | - | - | - | - | QA-20260606-0665 |
 | monitoring-server-health | deterministic | 2 | 33ms | 33ms | - | - | - | - | QA-20260607-0670 |
 | monitoring-capacity-forecast | deterministic | 1 | 29ms | 29ms | - | - | - | - | QA-20260607-0668 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-06T08:24:40.249Z -> 2026-06-07T08:24:40.249Z (24h)
+- Window: 2026-06-06T09:10:18.387Z -> 2026-06-07T09:10:18.387Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -78,23 +81,25 @@ Latest run: QA-20260607-0676 (2026-06-07T08:24:40.249Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA c998cc7b
-- Covered Surfaces: Q-NEW114: storage 그룹 평균 CPU → 24.5% 정확 (PASS), Q-NEW115: web 그룹+MAX 메모리 → web-nginx-dc1-01 44% 정확, monitoring-metric-ranking 그룹 필터 정상 (PASS), Q-NEW116: online 상태 서버 평균 디스크 → 17대 필터 후 36.2% 반환 (PASS), Q-NEW117: lb 그룹+MAX 메모리 → lb-haproxy-dc1-01 34%, monitoring-metric-ranking 정상. P31 브라우저 히스토리 의존적으로 재분류 (PASS), Q-NEW118: 경고 상태 서버 평균 CPU → warning 1대 필터 후 63%, 상태 필터 정상 (PASS), Q-NEW119: 전체 평균 메모리+디스크 동시 요청 → 메모리 46% 있으나 디스크 N/A, LLM fallback (PARTIAL), Q-NEW120: 메모리 경고 상태 서버 평균 CPU — P26 원본 재현 → warning 1대 필터 후 CPU 69% 정확. P26 수정 확인 (PASS), Q-NEW121: 디스크 증가율 가장 빠른 서버 → metric-trend 미매칭 Analyst LLM fallback 3500ms, 5대만 응답 (FAIL), Q-NEW122: DB vs cache 그룹 경고 수 비교 → zai LLM fallback 8초, generic summary, 경고 수 직접 비교 미처리 (FAIL)
-- Skipped Surfaces: numbered-list-accordion-split (UI 전용), summary-markdown (UI 전용)
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: ai-engine-00604-6n2 / SHA 704fcd6e
+- Coverage Packs: ai-core
+- Covered Surfaces: Q-NEW119: 전체 서버 평균 메모리+디스크 동시 요청 -> deterministic monitoring-metric-current, 평균 메모리 46.4%, 평균 디스크 35.6%, N/A 없음 (PASS), Q-NEW121: 디스크 사용률이 가장 빠르게 증가하고 있는 서버 -> deterministic monitoring-metric-trend, 24h 평균 대비 디스크 증가폭 상위 5대 반환 (PASS), Q-NEW122: DB 서버 그룹과 cache 서버 그룹 경고 수 비교 -> deterministic monitoring-server-health, DB 0대 vs 캐시 1대 warning 비교 및 결론 반환 (PASS)
+- Skipped Surfaces: 브라우저 UI 아코디언/마크다운 렌더링은 이번 변경 범위 밖, 표준 5문항 conversational QA는 v8.12.107 release-facing smoke 이후 targeted fix 검증으로 대체
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab main validate pipeline 2582748796 | [GitLab main validate pipeline 2582748796](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582748796) | - |
+| general | GitLab release pipeline 2582751443 | [GitLab release pipeline 2582751443](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582751443) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-console | v8.12.107 Cloud Run direct API deterministic QA evidence | `reports/qa/evidence/qa-20260607-v812107-ai-engine-direct-api.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -181,18 +186,19 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 ## Completed Improvements
 
-- Total: 786 items completed (full list in qa-tracker.json)
+- Total: 789 items completed (full list in qa-tracker.json)
 - Recently completed:
+  - q-new119-multi-metric-all-average: Q-NEW119: 전체 서버 평균 메모리+디스크 동시 요청 deterministic 처리 (last QA-20260607-0677)
+  - q-new121-fast-disk-trend-ranking: Q-NEW121: 디스크 사용률 빠른 증가 질의 metric-trend ranking 라우팅 (last QA-20260607-0677)
+  - q-new122-group-warning-count-compare: Q-NEW122: DB/cache 그룹 경고 수 비교 deterministic 처리 (last QA-20260607-0677)
   - numbered-list-accordion-split: 번호 목록 아코디언 요약/상세 경계 연속 렌더링 (last QA-20260607-0674)
   - q-new106-ranking-cross-metric: Q-NEW106: 메모리 상위N 서버의 이종 메트릭(디스크) 조회 처리 (last QA-20260607-0674)
-  - ranking-min-advice: 최저값 랭킹 응답의 안정 수치 문구 처리 (last QA-20260607-0674)
-  - server-comparison-deterministic-path: 서버 1:1 비교 쿼리 deterministic 경로 보장 (last QA-20260607-0674)
-  - summary-block-markdown-heading-hr-code-fence: 핵심 요약 스트리밍 블록 마크다운 delimiter literal 제거 (last QA-20260607-0674)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260607-0677 | 2026-06-07T09:10:18.387Z | targeted | yes | yes | Cloud Run Direct API - v8.12.107 Q-NEW119/121/122 deterministic fix validation | 3 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260607-0676 | 2026-06-07T08:24:40.249Z | targeted | no | no | Cloud Run Direct API - 29차 추가 평가 (v8.12.106) | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260607-0675 | 2026-06-07T07:33:22.074Z | targeted | no | no | Vercel Production Playwright MCP - 29차 AI 어시스턴트 평가 (v8.12.106) | 7 | 0 | 0 | 0 | 1 | 0 |
 | QA-20260607-0674 | 2026-06-07T05:19:01.995Z | targeted | yes | yes | Vercel Production Playwright MCP - v8.12.106 WONT-FIX remediation release QA | 6 | 5 | 0 | 0 | 0 | 0 |
@@ -212,4 +218,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260605-0660 | 2026-06-05T13:08:33.704Z | targeted | yes | yes | Vercel Production Playwright MCP - Artifact BFF LLM 분류기 활성화 검증 (v8.12.94) | 5 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260605-0659 | 2026-06-05T12:41:09.056Z | targeted | yes | yes | Vercel Production Playwright MCP - Artifact BFF LLM Fallback Activation QA (v8.12.94) | 20 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260605-0658 | 2026-06-05T11:03:39.705Z | targeted | no | no | Cloud Run Observability Check - Langfuse 100% Sampling Baseline Start (v8.12.92) | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260605-0657 | 2026-06-05T06:56:30.699Z | targeted | yes | yes | Vercel Production Playwright MCP - Artifact Intent BFF Release QA (v8.12.92) | 20 | 1 | 0 | 0 | 0 | 0 |

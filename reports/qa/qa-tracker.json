@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-07T08:24:40.249Z"
+    "updatedAt": "2026-06-07T09:10:18.387Z"
   },
   "sequence": {
-    "nextRunNumber": 677
+    "nextRunNumber": 678
   },
   "summary": {
-    "totalRecordedRuns": 674,
-    "totalRuns": 525,
+    "totalRecordedRuns": 675,
+    "totalRuns": 526,
     "excludedRuns": 149,
-    "totalChecks": 4667,
-    "totalPassed": 4460,
+    "totalChecks": 4670,
+    "totalPassed": 4463,
     "totalFailed": 162,
     "completionRate": 100,
-    "completedItems": 786,
+    "completedItems": 789,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 27,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260607-0674",
-    "lastRecordedAt": "2026-06-07T05:19:01.995Z",
-    "latestRecordedRunId": "QA-20260607-0676",
-    "latestRecordedAt": "2026-06-07T08:24:40.249Z"
+    "lastRunId": "QA-20260607-0677",
+    "lastRecordedAt": "2026-06-07T09:10:18.387Z",
+    "latestRecordedRunId": "QA-20260607-0677",
+    "latestRecordedAt": "2026-06-07T09:10:18.387Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -19244,6 +19244,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-06-07T05:19:01.995Z"
+    },
+    "q-new119-multi-metric-all-average": {
+      "id": "q-new119-multi-metric-all-average",
+      "title": "Q-NEW119: 전체 서버 평균 메모리+디스크 동시 요청 deterministic 처리",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260607-0677",
+      "firstSeenAt": "2026-06-07T09:10:18.387Z",
+      "lastSeenRunId": "QA-20260607-0677",
+      "lastSeenAt": "2026-06-07T09:10:18.387Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.12.107 Cloud Run direct API returned deterministic monitoring-metric-current with 평균 메모리 46.4%, 평균 디스크 35.6%, and no N/A.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-07T09:10:18.387Z"
+    },
+    "q-new121-fast-disk-trend-ranking": {
+      "id": "q-new121-fast-disk-trend-ranking",
+      "title": "Q-NEW121: 디스크 사용률 빠른 증가 질의 metric-trend ranking 라우팅",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260607-0677",
+      "firstSeenAt": "2026-06-07T09:10:18.387Z",
+      "lastSeenRunId": "QA-20260607-0677",
+      "lastSeenAt": "2026-06-07T09:10:18.387Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.12.107 Cloud Run direct API returned deterministic monitoring-metric-trend and 디스크 증가폭 상위 5대.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-07T09:10:18.387Z"
+    },
+    "q-new122-group-warning-count-compare": {
+      "id": "q-new122-group-warning-count-compare",
+      "title": "Q-NEW122: DB/cache 그룹 경고 수 비교 deterministic 처리",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260607-0677",
+      "firstSeenAt": "2026-06-07T09:10:18.387Z",
+      "lastSeenRunId": "QA-20260607-0677",
+      "lastSeenAt": "2026-06-07T09:10:18.387Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.12.107 Cloud Run direct API returned deterministic monitoring-server-health with DB 0대 vs 캐시 1대 warning count comparison.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-07T09:10:18.387Z"
     }
   },
   "runs": [
@@ -42311,6 +42383,149 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260607-0677",
+      "recordedAt": "2026-06-07T09:10:18.387Z",
+      "recordedAtKst": "2026-06-07 18:10:18 KST",
+      "title": "Cloud Run Direct API - v8.12.107 Q-NEW119/121/122 deterministic fix validation",
+      "owner": "codex",
+      "source": "direct-api",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260607-0677.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "frontend": "Cloud Run Direct API",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "ai-engine-00604-6n2",
+        "deploymentUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "commitSha": "704fcd6e4383f03a102cd3d8120f58c9425457b7"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Q-NEW119: 전체 서버 평균 메모리+디스크 동시 요청 -> deterministic monitoring-metric-current, 평균 메모리 46.4%, 평균 디스크 35.6%, N/A 없음 (PASS)",
+        "Q-NEW121: 디스크 사용률이 가장 빠르게 증가하고 있는 서버 -> deterministic monitoring-metric-trend, 24h 평균 대비 디스크 증가폭 상위 5대 반환 (PASS)",
+        "Q-NEW122: DB 서버 그룹과 cache 서버 그룹 경고 수 비교 -> deterministic monitoring-server-health, DB 0대 vs 캐시 1대 warning 비교 및 결론 반환 (PASS)"
+      ],
+      "skippedSurfaces": [
+        "브라우저 UI 아코디언/마크다운 렌더링은 이번 변경 범위 밖",
+        "표준 5문항 conversational QA는 v8.12.107 release-facing smoke 이후 targeted fix 검증으로 대체"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Q-NEW119 all-scope memory+disk averages",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "model": "monitoring-metric-current",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run direct API measured by Codex",
+          "latencyMs": 294
+        },
+        {
+          "surface": "Q-NEW121 disk fastest increase trend ranking",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "model": "monitoring-metric-trend",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run direct API measured by Codex",
+          "latencyMs": 146
+        },
+        {
+          "surface": "Q-NEW122 DB vs cache warning count comparison",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "model": "monitoring-server-health",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run direct API measured by Codex",
+          "latencyMs": 62
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The three v8.12.106 direct API failures were converted into deterministic parser/answer coverage, regression tests, and production direct API PASS evidence.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Responses use the existing synthetic OTel snapshot values and deterministic metric-current, metric-trend, and server-health evidence paths without LLM fallback.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline 2582751443 completed successfully and production version smoke passed for v8.12.107.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "cloud-run",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-07T18:08:22+09:00",
+          "summary": "Cloud Run free-tier guardrails intact after v8.12.107 deploy: maxScale=1, concurrency=16, timeout=300s, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00604-6n2.",
+          "evidence": "npm run check:usage",
+          "url": ""
+        },
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-07T18:08:22+09:00",
+          "summary": "Current billing period checked after v8.12.107 QA; effective=3.8906 USD, billed=0.0000 USD, chargeCount=3654.",
+          "evidence": "npm run check:usage",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.12.107 Cloud Run direct API deterministic QA evidence",
+          "path": "reports/qa/evidence/qa-20260607-v812107-ai-engine-direct-api.txt",
+          "note": "Text evidence for authenticated direct API Q-NEW119/Q-NEW121/Q-NEW122 responses."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main validate pipeline 2582748796",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582748796"
+        },
+        {
+          "type": "general",
+          "label": "GitLab release pipeline 2582751443",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582751443"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -42319,16 +42534,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 370,
-      "appropriateCount": 319,
+      "seenCount": 371,
+      "appropriateCount": 320,
       "partialCount": 51,
       "inappropriateCount": 0,
       "improvementNeededCount": 72,
-      "lastRunId": "QA-20260607-0674",
-      "lastSeenAt": "2026-06-07T05:19:01.995Z",
+      "lastRunId": "QA-20260607-0677",
+      "lastSeenAt": "2026-06-07T09:10:18.387Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "P2, P3, P1 AI assistant remediation surfaces all passed on production in the requested order with deterministic routing where required.",
+      "lastRationale": "The three v8.12.106 direct API failures were converted into deterministic parser/answer coverage, regression tests, and production direct API PASS evidence.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -42370,16 +42585,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 258,
-      "appropriateCount": 237,
+      "seenCount": 259,
+      "appropriateCount": 238,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260607-0674",
-      "lastSeenAt": "2026-06-07T05:19:01.995Z",
+      "lastRunId": "QA-20260607-0677",
+      "lastSeenAt": "2026-06-07T09:10:18.387Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline 2582574231 completed deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke successfully; Vercel deployment is Ready.",
+      "lastRationale": "GitLab tag pipeline 2582751443 completed successfully and production version smoke passed for v8.12.107.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -42404,16 +42619,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 79,
-      "appropriateCount": 57,
+      "seenCount": 80,
+      "appropriateCount": 58,
       "partialCount": 22,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260530-0645",
-      "lastSeenAt": "2026-05-30T00:20:52.444Z",
+      "lastRunId": "QA-20260607-0677",
+      "lastSeenAt": "2026-06-07T09:10:18.387Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "평균 메모리 44.3%(대시보드 44% 일치), 최고 api-was-dc1-01 64%, 디스크>=60% 2대(db-backup 68%/db-primary 63%) 모두 대시보드 실측치와 정합",
+      "lastRationale": "Responses use the existing synthetic OTel snapshot values and deterministic metric-current, metric-trend, and server-health evidence paths without LLM fallback.",
       "lastNextAction": ""
     },
     "infra-reliability": {
