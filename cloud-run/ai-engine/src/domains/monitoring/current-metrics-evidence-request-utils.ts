@@ -219,13 +219,6 @@ export function buildCrossMetricConditionAggregateRequest(params: {
   targets: string[];
   statusFilter?: QueryStatus;
 }): ParsedCurrentMetricsEvidenceRequest | null {
-  if (
-    params.statusFilter &&
-    /상태|status/i.test(params.message)
-  ) {
-    return null;
-  }
-
   if (!/평균|average|avg/i.test(params.message)) return null;
 
   const mentions = extractMetricMentions(params.message);
@@ -243,7 +236,23 @@ export function buildCrossMetricConditionAggregateRequest(params: {
     .filter(
       (condition): condition is MetricCondition => condition !== null
     );
-  if (filterConditions.length === 0) return null;
+
+  // P30: statusFilter + 모든 메트릭이 집계 대상인 경우 (필터 메트릭 없음)
+  // e.g., "경고 상태 서버들의 평균 메모리와 평균 디스크는?"
+  if (filterConditions.length === 0) {
+    if (params.statusFilter) {
+      return {
+        intent: 'metric_current',
+        capabilityId: MONITORING_METRIC_CURRENT_CAPABILITY_ID,
+        sourceIntent: 'status-filter-multi-metric-aggregate',
+        answerQuery: params.message,
+        metrics: mentions.map((m) => m.metric),
+        statusFilter: params.statusFilter,
+        ...(params.targets.length > 0 && { targets: params.targets }),
+      };
+    }
+    return null;
+  }
 
   return {
     intent: 'metric_current',

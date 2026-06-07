@@ -3387,20 +3387,22 @@ describe('current metrics domain evidence providers', () => {
         ],
       };
 
+      // P28 fix: "메모리 경고 상태인 서버들의 평균 CPU" → cross-metric-condition-aggregate
+      // 메모리(필터 메트릭) >= 80%(경고 임계값) 조건 서버를 필터링 후 CPU 평균 집계
       const parsed = parseCurrentMetricsEvidenceRequest(
         createEvidenceRequest('메모리 경고 상태인 서버들의 평균 CPU는?', snapshot)
       );
       expect(parsed).toMatchObject({
         intent: 'metric_current',
-        sourceIntent: 'all-aggregate',
+        sourceIntent: 'cross-metric-condition-aggregate',
         metric: 'cpu',
-        statusFilter: 'warning',
+        filterConditions: [{ metric: 'memory', operator: '>=', threshold: 80 }],
       });
 
       const evidence = await monitoringMetricCurrentEvidenceProvider.resolve(
         createEvidenceRequest('메모리 경고 상태인 서버들의 평균 CPU는?', snapshot)
       );
-      expect(evidence?.fallback).toContain('warning 상태 2대');
+      // memory >= 80%: db-mysql-dc1-primary(82%), cache-redis-dc1-01(84%) → CPU 평균 (70+30)/2=50%
       expect(evidence?.fallback).toContain('평균 CPU: 50%');
       expect(evidence?.fallback).toContain('db-mysql-dc1-primary');
       expect(evidence?.fallback).toContain('cache-redis-dc1-01');

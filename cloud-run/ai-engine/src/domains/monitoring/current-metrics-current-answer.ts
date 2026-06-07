@@ -470,12 +470,43 @@ function buildMultiMetricFilterAnswer(params: {
 
   if (threshold === undefined) {
     const allServers = readSnapshotServers(params.snapshot);
-    const { servers, targetLabel } = filterSnapshotServers(
+    const { servers: baseServers, targetLabel: baseLabel } = filterSnapshotServers(
       allServers,
       params.parsed.targets,
       { preferExplicitLabel: params.parsed.contextualTargets === true }
     );
+    const { servers, targetLabel } = applyMetricStatusFilter({
+      servers: baseServers,
+      targetLabel: baseLabel,
+      statusFilter: params.parsed.statusFilter,
+    });
     if (servers.length === 0) return null;
+
+    // P30: status-filter-multi-metric-aggregate → 메트릭별 평균 표시
+    // e.g., "경고 상태 서버들의 평균 메모리와 평균 디스크는?"
+    if (params.parsed.sourceIntent === 'status-filter-multi-metric-aggregate') {
+      const timeLabel = readSnapshotTimeLabel(params.snapshot);
+      const metricAverages = metrics.map((metric) => {
+        const values = servers
+          .map((server) => getMetricValue(server, metric))
+          .filter((v): v is number => v !== null);
+        const avg =
+          values.length > 0
+            ? Math.round(
+                (values.reduce((sum, v) => sum + v, 0) / values.length) * 10
+              ) / 10
+            : null;
+        return { metric, avg };
+      });
+      const avgLines = metricAverages
+        .filter((m) => m.avg !== null)
+        .map((m) => `• 평균 ${getMetricLabel(m.metric)}: ${m.avg}%`);
+      return [
+        `📊 **${targetLabel} ${metrics.map(getMetricLabel).join(' + ')} 현황**`,
+        `• 대상: ${targetLabel} · ${servers.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+        ...avgLines,
+      ].join('\n');
+    }
 
     const rows = servers
       .map((server) => {
