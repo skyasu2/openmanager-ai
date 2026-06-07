@@ -1,0 +1,138 @@
+{
+  "runId": "QA-20260607-0671",
+  "recordedAt": "2026-06-07T01:58:28.781Z",
+  "recordedAtKst": "2026-06-07 10:58:28 KST",
+  "runTitle": "Cloud Run Production Direct API - v8.12.103 P28/P29 deterministic evidence validation",
+  "owner": "codex",
+  "source": "gitlab-ci+cloud-run-direct-api+vercel-api",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "37513468d7724c679ecd6736902135dc1fd3abd3"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "GitLab release pipeline v8.12.103 success: deploy, deploy_ai_engine, post_deploy_smoke, post_deploy_ai_engine_smoke",
+    "Production /api/version reports 8.12.103 and releaseTag v8.12.103",
+    "Production /api/health?service=ai reports Cloud Run ai-engine 8.12.103",
+    "Direct Cloud Run /health reports ai-engine 8.12.103",
+    "P28: CPU 경고 서버들의 평균 디스크 => CPU >= 80% 조건 2대 필터 후 평균 디스크 반환, deterministic monitoring-metric-current, totalTokens=0",
+    "P29: 디스크 기준 상위3+하위3 => 디스크 상위 3대와 하위 3대를 모두 반환, deterministic monitoring-metric-ranking, totalTokens=0"
+  ],
+  "skippedSurfaces": [
+    "Playwright UI screenshot rerun skipped: defect and fix are deterministic AI Engine evidence-layer behavior, direct production API validation covers the changed route",
+    "Langfuse trace inspection skipped: no LLM routing or provider behavior changed; production responses were deterministic with totalTokens=0"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "P28 CPU warning filter then disk average",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-metric-current",
+      "route": "Cloud Run /api/ai/supervisor",
+      "source": "production direct API metadata",
+      "latencyMs": 82
+    },
+    {
+      "surface": "P29 disk top3+bottom3 dual ranking",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-metric-ranking",
+      "route": "Cloud Run /api/ai/supervisor",
+      "source": "production direct API metadata",
+      "latencyMs": 6
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "P28/P29 신규 약점은 v8.12.103 production direct API에서 deterministic evidence 경로로 재검증되어 PASS. 잔여 Q-NEW100 peak metric group filter는 기존 P3 non-blocking polish로 유지.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "GitLab release pipeline evidence",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582385552",
+      "note": "Durable URL evidence for v8.12.103 deploy and smoke success; no local Playwright artifact was produced for this direct API validation"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "p28-cpu-warning-filter-disk-aggregation",
+      "title": "P28: CPU 경고 상태 필터 + 이종 메트릭(디스크) 집계 미처리",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.103 production direct API: 'CPU 경고 서버들의 평균 디스크는?' returns CPU >= 80% condition subset and average disk, not CPU-only current metric",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "p29-metric-ranking-top-bottom-dual",
+      "title": "P29: metric-ranking 경로 TOP+BOTTOM 동시 질의 미처리",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.103 production direct API: '디스크 기준 상위3+하위3 서버 알려줘' returns both 디스크 상위 3대 and 디스크 하위 3대 in one deterministic answer",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local verification before release: AI Engine targeted test current-metrics-evidence-provider 100 passed; AI Engine type-check passed; AI Engine full test suite 1651 passed; root test:contract 24 passed; root type-check/lint/test:quick passed; git diff --check passed.",
+    "Production direct API validation used Cloud Run supervisor endpoint with API key from local env; secret values were not recorded.",
+    "P28/P29 responses used deterministic providers and reported totalTokens=0, so the fix does not add LLM cost or Cloud Run spec usage.",
+    "Node fetch had one transient DNS EAI_AGAIN against the Cloud Run hostname; curl retry and subsequent direct API calls succeeded."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline 2582385552",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582385552",
+      "note": "success; release tag v8.12.103 deploy and smoke jobs passed"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version",
+      "note": "version 8.12.103, releaseTag v8.12.103"
+    },
+    {
+      "type": "monitoring",
+      "label": "Production AI health endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/health?service=ai&soft=true",
+      "note": "healthy true, backend cloud-run, ai-engine 8.12.103"
+    }
+  ]
+}
