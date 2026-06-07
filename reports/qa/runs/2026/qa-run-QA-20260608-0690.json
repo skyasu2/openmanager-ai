@@ -1,0 +1,134 @@
+{
+  "runId": "QA-20260608-0690",
+  "recordedAt": "2026-06-07T23:44:09.497Z",
+  "recordedAtKst": "2026-06-08 08:44:09 KST",
+  "runTitle": "Production Cloud Run direct API post-deploy QA - v8.12.115 healthy TOP-N frame preservation",
+  "owner": "codex",
+  "source": "cloud-run-direct-api",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "frontend": "Vercel production version smoke",
+    "backend": "Cloud Run ai-engine v8.12.115",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2583436598",
+    "deploymentUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583436598",
+    "commitSha": "f375b1e9760c835bbeb698c96a72e21e19e38fb5"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "GitLab tag pipeline 2583436598 succeeded for v8.12.115",
+    "Vercel production /api/version returned v8.12.115 and releaseTag v8.12.115",
+    "Cloud Run /health returned status ok and version 8.12.115",
+    "Cloud Run service limits remained cpu=1 and memory=512Mi",
+    "Cloud Run revision ai-engine-00613-vp4 receives 100% traffic",
+    "direct API healthy TOP3 prompt returned deterministic monitoring-server-health with 3 numbered items",
+    "direct API stable top-3 Korean prompt returned deterministic monitoring-server-health with 3 numbered items",
+    "direct API inverse healthy-status list retained deterministic monitoring-server-health full-list behavior"
+  ],
+  "skippedSurfaces": [
+    "Browser AI sidebar was not repeated because the changed runtime surface is Cloud Run supervisor routing and direct API covered the failing production path",
+    "Public snapshot sync was not requested"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [
+    {
+      "surface": "direct API healthy TOP-N prompt pack",
+      "route": "/api/ai/supervisor",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "Cloud Run direct API response metadata and numbered item count"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The production direct API now preserves healthy-only TOP-N through the intent-frame path and keeps the inverse healthy full-list behavior intact.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab release pipeline, Vercel version smoke, Cloud Run health, traffic, and free-tier resource limits were verified.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Direct API response metadata confirmed deterministic provider/model/finalAgent for the affected prompt pack.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "gcp-cloud-run",
+      "method": "gcloud",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-08T08:42:00+09:00",
+      "summary": "Cloud Run ai-engine stayed at cpu=1, memory=512Mi, and 100% traffic on revision ai-engine-00613-vp4 after v8.12.115 deployment.",
+      "evidence": "gcloud run services describe ai-engine --region asia-northeast1 --format='value(status.latestReadyRevisionName,status.traffic[0].percent,status.traffic[0].revisionName,spec.template.spec.containers[0].resources.limits,status.url)'",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.12.115 healthy TOP-N post-deploy pass evidence",
+      "path": "reports/qa/evidence/qa-20260608-v812115-healthy-topn-postdeploy-pass.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-engine-healthy-server-topn-frame-preservation-v812115",
+      "title": "Healthy-only server TOP-N queries preserve topN through semantic intent frame",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.115 production direct API returned deterministic monitoring-server-health with exactly 3 numbered items for both healthy TOP3 and stable top-3 Korean prompts.",
+      "note": "Fixed by restoring frame.topN as rankCount in the healthy-only server-health frame branch.",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Pre-fix v8.12.114 production smoke showed deterministic routing but 17 numbered items for healthy TOP3/stable top-3 prompts.",
+    "Validation command: cd cloud-run/ai-engine && npm test -- current-metrics-server-health-routing.test.ts -> 1 file / 20 tests passed",
+    "Validation command: cd cloud-run/ai-engine && npm run type-check -> passed",
+    "Validation command: cd cloud-run/ai-engine && npm test -- current-metrics-evidence-provider.test.ts current-metrics-boundary-guard.test.ts current-metrics-server-health-routing.test.ts -> 3 files / 33 tests passed",
+    "Validation command: cd cloud-run/ai-engine && npm run test -> 161 files / 1691 tests passed",
+    "Post-deploy direct API smoke returned healthy TOP3=3 items, stable top3=3 items, inverse healthy list=17 items.",
+    "No secret values or API keys were recorded."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "v8.12.115 GitLab tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583436598"
+    }
+  ]
+}

@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-07T14:33:22.885Z"
+    "updatedAt": "2026-06-07T23:44:09.497Z"
   },
   "sequence": {
-    "nextRunNumber": 690
+    "nextRunNumber": 691
   },
   "summary": {
-    "totalRecordedRuns": 687,
-    "totalRuns": 530,
+    "totalRecordedRuns": 688,
+    "totalRuns": 531,
     "excludedRuns": 157,
-    "totalChecks": 4702,
-    "totalPassed": 4490,
+    "totalChecks": 4712,
+    "totalPassed": 4500,
     "totalFailed": 167,
     "completionRate": 100,
-    "completedItems": 791,
+    "completedItems": 792,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 28,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260607-0689",
-    "lastRecordedAt": "2026-06-07T14:33:22.885Z",
-    "latestRecordedRunId": "QA-20260607-0689",
-    "latestRecordedAt": "2026-06-07T14:33:22.885Z"
+    "lastRunId": "QA-20260608-0690",
+    "lastRecordedAt": "2026-06-07T23:44:09.497Z",
+    "latestRecordedRunId": "QA-20260608-0690",
+    "latestRecordedAt": "2026-06-07T23:44:09.497Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -19388,6 +19388,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-06-07T14:33:22.885Z"
+    },
+    "ai-engine-healthy-server-topn-frame-preservation-v812115": {
+      "id": "ai-engine-healthy-server-topn-frame-preservation-v812115",
+      "title": "Healthy-only server TOP-N queries preserve topN through semantic intent frame",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260608-0690",
+      "firstSeenAt": "2026-06-07T23:44:09.497Z",
+      "lastSeenRunId": "QA-20260608-0690",
+      "lastSeenAt": "2026-06-07T23:44:09.497Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "v8.12.115 production direct API returned deterministic monitoring-server-health with exactly 3 numbered items for both healthy TOP3 and stable top-3 Korean prompts.",
+      "lastNote": "Fixed by restoring frame.topN as rankCount in the healthy-only server-health frame branch.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-07T23:44:09.497Z"
     }
   },
   "runs": [
@@ -43795,6 +43819,120 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260608-0690",
+      "recordedAt": "2026-06-07T23:44:09.497Z",
+      "recordedAtKst": "2026-06-08 08:44:09 KST",
+      "title": "Production Cloud Run direct API post-deploy QA - v8.12.115 healthy TOP-N frame preservation",
+      "owner": "codex",
+      "source": "cloud-run-direct-api",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260608-0690.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "frontend": "Vercel production version smoke",
+        "backend": "Cloud Run ai-engine v8.12.115",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-2583436598",
+        "deploymentUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583436598",
+        "commitSha": "f375b1e9760c835bbeb698c96a72e21e19e38fb5"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag pipeline 2583436598 succeeded for v8.12.115",
+        "Vercel production /api/version returned v8.12.115 and releaseTag v8.12.115",
+        "Cloud Run /health returned status ok and version 8.12.115",
+        "Cloud Run service limits remained cpu=1 and memory=512Mi",
+        "Cloud Run revision ai-engine-00613-vp4 receives 100% traffic",
+        "direct API healthy TOP3 prompt returned deterministic monitoring-server-health with 3 numbered items",
+        "direct API stable top-3 Korean prompt returned deterministic monitoring-server-health with 3 numbered items",
+        "direct API inverse healthy-status list retained deterministic monitoring-server-health full-list behavior"
+      ],
+      "skippedSurfaces": [
+        "Browser AI sidebar was not repeated because the changed runtime surface is Cloud Run supervisor routing and direct API covered the failing production path",
+        "Public snapshot sync was not requested"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [
+        {
+          "surface": "direct API healthy TOP-N prompt pack",
+          "route": "/api/ai/supervisor",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "Cloud Run direct API response metadata and numbered item count"
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The production direct API now preserves healthy-only TOP-N through the intent-frame path and keeps the inverse healthy full-list behavior intact.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab release pipeline, Vercel version smoke, Cloud Run health, traffic, and free-tier resource limits were verified.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Direct API response metadata confirmed deterministic provider/model/finalAgent for the affected prompt pack.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "gcp-cloud-run",
+          "method": "gcloud",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-08T08:42:00+09:00",
+          "summary": "Cloud Run ai-engine stayed at cpu=1, memory=512Mi, and 100% traffic on revision ai-engine-00613-vp4 after v8.12.115 deployment.",
+          "evidence": "gcloud run services describe ai-engine --region asia-northeast1 --format='value(status.latestReadyRevisionName,status.traffic[0].percent,status.traffic[0].revisionName,spec.template.spec.containers[0].resources.limits,status.url)'",
+          "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.12.115 healthy TOP-N post-deploy pass evidence",
+          "path": "reports/qa/evidence/qa-20260608-v812115-healthy-topn-postdeploy-pass.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "v8.12.115 GitLab tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583436598"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -43803,16 +43941,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 379,
-      "appropriateCount": 327,
+      "seenCount": 380,
+      "appropriateCount": 328,
       "partialCount": 52,
       "inappropriateCount": 0,
       "improvementNeededCount": 75,
-      "lastRunId": "QA-20260607-0689",
-      "lastSeenAt": "2026-06-07T14:33:22.885Z",
+      "lastRunId": "QA-20260608-0690",
+      "lastSeenAt": "2026-06-07T23:44:09.497Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The prompt content contract tests were added and the production inverse healthy-status smoke still forces Metrics Query Agent.",
+      "lastRationale": "The production direct API now preserves healthy-only TOP-N through the intent-frame path and keeps the inverse healthy full-list behavior intact.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -43820,16 +43958,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 165,
-      "appropriateCount": 129,
+      "seenCount": 166,
+      "appropriateCount": 130,
       "partialCount": 36,
       "inappropriateCount": 0,
       "improvementNeededCount": 34,
-      "lastRunId": "QA-20260607-0689",
-      "lastSeenAt": "2026-06-07T14:33:22.885Z",
+      "lastRunId": "QA-20260608-0690",
+      "lastSeenAt": "2026-06-07T23:44:09.497Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Authenticated monitoring endpoint returned HTTP 200 after deploy and no resource-limit drift was observed.",
+      "lastRationale": "Direct API response metadata confirmed deterministic provider/model/finalAgent for the affected prompt pack.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -43854,16 +43992,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 262,
-      "appropriateCount": 241,
+      "seenCount": 263,
+      "appropriateCount": 242,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260607-0689",
-      "lastSeenAt": "2026-06-07T14:33:22.885Z",
+      "lastRunId": "QA-20260608-0690",
+      "lastSeenAt": "2026-06-07T23:44:09.497Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Preflight, branch validate pipeline, Cloud Build, Cloud Run health, traffic, and free-tier resource limits were verified.",
+      "lastRationale": "GitLab release pipeline, Vercel version smoke, Cloud Run health, traffic, and free-tier resource limits were verified.",
       "lastNextAction": ""
     },
     "test-automation": {
