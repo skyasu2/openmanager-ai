@@ -333,6 +333,16 @@ describe('getIntentCategory', () => {
     expect(getIntentCategory('anomaly detection')).toBe('anomaly');
   });
 
+  it('classifies inverse healthy-status filters as metrics before anomaly substring matching', () => {
+    expect(getIntentCategory('이상 없는 서버 목록')).toBe('metrics');
+    expect(getIntentCategory('이상 없는 서버들의 트렌드 변화')).toBe(
+      'metrics'
+    );
+    expect(getIntentCategory('문제 없는 서버만 보여줘')).toBe('metrics');
+    expect(getIntentCategory('정상 범위인 서버 목록')).toBe('metrics');
+    expect(getIntentCategory('이상 징후 탐지해줘')).toBe('anomaly');
+  });
+
   it('should classify prediction queries', () => {
     expect(getIntentCategory('트렌드 분석')).toBe('prediction');
     expect(getIntentCategory('추이 예측')).toBe('prediction');

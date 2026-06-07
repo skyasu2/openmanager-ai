@@ -2,18 +2,18 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-07T13:07:25.133Z"
+    "updatedAt": "2026-06-07T13:25:04.388Z"
   },
   "sequence": {
-    "nextRunNumber": 687
+    "nextRunNumber": 688
   },
   "summary": {
-    "totalRecordedRuns": 684,
-    "totalRuns": 527,
+    "totalRecordedRuns": 685,
+    "totalRuns": 528,
     "excludedRuns": 157,
-    "totalChecks": 4676,
-    "totalPassed": 4465,
-    "totalFailed": 166,
+    "totalChecks": 4682,
+    "totalPassed": 4470,
+    "totalFailed": 167,
     "completionRate": 99.87,
     "completedItems": 789,
     "pendingItems": 1,
@@ -21,10 +21,10 @@
     "wontFixItems": 28,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260607-0686",
-    "lastRecordedAt": "2026-06-07T13:07:25.133Z",
-    "latestRecordedRunId": "QA-20260607-0686",
-    "latestRecordedAt": "2026-06-07T13:07:25.133Z"
+    "lastRunId": "QA-20260607-0687",
+    "lastRecordedAt": "2026-06-07T13:25:04.388Z",
+    "latestRecordedRunId": "QA-20260607-0687",
+    "latestRecordedAt": "2026-06-07T13:25:04.388Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -19343,27 +19343,27 @@
     },
     "ai-engine-boundary-clarification-short-circuit-v812108": {
       "id": "ai-engine-boundary-clarification-short-circuit-v812108",
-      "title": "Cloud Run direct supervisor must short-circuit deterministic boundary clarifications",
+      "title": "Cloud Run direct supervisor must short-circuit deterministic boundary clarifications and report inverse-status metadata as Metrics Query",
       "priority": "P1",
       "status": "pending",
       "firstSeenRunId": "QA-20260607-0686",
       "firstSeenAt": "2026-06-07T13:07:25.133Z",
-      "lastSeenRunId": "QA-20260607-0686",
-      "lastSeenAt": "2026-06-07T13:07:25.133Z",
-      "seenCount": 1,
+      "lastSeenRunId": "QA-20260607-0687",
+      "lastSeenAt": "2026-06-07T13:25:04.388Z",
+      "seenCount": 2,
       "completedCount": 0,
-      "pendingCount": 1,
+      "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "project",
-      "lastEvidence": "v8.12.108 direct API: unsupported GPU and explicit unknown-server prompts reached LLM/tool-call paths and produced HTTP 500 or non-deterministic fallback.",
-      "lastNote": "Root cause identified locally: deterministic_clarification was not included in shouldUseDeterministicDomainEvidenceAnswer.",
+      "lastEvidence": "v8.12.109 direct API: boundary clarifications pass, but '이상 없는 서버 목록' metadata finalAgent remains Analyst Agent.",
+      "lastNote": "Remaining root cause: getIntentCategory must prefer inverse healthy-status filters before broad anomaly substring matching.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-06-07T13:07:25.133Z"
+      "lastStatusChangeAt": "2026-06-07T13:25:04.388Z"
     }
   },
   "runs": [
@@ -43438,6 +43438,103 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260607-0687",
+      "recordedAt": "2026-06-07T13:25:04.388Z",
+      "recordedAtKst": "2026-06-07 22:25:04 KST",
+      "title": "Production Cloud Run direct API post-deploy QA - v8.12.109 boundary guard partial closure",
+      "owner": "codex",
+      "source": "cloud-run-direct-api",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260607-0687.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "frontend": "not exercised",
+        "backend": "Cloud Run ai-engine v8.12.109",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-2582950316",
+        "deploymentUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582950316",
+        "commitSha": "97f8fbc70"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Cloud Run /health returned version 8.12.109 after GitLab tag pipeline 2582950316 succeeded",
+        "direct API network-ranking prompt returned deterministic monitoring-metric-ranking response",
+        "direct API unsupported GPU metric prompt returned deterministic monitoring-boundary-guard clarification",
+        "direct API explicit unknown server prompt returned deterministic not-found clarification",
+        "direct API ambiguous single-server prompt returned deterministic boundary clarification",
+        "direct API contextual follow-up prompt preserved target scope",
+        "direct API inverse-status prompt returned correct deterministic server-health content but metadata finalAgent still reported Analyst Agent"
+      ],
+      "skippedSurfaces": [
+        "Browser AI sidebar was not repeated because this check isolated Cloud Run direct supervisor behavior",
+        "Langfuse trace deep-dive was deferred until the final fix deployment"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 5,
+        "failed": 1
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [
+        {
+          "surface": "direct API inverse status",
+          "route": "/api/ai/supervisor",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "drift",
+          "driftReasonCodes": [],
+          "source": "Cloud Run direct API response metadata"
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "Boundary clarification short-circuiting is fixed in production, but inverse healthy-status metadata still uses Analyst Agent because getIntentCategory matches the broad anomaly substring before inverse status patterns.",
+          "nextAction": "Prioritize inverse healthy-status filters before anomaly regex in getIntentCategory, redeploy, and rerun the six direct API boundary prompts."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "gcp-cloud-run",
+          "method": "curl+gcloud",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-07T22:22:00+09:00",
+          "summary": "Cloud Run health served v8.12.109; free-tier runtime limits were already verified during this deployment series.",
+          "evidence": "curl /health and prior gcloud run services describe",
+          "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.12.109 Cloud Run direct API boundary partial failure evidence",
+          "path": "reports/qa/evidence/qa-20260607-v812109-boundary-postdeploy-partial.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "v8.12.109 GitLab tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582950316"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -43446,17 +43543,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 376,
-      "appropriateCount": 324,
+      "seenCount": 377,
+      "appropriateCount": 325,
       "partialCount": 52,
       "inappropriateCount": 0,
-      "improvementNeededCount": 74,
-      "lastRunId": "QA-20260607-0686",
-      "lastSeenAt": "2026-06-07T13:07:25.133Z",
+      "improvementNeededCount": 75,
+      "lastRunId": "QA-20260607-0687",
+      "lastSeenAt": "2026-06-07T13:25:04.388Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "The production direct API exposed that monitoring-boundary-guard evidence used responsePolicy=deterministic_clarification, but supervisor deterministic short-circuit logic did not accept that policy.",
-      "lastNextAction": "Allow deterministic_clarification in supervisor deterministic evidence handling, add direct/stream entrypoint regressions, redeploy, and rerun direct API boundary prompts."
+      "lastRationale": "Boundary clarification short-circuiting is fixed in production, but inverse healthy-status metadata still uses Analyst Agent because getIntentCategory matches the broad anomaly substring before inverse status patterns.",
+      "lastNextAction": "Prioritize inverse healthy-status filters before anomaly regex in getIntentCategory, redeploy, and rerun the six direct API boundary prompts."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",

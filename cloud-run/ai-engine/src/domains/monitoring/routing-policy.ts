@@ -29,7 +29,10 @@ import {
   shouldPreferAdvisorForOperationalAdvice,
 } from '../../services/ai-sdk/routing/query-routing-signals';
 import { createRoutingDecisionTrace } from '../../services/ai-sdk/routing/routing-decision-trace';
-import { CAPACITY_FULL_FORECAST_PATTERN } from '../../services/ai-sdk/routing/routing-patterns';
+import {
+  CAPACITY_FULL_FORECAST_PATTERN,
+  INVERSE_STATUS_PATTERN,
+} from '../../services/ai-sdk/routing/routing-patterns';
 import { resolveMonitoringSemanticFrameRoute } from '../../services/ai-sdk/routing/semantic-frame-policy';
 import { METRIC_TREND_RANKING_PATTERN } from './current-metrics-evidence-patterns';
 
@@ -180,6 +183,7 @@ export function getIntentCategory(
     return semanticCategory;
   }
 
+  if (INVERSE_STATUS_PATTERN.test(q)) return 'metrics';
   if (TOOL_ROUTING_PATTERNS.anomaly.test(q)) return 'anomaly';
   if (
     TOOL_ROUTING_PATTERNS.prediction.test(q) ||

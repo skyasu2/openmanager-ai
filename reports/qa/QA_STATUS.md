@@ -1,18 +1,18 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-07 22:07:25 KST
+> Generated at: 2026-06-07 22:25:04 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 684 |
-| Total Runs (Counted) | 527 |
+| Total Recorded Runs | 685 |
+| Total Runs (Counted) | 528 |
 | Non-counted Runs | 157 |
-| Total Checks | 4676 |
-| Passed | 4465 |
-| Failed | 166 |
+| Total Checks | 4682 |
+| Passed | 4470 |
+| Failed | 167 |
 | Completed Items | 789 |
 | Pending Items | 1 |
 | Deferred Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 99.87% |
-| Last Counted Run | QA-20260607-0686 (2026-06-07T13:07:25.133Z) |
-| Latest Recorded Run | QA-20260607-0686 (2026-06-07T13:07:25.133Z) |
+| Last Counted Run | QA-20260607-0687 (2026-06-07T13:25:04.388Z) |
+| Latest Recorded Run | QA-20260607-0687 (2026-06-07T13:25:04.388Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,22 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260607-0686 (2026-06-07T13:07:25.133Z)
+Latest run: QA-20260607-0687 (2026-06-07T13:25:04.388Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | yes | Allow deterministic_clarification in supervisor deterministic evidence handling, add direct/stream entrypoint regressions, redeploy, and rerun direct API boundary prompts. |
-| DevOps / SRE Engineer | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | yes | Prioritize inverse healthy-status filters before anomaly regex in getIntentCategory, redeploy, and rerun the six direct API boundary prompts. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| gcp-cloud-run | gcloud | checked | normal | Cloud Run ai-engine resource limits remained cpu=1 and memory=512Mi after deployment. |
+| gcp-cloud-run | curl+gcloud | checked | normal | Cloud Run health served v8.12.109; free-tier runtime limits were already verified during this deployment series. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-06T13:07:25.133Z -> 2026-06-07T13:07:25.133Z (24h)
+- Window: 2026-06-06T13:25:04.388Z -> 2026-06-07T13:25:04.388Z (24h)
 - Runs with observations: 13 recorded / 7 counted
 - Samples: 45
 
@@ -74,14 +73,14 @@ Latest run: QA-20260607-0686 (2026-06-07T13:07:25.133Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-06T13:07:25.133Z -> 2026-06-07T13:07:25.133Z (24h)
-- Runs with observations: 1 recorded / 1 counted
-- Samples: 2
+- Window: 2026-06-06T13:25:04.388Z -> 2026-06-07T13:25:04.388Z (24h)
+- Runs with observations: 2 recorded / 2 counted
+- Samples: 3
 - Drift rate: 100%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
-| /api/ai/supervisor | deterministic | 1 | 100% | 0ms | 0ms | QA-20260607-0686 |
+| /api/ai/supervisor | deterministic | 2 | 100% | 0ms | 0ms | QA-20260607-0687 |
 | /api/ai/supervisor | single-agent | 1 | 100% | 0ms | 0ms | QA-20260607-0686 |
 
 ## Coverage (Latest Run)
@@ -89,31 +88,31 @@ Latest run: QA-20260607-0686 (2026-06-07T13:07:25.133Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: gitlab-pipeline-2582927769 / SHA 6dbe317e
+- Deployment: gitlab-pipeline-2582950316 / SHA 97f8fbc7
 - Coverage Packs: ai-core
-- Covered Surfaces: Cloud Run /health returned version 8.12.108 after GitLab tag pipeline 2582927769 succeeded, Cloud Run service resource limits remained free-tier aligned at cpu=1 and memory=512Mi, Cloud Run /monitoring unauthenticated boundary returned 403 as expected, direct API network-ranking prompt returned deterministic monitoring-metric-ranking response, direct API contextual follow-up prompt returned deterministic metric ranking response, direct API unsupported GPU metric prompt returned HTTP 500 instead of deterministic unsupported-metric clarification, direct API explicit unknown server prompt returned HTTP 500 or LLM fallback instead of deterministic not-found clarification, direct API ambiguous single-server prompt returned LLM clarification instead of deterministic boundary guard, direct API inverse-status prompt returned correct deterministic content but metadata still reported Analyst Agent
-- Skipped Surfaces: Browser AI sidebar was not repeated because this deployment-stage check isolated Cloud Run direct supervisor behavior, Langfuse trace deep-dive was deferred until the follow-up fix deployment
+- Covered Surfaces: Cloud Run /health returned version 8.12.109 after GitLab tag pipeline 2582950316 succeeded, direct API network-ranking prompt returned deterministic monitoring-metric-ranking response, direct API unsupported GPU metric prompt returned deterministic monitoring-boundary-guard clarification, direct API explicit unknown server prompt returned deterministic not-found clarification, direct API ambiguous single-server prompt returned deterministic boundary clarification, direct API contextual follow-up prompt preserved target scope, direct API inverse-status prompt returned correct deterministic server-health content but metadata finalAgent still reported Analyst Agent
+- Skipped Surfaces: Browser AI sidebar was not repeated because this check isolated Cloud Run direct supervisor behavior, Langfuse trace deep-dive was deferred until the final fix deployment
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | v8.12.108 GitLab tag pipeline | [v8.12.108 GitLab tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582927769) | - |
+| general | v8.12.109 GitLab tag pipeline | [v8.12.109 GitLab tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582950316) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.12.108 Cloud Run direct API boundary post-deploy failure evidence | `reports/qa/evidence/qa-20260607-v812108-boundary-postdeploy-fail.md` | - |
+| playwright-report | v8.12.109 Cloud Run direct API boundary partial failure evidence | `reports/qa/evidence/qa-20260607-v812109-boundary-postdeploy-partial.md` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260607-0686)
-  next: Allow deterministic_clarification in supervisor deterministic evidence handling, add direct/stream entrypoint regressions, redeploy, and rerun direct API boundary prompts.
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260607-0687)
+  next: Prioritize inverse healthy-status filters before anomaly regex in getIntentCategory, redeploy, and rerun the six direct API boundary prompts.
 
 ## Pending Improvements
 
-- [P1] ai-engine-boundary-clarification-short-circuit-v812108: Cloud Run direct supervisor must short-circuit deterministic boundary clarifications (seen 1회, last QA-20260607-0686)
+- [P1] ai-engine-boundary-clarification-short-circuit-v812108: Cloud Run direct supervisor must short-circuit deterministic boundary clarifications and report inverse-status metadata as Metrics Query (seen 2회, last QA-20260607-0687)
 
 ## Deferred Improvements
 
@@ -206,6 +205,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260607-0687 | 2026-06-07T13:25:04.388Z | targeted | yes | yes | Production Cloud Run direct API post-deploy QA - v8.12.109 boundary guard partial closure | 6 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260607-0686 | 2026-06-07T13:07:25.133Z | targeted | yes | yes | Production Cloud Run direct API post-deploy QA - v8.12.108 boundary guard regression | 6 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260607-0685 | 2026-06-07T12:31:57.296Z | targeted | no | no | AI Engine pre-commit review validation - LLM prefilter routing guards | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260607-0684 | 2026-06-07T12:21:48.095Z | targeted | no | no | AI Engine pre-commit review validation - boundary guard and current metrics split | 10 | 0 | 0 | 0 | 0 | 0 |
@@ -225,4 +225,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260607-0670 | 2026-06-07T01:13:44.615Z | targeted | no | no | Vercel Production Playwright MCP - 26차 AI 어시스턴트 평가 (v8.12.102) | 10 | 4 | 0 | 0 | 3 | 1 |
 | QA-20260607-0669 | 2026-06-06T23:59:04.960Z | targeted | no | yes | Cloud Run Production Direct API - v8.12.102 AI assistant advanced metric filter regression validation | 10 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260607-0668 | 2026-06-06T16:45:34.002Z | targeted | no | yes | Vercel Production Playwright MCP - 25차 AI 어시스턴트 평가 (v8.12.100) | 6 | 1 | 0 | 0 | 2 | 0 |
-| QA-20260607-0667 | 2026-06-06T16:01:05.302Z | broad | yes | yes | Vercel Playwright MCP + Langfuse Final QA - v8.12.100 improvement closure check | 19 | 2 | 0 | 0 | 0 | 0 |
