@@ -47,6 +47,7 @@ import {
   monitoringLocationLoadBalanceEvidenceProvider,
 } from './load-balance-capacity-evidence-provider';
 import { monitoringPeakMetricEvidenceProvider } from './peak-metric-evidence-provider';
+import { classifyEvidenceIntentWithLLM } from './current-metrics-evidence-llm-classifier';
 import { parseMonitoringPeakMetricIntent } from './peak-metric-intent';
 import {
   MONITORING_DOMAIN_ID,
@@ -338,11 +339,14 @@ export const monitoringCapabilities: DomainCapabilityManifest = {
 };
 
 export const monitoringIntentParser: DomainIntentParser = {
-  parse(context) {
+  async parse(context) {
     const peakFrame = parseMonitoringPeakMetricIntent(context);
     if (peakFrame) return peakFrame;
 
-    const currentMetricsFrame = parseCurrentMetricsEvidenceRequest(context);
+    // regex 파싱 우선, 미매칭 시 LLM semantic fallback (2s timeout, round-robin provider)
+    const currentMetricsFrame =
+      parseCurrentMetricsEvidenceRequest(context) ??
+      (await classifyEvidenceIntentWithLLM(context.message));
     if (!currentMetricsFrame) return undefined;
 
     return {
@@ -362,8 +366,8 @@ export const monitoringIntentParser: DomainIntentParser = {
         topN: currentMetricsFrame.rankCount,
       }),
       slots: { sourceIntent: currentMetricsFrame.sourceIntent },
-      ambiguity: 'low',
-      confidence: 0.9,
+      ambiguity: currentMetricsFrame.sourceIntent === 'llm-classified' ? 'medium' : 'low',
+      confidence: currentMetricsFrame.sourceIntent === 'llm-classified' ? 0.75 : 0.9,
     };
   },
 };
