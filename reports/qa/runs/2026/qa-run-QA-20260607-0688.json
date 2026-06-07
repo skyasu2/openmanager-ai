@@ -1,0 +1,136 @@
+{
+  "runId": "QA-20260607-0688",
+  "recordedAt": "2026-06-07T13:37:08.781Z",
+  "recordedAtKst": "2026-06-07 22:37:08 KST",
+  "runTitle": "Production Cloud Run direct API post-deploy QA - v8.12.110 boundary guard closure",
+  "owner": "codex",
+  "source": "cloud-run-direct-api",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "frontend": "Vercel production smoke only",
+    "backend": "Cloud Run ai-engine v8.12.110",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2582961881",
+    "deploymentUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582961881",
+    "commitSha": "8be1ba664"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "GitLab tag pipeline 2582961881 succeeded for v8.12.110",
+    "Vercel production version smoke passed for v8.12.110",
+    "Cloud Run /health returned version 8.12.110",
+    "Cloud Run service limits remained cpu=1 and memory=512Mi",
+    "direct API network-ranking prompt returned deterministic monitoring-metric-ranking response",
+    "direct API unsupported GPU metric prompt returned deterministic monitoring-boundary-guard clarification",
+    "direct API explicit unknown server prompt returned deterministic not-found clarification",
+    "direct API ambiguous single-server prompt returned deterministic boundary clarification",
+    "direct API inverse-status prompt returned deterministic server-health with finalAgent=Metrics Query Agent",
+    "direct API contextual follow-up prompt preserved target scope",
+    "Langfuse supervisor trace query completed; sampled rows still included historical failures, so direct API response metadata is the primary acceptance evidence"
+  ],
+  "skippedSurfaces": [
+    "Browser AI sidebar was not repeated because the changed runtime surface is Cloud Run supervisor routing and the direct API covered the failing production path",
+    "Public snapshot sync was not requested"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [
+    {
+      "surface": "direct API boundary prompt pack",
+      "route": "/api/ai/supervisor",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "Cloud Run direct API response metadata"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The production direct API boundary prompt pack now passes 6/6, including deterministic clarification policies and inverse healthy-status metadata.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": false,
+      "rationale": "Langfuse supervisor query completed, but sampled rows still contained historical failure traces; direct response metadata is sufficient for release acceptance while trace freshness can be watched in routine observability.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab release pipeline, production version smoke, Cloud Run health, and free-tier resource limits were verified.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "gcp-cloud-run",
+      "method": "gcloud",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-07T22:35:00+09:00",
+      "summary": "Cloud Run ai-engine remained at cpu=1 and memory=512Mi after v8.12.110 deployment.",
+      "evidence": "gcloud run services describe ai-engine --region asia-northeast1 --format='value(status.url,spec.template.spec.containers[0].resources.limits)'",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.12.110 Cloud Run direct API boundary post-deploy pass evidence",
+      "path": "reports/qa/evidence/qa-20260607-v812110-boundary-postdeploy-pass.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-engine-boundary-clarification-short-circuit-v812108",
+      "title": "Cloud Run direct supervisor short-circuits deterministic boundary clarifications and reports inverse-status metadata as Metrics Query",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.12.110 production direct API passed all six boundary prompts, including unsupported GPU, unknown server, ambiguous server, inverse-status metadata, network ranking, and contextual follow-up.",
+      "note": "Closed by deterministic_clarification short-circuit support and inverse healthy-status metrics classification.",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Validation command: cd cloud-run/ai-engine && npm test -- routing-policy.test.ts supervisor-domain-wiring.contract.test.ts current-metrics-boundary-guard.test.ts -> 4 files / 121 tests passed",
+    "Validation command: cd cloud-run/ai-engine && npm run type-check -> passed",
+    "Validation command: cd cloud-run/ai-engine && npm run test -> 160 files / 1678 tests passed",
+    "Validation command: npm run test:contract -> 3 files / 24 tests passed",
+    "Post-deploy direct API script returned passed=6 failed=0 total=6.",
+    "No secret values or API keys were recorded."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "v8.12.110 GitLab tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582961881"
+    }
+  ]
+}
