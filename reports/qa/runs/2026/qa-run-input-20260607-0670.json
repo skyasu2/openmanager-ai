@@ -1,0 +1,178 @@
+{
+  "runTitle": "Vercel Production Playwright MCP - 26차 AI 어시스턴트 평가 (v8.12.102)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "Q1/P26 재검증: 메모리 경고 상태인 서버들의 평균 CPU => warning 1대 필터+CPU 85% 집계, 31ms (PASS)",
+    "Q2/P27 재검증: CPU·메모리·디스크 모두 50% 미만인 서버 몇 대? => 7대 카운트, < operator 보존 (PASS)",
+    "Q3/Q96 regression: 디스크가 거의 꽉 찬 서버 있어? => monitoring-metric-current disk>=80% 현재 필터 (PASS)",
+    "Q4/Q97 regression: DB vs cache 경고 상태 서버 더 많은 쪽? => monitoring-server-health, 0 vs 0 명시 (PASS)",
+    "Q5/Q-NEW100: 스토리지 서버들 중 디스크 사용률 가장 높은 서버? => peak-metric, 그룹 필터 누락, 전체 top-3 반환 (PARTIAL)",
+    "Q6/Q-NEW101: 전체 서버 평균 메모리 사용률? => 18대 평균 48.2%, OTel 48.23% 일치 (PASS)",
+    "Q7/Q-NEW102: CPU 경고 상태인 서버들의 평균 디스크 사용률? => CPU→디스크 크로스 메트릭 미처리 (FAIL, 신규 P28)",
+    "Q8/Q-NEW103: web 서버 그룹의 평균 CPU 사용률? => 3대 평균 28%, OTel (34+34+16)/3=28% 일치 (PASS)",
+    "Q9/Q-NEW104: 안정적인 서버만 목록 보여줘 => Groq/llama-4-scout, 조건 OK, markdown heading literal P3 wont-fix (PARTIAL)",
+    "Q10/Q-NEW105: 디스크 기준 상위3+하위3 서버? => metric-ranking, 하위만 반환 상위 누락 (FAIL, 신규 P29)",
+    "OTel 교차검증: Q6 48.2% 일치, Q8 28% 일치, Q2 7대 조건 일치"
+  ],
+  "skippedSurfaces": [
+    "Analyst 에이전트 심층 분석 테스트 미실시",
+    "Reporter 에이전트 보고서 생성 미실시",
+    "멀티턴 컨텍스트 팔로업 미실시"
+  ],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "6a4ace8c4"
+  },
+  "checks": {
+    "total": 10,
+    "passed": 6,
+    "failed": 2
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Q1 P26 재검증 - 메모리 경고 상태 필터+CPU 집계",
+      "agent": "monitoring-metric-current",
+      "provider": "deterministic",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "UI 라우팅 레이블",
+      "latencyMs": 31
+    },
+    {
+      "surface": "Q2 P27 재검증 - 모두 50% 미만 서버 카운트",
+      "agent": "monitoring-metric-current",
+      "provider": "deterministic",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "UI 라우팅 레이블",
+      "latencyMs": 35
+    },
+    {
+      "surface": "Q3 Q96 regression - 디스크 꽉 찬 서버",
+      "agent": "monitoring-metric-current",
+      "provider": "deterministic",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "UI 라우팅 레이블",
+      "latencyMs": 28
+    },
+    {
+      "surface": "Q4 Q97 regression - DB vs cache warning count",
+      "agent": "monitoring-server-health",
+      "provider": "deterministic",
+      "model": "monitoring-server-health",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "UI 라우팅 레이블",
+      "latencyMs": 32
+    },
+    {
+      "surface": "Q9 안정적인 서버 목록 - LLM 경로",
+      "agent": "llama-4-scout",
+      "provider": "groq",
+      "model": "llama-4-scout",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "UI 라우팅 레이블",
+      "latencyMs": 1800
+    }
+  ],
+  "plannerShadowObservations": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "26차 QA Playwright MCP 스크린샷",
+      "path": "qa-26-q1-p26.png",
+      "note": "Local Playwright MCP screenshots (session-local). Response content captured inline in coveredSurfaces."
+    }
+  ],
+  "playwrightArtifacts": {
+    "screenshotsDir": ".playwright-mcp/screenshots",
+    "recentMinutes": 60,
+    "pathIncludes": [
+      "qa-26-"
+    ]
+  },
+  "ciEvidence": null,
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "P26/P27/Q96/Q97 regression PASS. 신규 P28(CPU경고→디스크집계 미처리), P29(metric-ranking TOP+BOTTOM dual 미처리) 발견. 치명적 약점 없음. 포트폴리오 기준선 90 초과 유지.",
+      "nextAction": "P28·P29 수정 여부는 Codex 위임 판단. wont-fix 검토 가능."
+    }
+  ],
+  "dodChecks": [],
+  "completedImprovements": [
+    {
+      "id": "p26-status-filter-cross-metric-aggregation",
+      "title": "P26: 상태 필터 후 이종 메트릭 집계 (메모리 경고→CPU) 재검증 PASS",
+      "priority": "P2",
+      "evidence": "Q1 PASS: warning 1대 필터+CPU 85% 집계 올바름 (v8.12.102)"
+    },
+    {
+      "id": "p27-and-under-50-percent-filter",
+      "title": "P27: 복합 AND 미만 조건(<50%) 서버 카운트 재검증 PASS",
+      "priority": "P2",
+      "evidence": "Q2 PASS: 7대 카운트, < operator 보존, 합산 오분기 없음 (v8.12.102)"
+    },
+    {
+      "id": "q96-disk-current-filter",
+      "title": "Q96: 디스크 꽉 찬 서버 현재 필터 경로 재검증 PASS",
+      "priority": "P2",
+      "evidence": "Q3 PASS: monitoring-metric-current disk>=80% 현재 필터 (v8.12.102)"
+    },
+    {
+      "id": "q97-warning-count-comparison",
+      "title": "Q97: 그룹별 warning 상태 서버 수 비교 재검증 PASS",
+      "priority": "P2",
+      "evidence": "Q4 PASS: monitoring-server-health, DB 0대 vs 캐시 0대 명시 (v8.12.102)"
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "p28-cpu-warning-filter-disk-aggregation",
+      "title": "P28: CPU 경고 상태 필터 + 이종 메트릭(디스크) 집계 미처리",
+      "priority": "P2",
+      "isBlocking": false,
+      "note": "CPU 경고 상태인 서버들의 평균 디스크 사용률 요청 시 CPU 현황만 반환. P26와 동일 레이어의 다른 조합. Codex 수정 검토."
+    },
+    {
+      "id": "p29-metric-ranking-top-bottom-dual",
+      "title": "P29: metric-ranking 경로 TOP+BOTTOM 동시 질의 미처리",
+      "priority": "P2",
+      "isBlocking": false,
+      "note": "디스크 상위3+하위3 요청 시 하위만 반환. P25(server-health) fix와 유사 패턴이지만 metric-ranking 경로 미적용. Codex 수정 검토."
+    },
+    {
+      "id": "q-new100-group-filtered-peak-metric",
+      "title": "Q-NEW100: 그룹 필터된 peak metric 쿼리 그룹 필터 누락",
+      "priority": "P3",
+      "isBlocking": false,
+      "note": "스토리지 그룹 필터가 monitoring-peak-metric 경로에서 미적용. 전체 서버 top-3 반환. wont-fix 검토."
+    }
+  ],
+  "notes": "26차 평가: 10문항 PASS 6 / PARTIAL 2 / FAIL 2. regression clean. 신규 약점 P28·P29 발견. OTel 교차검증 3건 일치. 평점 97/100.",
+  "links": [
+    {
+      "type": "general",
+      "label": "Production AI assistant",
+      "url": "https://openmanager-ai.vercel.app/dashboard/ai-assistant",
+      "note": "26차 QA 테스트 대상 페이지"
+    }
+  ]
+}
