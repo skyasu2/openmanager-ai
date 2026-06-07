@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-06-07 KST (WONT-FIX targeted remediation 완료)
+**Last Updated**: 2026-06-07 KST (line-guard runtime hotspot refactor 진행 중)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -15,7 +15,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| _None_ | - | 현재 진행 중인 작업 없음. |
+| Line guard runtime hotspot refactor | P2 | In Progress. Plan: [`line-guard-runtime-hotspots-refactor-plan.md`](line-guard-runtime-hotspots-refactor-plan.md). |
 
 ---
 
