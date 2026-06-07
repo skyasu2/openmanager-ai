@@ -32,7 +32,45 @@ function getLastOrderedListNumber(
 }
 
 function startsWithOrderedList(content: string | null | undefined): boolean {
-  return typeof content === 'string' && /^\s*\d+[.)]\s+\S+/m.test(content);
+  return typeof content === 'string' && /^\s*\d+[.)]\s+\S+/.test(content);
+}
+
+function normalizeSplitOrderedListBoundary(
+  summary: string,
+  details: string | null
+): { summary: string; details: string | null } {
+  if (!details || startsWithOrderedList(details)) {
+    return { summary, details };
+  }
+
+  const summaryLines = summary.split(/\r?\n/);
+  let danglingMarkerIndex = -1;
+  for (let index = summaryLines.length - 1; index >= 0; index -= 1) {
+    if (summaryLines[index]?.trim().length) {
+      danglingMarkerIndex = index;
+      break;
+    }
+  }
+  if (danglingMarkerIndex === -1) {
+    return { summary, details };
+  }
+
+  const danglingMarker =
+    summaryLines[danglingMarkerIndex]?.match(/^\s*(\d+)([.)])\s*$/);
+  if (!danglingMarker?.[1] || !danglingMarker[2]) {
+    return { summary, details };
+  }
+
+  const normalizedSummary = summaryLines
+    .slice(0, danglingMarkerIndex)
+    .join('\n')
+    .trimEnd();
+  const normalizedDetails = `${danglingMarker[1]}${danglingMarker[2]} ${details.trimStart()}`;
+
+  return {
+    summary: normalizedSummary || summary,
+    details: normalizedDetails,
+  };
 }
 
 const ThinkingToggle = memo<{
@@ -118,19 +156,36 @@ export const AIWorkspaceMessage = memo<{
     const inlineAssistantDetails = assistantResponseView?.shouldCollapse
       ? userFacingAssistantDetails
       : null;
+    const inlineAssistantResponseView = useMemo(
+      () =>
+        assistantResponseView?.shouldCollapse
+          ? normalizeSplitOrderedListBoundary(
+              assistantResponseView.summary,
+              inlineAssistantDetails
+            )
+          : {
+              summary: assistantResponseView?.summary ?? '',
+              details: inlineAssistantDetails,
+            },
+      [
+        assistantResponseView?.shouldCollapse,
+        assistantResponseView?.summary,
+        inlineAssistantDetails,
+      ]
+    );
     const inlineAssistantDetailsOrderedListStart = useMemo(() => {
       if (
-        !inlineAssistantDetails ||
-        !startsWithOrderedList(inlineAssistantDetails)
+        !inlineAssistantResponseView.details ||
+        !startsWithOrderedList(inlineAssistantResponseView.details)
       ) {
         return undefined;
       }
 
       const lastSummaryNumber = getLastOrderedListNumber(
-        assistantResponseView?.summary
+        inlineAssistantResponseView.summary
       );
       return lastSummaryNumber ? lastSummaryNumber + 1 : undefined;
-    }, [assistantResponseView?.summary, inlineAssistantDetails]);
+    }, [inlineAssistantResponseView]);
     const analysisBasisDetails =
       analysisBasis && assistantResponseView?.details && !inlineAssistantDetails
         ? userFacingAssistantDetails
@@ -208,17 +263,17 @@ export const AIWorkspaceMessage = memo<{
                             핵심 요약
                           </p>
                           <MarkdownRenderer
-                            content={assistantResponseView.summary}
+                            content={inlineAssistantResponseView.summary}
                             className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words"
                           />
                         </div>
-                        {inlineAssistantDetails && (
+                        {inlineAssistantResponseView.details && (
                           <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
                             <p className="mb-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">
                               상세 분석
                             </p>
                             <MarkdownRenderer
-                              content={inlineAssistantDetails}
+                              content={inlineAssistantResponseView.details}
                               orderedListStart={
                                 inlineAssistantDetailsOrderedListStart
                               }

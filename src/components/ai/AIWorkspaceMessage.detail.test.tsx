@@ -195,6 +195,33 @@ describe('AIWorkspaceMessage detail affordance', () => {
     expect(rendered[1]).toHaveAttribute('data-ordered-list-start', '3');
   });
 
+  it('moves dangling ordered-list markers from summary to details before rendering', () => {
+    const message: EnhancedChatMessage = {
+      id: 'assistant-list-dangling-boundary',
+      role: 'assistant',
+      content:
+        '1. lb-haproxy-dc1-01\n2. lb-haproxy-dc1-02\n3. web-nginx-dc1-03',
+      timestamp: new Date('2026-06-07T09:10:00.000Z'),
+      isStreaming: false,
+      metadata: {
+        assistantResponseView: {
+          summary: '1. lb-haproxy-dc1-01\n2.',
+          details: 'lb-haproxy-dc1-02\n3. web-nginx-dc1-03',
+          shouldCollapse: true,
+        },
+      },
+    };
+
+    render(<AIWorkspaceMessage message={message} isLastMessage={true} />);
+
+    const rendered = screen.getAllByTestId('markdown-renderer');
+    expect(rendered[0]).toHaveTextContent('1. lb-haproxy-dc1-01');
+    expect(rendered[0]).not.toHaveTextContent('2.');
+    expect(rendered[1]).toHaveTextContent('2. lb-haproxy-dc1-02');
+    expect(rendered[1]).toHaveTextContent('3. web-nginx-dc1-03');
+    expect(rendered[1]).toHaveAttribute('data-ordered-list-start', '2');
+  });
+
   it('keeps metadata-only assistant messages free of content actions', () => {
     const message: EnhancedChatMessage = {
       id: 'assistant-1',
