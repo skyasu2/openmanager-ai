@@ -357,8 +357,8 @@ async function checkRedisLimit(
 
 const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
   supervisor: {
-    maxRequests: 10,
-    windowMs: 60 * 1000, // 1분에 10회
+    maxRequests: 20,
+    windowMs: 60 * 1000, // 1분에 20회
     dailyLimit: 500,     // Cloud Run vCPU 17%/월, LLM provider Cerebras 38회/day (무료 한도 3.8%)
     maxInFlight: 4,
     keyPrefix: 'rl:supervisor',

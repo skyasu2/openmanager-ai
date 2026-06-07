@@ -256,17 +256,17 @@ describe('cloud run jobs limiter policy', () => {
 });
 
 describe('cloud run daily semantics', () => {
-  it('keeps supervisor write traffic on the strict 10/min minute bucket', async () => {
+  it('keeps supervisor write traffic on the strict 20/min minute bucket', async () => {
     const app = new Hono();
     app.use('/api/*', rateLimitMiddleware);
     app.post('/api/ai/supervisor/stream/v2', (c) => c.json({ ok: true }));
 
     const headers = {
-      [RATE_LIMIT_IDENTITY_HEADER]: 'test:supervisor-minute-10',
+      [RATE_LIMIT_IDENTITY_HEADER]: 'test:supervisor-minute-20',
       'X-API-Key': 'shared-service-secret',
     };
 
-    for (let index = 0; index < 10; index += 1) {
+    for (let index = 0; index < 20; index += 1) {
       const res = await app.request('/api/ai/supervisor/stream/v2', {
         method: 'POST',
         headers,
@@ -280,7 +280,7 @@ describe('cloud run daily semantics', () => {
     });
 
     expect(blocked.status).toBe(429);
-    expect(blocked.headers.get('X-RateLimit-Limit')).toBe('10');
+    expect(blocked.headers.get('X-RateLimit-Limit')).toBe('20');
   });
 
   it('blocks supervisor requests on the 501st request with daily metadata after minute windows reset', async () => {
@@ -342,7 +342,7 @@ describe('cloud run supervisor health limiter policy', () => {
     expect(res.headers.get('X-RateLimit-Limit')).toBe('120');
   });
 
-  it('does not let supervisor health checks consume the strict 10/min write bucket', async () => {
+  it('does not let supervisor health checks consume the strict 20/min write bucket', async () => {
     const app = new Hono();
     app.use('/api/*', rateLimitMiddleware);
     app.get('/api/ai/supervisor/health', (c) => c.json({ ok: true }));
@@ -361,7 +361,7 @@ describe('cloud run supervisor health limiter policy', () => {
       expect(health.status).toBe(200);
     }
 
-    for (let index = 0; index < 10; index += 1) {
+    for (let index = 0; index < 20; index += 1) {
       const write = await app.request('/api/ai/supervisor/stream/v2', {
         method: 'POST',
         headers,
@@ -375,6 +375,6 @@ describe('cloud run supervisor health limiter policy', () => {
     });
 
     expect(blocked.status).toBe(429);
-    expect(blocked.headers.get('X-RateLimit-Limit')).toBe('10');
+    expect(blocked.headers.get('X-RateLimit-Limit')).toBe('20');
   });
 });
