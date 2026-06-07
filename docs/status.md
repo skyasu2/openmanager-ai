@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-06-07 | **현재 버전 스냅샷**: v8.12.106
+**상태 스냅샷 기준일**: 2026-06-07 | **현재 버전 스냅샷**: v8.12.107
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.107** (2026-06-07) — Bug Fixes: ai-engine: route advanced metric QA queries deterministically; Tests: qa: record 29th AI assistant direct API follow-up; Tests: qa: record 29th AI assistant evaluation
 - **v8.12.106** (2026-06-07) — Bug Fixes: ui: preserve numbered list markers across summary split
 - **v8.12.105** (2026-06-07) — Bug Fixes: ai: remediate targeted WONT-FIX QA gaps; Tests: spec: add WONT-FIX remediation regression specs; Tests: qa: record v8.12.104 P28/P30 production validation
 - **v8.12.104** (2026-06-07) — Bug Fixes: ai-engine: fix P28 cross-metric filter and add P30 multi-metric aggregate; Tests: qa: record v8.12.103 27차 AI 어시스턴트 평가; Tests: qa: record v8.12.103 p28 p29 validation
 - **v8.12.103** (2026-06-07) — Bug Fixes: ai-engine: harden metric evidence grammar; Tests: qa: record v8.12.102 26차 AI 어시스턴트 평가; Tests: qa: record v8.12.102 AI regression validation
-- **v8.12.102** (2026-06-07) — Bug Fixes: ai-engine: handle advanced metric filters; Tests: qa: record v8.12.100 25차 AI 어시스턴트 평가
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
