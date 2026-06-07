@@ -40,6 +40,12 @@ const ARTIFACT_FILE_EXTENSIONS = new Set([
   '.har',
 ]);
 
+// Playwright MCP / Chrome DevTools MCP이 루트에 덤프하는 텍스트 스냅샷 패턴
+const ARTIFACT_MD_PATTERNS = [
+  /^.+-snapshot\.md$/,   // *-snapshot.md (e.g. ai-chat-snapshot.md)
+  /^qa-[\d].*\.md$/,     // qa-YYYYMMDD*.md QA 증거 스냅샷
+];
+
 function seoulDateStamp(date = new Date()) {
   const formatter = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Seoul',
@@ -165,9 +171,14 @@ function directorySizeBytes(dirPath) {
 }
 
 function detectArtifactFiles(rootFiles) {
-  return rootFiles.filter((file) =>
-    ARTIFACT_FILE_EXTENSIONS.has(path.extname(file.name).toLowerCase())
-  );
+  return rootFiles.filter((file) => {
+    const ext = path.extname(file.name).toLowerCase();
+    if (ARTIFACT_FILE_EXTENSIONS.has(ext)) return true;
+    if (ext === '.md') {
+      return ARTIFACT_MD_PATTERNS.some((re) => re.test(file.name));
+    }
+    return false;
+  });
 }
 
 function ensureDir(dirPath) {
