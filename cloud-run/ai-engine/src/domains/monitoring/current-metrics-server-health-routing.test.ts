@@ -136,6 +136,46 @@ describe('current metrics domain evidence providers: server health routing', () 
     expect(evidence?.fallback).not.toContain('cache-redis-dc1-01');
   });
 
+  it('preserves healthy-only TOP-N from metadata frame when resolving server health evidence', async () => {
+    const evidence = await monitoringServerHealthEvidenceProvider.resolve({
+      ...createEvidenceRequest('건강한 서버 TOP3 알려줘', {
+        timeLabel: '08:50',
+        servers: [
+          { id: 'api-was-dc1-01', status: 'online', cpu: 43, memory: 66, disk: 44 },
+          { id: 'api-was-dc1-02', status: 'online', cpu: 51, memory: 57, disk: 36 },
+          { id: 'api-was-dc1-03', status: 'online', cpu: 37, memory: 44, disk: 28 },
+          { id: 'cache-redis-dc1-01', status: 'online', cpu: 45, memory: 71, disk: 44 },
+          { id: 'db-mysql-dc1-primary', status: 'warning', cpu: 60, memory: 81, disk: 73 },
+        ],
+      }),
+      intentFrame: {
+        domainId: MONITORING_DOMAIN_ID,
+        intent: 'server_health',
+        capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
+        scope: 'whole_fleet',
+        targets: [],
+        aggregation: 'summary',
+        topN: 3,
+        ambiguity: 'low',
+        confidence: 0.9,
+      },
+    });
+
+    expect(evidence?.metadata).toMatchObject({
+      intent: 'server_health',
+      sourceIntent: 'healthy-only',
+      statusFilter: 'healthy-only',
+      rankCount: 3,
+    });
+    expect(evidence?.fallback).toContain('정상 범위 서버 상위 3대');
+    expect(evidence?.fallback).toContain('상위 3대 / 총 4대');
+    expect(evidence?.fallback).toMatch(
+      /1\. \*\*api-was-dc1-01\*\*[\s\S]+2\. \*\*api-was-dc1-02\*\*[\s\S]+3\. \*\*api-was-dc1-03\*\*/
+    );
+    expect(evidence?.fallback).not.toContain('cache-redis-dc1-01');
+    expect(evidence?.fallback).not.toContain('db-mysql-dc1-primary');
+  });
+
   it('resolves lowest composite load queries as deterministic ranking evidence', async () => {
     const evidence = await monitoringMetricRankingEvidenceProvider.resolve(
       createEvidenceRequest('지금 부하가 가장 낮은 서버는?', {

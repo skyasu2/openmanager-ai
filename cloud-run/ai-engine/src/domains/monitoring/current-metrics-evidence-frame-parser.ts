@@ -187,6 +187,8 @@ export function parseCurrentMetricsFrame(
 
     if (isHealthyOnlyServerListMessage(request.message)) {
       const healthGroupTarget = inferGroupTargetFromMessage(request.message);
+      const rankCount =
+        frame.topN !== undefined ? normalizeRankCount(frame.topN) : undefined;
       return {
         intent: 'server_health',
         capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
@@ -194,6 +196,7 @@ export function parseCurrentMetricsFrame(
         answerQuery: request.message,
         statusFilter: 'healthy-only',
         ...(healthGroupTarget && { targets: [healthGroupTarget] }),
+        ...(rankCount !== undefined && { rankCount }),
       };
     }
 
