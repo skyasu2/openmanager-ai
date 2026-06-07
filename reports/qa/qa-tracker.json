@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-07T09:10:18.387Z"
+    "updatedAt": "2026-06-07T09:31:29.385Z"
   },
   "sequence": {
-    "nextRunNumber": 678
+    "nextRunNumber": 680
   },
   "summary": {
-    "totalRecordedRuns": 675,
+    "totalRecordedRuns": 677,
     "totalRuns": 526,
-    "excludedRuns": 149,
+    "excludedRuns": 151,
     "totalChecks": 4670,
     "totalPassed": 4463,
     "totalFailed": 162,
@@ -23,8 +23,9 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260607-0677",
     "lastRecordedAt": "2026-06-07T09:10:18.387Z",
-    "latestRecordedRunId": "QA-20260607-0677",
-    "latestRecordedAt": "2026-06-07T09:10:18.387Z"
+    "latestRecordedRunId": "QA-20260607-0679",
+    "latestRecordedAt": "2026-06-07T09:31:29.385Z",
+    "wontFix": 28
   },
   "items": {
     "modal-backdrop-close": {
@@ -19316,6 +19317,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-06-07T09:10:18.387Z"
+    },
+    "q-new128-network-io-ranking-fallback": {
+      "id": "q-new128-network-io-ranking-fallback",
+      "title": "네트워크 I/O 상위 랭킹 질의 LLM fallback",
+      "priority": "P3",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260607-0678",
+      "firstSeenAt": "2026-06-07T09:45:23.458050+00:00",
+      "lastSeenRunId": "QA-20260607-0678",
+      "lastSeenAt": "2026-06-07T09:45:23.458050+00:00",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "\"네트워크 I/O 상위 서버 3대 알려줘\" → mistral LLM fallback 3초, generic summary 3대. monitoring-metric-ranking에 network_io 메트릭 라우팅 패턴 없음. Q-NEW12(데이터 부재 미명시)와 연관. OTel에 network_io 데이터 있으나 ranking 경로 미지원.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-06-07T09:45:23.458050+00:00"
     }
   },
   "runs": [
@@ -42523,6 +42548,138 @@
       "expertCount": 3,
       "expertNeedsImprovementCount": 0,
       "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260607-0678",
+      "recordedAt": "2026-06-07T09:26:24.330Z",
+      "recordedAtKst": "2026-06-07 18:26:24 KST",
+      "title": "Cloud Run Direct API - 30차 AI 어시스턴트 평가 (v8.12.106)",
+      "owner": "claude",
+      "source": "direct-api",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260607-0678.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-490817238363.asia-northeast1.run.app",
+        "frontend": "Cloud Run Direct API",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "c998cc7b8ad6b9faaf3d0eac26705ec4a8c38153"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "Q-NEW123: 가장 위험한 서버 → cache-redis-dc1-01 warning, deterministic/monitoring-server-health 9ms (PASS)",
+        "Q-NEW124: 메모리 순위 전체 → 상위 3대 정확, deterministic/monitoring-metric-ranking (PASS)",
+        "Q-NEW125: DB 디스크 50% 이상 → backup 70%+primary 62%, 2대 정확, deterministic (PASS)",
+        "Q-NEW126: cache 그룹 평균 메모리+CPU 동시 → 54%+35%, 신규 강점: 그룹+이중 메트릭 동시 집계, deterministic (PASS)",
+        "Q-NEW127: api-was-dc1-01 CPU 왜 높아? (RCA) → zai LLM 10초+응답 거의 비어있음, P4 재확인 (PARTIAL)",
+        "Q-NEW128: 네트워크 I/O 상위 서버 3대 → LLM fallback 3초, 3대 generic, 랭킹 미처리 (FAIL)",
+        "Q-NEW129: storage 그룹+AND 복합 조건(CPU>=40% AND DISK>=40%) → 0대 정확, deterministic (PASS)",
+        "Q-NEW130: CPU 상위 5대+하위 5대 동시 → 정확, deterministic/monitoring-metric-ranking. P25 재확인 (PASS)",
+        "Q-NEW131: 서버 총 몇 대? → mistral LLM 1700ms이지만 18대+경고1대 정확 (PARTIAL)",
+        "Q-NEW132: 오프라인 서버 있어? → 0대 정확 (PASS)",
+        "Q-NEW133: 디스크 24h 전보다 많이 늘어난 서버 → monitoring-metric-trend 정상 라우팅. Q-NEW121(빠르게 증가) 표현 차이 원인 확인 (PASS)"
+      ],
+      "skippedSurfaces": [
+        "UI/accordion/markdown 렌더링 항목 (API 전용 세션)"
+      ],
+      "checks": {
+        "total": 11,
+        "passed": 8,
+        "failed": 1
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Q-NEW123 server-health",
+          "agent": "Metrics Query",
+          "provider": "deterministic",
+          "model": "monitoring-server-health",
+          "route": "/api/ai/supervisor",
+          "source": "API metadata",
+          "latencyMs": 9
+        },
+        {
+          "surface": "Q-NEW126 dual-metric group",
+          "agent": "Metrics Query",
+          "provider": "deterministic",
+          "model": "monitoring-metric-current",
+          "route": "/api/ai/supervisor",
+          "source": "API metadata",
+          "latencyMs": 1
+        },
+        {
+          "surface": "Q-NEW127 RCA (P4)",
+          "agent": "zai fallback",
+          "provider": "zai",
+          "model": "glm-4.5-flash",
+          "route": "/api/ai/supervisor",
+          "source": "API metadata",
+          "latencyMs": 10495
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260607-0679",
+      "recordedAt": "2026-06-07T09:31:29.385Z",
+      "recordedAtKst": "2026-06-07 18:31:29 KST",
+      "title": "Cloud Run Direct API - 31차 v8.12.107 수정 재검증",
+      "owner": "claude",
+      "source": "direct-api",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260607-0679.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-490817238363.asia-northeast1.run.app",
+        "frontend": "Vercel v8.12.107",
+        "backend": "Cloud Run v8.12.107",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "704fcd6e43"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "Q-NEW134: 전체 평균 메모리+디스크 동시(Q-NEW119 fix) → 평균 MEM 45.9%+DISK 36.1%, deterministic/monitoring-metric-current 1ms (PASS)",
+        "Q-NEW135: 디스크 빠르게 증가(Q-NEW121 fix) → monitoring-metric-trend 4ms, 증가폭 상위 5대 표시 (PASS)",
+        "Q-NEW136: DB vs cache 그룹 경고 수 비교(Q-NEW122 fix) → cache 1대>DB 0대, deterministic/monitoring-server-health 1ms (PASS)"
+      ],
+      "skippedSurfaces": [
+        "전체 regression suite (targeted 세션)"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

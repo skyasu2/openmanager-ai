@@ -1,0 +1,29 @@
+{
+  "runTitle": "Cloud Run Direct API - 31차 v8.12.107 수정 재검증",
+  "owner": "claude",
+  "source": "direct-api",
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-490817238363.asia-northeast1.run.app",
+    "frontend": "Vercel v8.12.107",
+    "backend": "Cloud Run v8.12.107",
+    "branch": "main",
+    "commitSha": "704fcd6e43"
+  },
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "coveredSurfaces": [
+    "Q-NEW134: 전체 평균 메모리+디스크 동시(Q-NEW119 fix) → 평균 MEM 45.9%+DISK 36.1%, deterministic/monitoring-metric-current 1ms (PASS)",
+    "Q-NEW135: 디스크 빠르게 증가(Q-NEW121 fix) → monitoring-metric-trend 4ms, 증가폭 상위 5대 표시 (PASS)",
+    "Q-NEW136: DB vs cache 그룹 경고 수 비교(Q-NEW122 fix) → cache 1대>DB 0대, deterministic/monitoring-server-health 1ms (PASS)"
+  ],
+  "skippedSurfaces": [
+    "전체 regression suite (targeted 세션)"
+  ]
+}

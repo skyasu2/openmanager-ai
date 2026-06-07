@@ -1,0 +1,66 @@
+{
+  "runTitle": "Cloud Run Direct API - 30차 AI 어시스턴트 평가 (v8.12.106)",
+  "owner": "claude",
+  "source": "direct-api",
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-490817238363.asia-northeast1.run.app",
+    "frontend": "Cloud Run Direct API",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "commitSha": "c998cc7b8ad6b9faaf3d0eac26705ec4a8c38153"
+  },
+  "checks": {
+    "total": 11,
+    "passed": 8,
+    "failed": 1
+  },
+  "coveredSurfaces": [
+    "Q-NEW123: 가장 위험한 서버 → cache-redis-dc1-01 warning, deterministic/monitoring-server-health 9ms (PASS)",
+    "Q-NEW124: 메모리 순위 전체 → 상위 3대 정확, deterministic/monitoring-metric-ranking (PASS)",
+    "Q-NEW125: DB 디스크 50% 이상 → backup 70%+primary 62%, 2대 정확, deterministic (PASS)",
+    "Q-NEW126: cache 그룹 평균 메모리+CPU 동시 → 54%+35%, 신규 강점: 그룹+이중 메트릭 동시 집계, deterministic (PASS)",
+    "Q-NEW127: api-was-dc1-01 CPU 왜 높아? (RCA) → zai LLM 10초+응답 거의 비어있음, P4 재확인 (PARTIAL)",
+    "Q-NEW128: 네트워크 I/O 상위 서버 3대 → LLM fallback 3초, 3대 generic, 랭킹 미처리 (FAIL)",
+    "Q-NEW129: storage 그룹+AND 복합 조건(CPU>=40% AND DISK>=40%) → 0대 정확, deterministic (PASS)",
+    "Q-NEW130: CPU 상위 5대+하위 5대 동시 → 정확, deterministic/monitoring-metric-ranking. P25 재확인 (PASS)",
+    "Q-NEW131: 서버 총 몇 대? → mistral LLM 1700ms이지만 18대+경고1대 정확 (PARTIAL)",
+    "Q-NEW132: 오프라인 서버 있어? → 0대 정확 (PASS)",
+    "Q-NEW133: 디스크 24h 전보다 많이 늘어난 서버 → monitoring-metric-trend 정상 라우팅. Q-NEW121(빠르게 증가) 표현 차이 원인 확인 (PASS)"
+  ],
+  "skippedSurfaces": [
+    "UI/accordion/markdown 렌더링 항목 (API 전용 세션)"
+  ],
+  "aiLatencyObservations": [
+    {
+      "surface": "Q-NEW123 server-health",
+      "agent": "Metrics Query",
+      "provider": "deterministic",
+      "model": "monitoring-server-health",
+      "route": "/api/ai/supervisor",
+      "source": "API metadata",
+      "latencyMs": 9
+    },
+    {
+      "surface": "Q-NEW126 dual-metric group",
+      "agent": "Metrics Query",
+      "provider": "deterministic",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor",
+      "source": "API metadata",
+      "latencyMs": 1
+    },
+    {
+      "surface": "Q-NEW127 RCA (P4)",
+      "agent": "zai fallback",
+      "provider": "zai",
+      "model": "glm-4.5-flash",
+      "route": "/api/ai/supervisor",
+      "source": "API metadata",
+      "latencyMs": 10495
+    }
+  ]
+}
