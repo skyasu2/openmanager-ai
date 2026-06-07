@@ -99,6 +99,11 @@ export function parseCurrentMetricsMessage(
 
   if (isHealthyOnlyServerListMessage(message)) {
     const healthGroupTarget = inferGroupTargetFromMessage(message);
+    // 명시적 "TOP N / 상위 N대" 패턴이 있을 때만 rankCount 추출
+    const explicitRankMatch = /(?:상위|top|최상위)\s*(\d{1,2})|(\d{1,2})\s*(?:개|대)\s*(?:만|씩|순)?/i.exec(message);
+    const healthyRankCount = explicitRankMatch
+      ? Number(explicitRankMatch[1] ?? explicitRankMatch[2])
+      : undefined;
     return {
       intent: 'server_health',
       capabilityId: MONITORING_SERVER_HEALTH_CAPABILITY_ID,
@@ -106,6 +111,7 @@ export function parseCurrentMetricsMessage(
       answerQuery: message,
       statusFilter: 'healthy-only',
       ...(healthGroupTarget && { targets: [healthGroupTarget] }),
+      ...(healthyRankCount && { rankCount: healthyRankCount }),
     };
   }
 

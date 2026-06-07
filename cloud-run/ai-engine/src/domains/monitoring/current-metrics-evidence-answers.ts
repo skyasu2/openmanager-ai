@@ -497,14 +497,19 @@ export function buildHealthyOnlyServerAnswer(params: {
   );
   if (servers.length === 0) return null;
 
-  const rows = servers.filter(isHealthyServer).sort((left, right) =>
+  const allHealthy = servers.filter(isHealthyServer).sort((left, right) =>
     left.id.localeCompare(right.id)
   );
+  const rankCount = params.parsed.rankCount;
+  const rows = rankCount ? allHealthy.slice(0, rankCount) : allHealthy;
   const timeLabel = readSnapshotTimeLabel(params.snapshot);
+  const listLabel = rankCount
+    ? `정상 범위 서버 상위 ${rankCount}대`
+    : '정상 범위 서버 목록';
   const header = [
-    '📋 **정상 범위 서버 목록**',
+    `📋 **${listLabel}**`,
     '• 기준: 상태 online, CPU < 80%, 메모리 < 90%, 디스크 < 85%',
-    `• 대상: ${targetLabel} 중 ${rows.length}대${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
+    `• 대상: ${targetLabel} 중 ${rankCount ? `상위 ${rankCount}대 / 총 ${allHealthy.length}대` : `${rows.length}대`}${timeLabel ? ` · 데이터 슬롯 ${timeLabel} KST` : ''}`,
   ];
 
   if (rows.length === 0) {

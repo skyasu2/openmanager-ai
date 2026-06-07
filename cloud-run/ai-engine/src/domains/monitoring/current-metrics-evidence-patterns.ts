@@ -21,7 +21,7 @@ export const SERVER_DETAIL_PATTERN =
 export const ACTION_NEEDED_PATTERN =
   /(?:지금|현재|당장|즉시).{0,32}(?:조치|대응|위험).{0,32}(?:필요|해야|대상|있|시급|서버)|(?:조치|대응).{0,16}(?:필요한|필요|대상|시급).{0,16}(?:서버|순위)|(?:서버|대상).{0,16}(?:조치|대응).{0,16}(?:필요|시급|우선순위|순위)|(?:가장\s*)?(?:위험한|위험도\s*높은).{0,24}(?:서버|대상|순위)|(?:어떤|어느|무슨)?\s*(?:서버|대상).{0,24}(?:가장\s*)?(?:위험한|위험도\s*높은)|문제\s*(?:있는|가\s*있는|있\s*는)\s*(?:서버|대상|시스템)|(?:서버|대상|시스템).{0,20}문제\s*(?:있|가\s*있)|이상\s*(?:있는|이\s*있는)\s*(?:서버|대상)|비정상\s*(?:서버|대상|인\s*서버)|장애\s*(?:있는|가\s*있는)\s*(?:서버|대상)|immediate\s+action|urgent\s+action|action\s+needed|most\s+at\s+risk|problematic\s+servers?|faulty\s+servers?|unhealthy\s+servers?/i;
 export const HEALTHY_ONLY_PATTERN =
-  /정상\s*범위|이상\s*없는|문제\s*없는|괜찮은\s*서버|정상.{0,12}서버|healthy|normal|ok\s+servers?/i;
+  /정상\s*범위|이상\s*없는|문제\s*없는|괜찮은\s*서버|정상.{0,12}서버|healthy|normal|ok\s+servers?|(?:건강(?:한)?|안정(?:적(?:인)?)?)\s*(?:서버|server)/i;
 export const HEALTHY_ONLY_EXCLUSION_PATTERN =
   /비정상|문제\s*있는|위험|경고|warning|critical|offline|장애|포화|병목/i;
 export const COMPOSITE_LOAD_RANKING_PATTERN =
