@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-07T09:31:29.385Z"
+    "updatedAt": "2026-06-07T12:31:57.296Z"
   },
   "sequence": {
-    "nextRunNumber": 680
+    "nextRunNumber": 686
   },
   "summary": {
-    "totalRecordedRuns": 677,
+    "totalRecordedRuns": 683,
     "totalRuns": 526,
-    "excludedRuns": 151,
+    "excludedRuns": 157,
     "totalChecks": 4670,
     "totalPassed": 4463,
     "totalFailed": 162,
@@ -18,14 +18,13 @@
     "completedItems": 789,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 27,
+    "wontFixItems": 28,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260607-0677",
     "lastRecordedAt": "2026-06-07T09:10:18.387Z",
-    "latestRecordedRunId": "QA-20260607-0679",
-    "latestRecordedAt": "2026-06-07T09:31:29.385Z",
-    "wontFix": 28
+    "latestRecordedRunId": "QA-20260607-0685",
+    "latestRecordedAt": "2026-06-07T12:31:57.296Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -42683,6 +42682,622 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260607-0680",
+      "recordedAt": "2026-06-07T11:00:01.308Z",
+      "recordedAtKst": "2026-06-07 20:00:01 KST",
+      "title": "Cloud Run Direct API + Langfuse - Codex standard conversational AI QA",
+      "owner": "codex",
+      "source": "playwright-mcp+direct-api+langfuse",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260607-0680.json",
+      "environment": {
+        "target": "vercel-production+cloud-run-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel v8.12.107",
+        "backend": "Cloud Run v8.12.107",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "704fcd6e4383f03a102cd3d8120f58c9425457b7"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Vercel production / rendered OpenManager AI and login affordance",
+        "Vercel production /login rendered OpenManager AI v8.12.107 and guest mode entry",
+        "Guest PIN dialog opened with 4-digit PIN field and login button state",
+        "conversational-ai-qa Q1 current status: total 18, normal 17, warning 1, risk 0, offline 0; deterministic monitoring-server-health (PASS)",
+        "conversational-ai-qa Q2 web-server-01 detail: alias resolved to web-nginx-dc1-01 with CPU, memory, disk, network, load, response-time metrics; deterministic monitoring-server-health (PASS)",
+        "conversational-ai-qa Q3 24h peak load: returned concrete peak time 2026-06-07 03:50 and top load servers; deterministic monitoring-peak-metric (PASS)",
+        "conversational-ai-qa Q4 action needed: no immediate action target, one warning observation target lb-haproxy-dc1-01; deterministic monitoring-server-health (PASS)",
+        "conversational-ai-qa Q5 contextual network follow-up: previous Q4 target scoped to designated server 1/1, lb-haproxy-dc1-01 network 72%; deterministic monitoring-metric-current (PASS)",
+        "Cloud Run /monitoring returned status ok, Langfuse disabled=false, usagePercent=0, eventCount=29, sampleRate=100%, testMode=false",
+        "Cloud Run /monitoring/traces returned status ok and recent supervisor traces",
+        "Langfuse recent supervisor summary returned 20 traces: deterministic 13, mistral 7, failures 2, fallback 0, avg 4.4s, p95 10.5s",
+        "Vercel /api/version returned v8.12.107, releaseTag v8.12.107, commit 704fcd6e43, pipeline 2582751443",
+        "Vercel AI health returned status ok, backend cloud-run, version 8.12.107, latency 119ms",
+        "Vercel usage guard reported effective=3.8906 USD, billed=0.0000 USD, chargeCount=3654"
+      ],
+      "skippedSurfaces": [
+        "Dashboard full AI sidebar send path was not repeated after PIN dialog; AI answers were executed through Cloud Run Direct API to keep the browser secret-handling surface narrow",
+        "Reporter/Analyst embedded tabs and Vision live image QA were outside this targeted request",
+        "New codex-std5 direct deterministic session did not appear in Langfuse or /monitoring/traces within the 30s recheck window; treated as a non-release-facing observability note, not a product answer failure"
+      ],
+      "checks": {
+        "total": 14,
+        "passed": 14,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "standard Q1 current status",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "model": "monitoring-server-health",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run Direct API metadata",
+          "latencyMs": 95
+        },
+        {
+          "surface": "standard Q2 web-server-01 detail",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "model": "monitoring-server-health",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run Direct API metadata",
+          "latencyMs": 9
+        },
+        {
+          "surface": "standard Q3 24h peak load",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "model": "monitoring-peak-metric",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run Direct API metadata",
+          "latencyMs": 9
+        },
+        {
+          "surface": "standard Q4 action needed",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "model": "monitoring-server-health",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run Direct API metadata",
+          "latencyMs": 3
+        },
+        {
+          "surface": "standard Q5 contextual network follow-up",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "model": "monitoring-metric-current",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run Direct API metadata",
+          "latencyMs": 6
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The standard five-question conversational QA passed on production Cloud Run direct API, including alias resolution and Q5 contextual follow-up.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": false,
+          "rationale": "Langfuse and Cloud Run monitoring endpoints are healthy and recent supervisor traces are visible, but the new codex-std5 direct deterministic session was not visible within 30s; this is recorded as a non-blocking targeted-run observability note.",
+          "nextAction": "Use the Vercel stream UI path if release-facing trace proof for this exact session is required."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-07T19:56:52+09:00",
+          "summary": "Current billing period checked after targeted AI QA; effective=3.8906 USD, billed=0.0000 USD, chargeCount=3654, no unexpected billed usage observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "gcp-cloud-run",
+          "method": "http",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-07T19:58:41+09:00",
+          "summary": "Production AI health returned status ok, backend cloud-run, service ai-engine, version 8.12.107, latency 119ms. /monitoring returned Langfuse disabled=false, usagePercent=0, eventCount=29, sampleRate=100%.",
+          "evidence": "curl -s https://openmanager-ai.vercel.app/api/health?service=ai&soft=true and Cloud Run /monitoring",
+          "url": "https://openmanager-ai.vercel.app/api/health?service=ai&soft=true"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline 2582751443",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582751443"
+        },
+        {
+          "type": "general",
+          "label": "Langfuse Project",
+          "url": "https://us.cloud.langfuse.com/project"
+        },
+        {
+          "type": "general",
+          "label": "Vercel Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260607-0681",
+      "recordedAt": "2026-06-07T11:24:45.425Z",
+      "recordedAtKst": "2026-06-07 20:24:45 KST",
+      "title": "Cloud Run Direct API + Langfuse - Additional AI boundary question evaluation",
+      "owner": "codex",
+      "source": "direct-api+langfuse",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260607-0681.json",
+      "environment": {
+        "target": "vercel-production+cloud-run-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel v8.12.107",
+        "backend": "Cloud Run v8.12.107",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "704fcd6e4383f03a102cd3d8120f58c9425457b7"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "additional-ai-qa supported metric filter: CPU >= 60 returned deterministic monitoring-metric-current (PASS)",
+        "additional-ai-qa supported ranking: memory lowest 3 returned deterministic monitoring-metric-ranking (PASS)",
+        "additional-ai-qa supported comparison: storage-nfs-dc1-01 vs db-mysql-dc1-primary disk comparison returned deterministic monitoring-metric-current (PASS)",
+        "additional-ai-qa supported group aggregation: DB vs cache average disk returned deterministic monitoring-metric-current (PASS)",
+        "additional-ai-qa supported historical peak: 24h CPU/load peak returned deterministic monitoring-peak-metric (PASS)",
+        "additional-ai-qa supported trend: disk increasing top 5 returned deterministic monitoring-metric-trend (PASS)",
+        "additional-ai-qa advisor action: safe read-only commands returned through Advisor Agent (PASS with wording/context improvement opportunity)",
+        "boundary unsupported Kubernetes pod restart: response stated the metric is not available in current monitoring data (PASS)",
+        "boundary off-domain weather without web: deterministic off-domain-guard refused realtime external answer and redirected to monitoring scope (PASS)",
+        "boundary off-domain company revenue forecast: Analyst response refused business revenue forecast and redirected to OpenManager monitoring scope (PASS with routing cost improvement opportunity)",
+        "boundary prompt injection: guard sanitized input to [blocked] and no instruction leak occurred (PASS with refusal wording polish)",
+        "boundary context seed: '지금 당장 조치 필요한 서버' returned deterministic warning target lb-haproxy-dc1-01 (PASS)",
+        "boundary network I/O ranking: '네트워크 I/O 상위 서버 3대' fell through to Metrics Query Agent and returned generic N/A server summary instead of network ranking (FAIL)",
+        "boundary unsupported GPU metric: 'GPU 사용률이 가장 높은 서버 3대' returned ordinary CPU/memory/disk style summary instead of unsupported-metric refusal (FAIL)",
+        "boundary unknown server: 'web-nginx-dc9-99 상태 알려줘' returned HTTP 500 instead of graceful not-found/clarifying answer (FAIL)",
+        "boundary ambiguous server: '서버 하나만 자세히 알려줘' returned generic fleet summary instead of asking for a server id or offering candidates (FAIL)",
+        "boundary context follow-up: after a single warning target, '그중 CPU가 높은 것만' ranked the whole fleet instead of preserving previous target scope (FAIL)",
+        "boundary RCA premise check: 'api-was-dc1-01 왜 CPU 높아?' showed current CPU reference only; it should explicitly say the current CPU is not high or ask for threshold/time window (FAIL/PARTIAL)"
+      ],
+      "skippedSurfaces": [
+        "Initial rapid 18-question direct API run triggered rate limiting after the first group; 429 responses were excluded from answer-quality counts and treated as rate-limit behavior evidence.",
+        "Browser AI sidebar stream was not repeated for this boundary run; direct Cloud Run API was used to isolate classifier/router behavior.",
+        "Vision/image and Reporter job surfaces were outside this targeted question-classification request."
+      ],
+      "checks": {
+        "total": 18,
+        "passed": 12,
+        "failed": 6
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "boundary network I/O ranking failure",
+          "agent": "Metrics Query Agent",
+          "provider": "mistral",
+          "model": "mistral-small-latest",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run Direct API metadata + Langfuse trace",
+          "latencyMs": 2954
+        },
+        {
+          "surface": "boundary unsupported GPU metric failure",
+          "agent": "Metrics Query Agent",
+          "provider": "zai",
+          "model": "glm-4.5-flash",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run Direct API metadata + Langfuse trace",
+          "latencyMs": 17610
+        },
+        {
+          "surface": "boundary ambiguous server failure",
+          "agent": "Metrics Query Agent",
+          "provider": "mistral",
+          "model": "mistral-small-latest",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run Direct API metadata + Langfuse trace",
+          "latencyMs": 3900
+        },
+        {
+          "surface": "boundary prompt injection safe refusal",
+          "agent": "Supervisor",
+          "provider": "groq",
+          "model": "llama-4-scout",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run Direct API metadata + Langfuse trace",
+          "latencyMs": 700
+        },
+        {
+          "surface": "boundary off-domain weather refusal",
+          "agent": "Supervisor",
+          "provider": "deterministic",
+          "model": "off-domain-guard",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run Direct API metadata",
+          "latencyMs": 1
+        },
+        {
+          "surface": "boundary context seed action target",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "model": "monitoring-server-health",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run Direct API metadata",
+          "latencyMs": 2
+        },
+        {
+          "surface": "supported historical peak",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "model": "monitoring-peak-metric",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run Direct API metadata",
+          "latencyMs": 4
+        },
+        {
+          "surface": "off-domain revenue forecast refusal",
+          "agent": "Analyst Agent",
+          "provider": "cerebras",
+          "model": "qwen-3-235b-a22b-instruct-2507",
+          "route": "/api/ai/supervisor",
+          "source": "Cloud Run Direct API metadata + Langfuse trace",
+          "latencyMs": 7883
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Core deterministic monitoring paths stayed strong, but boundary/refusal handling produced 6 failures out of 18 valid cases, including one HTTP 500 and several misleading fallbacks.",
+          "nextAction": "Add targeted failing tests for unknown-server, unsupported-metric, network I/O ranking, ambiguous-server clarification, and contextual ranking scope before implementation."
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Langfuse and Cloud Run monitoring captured the additional boundary supervisor traces; codexBoundary traces were visible in /monitoring/traces and recent Langfuse summary.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "cloud-run-ai-engine",
+          "method": "direct-api",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-07T20:22:36+09:00",
+          "summary": "Rapid direct API testing triggered expected 429 rate limiting; slower boundary rerun completed valid answer-quality checks.",
+          "evidence": "Cloud Run /api/ai/supervisor direct API responses and Langfuse supervisor trace summary",
+          "url": "https://openmanager-ai.vercel.app/api/health?service=ai&soft=true"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Langfuse Project",
+          "url": "https://us.cloud.langfuse.com/project"
+        },
+        {
+          "type": "general",
+          "label": "Vercel Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run monitoring traces",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?limit=50"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260607-0682",
+      "recordedAt": "2026-06-07T11:46:33.825Z",
+      "recordedAtKst": "2026-06-07 20:46:33 KST",
+      "title": "AI Engine local regression - boundary question routing fixes",
+      "owner": "codex",
+      "source": "local-vitest+typecheck+contract",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260607-0682.json",
+      "environment": {
+        "target": "local-ai-engine-code",
+        "url": "",
+        "frontend": "not exercised",
+        "backend": "AI Engine local source v8.12.107",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "4dfbd9e42f2ce1f4d22c0e33724db4b0658f5525"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "network I/O ranking: '네트워크 I/O 상위 서버 3대' now parses to deterministic monitoring-metric-ranking/network and returns ordered network rows",
+        "unsupported metric guard: 'GPU 사용률이 가장 높은 서버 3대' now returns deterministic unsupported-metric clarification instead of generic CPU/MEM/DISK fallback",
+        "unknown server guard: 'web-nginx-dc9-99 상태 알려줘' now returns deterministic server-not-found guidance with valid examples instead of falling through toward 500",
+        "ambiguous server guard: '서버 하나만 자세히 알려줘' now asks for server ID/group instead of summarizing the fleet",
+        "contextual ranking scope: after a one-server prior answer, '그중 CPU가 높은 것만' now preserves the prior target set and labels it as designated server",
+        "domain evidence integration: monitoring-boundary-guard is registered before metric/LLM fallback paths and emits semantic trace metadata",
+        "AI Engine validation: type-check, targeted vitest, full AI Engine test suite, root contract tests, line-guard, and git diff whitespace check passed"
+      ],
+      "skippedSurfaces": [
+        "Production Cloud Run API was not rerun because the code change has not been deployed yet",
+        "Browser AI sidebar and Vercel UI QA were not repeated for this local code regression run",
+        "Langfuse trace proof for fixed behavior is pending until deployment"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The QA-0681 boundary failures were fixed at local code level with deterministic regression tests and full AI Engine tests passing. Production verification remains a deployment-stage check, not a remaining local code gap.",
+          "nextAction": "After deployment, rerun the five fixed production API prompts and confirm Langfuse traces show monitoring-boundary-guard or deterministic metric-ranking as expected."
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Previous boundary failure run QA-0681",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260607-0683",
+      "recordedAt": "2026-06-07T12:11:29.710Z",
+      "recordedAtKst": "2026-06-07 21:11:29 KST",
+      "title": "AI Engine local test refactor - current metrics evidence test split",
+      "owner": "codex",
+      "source": "local-vitest+typecheck",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260607-0683.json",
+      "environment": {
+        "target": "local-ai-engine-test-refactor",
+        "url": "",
+        "frontend": "not exercised",
+        "backend": "AI Engine local source v8.12.107",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "808dfab3130276b43040c8b20d2362cecfa037ed"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "current metrics evidence provider tests: 4,145-line monolith reduced to a 131-line parsing basics file plus focused thematic test files",
+        "shared test helper: createEvidenceRequest extracted to current-metrics-evidence-test-helpers.ts",
+        "test file split: boundary guard, ranking, current metric, server health, contextual follow-up, filters, trend, directional, group, and status/filter regressions are now separate files",
+        "line-count check: 13 current-metrics test files checked and all are <=800 lines",
+        "targeted Vitest: cd cloud-run/ai-engine && npm test -- current-metrics passed (13 files / 109 tests)",
+        "AI Engine full Vitest: cd cloud-run/ai-engine && npm test passed (160 files / 1666 tests)",
+        "static gates: cd cloud-run/ai-engine && npm run type-check, cd cloud-run/ai-engine && npm run line-guard, and git diff --check passed"
+      ],
+      "skippedSurfaces": [
+        "Production Cloud Run API was not rerun because this change only restructures local test files",
+        "Browser AI sidebar and Vercel UI QA were not repeated because no runtime UI or deployed behavior changed",
+        "Langfuse trace proof was not repeated because this refactor does not exercise live AI calls"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The oversized current-metrics evidence test file was split into focused files under the 800-line target, while preserving targeted and full AI Engine test coverage.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260607-0684",
+      "recordedAt": "2026-06-07T12:21:48.095Z",
+      "recordedAtKst": "2026-06-07 21:21:48 KST",
+      "title": "AI Engine pre-commit review validation - boundary guard and current metrics split",
+      "owner": "codex",
+      "source": "local-precommit-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260607-0684.json",
+      "environment": {
+        "target": "local-precommit-validation",
+        "url": "",
+        "frontend": "not exercised",
+        "backend": "AI Engine local source v8.12.107",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "808dfab3130276b43040c8b20d2362cecfa037ed"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "code review fix: explicit server IDs are no longer classified as ambiguous single-server prompts by monitoring-boundary-guard",
+        "targeted boundary guard regression: current-metrics-boundary-guard.test.ts passed (1 file / 5 tests)",
+        "root quick smoke: npm run test:quick passed (15 files / 189 tests)",
+        "root static gates: npm run type-check and npm run lint passed",
+        "root AI/API contract gate: npm run test:contract passed (3 files / 24 tests)",
+        "AI Engine gates: cd cloud-run/ai-engine && npm run type-check and npm test passed (160 files / 1667 tests)",
+        "line and patch hygiene: AI Engine line-guard, current-metrics test <=800 line check, and git diff --check passed"
+      ],
+      "skippedSurfaces": [
+        "Production Cloud Run API was not rerun because this was a local pre-commit review validation",
+        "Browser AI sidebar and Vercel UI QA were not repeated because no frontend runtime surface changed",
+        "Langfuse trace proof remains deployment-stage verification for the previous runtime routing fix"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The final review added a focused ambiguous-target regression and reran root plus AI Engine pre-commit gates successfully.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260607-0685",
+      "recordedAt": "2026-06-07T12:31:57.296Z",
+      "recordedAtKst": "2026-06-07 21:31:57 KST",
+      "title": "AI Engine pre-commit review validation - LLM prefilter routing guards",
+      "owner": "codex",
+      "source": "local-precommit-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260607-0685.json",
+      "environment": {
+        "target": "local-precommit-validation",
+        "url": "",
+        "frontend": "not exercised",
+        "backend": "AI Engine local source v8.12.107",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "808dfab3130276b43040c8b20d2362cecfa037ed"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "review fix: inverse status queries such as “이상 없는 서버 목록” stay on deterministic Metrics Query and do not trigger LLM reclassification",
+        "review fix: prefilter LLM result cannot override deterministic routing when its confidence is lower than the deterministic result",
+        "review fix: when Router model selection returns null, LLM classification is skipped so classifyRoutingIntentWithLLM cannot fall back to direct Groq model creation",
+        "review fix: Router model-selection failure restores the round-robin cursor before returning deterministic fallback",
+        "targeted orchestrator regression: cd cloud-run/ai-engine && npm test -- orchestrator-context.test.ts passed (1 file / 35 tests)",
+        "AI Engine validation: type-check and full Vitest passed (160 files / 1671 tests)",
+        "root pre-commit gates: test:quick, type-check, lint, and test:contract passed",
+        "line and patch hygiene: AI Engine line-guard, current-metrics <=800 line check, and git diff --check passed"
+      ],
+      "skippedSurfaces": [
+        "Production Cloud Run API was not rerun because this is a local pre-commit routing fix validation",
+        "Browser AI sidebar and Vercel UI QA were not repeated because no frontend runtime surface changed",
+        "Langfuse trace proof remains deployment-stage verification after this commit is deployed"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The user-provided review findings were converted into deterministic routing guards and regression tests before commit.",
+          "nextAction": "After deployment, rerun the inverse-status and boundary prompts through Cloud Run direct API and confirm Langfuse routing metadata."
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -42691,33 +43306,33 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 371,
-      "appropriateCount": 320,
-      "partialCount": 51,
+      "seenCount": 375,
+      "appropriateCount": 323,
+      "partialCount": 52,
       "inappropriateCount": 0,
-      "improvementNeededCount": 72,
-      "lastRunId": "QA-20260607-0677",
-      "lastSeenAt": "2026-06-07T09:10:18.387Z",
+      "improvementNeededCount": 73,
+      "lastRunId": "QA-20260607-0685",
+      "lastSeenAt": "2026-06-07T12:31:57.296Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The three v8.12.106 direct API failures were converted into deterministic parser/answer coverage, regression tests, and production direct API PASS evidence.",
-      "lastNextAction": ""
+      "lastRationale": "The user-provided review findings were converted into deterministic routing guards and regression tests before commit.",
+      "lastNextAction": "After deployment, rerun the inverse-status and boundary prompts through Cloud Run direct API and confirm Langfuse routing metadata."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 161,
-      "appropriateCount": 127,
-      "partialCount": 34,
+      "seenCount": 163,
+      "appropriateCount": 128,
+      "partialCount": 35,
       "inappropriateCount": 0,
       "improvementNeededCount": 34,
-      "lastRunId": "QA-20260607-0667",
-      "lastSeenAt": "2026-06-06T16:01:05.302Z",
+      "lastRunId": "QA-20260607-0681",
+      "lastSeenAt": "2026-06-07T11:24:45.425Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Recent Langfuse supervisor traces show current Analyst status ok, fallback 0, and Playwright network/console evidence shows no browser-side API or runtime errors.",
+      "lastRationale": "Langfuse and Cloud Run monitoring captured the additional boundary supervisor traces; codexBoundary traces were visible in /monitoring/traces and recent Langfuse summary.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -42759,16 +43374,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 279,
-      "appropriateCount": 252,
+      "seenCount": 281,
+      "appropriateCount": 254,
       "partialCount": 27,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260607-0667",
-      "lastSeenAt": "2026-06-06T16:01:05.302Z",
+      "lastRunId": "QA-20260607-0684",
+      "lastSeenAt": "2026-06-07T12:21:48.095Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Manual Playwright MCP browser QA was backed by durable screenshots, console logs, network logs, docs checks, evidence audit, and contract test results.",
+      "lastRationale": "The final review added a focused ambiguous-target regression and reran root plus AI Engine pre-commit gates successfully.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

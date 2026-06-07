@@ -7,6 +7,7 @@ const {
   mockAppendRecommendedCommands,
   mockUpdateSessionContext,
   mockClassifyRoutingIntentWithLLM,
+  mockSelectTextModel,
 } = vi.hoisted(() => ({
   mockAppendAffectedServers: vi.fn(),
   mockAppendAnomalies: vi.fn(),
@@ -14,6 +15,7 @@ const {
   mockAppendRecommendedCommands: vi.fn(),
   mockUpdateSessionContext: vi.fn(),
   mockClassifyRoutingIntentWithLLM: vi.fn(),
+  mockSelectTextModel: vi.fn(),
 }));
 
 vi.mock('./context-store', () => ({
@@ -35,14 +37,31 @@ vi.mock('../routing/llm-intent-classifier', () => ({
     mockClassifyRoutingIntentWithLLM(...args),
 }));
 
+vi.mock('./config/agent-model-selectors', () => ({
+  selectTextModel: (...args: unknown[]) => mockSelectTextModel(...args),
+}));
+
 import {
   preFilterQuery,
   preFilterQueryWithLLM,
   saveAgentFindingsToContext,
 } from './orchestrator-context';
+import {
+  getRoundRobinCursor,
+  resetRoundRobinCursor,
+} from './config/round-robin-provider-selector';
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockClassifyRoutingIntentWithLLM.mockReset();
+  mockSelectTextModel.mockReset();
+  resetRoundRobinCursor();
+  mockSelectTextModel.mockReturnValue({
+    model: { modelId: 'test-router-model' },
+    provider: 'groq',
+    modelId: 'test-router-model',
+    capabilities: {},
+  });
 });
 
 describe('preFilterQuery', () => {
@@ -242,6 +261,28 @@ describe('preFilterQuery', () => {
     expect(mockClassifyRoutingIntentWithLLM).not.toHaveBeenCalled();
   });
 
+  it.each([
+    '이상 없는 서버 목록',
+    '이상 없는 서버들의 트렌드 변화',
+    '문제 없는 서버만 보여줘',
+  ])(
+    'keeps inverse status filter queries on deterministic Metrics Query routing: %s',
+    async (query) => {
+      mockClassifyRoutingIntentWithLLM.mockResolvedValueOnce({
+        suggestedAgent: 'Analyst Agent',
+        confidence: 0.91,
+      });
+
+      const result = await preFilterQueryWithLLM(query);
+
+      expect(result).toEqual(preFilterQuery(query));
+      expect(result.suggestedAgent).toBe('Metrics Query Agent');
+      expect(result.confidence).toBe(0.88);
+      expect(mockSelectTextModel).not.toHaveBeenCalled();
+      expect(mockClassifyRoutingIntentWithLLM).not.toHaveBeenCalled();
+    }
+  );
+
   it('uses high-confidence LLM classification for unclear routing expressions', async () => {
     mockClassifyRoutingIntentWithLLM.mockResolvedValueOnce({
       suggestedAgent: 'Metrics Query Agent',
@@ -274,6 +315,17 @@ describe('preFilterQuery', () => {
     const result = await preFilterQueryWithLLM('새로운 운영 표현');
 
     expect(result).toEqual(preFilterQuery('새로운 운영 표현'));
+  });
+
+  it('skips LLM classification and restores provider rotation when no router model is available', async () => {
+    mockSelectTextModel.mockReturnValueOnce(null);
+
+    const result = await preFilterQueryWithLLM('DB vs Cache 비교');
+
+    expect(result).toEqual(preFilterQuery('DB vs Cache 비교'));
+    expect(mockSelectTextModel).toHaveBeenCalledTimes(1);
+    expect(mockClassifyRoutingIntentWithLLM).not.toHaveBeenCalled();
+    expect(getRoundRobinCursor()).toBe(0);
   });
 });
 

@@ -1,0 +1,189 @@
+{
+  "runId": "QA-20260607-0681",
+  "recordedAt": "2026-06-07T11:24:45.425Z",
+  "recordedAtKst": "2026-06-07 20:24:45 KST",
+  "runTitle": "Cloud Run Direct API + Langfuse - Additional AI boundary question evaluation",
+  "owner": "codex",
+  "source": "direct-api+langfuse",
+  "environment": {
+    "target": "vercel-production+cloud-run-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel v8.12.107",
+    "backend": "Cloud Run v8.12.107",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "704fcd6e4383f03a102cd3d8120f58c9425457b7"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "additional-ai-qa supported metric filter: CPU >= 60 returned deterministic monitoring-metric-current (PASS)",
+    "additional-ai-qa supported ranking: memory lowest 3 returned deterministic monitoring-metric-ranking (PASS)",
+    "additional-ai-qa supported comparison: storage-nfs-dc1-01 vs db-mysql-dc1-primary disk comparison returned deterministic monitoring-metric-current (PASS)",
+    "additional-ai-qa supported group aggregation: DB vs cache average disk returned deterministic monitoring-metric-current (PASS)",
+    "additional-ai-qa supported historical peak: 24h CPU/load peak returned deterministic monitoring-peak-metric (PASS)",
+    "additional-ai-qa supported trend: disk increasing top 5 returned deterministic monitoring-metric-trend (PASS)",
+    "additional-ai-qa advisor action: safe read-only commands returned through Advisor Agent (PASS with wording/context improvement opportunity)",
+    "boundary unsupported Kubernetes pod restart: response stated the metric is not available in current monitoring data (PASS)",
+    "boundary off-domain weather without web: deterministic off-domain-guard refused realtime external answer and redirected to monitoring scope (PASS)",
+    "boundary off-domain company revenue forecast: Analyst response refused business revenue forecast and redirected to OpenManager monitoring scope (PASS with routing cost improvement opportunity)",
+    "boundary prompt injection: guard sanitized input to [blocked] and no instruction leak occurred (PASS with refusal wording polish)",
+    "boundary context seed: '지금 당장 조치 필요한 서버' returned deterministic warning target lb-haproxy-dc1-01 (PASS)",
+    "boundary network I/O ranking: '네트워크 I/O 상위 서버 3대' fell through to Metrics Query Agent and returned generic N/A server summary instead of network ranking (FAIL)",
+    "boundary unsupported GPU metric: 'GPU 사용률이 가장 높은 서버 3대' returned ordinary CPU/memory/disk style summary instead of unsupported-metric refusal (FAIL)",
+    "boundary unknown server: 'web-nginx-dc9-99 상태 알려줘' returned HTTP 500 instead of graceful not-found/clarifying answer (FAIL)",
+    "boundary ambiguous server: '서버 하나만 자세히 알려줘' returned generic fleet summary instead of asking for a server id or offering candidates (FAIL)",
+    "boundary context follow-up: after a single warning target, '그중 CPU가 높은 것만' ranked the whole fleet instead of preserving previous target scope (FAIL)",
+    "boundary RCA premise check: 'api-was-dc1-01 왜 CPU 높아?' showed current CPU reference only; it should explicitly say the current CPU is not high or ask for threshold/time window (FAIL/PARTIAL)"
+  ],
+  "skippedSurfaces": [
+    "Initial rapid 18-question direct API run triggered rate limiting after the first group; 429 responses were excluded from answer-quality counts and treated as rate-limit behavior evidence.",
+    "Browser AI sidebar stream was not repeated for this boundary run; direct Cloud Run API was used to isolate classifier/router behavior.",
+    "Vision/image and Reporter job surfaces were outside this targeted question-classification request."
+  ],
+  "checks": {
+    "total": 18,
+    "passed": 12,
+    "failed": 6
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "boundary network I/O ranking failure",
+      "agent": "Metrics Query Agent",
+      "provider": "mistral",
+      "model": "mistral-small-latest",
+      "route": "/api/ai/supervisor",
+      "source": "Cloud Run Direct API metadata + Langfuse trace",
+      "latencyMs": 2954
+    },
+    {
+      "surface": "boundary unsupported GPU metric failure",
+      "agent": "Metrics Query Agent",
+      "provider": "zai",
+      "model": "glm-4.5-flash",
+      "route": "/api/ai/supervisor",
+      "source": "Cloud Run Direct API metadata + Langfuse trace",
+      "latencyMs": 17610
+    },
+    {
+      "surface": "boundary ambiguous server failure",
+      "agent": "Metrics Query Agent",
+      "provider": "mistral",
+      "model": "mistral-small-latest",
+      "route": "/api/ai/supervisor",
+      "source": "Cloud Run Direct API metadata + Langfuse trace",
+      "latencyMs": 3900
+    },
+    {
+      "surface": "boundary prompt injection safe refusal",
+      "agent": "Supervisor",
+      "provider": "groq",
+      "model": "llama-4-scout",
+      "route": "/api/ai/supervisor",
+      "source": "Cloud Run Direct API metadata + Langfuse trace",
+      "latencyMs": 700
+    },
+    {
+      "surface": "boundary off-domain weather refusal",
+      "agent": "Supervisor",
+      "provider": "deterministic",
+      "model": "off-domain-guard",
+      "route": "/api/ai/supervisor",
+      "source": "Cloud Run Direct API metadata",
+      "latencyMs": 1
+    },
+    {
+      "surface": "boundary context seed action target",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-server-health",
+      "route": "/api/ai/supervisor",
+      "source": "Cloud Run Direct API metadata",
+      "latencyMs": 2
+    },
+    {
+      "surface": "supported historical peak",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-peak-metric",
+      "route": "/api/ai/supervisor",
+      "source": "Cloud Run Direct API metadata",
+      "latencyMs": 4
+    },
+    {
+      "surface": "off-domain revenue forecast refusal",
+      "agent": "Analyst Agent",
+      "provider": "cerebras",
+      "model": "qwen-3-235b-a22b-instruct-2507",
+      "route": "/api/ai/supervisor",
+      "source": "Cloud Run Direct API metadata + Langfuse trace",
+      "latencyMs": 7883
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Core deterministic monitoring paths stayed strong, but boundary/refusal handling produced 6 failures out of 18 valid cases, including one HTTP 500 and several misleading fallbacks.",
+      "nextAction": "Add targeted failing tests for unknown-server, unsupported-metric, network I/O ranking, ambiguous-server clarification, and contextual ranking scope before implementation."
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Langfuse and Cloud Run monitoring captured the additional boundary supervisor traces; codexBoundary traces were visible in /monitoring/traces and recent Langfuse summary.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "cloud-run-ai-engine",
+      "method": "direct-api",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-07T20:22:36+09:00",
+      "summary": "Rapid direct API testing triggered expected 429 rate limiting; slower boundary rerun completed valid answer-quality checks.",
+      "evidence": "Cloud Run /api/ai/supervisor direct API responses and Langfuse supervisor trace summary",
+      "url": "https://openmanager-ai.vercel.app/api/health?service=ai&soft=true"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Manual adjudication was applied because some automatic script matchers were intentionally loose and marked misleading fallback answers as pass.",
+    "Langfuse latest boundary summary after the rerun showed recent supervisor traces around 20:16-20:17 KST, including network I/O, GPU, Kubernetes, unknown-server, ambiguous-server, revenue, and security prompt cases.",
+    "Langfuse recent supervisor aggregate after the additional run: avg about 4.1s, p95 about 10.5s, failures 8, fallback 1, provider distribution deterministic 37, mistral 9, groq 3, rule-based 1.",
+    "Cloud Run /monitoring/traces?limit=50 returned status ok and showed codexBoundary=8 out of 40 recent traces.",
+    "Scorecard updated in Claude memory SSOT: Codex 30차 추가, v8.12.107, 91/100."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Langfuse Project",
+      "url": "https://us.cloud.langfuse.com/project"
+    },
+    {
+      "type": "general",
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run monitoring traces",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?limit=50"
+    }
+  ]
+}

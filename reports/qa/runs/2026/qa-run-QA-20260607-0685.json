@@ -1,0 +1,75 @@
+{
+  "runId": "QA-20260607-0685",
+  "recordedAt": "2026-06-07T12:31:57.296Z",
+  "recordedAtKst": "2026-06-07 21:31:57 KST",
+  "runTitle": "AI Engine pre-commit review validation - LLM prefilter routing guards",
+  "owner": "codex",
+  "source": "local-precommit-smoke",
+  "environment": {
+    "target": "local-precommit-validation",
+    "url": "",
+    "frontend": "not exercised",
+    "backend": "AI Engine local source v8.12.107",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "808dfab3130276b43040c8b20d2362cecfa037ed"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "review fix: inverse status queries such as “이상 없는 서버 목록” stay on deterministic Metrics Query and do not trigger LLM reclassification",
+    "review fix: prefilter LLM result cannot override deterministic routing when its confidence is lower than the deterministic result",
+    "review fix: when Router model selection returns null, LLM classification is skipped so classifyRoutingIntentWithLLM cannot fall back to direct Groq model creation",
+    "review fix: Router model-selection failure restores the round-robin cursor before returning deterministic fallback",
+    "targeted orchestrator regression: cd cloud-run/ai-engine && npm test -- orchestrator-context.test.ts passed (1 file / 35 tests)",
+    "AI Engine validation: type-check and full Vitest passed (160 files / 1671 tests)",
+    "root pre-commit gates: test:quick, type-check, lint, and test:contract passed",
+    "line and patch hygiene: AI Engine line-guard, current-metrics <=800 line check, and git diff --check passed"
+  ],
+  "skippedSurfaces": [
+    "Production Cloud Run API was not rerun because this is a local pre-commit routing fix validation",
+    "Browser AI sidebar and Vercel UI QA were not repeated because no frontend runtime surface changed",
+    "Langfuse trace proof remains deployment-stage verification after this commit is deployed"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The user-provided review findings were converted into deterministic routing guards and regression tests before commit.",
+      "nextAction": "After deployment, rerun the inverse-status and boundary prompts through Cloud Run direct API and confirm Langfuse routing metadata."
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Validation command: cd cloud-run/ai-engine && npm test -- orchestrator-context.test.ts -> 1 file / 35 tests passed",
+    "Validation command: cd cloud-run/ai-engine && npm run type-check -> passed",
+    "Validation command: cd cloud-run/ai-engine && npm test -> 160 files / 1671 tests passed",
+    "Validation command: npm run test:quick -> 15 files / 189 tests passed",
+    "Validation command: npm run type-check -> passed",
+    "Validation command: npm run lint -> passed",
+    "Validation command: npm run test:contract -> 3 files / 24 tests passed",
+    "Validation command: cd cloud-run/ai-engine && npm run line-guard -> warning only, no fail-threshold violations",
+    "Validation command: current-metrics test line-count check -> 13 files all <=800 lines",
+    "Validation command: git diff --check -> passed"
+  ],
+  "links": []
+}

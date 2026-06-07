@@ -35,6 +35,7 @@ import {
 } from '../../services/ai-sdk/supervisor-semantic-metadata';
 import { monitoringAgentRoleRegistry } from './agent-roles';
 import {
+  monitoringBoundaryGuardEvidenceProvider,
   monitoringMetricCurrentEvidenceProvider,
   monitoringMetricRankingEvidenceProvider,
   monitoringMetricTrendEvidenceProvider,
@@ -393,6 +394,7 @@ export const monitoringDomainPack: AssistantDomain = {
   intentParser: monitoringIntentParser,
   routingOverridePolicy: monitoringRoutingOverridePolicy,
   evidenceProviders: [
+    monitoringBoundaryGuardEvidenceProvider,
     monitoringPeakMetricEvidenceProvider,
     monitoringLocationLoadBalanceEvidenceProvider,
     monitoringCapacityForecastEvidenceProvider,

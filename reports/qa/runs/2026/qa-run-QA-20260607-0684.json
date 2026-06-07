@@ -1,0 +1,75 @@
+{
+  "runId": "QA-20260607-0684",
+  "recordedAt": "2026-06-07T12:21:48.095Z",
+  "recordedAtKst": "2026-06-07 21:21:48 KST",
+  "runTitle": "AI Engine pre-commit review validation - boundary guard and current metrics split",
+  "owner": "codex",
+  "source": "local-precommit-smoke",
+  "environment": {
+    "target": "local-precommit-validation",
+    "url": "",
+    "frontend": "not exercised",
+    "backend": "AI Engine local source v8.12.107",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "808dfab3130276b43040c8b20d2362cecfa037ed"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "code review fix: explicit server IDs are no longer classified as ambiguous single-server prompts by monitoring-boundary-guard",
+    "targeted boundary guard regression: current-metrics-boundary-guard.test.ts passed (1 file / 5 tests)",
+    "root quick smoke: npm run test:quick passed (15 files / 189 tests)",
+    "root static gates: npm run type-check and npm run lint passed",
+    "root AI/API contract gate: npm run test:contract passed (3 files / 24 tests)",
+    "AI Engine gates: cd cloud-run/ai-engine && npm run type-check and npm test passed (160 files / 1667 tests)",
+    "line and patch hygiene: AI Engine line-guard, current-metrics test <=800 line check, and git diff --check passed"
+  ],
+  "skippedSurfaces": [
+    "Production Cloud Run API was not rerun because this was a local pre-commit review validation",
+    "Browser AI sidebar and Vercel UI QA were not repeated because no frontend runtime surface changed",
+    "Langfuse trace proof remains deployment-stage verification for the previous runtime routing fix"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The final review added a focused ambiguous-target regression and reran root plus AI Engine pre-commit gates successfully.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Review finding fixed before commit: explicit server ID queries that include “서버 하나” should fall through to normal server evidence instead of ambiguous clarification.",
+    "Validation command: cd cloud-run/ai-engine && npm test -- current-metrics-boundary-guard.test.ts -> 1 file / 5 tests passed",
+    "Validation command: npm run test:quick -> 15 files / 189 tests passed",
+    "Validation command: npm run type-check -> passed",
+    "Validation command: npm run lint -> passed",
+    "Validation command: npm run test:contract -> 3 files / 24 tests passed",
+    "Validation command: cd cloud-run/ai-engine && npm run type-check -> passed",
+    "Validation command: cd cloud-run/ai-engine && npm test -> 160 files / 1667 tests passed",
+    "Validation command: cd cloud-run/ai-engine && npm run line-guard -> warning only, no fail-threshold violations",
+    "Validation command: git diff --check -> passed",
+    "Validation command: current-metrics test line-count check -> 13 files all <=800 lines"
+  ],
+  "links": []
+}

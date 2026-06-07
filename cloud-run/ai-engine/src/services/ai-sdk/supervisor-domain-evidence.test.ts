@@ -57,7 +57,9 @@ function createEvidenceRequest(message: string) {
 
 describe('supervisor domain evidence support', () => {
   it('lets the monitoring domain decide which peak-load questions it handles', () => {
-    const provider = monitoringDomainPack.evidenceProviders?.[0];
+    const provider = monitoringDomainPack.evidenceProviders?.find(
+      (entry) => entry.id === 'monitoring-peak-metric'
+    );
 
     expect(
       provider?.canHandle(
@@ -227,7 +229,9 @@ describe('supervisor domain evidence support', () => {
   });
 
   it('lets providers handle capability intent frames without matching raw regex text', () => {
-    const provider = monitoringDomainPack.evidenceProviders?.[0];
+    const provider = monitoringDomainPack.evidenceProviders?.find(
+      (entry) => entry.id === 'monitoring-peak-metric'
+    );
     const request = {
       ...createEvidenceRequest('frame only request without load keywords'),
       intentFrame: monitoringMetricPeakFrame,
@@ -1007,6 +1011,67 @@ describe('supervisor domain evidence support', () => {
           'semantic_frame_provider_miss',
           'semantic_frame_fail_closed',
         ]),
+      },
+    });
+  });
+
+  it('returns deterministic boundary clarification for unsupported raw monitoring metrics', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: 'GPU 사용률이 가장 높은 서버 3대 알려줘',
+      domain: monitoringDomainPack,
+      sessionId: 'boundary-gpu',
+    });
+
+    expect(support?.id).toBe('monitoring-boundary-guard');
+    expect(support?.fallback).toContain('지원하지 않는 지표');
+    expect(support?.fallback).toContain('CPU');
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_clarification',
+      reason: 'unsupported_metric',
+      unsupportedMetric: 'gpu',
+      semanticQueryTrace: {
+        selectedEvidenceProvider: 'monitoring-boundary-guard',
+        evidenceAvailable: true,
+      },
+    });
+  });
+
+  it('returns deterministic boundary clarification for explicit unknown server ids', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: 'web-nginx-dc9-99 상태 알려줘',
+      domain: monitoringDomainPack,
+      sessionId: 'boundary-unknown-server',
+    });
+
+    expect(support?.id).toBe('monitoring-boundary-guard');
+    expect(support?.fallback).toContain('서버를 찾지 못했습니다');
+    expect(support?.fallback).toContain('web-nginx-dc9-99');
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_clarification',
+      reason: 'unknown_server',
+      missingTargets: ['web-nginx-dc9-99'],
+      semanticQueryTrace: {
+        selectedEvidenceProvider: 'monitoring-boundary-guard',
+        evidenceAvailable: true,
+      },
+    });
+  });
+
+  it('returns deterministic boundary clarification for ambiguous single-server detail requests', async () => {
+    const support = await resolveDomainEvidenceSupport({
+      query: '서버 하나만 자세히 알려줘',
+      domain: monitoringDomainPack,
+      sessionId: 'boundary-ambiguous-server',
+    });
+
+    expect(support?.id).toBe('monitoring-boundary-guard');
+    expect(support?.fallback).toContain('어떤 서버를 볼지 지정해 주세요');
+    expect(support?.metadata).toMatchObject({
+      responsePolicy: 'deterministic_clarification',
+      reason: 'ambiguous_single_server',
+      semanticQueryTrace: {
+        selectedEvidenceProvider: 'monitoring-boundary-guard',
+        evidenceAvailable: true,
       },
     });
   });

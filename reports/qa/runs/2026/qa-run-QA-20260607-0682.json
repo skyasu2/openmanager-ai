@@ -1,0 +1,76 @@
+{
+  "runId": "QA-20260607-0682",
+  "recordedAt": "2026-06-07T11:46:33.825Z",
+  "recordedAtKst": "2026-06-07 20:46:33 KST",
+  "runTitle": "AI Engine local regression - boundary question routing fixes",
+  "owner": "codex",
+  "source": "local-vitest+typecheck+contract",
+  "environment": {
+    "target": "local-ai-engine-code",
+    "url": "",
+    "frontend": "not exercised",
+    "backend": "AI Engine local source v8.12.107",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "4dfbd9e42f2ce1f4d22c0e33724db4b0658f5525"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "network I/O ranking: '네트워크 I/O 상위 서버 3대' now parses to deterministic monitoring-metric-ranking/network and returns ordered network rows",
+    "unsupported metric guard: 'GPU 사용률이 가장 높은 서버 3대' now returns deterministic unsupported-metric clarification instead of generic CPU/MEM/DISK fallback",
+    "unknown server guard: 'web-nginx-dc9-99 상태 알려줘' now returns deterministic server-not-found guidance with valid examples instead of falling through toward 500",
+    "ambiguous server guard: '서버 하나만 자세히 알려줘' now asks for server ID/group instead of summarizing the fleet",
+    "contextual ranking scope: after a one-server prior answer, '그중 CPU가 높은 것만' now preserves the prior target set and labels it as designated server",
+    "domain evidence integration: monitoring-boundary-guard is registered before metric/LLM fallback paths and emits semantic trace metadata",
+    "AI Engine validation: type-check, targeted vitest, full AI Engine test suite, root contract tests, line-guard, and git diff whitespace check passed"
+  ],
+  "skippedSurfaces": [
+    "Production Cloud Run API was not rerun because the code change has not been deployed yet",
+    "Browser AI sidebar and Vercel UI QA were not repeated for this local code regression run",
+    "Langfuse trace proof for fixed behavior is pending until deployment"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The QA-0681 boundary failures were fixed at local code level with deterministic regression tests and full AI Engine tests passing. Production verification remains a deployment-stage check, not a remaining local code gap.",
+      "nextAction": "After deployment, rerun the five fixed production API prompts and confirm Langfuse traces show monitoring-boundary-guard or deterministic metric-ranking as expected."
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Validation commands: cd cloud-run/ai-engine && npm run type-check",
+    "Validation commands: cd cloud-run/ai-engine && npm test -- current-metrics-evidence-provider.test.ts supervisor-domain-evidence.test.ts",
+    "Validation commands: cd cloud-run/ai-engine && npm test",
+    "Validation commands: npm run test:contract",
+    "Validation commands: cd cloud-run/ai-engine && npm run line-guard",
+    "Validation commands: git diff --check"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Previous boundary failure run QA-0681",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

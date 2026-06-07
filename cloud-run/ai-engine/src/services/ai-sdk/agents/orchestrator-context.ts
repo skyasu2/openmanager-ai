@@ -36,7 +36,11 @@ import {
 } from '../routing/query-routing-signals';
 import { createRoutingDecisionTrace } from '../routing/routing-decision-trace';
 import { classifyRoutingIntentWithLLM } from '../routing/llm-intent-classifier';
-import { selectRoundRobinProviderOrder } from './config/round-robin-provider-selector';
+import {
+  getRoundRobinCursor,
+  selectRoundRobinProviderOrder,
+  setRoundRobinCursor,
+} from './config/round-robin-provider-selector';
 import { selectTextModel } from './config/agent-model-selectors';
 import { buildServiceCommandGuidanceAnswer } from '../../../tools-ai-sdk/reporter-tools/knowledge-command-catalog';
 
@@ -658,16 +662,6 @@ function shouldTryLLMPreFilter(
     return true;
   }
 
-  // Metrics Query(기본 fallback)로 결정됐는데 Analyst 힌트가 있는 경우:
-  // regex가 표현 변형을 못 잡은 케이스일 가능성이 높으므로 LLM 재확인.
-  // (trend ranking, anomaly signals, capacity wording 등 반복 패턴 추가를 방지)
-  if (
-    preFilterResult.suggestedAgent === 'Metrics Query Agent' &&
-    ANALYST_QUERY_PATTERN.test(query)
-  ) {
-    return true;
-  }
-
   return false;
 }
 
@@ -682,19 +676,26 @@ export async function preFilterQueryWithLLM(
 
   // round-robin으로 provider 선택 — Groq 단독 고정에서 벗어나
   // 429 시에도 mistral/zai/cerebras로 폴백하여 LLM 판단 성공률을 높임.
-  const { providerOrder } = selectRoundRobinProviderOrder(4_000);
+  const cursorBeforeRouterSelection = getRoundRobinCursor();
+  const { providerOrder, rotationSlot } = selectRoundRobinProviderOrder(4_000);
   const routerModel = selectTextModel('Router', providerOrder, {
     cbPrefix: 'llm-prefilter',
     requiredCapabilities: { requireStructuredOutput: true },
+    rotationSlot,
   });
+  if (!routerModel) {
+    setRoundRobinCursor(cursorBeforeRouterSelection);
+    return deterministicResult;
+  }
 
   const llmResult = await classifyRoutingIntentWithLLM(query, {
-    model: routerModel?.model,
+    model: routerModel.model,
   });
   if (
     !llmResult ||
     !llmResult.suggestedAgent ||
-    llmResult.confidence < LLM_PREFILTER_CONFIDENCE_THRESHOLD
+    llmResult.confidence < LLM_PREFILTER_CONFIDENCE_THRESHOLD ||
+    llmResult.confidence < deterministicResult.confidence
   ) {
     return deterministicResult;
   }

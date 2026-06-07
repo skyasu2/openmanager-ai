@@ -53,7 +53,13 @@ export function extractMentionedMetrics(message: string): SupportedMetric[] {
   if (/디스크|\bdisk\b|스토리지|\bstorage\b/i.test(message)) {
     metrics.push('disk');
   }
-  if (/네트워크|\bnetwork\b|\bnet\b/i.test(message)) metrics.push('network');
+  if (
+    /네트워크|\bnetwork\b|\bnet\b|트래픽|대역폭|\btraffic\b|\bthroughput\b|\bbandwidth\b|\bbps\b/i.test(
+      message
+    )
+  ) {
+    metrics.push('network');
+  }
   return metrics;
 }
 
@@ -67,7 +73,10 @@ const METRIC_MENTION_PATTERNS: Array<[SupportedMetric, RegExp]> = [
   ['cpu', /\bcpu\b|씨피유/gi],
   ['memory', /메모리|\bmem\b|\bmemory\b|\bmemori\b|\bmemroy\b/gi],
   ['disk', /디스크|\bdisk\b|스토리지|\bstorage\b/gi],
-  ['network', /네트워크|\bnetwork\b|\bnet\b/gi],
+  [
+    'network',
+    /네트워크|\bnetwork\b|\bnet\b|트래픽|대역폭|\btraffic\b|\bthroughput\b|\bbandwidth\b|\bbps\b/gi,
+  ],
 ];
 
 const LOW_THRESHOLD_BY_METRIC: Record<SupportedMetric, number> = {

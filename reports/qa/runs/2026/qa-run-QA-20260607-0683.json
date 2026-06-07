@@ -1,0 +1,70 @@
+{
+  "runId": "QA-20260607-0683",
+  "recordedAt": "2026-06-07T12:11:29.710Z",
+  "recordedAtKst": "2026-06-07 21:11:29 KST",
+  "runTitle": "AI Engine local test refactor - current metrics evidence test split",
+  "owner": "codex",
+  "source": "local-vitest+typecheck",
+  "environment": {
+    "target": "local-ai-engine-test-refactor",
+    "url": "",
+    "frontend": "not exercised",
+    "backend": "AI Engine local source v8.12.107",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "808dfab3130276b43040c8b20d2362cecfa037ed"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "current metrics evidence provider tests: 4,145-line monolith reduced to a 131-line parsing basics file plus focused thematic test files",
+    "shared test helper: createEvidenceRequest extracted to current-metrics-evidence-test-helpers.ts",
+    "test file split: boundary guard, ranking, current metric, server health, contextual follow-up, filters, trend, directional, group, and status/filter regressions are now separate files",
+    "line-count check: 13 current-metrics test files checked and all are <=800 lines",
+    "targeted Vitest: cd cloud-run/ai-engine && npm test -- current-metrics passed (13 files / 109 tests)",
+    "AI Engine full Vitest: cd cloud-run/ai-engine && npm test passed (160 files / 1666 tests)",
+    "static gates: cd cloud-run/ai-engine && npm run type-check, cd cloud-run/ai-engine && npm run line-guard, and git diff --check passed"
+  ],
+  "skippedSurfaces": [
+    "Production Cloud Run API was not rerun because this change only restructures local test files",
+    "Browser AI sidebar and Vercel UI QA were not repeated because no runtime UI or deployed behavior changed",
+    "Langfuse trace proof was not repeated because this refactor does not exercise live AI calls"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The oversized current-metrics evidence test file was split into focused files under the 800-line target, while preserving targeted and full AI Engine test coverage.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Validation command: cd cloud-run/ai-engine && npm test -- current-metrics -> 13 files / 109 tests passed",
+    "Validation command: cd cloud-run/ai-engine && npm run type-check -> passed",
+    "Validation command: cd cloud-run/ai-engine && npm test -> 160 files / 1666 tests passed",
+    "Validation command: cd cloud-run/ai-engine && npm run line-guard -> passed with warnings only, no fail-threshold violations",
+    "Validation command: git diff --check -> passed",
+    "Validation command: current-metrics test line-count check -> 13 files all <=800 lines"
+  ],
+  "links": []
+}

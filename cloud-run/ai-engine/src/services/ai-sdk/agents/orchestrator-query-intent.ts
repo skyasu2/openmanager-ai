@@ -73,7 +73,7 @@ const THRESHOLD_FILTER_SIGNALS =
 // Ranking: ordinal + metric — "top N", "highest", "lowest", "rank by"
 // e.g. "상위 5개", "top 3 by CPU", "가장 높은", "순위"
 const RANKING_SIGNALS =
-  /(상위|하위|top|bottom)\s*\d{1,2}|(가장\s*(높|낮|많|적))|(\d{1,2}\s*(개|위|번째))\s*(순|위)|순위|랭킹|rank(ing|ed)?\s+by|sort\s+by|highest|lowest|most|least|최고|최저|높은|낮은/i;
+  /(상위|하위|top|bottom)\s*\d{1,2}|(?:상위|하위).{0,16}(?:서버|호스트|대상).{0,16}\d{0,2}|(가장\s*(높|낮|많|적))|(\d{1,2}\s*(개|대|위|번째))\s*(순|위)|순위|랭킹|rank(ing|ed)?\s+by|sort\s+by|highest|lowest|most|least|최고|최저|높은|낮은/i;
 
 // Metric issue filter without an explicit threshold.
 // e.g. "네트워크 문제가 있는 서버만", "방금 분석한 서버 중 disk 이상만 골라줘"
@@ -107,7 +107,13 @@ function parseMetric(query: string): QueryMetric | undefined {
     return 'memory';
   }
   if (/디스크|\bdisk\b|스토리지|\bstorage\b/i.test(query)) return 'disk';
-  if (/네트워크|\bnetwork\b|\bnet\b/i.test(query)) return 'network';
+  if (
+    /네트워크|\bnetwork\b|\bnet\b|트래픽|대역폭|\btraffic\b|\bthroughput\b|\bbandwidth\b|\bbps\b/i.test(
+      query
+    )
+  ) {
+    return 'network';
+  }
   if (/상태|\bstatus\b|offline|online|warning|critical|오프라인|온라인|정상|경고|위험/i.test(query)) {
     return 'status';
   }

@@ -1,0 +1,167 @@
+{
+  "runId": "QA-20260607-0680",
+  "recordedAt": "2026-06-07T11:00:01.308Z",
+  "recordedAtKst": "2026-06-07 20:00:01 KST",
+  "runTitle": "Cloud Run Direct API + Langfuse - Codex standard conversational AI QA",
+  "owner": "codex",
+  "source": "playwright-mcp+direct-api+langfuse",
+  "environment": {
+    "target": "vercel-production+cloud-run-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel v8.12.107",
+    "backend": "Cloud Run v8.12.107",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "704fcd6e4383f03a102cd3d8120f58c9425457b7"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Vercel production / rendered OpenManager AI and login affordance",
+    "Vercel production /login rendered OpenManager AI v8.12.107 and guest mode entry",
+    "Guest PIN dialog opened with 4-digit PIN field and login button state",
+    "conversational-ai-qa Q1 current status: total 18, normal 17, warning 1, risk 0, offline 0; deterministic monitoring-server-health (PASS)",
+    "conversational-ai-qa Q2 web-server-01 detail: alias resolved to web-nginx-dc1-01 with CPU, memory, disk, network, load, response-time metrics; deterministic monitoring-server-health (PASS)",
+    "conversational-ai-qa Q3 24h peak load: returned concrete peak time 2026-06-07 03:50 and top load servers; deterministic monitoring-peak-metric (PASS)",
+    "conversational-ai-qa Q4 action needed: no immediate action target, one warning observation target lb-haproxy-dc1-01; deterministic monitoring-server-health (PASS)",
+    "conversational-ai-qa Q5 contextual network follow-up: previous Q4 target scoped to designated server 1/1, lb-haproxy-dc1-01 network 72%; deterministic monitoring-metric-current (PASS)",
+    "Cloud Run /monitoring returned status ok, Langfuse disabled=false, usagePercent=0, eventCount=29, sampleRate=100%, testMode=false",
+    "Cloud Run /monitoring/traces returned status ok and recent supervisor traces",
+    "Langfuse recent supervisor summary returned 20 traces: deterministic 13, mistral 7, failures 2, fallback 0, avg 4.4s, p95 10.5s",
+    "Vercel /api/version returned v8.12.107, releaseTag v8.12.107, commit 704fcd6e43, pipeline 2582751443",
+    "Vercel AI health returned status ok, backend cloud-run, version 8.12.107, latency 119ms",
+    "Vercel usage guard reported effective=3.8906 USD, billed=0.0000 USD, chargeCount=3654"
+  ],
+  "skippedSurfaces": [
+    "Dashboard full AI sidebar send path was not repeated after PIN dialog; AI answers were executed through Cloud Run Direct API to keep the browser secret-handling surface narrow",
+    "Reporter/Analyst embedded tabs and Vision live image QA were outside this targeted request",
+    "New codex-std5 direct deterministic session did not appear in Langfuse or /monitoring/traces within the 30s recheck window; treated as a non-release-facing observability note, not a product answer failure"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "standard Q1 current status",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-server-health",
+      "route": "/api/ai/supervisor",
+      "source": "Cloud Run Direct API metadata",
+      "latencyMs": 95
+    },
+    {
+      "surface": "standard Q2 web-server-01 detail",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-server-health",
+      "route": "/api/ai/supervisor",
+      "source": "Cloud Run Direct API metadata",
+      "latencyMs": 9
+    },
+    {
+      "surface": "standard Q3 24h peak load",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-peak-metric",
+      "route": "/api/ai/supervisor",
+      "source": "Cloud Run Direct API metadata",
+      "latencyMs": 9
+    },
+    {
+      "surface": "standard Q4 action needed",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-server-health",
+      "route": "/api/ai/supervisor",
+      "source": "Cloud Run Direct API metadata",
+      "latencyMs": 3
+    },
+    {
+      "surface": "standard Q5 contextual network follow-up",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor",
+      "source": "Cloud Run Direct API metadata",
+      "latencyMs": 6
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The standard five-question conversational QA passed on production Cloud Run direct API, including alias resolution and Q5 contextual follow-up.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": false,
+      "rationale": "Langfuse and Cloud Run monitoring endpoints are healthy and recent supervisor traces are visible, but the new codex-std5 direct deterministic session was not visible within 30s; this is recorded as a non-blocking targeted-run observability note.",
+      "nextAction": "Use the Vercel stream UI path if release-facing trace proof for this exact session is required."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-07T19:56:52+09:00",
+      "summary": "Current billing period checked after targeted AI QA; effective=3.8906 USD, billed=0.0000 USD, chargeCount=3654, no unexpected billed usage observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "gcp-cloud-run",
+      "method": "http",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-07T19:58:41+09:00",
+      "summary": "Production AI health returned status ok, backend cloud-run, service ai-engine, version 8.12.107, latency 119ms. /monitoring returned Langfuse disabled=false, usagePercent=0, eventCount=29, sampleRate=100%.",
+      "evidence": "curl -s https://openmanager-ai.vercel.app/api/health?service=ai&soft=true and Cloud Run /monitoring",
+      "url": "https://openmanager-ai.vercel.app/api/health?service=ai&soft=true"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Direct API sessionId: codex-std5-1780829771662.",
+    "Direct API elapsed wall time differed from metadata latency on Q1 (4693ms wall vs 95ms metadata), likely cold/network overhead; Q2-Q5 wall times were 61-152ms.",
+    "Langfuse --q codex-std5 returned no traces after a 30s recheck. Langfuse --q supervisor remained healthy but latest visible trace was 2026-06-07 18:25:37 KST from qa-30th-r2.",
+    "Cloud Run /monitoring/traces after recheck returned count 16 and hasCodexStd5=false; latest visible traces were qa-30th sessions."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline 2582751443",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582751443"
+    },
+    {
+      "type": "general",
+      "label": "Langfuse Project",
+      "url": "https://us.cloud.langfuse.com/project"
+    },
+    {
+      "type": "general",
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

@@ -58,7 +58,7 @@ export const GROUP_SERVER_LIST_PATTERN =
 // to avoid stateful lastIndex accumulation from exported regex constants.
 export const SERVER_ID_PATTERN = /\b[a-z][a-z0-9]+(?:-[a-z0-9]+){2,}\b/i;
 export const CONTEXTUAL_FOLLOW_UP_PATTERN =
-  /방금|직전|이전|앞서|위\s*(?:결과|답변|내용)|방금\s*분석한|분석한\s*서버\s*중|방금\s*본|앞에서\s*본|(?:그|해당|이|위)\s*(?:서버|대상|호스트|노드)\s*(?:들|중|만|의)?/i;
+  /방금|직전|이전|앞서|위\s*(?:결과|답변|내용)|방금\s*분석한|분석한\s*서버\s*중|방금\s*본|앞에서\s*본|그\s*중|그중|이\s*중|이중|해당\s*목록\s*중|(?:그|해당|이|위)\s*(?:서버|대상|호스트|노드)\s*(?:들|중|만|의)?/i;
 export const MAX_CONTEXTUAL_SERVER_TARGETS = 12;
 export const CONTEXTUAL_TOP_N_PATTERN =
   /(?:상위|하위|top|bottom)\s*(\d{1,2})|(?:가장|최고|최저|높|낮|많|적).{0,24}(\d{1,2})\s*(?:대|개)|(\d{1,2})\s*(?:대|개).{0,24}(?:상위|하위|top|bottom|가장|높|낮|많|적|랭킹|순위)/i;

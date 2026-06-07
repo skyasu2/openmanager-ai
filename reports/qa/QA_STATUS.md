@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-07 18:31:29 KST
+> Generated at: 2026-06-07 21:31:57 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 677 |
+| Total Recorded Runs | 683 |
 | Total Runs (Counted) | 526 |
-| Non-counted Runs | 151 |
+| Non-counted Runs | 157 |
 | Total Checks | 4670 |
 | Passed | 4463 |
 | Failed | 162 |
 | Completed Items | 789 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 27 |
+| Wont-Fix Items | 28 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260607-0677 (2026-06-07T09:10:18.387Z) |
-| Latest Recorded Run | QA-20260607-0679 (2026-06-07T09:31:29.385Z) |
+| Latest Recorded Run | QA-20260607-0685 (2026-06-07T12:31:57.296Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,11 +34,11 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260607-0679 (2026-06-07T09:31:29.385Z)
+Latest run: QA-20260607-0685 (2026-06-07T12:31:57.296Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | After deployment, rerun the inverse-status and boundary prompts through Cloud Run direct API and confirm Langfuse routing metadata. |
 
 ## Usage Checks (Latest Run)
 
@@ -48,27 +48,32 @@ Latest run: QA-20260607-0679 (2026-06-07T09:31:29.385Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-06T09:31:29.385Z -> 2026-06-07T09:31:29.385Z (24h)
-- Runs with observations: 11 recorded / 7 counted
-- Samples: 32
+- Window: 2026-06-06T12:31:57.296Z -> 2026-06-07T12:31:57.296Z (24h)
+- Runs with observations: 13 recorded / 7 counted
+- Samples: 45
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| Metrics Query Agent | zai | 1 | 17610ms | 17610ms | - | - | - | - | QA-20260607-0681 |
 | zai fallback | zai | 1 | 10495ms | 10495ms | - | - | - | - | QA-20260607-0678 |
+| Analyst Agent | cerebras | 1 | 7883ms | 7883ms | - | - | - | - | QA-20260607-0681 |
 | Analyst Agent | mistral | 3 | 5770ms | 7677ms | - | - | - | - | QA-20260607-0667 |
+| Metrics Query Agent | mistral | 2 | 3427ms | 3900ms | - | - | - | - | QA-20260607-0681 |
 | CapacityForecast | groq | 1 | 3500ms | 3500ms | - | - | - | - | QA-20260606-0665 |
 | llama-4-scout | groq | 2 | 2050ms | 2300ms | - | - | - | - | QA-20260607-0672 |
 | monitoring-metric-current | deterministic | 10 | 250ms | 1352ms | - | - | - | - | QA-20260607-0674 |
 | monitoring-metric-ranking | deterministic | 2 | 434ms | 838ms | - | - | - | - | QA-20260607-0674 |
-| Metrics Query Agent | deterministic | 7 | 117ms | 294ms | - | - | - | - | QA-20260607-0677 |
+| Supervisor | groq | 1 | 700ms | 700ms | - | - | - | - | QA-20260607-0681 |
+| Metrics Query Agent | deterministic | 14 | 68ms | 294ms | - | - | - | - | QA-20260607-0681 |
 | MetricsQuery | deterministic | 1 | 120ms | 120ms | - | - | - | - | QA-20260606-0665 |
 | monitoring-server-health | deterministic | 2 | 33ms | 33ms | - | - | - | - | QA-20260607-0670 |
 | monitoring-capacity-forecast | deterministic | 1 | 29ms | 29ms | - | - | - | - | QA-20260607-0668 |
 | Metrics Query | deterministic | 2 | 5ms | 9ms | - | - | - | - | QA-20260607-0678 |
+| Supervisor | deterministic | 1 | 1ms | 1ms | - | - | - | - | QA-20260607-0681 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-06T09:31:29.385Z -> 2026-06-07T09:31:29.385Z (24h)
+- Window: 2026-06-06T12:31:57.296Z -> 2026-06-07T12:31:57.296Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -82,9 +87,10 @@ Latest run: QA-20260607-0679 (2026-06-07T09:31:29.385Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 704fcd6e
-- Covered Surfaces: Q-NEW134: 전체 평균 메모리+디스크 동시(Q-NEW119 fix) → 평균 MEM 45.9%+DISK 36.1%, deterministic/monitoring-metric-current 1ms (PASS), Q-NEW135: 디스크 빠르게 증가(Q-NEW121 fix) → monitoring-metric-trend 4ms, 증가폭 상위 5대 표시 (PASS), Q-NEW136: DB vs cache 그룹 경고 수 비교(Q-NEW122 fix) → cache 1대>DB 0대, deterministic/monitoring-server-health 1ms (PASS)
-- Skipped Surfaces: 전체 regression suite (targeted 세션)
+- Deployment: SHA 808dfab3
+- Coverage Packs: ai-core
+- Covered Surfaces: review fix: inverse status queries such as “이상 없는 서버 목록” stay on deterministic Metrics Query and do not trigger LLM reclassification, review fix: prefilter LLM result cannot override deterministic routing when its confidence is lower than the deterministic result, review fix: when Router model selection returns null, LLM classification is skipped so classifyRoutingIntentWithLLM cannot fall back to direct Groq model creation, review fix: Router model-selection failure restores the round-robin cursor before returning deterministic fallback, targeted orchestrator regression: cd cloud-run/ai-engine && npm test -- orchestrator-context.test.ts passed (1 file / 35 tests), AI Engine validation: type-check and full Vitest passed (160 files / 1671 tests), root pre-commit gates: test:quick, type-check, lint, and test:contract passed, line and patch hygiene: AI Engine line-guard, current-metrics <=800 line check, and git diff --check passed
+- Skipped Surfaces: Production Cloud Run API was not rerun because this is a local pre-commit routing fix validation, Browser AI sidebar and Vercel UI QA were not repeated because no frontend runtime surface changed, Langfuse trace proof remains deployment-stage verification after this commit is deployed
 
 ## Links (Latest Run)
 
@@ -112,13 +118,13 @@ Latest run: QA-20260607-0679 (2026-06-07T09:31:29.385Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Portfolio Deferral 27
-- Review classes: Verify Before Promotion 12, Future Product Expansion 5, Low-Priority Polish 6, Accepted No-Action 4
+- Reason categories: Portfolio Deferral 28
+- Review classes: Verify Before Promotion 12, Future Product Expansion 6, Low-Priority Polish 6, Accepted No-Action 4
 
 ### Review Classes
 
 - Verify Before Promotion 12: Potentially stale accepted debt. Re-run a targeted QA check before promoting it back to implementation work.
-- Future Product Expansion 5: Valid enhancement only if the portfolio scope expands into a fuller product surface or longer-lived conversational memory.
+- Future Product Expansion 6: Valid enhancement only if the portfolio scope expands into a fuller product surface or longer-lived conversational memory.
 - Low-Priority Polish 6: Non-blocking answer, copy, layout, or evidence-label polish. Keep accepted unless it appears in a release-facing regression.
 - Accepted No-Action 4: Accepted no-fix item with no current trigger for implementation work.
 
@@ -174,6 +180,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] q-new12-network-metric-disclosure: 네트워크 I/O 미보유 시 데이터 부재 미명시 폴백 (seen 1회, last QA-20260525-0584)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P3] q-new128-network-io-ranking-fallback: 네트워크 I/O 상위 랭킹 질의 LLM fallback (seen 1회, last QA-20260607-0678)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] q-new13-advisor-evidence-label-preservation: Q-NEW13 Advisor command evidence label should survive getServerMetrics preparation (seen 1회, last QA-20260525-0589)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] reporter-dashboard-threshold-unification: Reporter 영향 서버 기준 대시보드와 불일치 (seen 1회, last QA-20260522-0559)
@@ -195,6 +203,12 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260607-0685 | 2026-06-07T12:31:57.296Z | targeted | no | no | AI Engine pre-commit review validation - LLM prefilter routing guards | 12 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260607-0684 | 2026-06-07T12:21:48.095Z | targeted | no | no | AI Engine pre-commit review validation - boundary guard and current metrics split | 10 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260607-0683 | 2026-06-07T12:11:29.710Z | targeted | no | no | AI Engine local test refactor - current metrics evidence test split | 6 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260607-0682 | 2026-06-07T11:46:33.825Z | targeted | no | no | AI Engine local regression - boundary question routing fixes | 7 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260607-0681 | 2026-06-07T11:24:45.425Z | targeted | no | no | Cloud Run Direct API + Langfuse - Additional AI boundary question evaluation | 18 | 0 | 0 | 0 | 0 | 1 |
+| QA-20260607-0680 | 2026-06-07T11:00:01.308Z | targeted | no | no | Cloud Run Direct API + Langfuse - Codex standard conversational AI QA | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260607-0679 | 2026-06-07T09:31:29.385Z | targeted | no | no | Cloud Run Direct API - 31차 v8.12.107 수정 재검증 | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260607-0678 | 2026-06-07T09:26:24.330Z | targeted | no | no | Cloud Run Direct API - 30차 AI 어시스턴트 평가 (v8.12.106) | 11 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260607-0677 | 2026-06-07T09:10:18.387Z | targeted | yes | yes | Cloud Run Direct API - v8.12.107 Q-NEW119/121/122 deterministic fix validation | 3 | 3 | 0 | 0 | 0 | 0 |
@@ -209,9 +223,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260607-0668 | 2026-06-06T16:45:34.002Z | targeted | no | yes | Vercel Production Playwright MCP - 25차 AI 어시스턴트 평가 (v8.12.100) | 6 | 1 | 0 | 0 | 2 | 0 |
 | QA-20260607-0667 | 2026-06-06T16:01:05.302Z | broad | yes | yes | Vercel Playwright MCP + Langfuse Final QA - v8.12.100 improvement closure check | 19 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260607-0666 | 2026-06-06T15:25:12.210Z | targeted | yes | yes | Cloud Run Production Targeted QA - v8.12.100 P25 TOP+BOTTOM dual server query fix | 10 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260606-0665 | 2026-06-06T14:36:04.907Z | targeted | no | yes | Vercel Production Playwright MCP - 24차 AI 어시스턴트 평가 (v8.12.99) | 7 | 1 | 0 | 0 | 1 | 0 |
-| QA-20260606-0664 | 2026-06-06T13:25:18.055Z | smoke | yes | yes | GitLab Release Deploy Smoke - v8.12.99 auth retention and QA tooling release | 10 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260606-0663 | 2026-06-06T10:00:46.159Z | targeted | yes | yes | Vercel Production Manual QA - v8.12.98 AI assistant example questions and deploy smoke | 16 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260606-0662 | 2026-06-06T06:33:47.793Z | smoke | yes | yes | GitLab Release Deploy Smoke - v8.12.96 landing refactor release | 10 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260606-0661 | 2026-06-06T06:20:08.317Z | smoke | yes | yes | GitLab Release Deploy Smoke - v8.12.95 RCA routing and observability release | 12 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260605-0660 | 2026-06-05T13:08:33.704Z | targeted | yes | yes | Vercel Production Playwright MCP - Artifact BFF LLM 분류기 활성화 검증 (v8.12.94) | 5 | 2 | 0 | 0 | 0 | 0 |
