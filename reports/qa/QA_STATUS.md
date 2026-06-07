@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-07 12:00:04 KST
+> Generated at: 2026-06-07 14:19:02 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 671 |
-| Total Runs (Counted) | 524 |
+| Total Recorded Runs | 672 |
+| Total Runs (Counted) | 525 |
 | Non-counted Runs | 147 |
-| Total Checks | 4661 |
-| Passed | 4454 |
+| Total Checks | 4667 |
+| Passed | 4460 |
 | Failed | 162 |
-| Completed Items | 781 |
+| Completed Items | 786 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 32 |
+| Wont-Fix Items | 27 |
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260607-0671 (2026-06-07T01:58:28.781Z) |
-| Latest Recorded Run | QA-20260607-0673 (2026-06-07T03:00:04.368Z) |
+| Last Counted Run | QA-20260607-0674 (2026-06-07T05:19:01.995Z) |
+| Latest Recorded Run | QA-20260607-0674 (2026-06-07T05:19:01.995Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,39 +34,41 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260607-0673 (2026-06-07T03:00:04.368Z)
+Latest run: QA-20260607-0674 (2026-06-07T05:19:01.995Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
+| Frontend UX Engineer | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period checked after production QA; effective=3.2368 USD, billed=0.0000 USD, chargeCount=3045, no unexpected billed usage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-06T03:00:04.368Z -> 2026-06-07T03:00:04.368Z (24h)
-- Runs with observations: 8 recorded / 5 counted
-- Samples: 23
+- Window: 2026-06-06T05:19:01.995Z -> 2026-06-07T05:19:01.995Z (24h)
+- Runs with observations: 9 recorded / 6 counted
+- Samples: 26
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Analyst Agent | mistral | 3 | 5770ms | 7677ms | - | - | - | - | QA-20260607-0667 |
 | CapacityForecast | groq | 1 | 3500ms | 3500ms | - | - | - | - | QA-20260606-0665 |
 | llama-4-scout | groq | 2 | 2050ms | 2300ms | - | - | - | - | QA-20260607-0672 |
+| monitoring-metric-current | deterministic | 10 | 250ms | 1352ms | - | - | - | - | QA-20260607-0674 |
+| monitoring-metric-ranking | deterministic | 2 | 434ms | 838ms | - | - | - | - | QA-20260607-0674 |
 | Metrics Query Agent | deterministic | 4 | 79ms | 204ms | - | - | - | - | QA-20260607-0671 |
 | MetricsQuery | deterministic | 1 | 120ms | 120ms | - | - | - | - | QA-20260606-0665 |
-| monitoring-metric-current | deterministic | 8 | 30ms | 35ms | - | - | - | - | QA-20260607-0673 |
 | monitoring-server-health | deterministic | 2 | 33ms | 33ms | - | - | - | - | QA-20260607-0670 |
-| monitoring-metric-ranking | deterministic | 1 | 30ms | 30ms | - | - | - | - | QA-20260607-0672 |
 | monitoring-capacity-forecast | deterministic | 1 | 29ms | 29ms | - | - | - | - | QA-20260607-0668 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-06T03:00:04.368Z -> 2026-06-07T03:00:04.368Z (24h)
+- Window: 2026-06-06T05:19:01.995Z -> 2026-06-07T05:19:01.995Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -78,24 +80,25 @@ Latest run: QA-20260607-0673 (2026-06-07T03:00:04.368Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA 029d7474
-- Coverage Packs: ai-advanced-surface
-- Covered Surfaces: P28 재검증: CPU 경고 상태인 서버들의 평균 디스크 사용률은? => CPU >= 80% 필터(api-was-dc1-01) 후 디스크 33% 반환. monitoring-metric-current. OTel 일치 (PASS), P30 재검증: 경고 상태 서버들의 평균 메모리와 평균 디스크는? => warning 상태 1대 필터 후 평균 메모리 76% + 평균 디스크 33% 동시 반환. monitoring-metric-current. OTel 일치 (PASS)
-- Skipped Surfaces: Q-NEW106(메모리 상위N 서버의 이종 메트릭) 미재검증 - P28/P30 우선 검증
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_D36pRxytCDadd54ka4VV56dQbwTS / SHA c998cc7b
+- Coverage Packs: ai-core, ai-advanced-surface
+- Covered Surfaces: Production version/health: /api/version and /api/health returned v8.12.106, commit c998cc7b8, healthy database/cache/ai services (PASS), P2 q-new106-ranking-cross-metric: '메모리 사용률 상위 2개 서버들의 디스크 사용량 알려줘' => 메모리 상위 2대 서버(cache-redis-dc1-01, cache-redis-dc1-03)를 대상으로 디스크 26%/26% 반환, deterministic / monitoring-metric-current (PASS), P3 ranking-min-advice: '디스크 사용률 하위 3대 서버 알려줘' => 하위 3대(cache-redis-dc1-02 21%, lb-haproxy-dc1-02 21%, lb-haproxy-dc1-01 23%)와 '낮은 안정적 수치' 문구 반환, deterministic / monitoring-metric-ranking (PASS), P3 numbered-list-accordion-split: persisted production response re-rendered on v8.12.106 with detail ol start="2" for split summary/details lists; dangling '2.' marker removed and no '3.' literal restart/split artifact remained (PASS), P3 summary-block-markdown-heading-hr-code-fence: '안정적인 서버만 목록 보여줘' response core summary rendered plain text without literal ###, ---, or code-fence delimiter lines (PASS), P1 server-comparison-deterministic-path: 'web-nginx-dc1-01와 web-nginx-dc1-02 CPU 메모리 디스크 비교해줘' => CPU/메모리/디스크 comparison returned on deterministic / monitoring-metric-current with 14:10 KST slot metrics (PASS)
+- Skipped Surfaces: core-routes-smoke full route matrix skipped: targeted release QA was limited to changed AI assistant WONT-FIX remediation surfaces after GitLab deploy/smoke success, modal-detail-pack skipped: no dashboard modal/detail code changed, Cloud Run admin observability endpoints skipped: no admin monitoring endpoint behavior changed; GitLab ai-engine deploy/smoke and Vercel AI UI paths were checked
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab pipeline 2582438176 | [GitLab pipeline 2582438176](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582438176) | success |
+| general | GitLab pipeline 2582574231 | [GitLab pipeline 2582574231](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582574231) | v8.12.106 deploy and smoke success |
+| vercel-deployment | Vercel production deployment dpl_D36pRxytCDadd54ka4VV56dQbwTS | [Vercel production deployment dpl_D36pRxytCDadd54ka4VV56dQbwTS](https://openmanager-flyjnrucf-skyasus-projects.vercel.app/) | Ready, aliased to https://openmanager-ai.vercel.app |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | P28/P30 production 검증 | [P28/P30 production 검증](https://openmanager-ai.vercel.app/dashboard/ai-assistant) | - |
+| playwright-screenshot | v8.12.106 WONT-FIX remediation targeted production QA | `reports/qa/evidence/qa-20260607-v812106-wontfix-targeted-qa.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -111,15 +114,15 @@ Latest run: QA-20260607-0673 (2026-06-07T03:00:04.368Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Portfolio Deferral 32
-- Review classes: Verify Before Promotion 13, Future Product Expansion 5, Low-Priority Polish 9, Accepted No-Action 5
+- Reason categories: Portfolio Deferral 27
+- Review classes: Verify Before Promotion 12, Future Product Expansion 5, Low-Priority Polish 6, Accepted No-Action 4
 
 ### Review Classes
 
-- Verify Before Promotion 13: Potentially stale accepted debt. Re-run a targeted QA check before promoting it back to implementation work.
+- Verify Before Promotion 12: Potentially stale accepted debt. Re-run a targeted QA check before promoting it back to implementation work.
 - Future Product Expansion 5: Valid enhancement only if the portfolio scope expands into a fuller product surface or longer-lived conversational memory.
-- Low-Priority Polish 9: Non-blocking answer, copy, layout, or evidence-label polish. Keep accepted unless it appears in a release-facing regression.
-- Accepted No-Action 5: Accepted no-fix item with no current trigger for implementation work.
+- Low-Priority Polish 6: Non-blocking answer, copy, layout, or evidence-label polish. Keep accepted unless it appears in a release-facing regression.
+- Accepted No-Action 4: Accepted no-fix item with no current trigger for implementation work.
 
 ### Portfolio Deferral
 
@@ -130,8 +133,6 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P1] analyst-single-server-response-mismatch: Analyst 단일 서버 분석 응답 구조 불일치 수정 (seen 1회, last QA-20260519-0535)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P1] landing-vibe-content-deployment-drift: Vibe Coding 프로덕션 카드 내용과 현재 소스 간 배포 드리프트 해소 (seen 1회, last QA-20260330-0195)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P1] server-comparison-deterministic-path: 서버 1:1 비교 쿼리 deterministic 경로 미확립 (seen 1회, last QA-20260522-0559)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P4] advisor-response-quality: Advisor 응답 내용 충실도 개선 (seen 1회, last QA-20260525-0592)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -161,8 +162,6 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] production-login-console-init-error: production login/assistant chunk init console error triage (seen 1회, last QA-20260421-0322)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P2] q-new106-ranking-cross-metric: Q-NEW106: 메모리 상위N 서버의 이종 메트릭(디스크) 조회 미처리 (seen 1회, last QA-20260607-0672)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P4] q-new8-advisor-routing: P4 재확인: 특정 서버 성능 개선 조언 시 Advisor 대신 AZ 라우팅 오발동 (seen 1회, last QA-20260525-0584)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] vision-gemini-exact-forecast-delta-attribution: Gemini Vision misattributes exact forecast delta values in the screenshot (seen 1회, last QA-20260520-0542)
@@ -170,8 +169,6 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P3] action-needed-transient-500-observation: One transient 500 on standard question 4 before immediate retry success (seen 1회, last QA-20260519-0538)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] embedded-ai-tab-copy-scope: /dashboard/ai-assistant embedded tabs still show older generic subtitles (seen 1회, last QA-20260523-0569)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P3] numbered-list-accordion-split: 번호 목록이 핵심 요약/상세 분석 아코디언 경계에서 분리됨 (seen 1회, last QA-20260524-0579)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] q-new100-group-filtered-peak-metric: Q-NEW100: 그룹 필터된 peak metric 스토리지 필터 누락 (seen 2회, last QA-20260607-0672)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -181,29 +178,26 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] q-new13-advisor-evidence-label-preservation: Q-NEW13 Advisor command evidence label should survive getServerMetrics preparation (seen 1회, last QA-20260525-0589)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P3] ranking-min-advice: 최저값 랭킹 응답에도 경고성 확인 항목이 표시됨 (seen 1회, last QA-20260524-0579)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] reporter-dashboard-threshold-unification: Reporter 영향 서버 기준 대시보드와 불일치 (seen 1회, last QA-20260522-0559)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P3] summary-block-markdown-heading-hr-code-fence: 핵심 요약 스트리밍 블록에서 마크다운 heading(###)/hr(---)/code-fence(```bash) 미렌더링 literal 노출 (seen 1회, last QA-20260530-0645)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] vision-ui-upload-e2e: Authenticated frontend image-upload UI E2E path (seen 1회, last QA-20260519-0538)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 
 ## Completed Improvements
 
-- Total: 781 items completed (full list in qa-tracker.json)
+- Total: 786 items completed (full list in qa-tracker.json)
 - Recently completed:
-  - p28-cpu-warning-filter-disk-aggregation: P28: CPU 경고 상태 필터 + 이종 메트릭(디스크) 집계 PASS (last QA-20260607-0673)
-  - p30-warning-filter-multi-metric-aggregation: P30: 경고 상태 필터 + 복수 메트릭 동시 집계 PASS (last QA-20260607-0673)
-  - p29-metric-ranking-top-bottom-dual: P29: metric-ranking TOP+BOTTOM dual query PASS 재확인 (last QA-20260607-0672)
-  - p26-status-filter-cross-metric-aggregation: P26: 상태 필터 후 이종 메트릭 집계 (메모리 경고→CPU) 재검증 PASS (last QA-20260607-0670)
-  - p27-and-under-50-percent-filter: P27: 복합 AND 미만 조건(<50%) 서버 카운트 재검증 PASS (last QA-20260607-0670)
+  - numbered-list-accordion-split: 번호 목록 아코디언 요약/상세 경계 연속 렌더링 (last QA-20260607-0674)
+  - q-new106-ranking-cross-metric: Q-NEW106: 메모리 상위N 서버의 이종 메트릭(디스크) 조회 처리 (last QA-20260607-0674)
+  - ranking-min-advice: 최저값 랭킹 응답의 안정 수치 문구 처리 (last QA-20260607-0674)
+  - server-comparison-deterministic-path: 서버 1:1 비교 쿼리 deterministic 경로 보장 (last QA-20260607-0674)
+  - summary-block-markdown-heading-hr-code-fence: 핵심 요약 스트리밍 블록 마크다운 delimiter literal 제거 (last QA-20260607-0674)
 
 ## Recent Runs
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260607-0674 | 2026-06-07T05:19:01.995Z | targeted | yes | yes | Vercel Production Playwright MCP - v8.12.106 WONT-FIX remediation release QA | 6 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260607-0673 | 2026-06-07T03:00:04.368Z | targeted | no | no | Production Playwright MCP - v8.12.104 P28/P30 fix validation | 2 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260607-0672 | 2026-06-07T02:33:52.729Z | targeted | no | no | Vercel Production Playwright MCP - 27차 AI 어시스턴트 평가 (v8.12.103) | 10 | 1 | 0 | 0 | 4 | 1 |
 | QA-20260607-0671 | 2026-06-07T01:58:28.781Z | targeted | no | yes | Cloud Run Production Direct API - v8.12.103 P28/P29 deterministic evidence validation | 6 | 2 | 0 | 0 | 0 | 0 |
@@ -223,4 +217,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260605-0657 | 2026-06-05T06:56:30.699Z | targeted | yes | yes | Vercel Production Playwright MCP - Artifact Intent BFF Release QA (v8.12.92) | 20 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260605-0656 | 2026-06-05T03:33:51.856Z | targeted | yes | yes | Vercel Production Playwright MCP - Recent Two-Week Improvements Applied Recheck (v8.12.91) | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260605-0655 | 2026-06-05T02:01:39.005Z | targeted | yes | yes | Vercel Production Chrome DevTools MCP Fallback - Frontend UI/UX Wiring Polish (v8.12.91) | 14 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260605-0654 | 2026-06-05T01:25:05.069Z | targeted | no | no | Local Dev Chrome DevTools MCP - Frontend UI/UX Wiring Polish Verification | 12 | 1 | 0 | 0 | 0 | 0 |

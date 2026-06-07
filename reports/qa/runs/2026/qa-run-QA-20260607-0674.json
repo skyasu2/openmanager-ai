@@ -1,0 +1,208 @@
+{
+  "runId": "QA-20260607-0674",
+  "recordedAt": "2026-06-07T05:19:01.995Z",
+  "recordedAtKst": "2026-06-07 14:19:01 KST",
+  "runTitle": "Vercel Production Playwright MCP - v8.12.106 WONT-FIX remediation release QA",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_D36pRxytCDadd54ka4VV56dQbwTS",
+    "deploymentUrl": "https://openmanager-flyjnrucf-skyasus-projects.vercel.app",
+    "commitSha": "c998cc7b8ad6b9faaf3d0eac26705ec4a8c38153"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "Production version/health: /api/version and /api/health returned v8.12.106, commit c998cc7b8, healthy database/cache/ai services (PASS)",
+    "P2 q-new106-ranking-cross-metric: '메모리 사용률 상위 2개 서버들의 디스크 사용량 알려줘' => 메모리 상위 2대 서버(cache-redis-dc1-01, cache-redis-dc1-03)를 대상으로 디스크 26%/26% 반환, deterministic / monitoring-metric-current (PASS)",
+    "P3 ranking-min-advice: '디스크 사용률 하위 3대 서버 알려줘' => 하위 3대(cache-redis-dc1-02 21%, lb-haproxy-dc1-02 21%, lb-haproxy-dc1-01 23%)와 '낮은 안정적 수치' 문구 반환, deterministic / monitoring-metric-ranking (PASS)",
+    "P3 numbered-list-accordion-split: persisted production response re-rendered on v8.12.106 with detail ol start=\"2\" for split summary/details lists; dangling '2.' marker removed and no '3.' literal restart/split artifact remained (PASS)",
+    "P3 summary-block-markdown-heading-hr-code-fence: '안정적인 서버만 목록 보여줘' response core summary rendered plain text without literal ###, ---, or code-fence delimiter lines (PASS)",
+    "P1 server-comparison-deterministic-path: 'web-nginx-dc1-01와 web-nginx-dc1-02 CPU 메모리 디스크 비교해줘' => CPU/메모리/디스크 comparison returned on deterministic / monitoring-metric-current with 14:10 KST slot metrics (PASS)"
+  ],
+  "skippedSurfaces": [
+    "core-routes-smoke full route matrix skipped: targeted release QA was limited to changed AI assistant WONT-FIX remediation surfaces after GitLab deploy/smoke success",
+    "modal-detail-pack skipped: no dashboard modal/detail code changed",
+    "Cloud Run admin observability endpoints skipped: no admin monitoring endpoint behavior changed; GitLab ai-engine deploy/smoke and Vercel AI UI paths were checked"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "P2 q-new106 ranking cross metric",
+      "agent": "monitoring-metric-current",
+      "provider": "deterministic",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Performance API resource duration",
+      "latencyMs": 1352
+    },
+    {
+      "surface": "P3 ASC disk ranking",
+      "agent": "monitoring-metric-ranking",
+      "provider": "deterministic",
+      "model": "monitoring-metric-ranking",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Performance API resource duration",
+      "latencyMs": 838
+    },
+    {
+      "surface": "P1 server comparison deterministic",
+      "agent": "monitoring-metric-current",
+      "provider": "deterministic",
+      "model": "monitoring-metric-current",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "Performance API job stream resource duration",
+      "latencyMs": 904
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "P2, P3, P1 AI assistant remediation surfaces all passed on production in the requested order with deterministic routing where required.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "frontend-ux",
+      "domainName": "Frontend UX Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The summary/details split renders continued ordered lists with ol start=2 and no dangling marker artifact after the v8.12.106 frontend bundle.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline 2582574231 completed deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke successfully; Vercel deployment is Ready.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-07T14:12:52+09:00",
+      "summary": "Current billing period checked after production QA; effective=3.2368 USD, billed=0.0000 USD, chargeCount=3045, no unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.12.106 WONT-FIX remediation targeted production QA",
+      "path": "reports/qa/evidence/qa-20260607-v812106-wontfix-targeted-qa.png",
+      "note": "Shows fresh P3 ASC ranking and P1 server comparison deterministic provider chips on Vercel production."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "q-new106-ranking-cross-metric",
+      "title": "Q-NEW106: 메모리 상위N 서버의 이종 메트릭(디스크) 조회 처리",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.106 production UI: memory top 2 servers were used as disk-current targets; deterministic monitoring-metric-current returned cache-redis-dc1-01/cache-redis-dc1-03 disk 26%.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ranking-min-advice",
+      "title": "최저값 랭킹 응답의 안정 수치 문구 처리",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.106 production UI: disk bottom 3 response used '낮은 안정적 수치' wording and deterministic monitoring-metric-ranking.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "numbered-list-accordion-split",
+      "title": "번호 목록 아코디언 요약/상세 경계 연속 렌더링",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.106 production UI DOM: split details rendered as ol start=2 and no dangling marker literal remained.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "summary-block-markdown-heading-hr-code-fence",
+      "title": "핵심 요약 스트리밍 블록 마크다운 delimiter literal 제거",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.106 production UI: stable-server summary rendered without literal ###, ---, or code fence delimiters.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "server-comparison-deterministic-path",
+      "title": "서버 1:1 비교 쿼리 deterministic 경로 보장",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.12.106 production UI: web-nginx-dc1-01 vs web-nginx-dc1-02 CPU/MEM/DISK comparison returned deterministic monitoring-metric-current instead of LLM fallback.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local gates before deploy: targeted AI Engine/frontend tests passed; npm run ci:local:quick passed on c998cc7b8.",
+    "GitLab tag pipeline 2582574231 success: deploy, deploy_ai_engine, post_deploy_smoke, post_deploy_ai_engine_smoke all success.",
+    "Pre-browser observability: npm run langfuse:check -- --limit 20 showed 0 failures and 0 fallbacks in recent traces."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline 2582574231",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2582574231",
+      "note": "v8.12.106 deploy and smoke success"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_D36pRxytCDadd54ka4VV56dQbwTS",
+      "url": "https://openmanager-flyjnrucf-skyasus-projects.vercel.app/",
+      "note": "Ready, aliased to https://openmanager-ai.vercel.app"
+    }
+  ]
+}
