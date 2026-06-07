@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-07T13:37:08.781Z"
+    "updatedAt": "2026-06-07T14:33:22.885Z"
   },
   "sequence": {
-    "nextRunNumber": 689
+    "nextRunNumber": 690
   },
   "summary": {
-    "totalRecordedRuns": 686,
-    "totalRuns": 529,
+    "totalRecordedRuns": 687,
+    "totalRuns": 530,
     "excludedRuns": 157,
-    "totalChecks": 4692,
-    "totalPassed": 4480,
+    "totalChecks": 4702,
+    "totalPassed": 4490,
     "totalFailed": 167,
     "completionRate": 100,
-    "completedItems": 790,
+    "completedItems": 791,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 28,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260607-0688",
-    "lastRecordedAt": "2026-06-07T13:37:08.781Z",
-    "latestRecordedRunId": "QA-20260607-0688",
-    "latestRecordedAt": "2026-06-07T13:37:08.781Z"
+    "lastRunId": "QA-20260607-0689",
+    "lastRecordedAt": "2026-06-07T14:33:22.885Z",
+    "latestRecordedRunId": "QA-20260607-0689",
+    "latestRecordedAt": "2026-06-07T14:33:22.885Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -19364,6 +19364,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-06-07T13:37:08.781Z"
+    },
+    "ai-engine-llm-intent-classifier-prompt-contract-v812110": {
+      "id": "ai-engine-llm-intent-classifier-prompt-contract-v812110",
+      "title": "LLM intent classifier prompt includes explicit edge-case examples for metrics vs analyst routing",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260607-0689",
+      "firstSeenAt": "2026-06-07T14:33:22.885Z",
+      "lastSeenRunId": "QA-20260607-0689",
+      "lastSeenAt": "2026-06-07T14:33:22.885Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "Prompt content contract tests were added and production Cloud Run deploy smoke passed after manual fallback deploy.",
+      "lastNote": "Examples cover inverse healthy-status filters, group warning comparison, multi-metric AND filters, short monitoring query, and saturation forecasting.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-06-07T14:33:22.885Z"
     }
   },
   "runs": [
@@ -43652,6 +43676,125 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260607-0689",
+      "recordedAt": "2026-06-07T14:33:22.885Z",
+      "recordedAtKst": "2026-06-07 23:33:22 KST",
+      "title": "Production Cloud Run manual deploy smoke - v8.12.110 LLM intent prompt examples",
+      "owner": "codex",
+      "source": "cloud-run-direct-api",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260607-0689.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "frontend": "not changed",
+        "backend": "Cloud Run ai-engine v8.12.110",
+        "branch": "main",
+        "deploymentId": "cloud-build-ad04b07e-90d2-46d0-bf92-a9e53f4e669f",
+        "deploymentUrl": "https://console.cloud.google.com/cloud-build/builds/ad04b07e-90d2-46d0-bf92-a9e53f4e669f?project=490817238363",
+        "commitSha": "dca6870a0b6ab7589cef7e25d7af7f258de2e843"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "LLM intent classifier prompt examples committed to gitlab/main",
+        "GitLab branch validate pipeline 2583000076 succeeded",
+        "Cloud Run manual fallback deploy.sh completed successfully",
+        "Cloud Build ad04b07e-90d2-46d0-bf92-a9e53f4e669f succeeded with default machine type",
+        "Cloud Run revision ai-engine-00608-vq8 receives 100% traffic",
+        "Cloud Run /health returned status ok and version 8.12.110",
+        "Cloud Run /monitoring requires auth without key and returns 200 with X-API-Key",
+        "Cloud Run /debug/prefilter inverse healthy-status smoke forced Metrics Query Agent"
+      ],
+      "skippedSurfaces": [
+        "Frontend browser QA was not repeated because the deployed change is limited to Cloud Run ai-engine prompt routing text",
+        "Semver tag release pipeline was not used; this was an explicit manual Cloud Run fallback deploy"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [
+        {
+          "surface": "debug prefilter inverse healthy-status prompt",
+          "route": "/debug/prefilter",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "Cloud Run debug prefilter response"
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The prompt content contract tests were added and the production inverse healthy-status smoke still forces Metrics Query Agent.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Preflight, branch validate pipeline, Cloud Build, Cloud Run health, traffic, and free-tier resource limits were verified.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Authenticated monitoring endpoint returned HTTP 200 after deploy and no resource-limit drift was observed.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "gcp-cloud-run",
+          "method": "gcloud",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-07T23:31:00+09:00",
+          "summary": "Cloud Build used default machine type and Cloud Run ai-engine stayed at cpu=1, memory=512Mi, max 1 instance.",
+          "evidence": "gcloud builds describe ad04b07e-90d2-46d0-bf92-a9e53f4e669f; gcloud run services describe ai-engine --region asia-northeast1",
+          "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.12.110 LLM intent prompt manual Cloud Run deploy evidence",
+          "path": "reports/qa/evidence/qa-20260607-v812110-llm-intent-prompt-manual-cloudrun-deploy.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Build ad04b07e-90d2-46d0-bf92-a9e53f4e669f",
+          "url": "https://console.cloud.google.com/cloud-build/builds/ad04b07e-90d2-46d0-bf92-a9e53f4e669f?project=490817238363"
+        },
+        {
+          "type": "general",
+          "label": "GitLab branch validate pipeline 2583000076",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583000076"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -43660,16 +43803,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 378,
-      "appropriateCount": 326,
+      "seenCount": 379,
+      "appropriateCount": 327,
       "partialCount": 52,
       "inappropriateCount": 0,
       "improvementNeededCount": 75,
-      "lastRunId": "QA-20260607-0688",
-      "lastSeenAt": "2026-06-07T13:37:08.781Z",
+      "lastRunId": "QA-20260607-0689",
+      "lastSeenAt": "2026-06-07T14:33:22.885Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The production direct API boundary prompt pack now passes 6/6, including deterministic clarification policies and inverse healthy-status metadata.",
+      "lastRationale": "The prompt content contract tests were added and the production inverse healthy-status smoke still forces Metrics Query Agent.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -43677,16 +43820,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 164,
-      "appropriateCount": 128,
+      "seenCount": 165,
+      "appropriateCount": 129,
       "partialCount": 36,
       "inappropriateCount": 0,
       "improvementNeededCount": 34,
-      "lastRunId": "QA-20260607-0688",
-      "lastSeenAt": "2026-06-07T13:37:08.781Z",
-      "lastFit": "partially-appropriate",
+      "lastRunId": "QA-20260607-0689",
+      "lastSeenAt": "2026-06-07T14:33:22.885Z",
+      "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Langfuse supervisor query completed, but sampled rows still contained historical failure traces; direct response metadata is sufficient for release acceptance while trace freshness can be watched in routine observability.",
+      "lastRationale": "Authenticated monitoring endpoint returned HTTP 200 after deploy and no resource-limit drift was observed.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -43711,16 +43854,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 261,
-      "appropriateCount": 240,
+      "seenCount": 262,
+      "appropriateCount": 241,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260607-0688",
-      "lastSeenAt": "2026-06-07T13:37:08.781Z",
+      "lastRunId": "QA-20260607-0689",
+      "lastSeenAt": "2026-06-07T14:33:22.885Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab release pipeline, production version smoke, Cloud Run health, and free-tier resource limits were verified.",
+      "lastRationale": "Preflight, branch validate pipeline, Cloud Build, Cloud Run health, traffic, and free-tier resource limits were verified.",
       "lastNextAction": ""
     },
     "test-automation": {

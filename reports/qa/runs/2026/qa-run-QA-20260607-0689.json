@@ -1,0 +1,138 @@
+{
+  "runId": "QA-20260607-0689",
+  "recordedAt": "2026-06-07T14:33:22.885Z",
+  "recordedAtKst": "2026-06-07 23:33:22 KST",
+  "runTitle": "Production Cloud Run manual deploy smoke - v8.12.110 LLM intent prompt examples",
+  "owner": "codex",
+  "source": "cloud-run-direct-api",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "frontend": "not changed",
+    "backend": "Cloud Run ai-engine v8.12.110",
+    "branch": "main",
+    "deploymentId": "cloud-build-ad04b07e-90d2-46d0-bf92-a9e53f4e669f",
+    "deploymentUrl": "https://console.cloud.google.com/cloud-build/builds/ad04b07e-90d2-46d0-bf92-a9e53f4e669f?project=490817238363",
+    "commitSha": "dca6870a0b6ab7589cef7e25d7af7f258de2e843"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "LLM intent classifier prompt examples committed to gitlab/main",
+    "GitLab branch validate pipeline 2583000076 succeeded",
+    "Cloud Run manual fallback deploy.sh completed successfully",
+    "Cloud Build ad04b07e-90d2-46d0-bf92-a9e53f4e669f succeeded with default machine type",
+    "Cloud Run revision ai-engine-00608-vq8 receives 100% traffic",
+    "Cloud Run /health returned status ok and version 8.12.110",
+    "Cloud Run /monitoring requires auth without key and returns 200 with X-API-Key",
+    "Cloud Run /debug/prefilter inverse healthy-status smoke forced Metrics Query Agent"
+  ],
+  "skippedSurfaces": [
+    "Frontend browser QA was not repeated because the deployed change is limited to Cloud Run ai-engine prompt routing text",
+    "Semver tag release pipeline was not used; this was an explicit manual Cloud Run fallback deploy"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [
+    {
+      "surface": "debug prefilter inverse healthy-status prompt",
+      "route": "/debug/prefilter",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "Cloud Run debug prefilter response"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The prompt content contract tests were added and the production inverse healthy-status smoke still forces Metrics Query Agent.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Preflight, branch validate pipeline, Cloud Build, Cloud Run health, traffic, and free-tier resource limits were verified.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Authenticated monitoring endpoint returned HTTP 200 after deploy and no resource-limit drift was observed.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "gcp-cloud-run",
+      "method": "gcloud",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-07T23:31:00+09:00",
+      "summary": "Cloud Build used default machine type and Cloud Run ai-engine stayed at cpu=1, memory=512Mi, max 1 instance.",
+      "evidence": "gcloud builds describe ad04b07e-90d2-46d0-bf92-a9e53f4e669f; gcloud run services describe ai-engine --region asia-northeast1",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.12.110 LLM intent prompt manual Cloud Run deploy evidence",
+      "path": "reports/qa/evidence/qa-20260607-v812110-llm-intent-prompt-manual-cloudrun-deploy.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-engine-llm-intent-classifier-prompt-contract-v812110",
+      "title": "LLM intent classifier prompt includes explicit edge-case examples for metrics vs analyst routing",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Prompt content contract tests were added and production Cloud Run deploy smoke passed after manual fallback deploy.",
+      "note": "Examples cover inverse healthy-status filters, group warning comparison, multi-metric AND filters, short monitoring query, and saturation forecasting.",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Validation command: cd cloud-run/ai-engine && npm run type-check -> passed",
+    "Validation command: cd cloud-run/ai-engine && npm run test -> 160 files / 1683 tests passed",
+    "Validation command: cd cloud-run/ai-engine && npm run docker:preflight -> passed",
+    "Deployment command: cd cloud-run/ai-engine && bash deploy.sh -> Cloud Run revision ai-engine-00608-vq8 serving 100% traffic",
+    "Post-deploy smoke: /health 200, /monitoring unauth blocked, /monitoring X-API-Key 200, /debug/prefilter inverse status Metrics Query 0.88",
+    "No secret values or API keys were recorded."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Build ad04b07e-90d2-46d0-bf92-a9e53f4e669f",
+      "url": "https://console.cloud.google.com/cloud-build/builds/ad04b07e-90d2-46d0-bf92-a9e53f4e669f?project=490817238363"
+    },
+    {
+      "type": "general",
+      "label": "GitLab branch validate pipeline 2583000076",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583000076"
+    }
+  ]
+}
