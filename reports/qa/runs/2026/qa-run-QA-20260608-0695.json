@@ -1,0 +1,149 @@
+{
+  "runId": "QA-20260608-0695",
+  "recordedAt": "2026-06-08T07:22:56.182Z",
+  "recordedAtKst": "2026-06-08 16:22:56 KST",
+  "runTitle": "Production deploy validation - v8.12.118 ambiguous status prefilter",
+  "owner": "codex",
+  "source": "gitlab-ci-cloud-run-debug-smoke",
+  "environment": {
+    "target": "vercel-production-and-cloud-run-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel production v8.12.118",
+    "backend": "Cloud Run ai-engine v8.12.118",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2584020593",
+    "deploymentUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2584020593",
+    "commitSha": "0486fe674c36026ea40c3e422c22d5797d594f4b"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "GitLab tag pipeline 2584020593 succeeded for v8.12.118",
+    "GitLab deploy job succeeded for Vercel production",
+    "GitLab deploy_ai_engine job succeeded for Cloud Run ai-engine",
+    "GitLab post_deploy_smoke job succeeded",
+    "GitLab post_deploy_ai_engine_smoke job succeeded",
+    "Vercel production /api/version returned v8.12.118 and releaseTag v8.12.118",
+    "Vercel production /api/health returned success=true, status=healthy, and version 8.12.118",
+    "Cloud Run /health returned status ok and version 8.12.118",
+    "Cloud Run debug prefilter returned direct clarification for ambiguous query 상태 어때?",
+    "Cloud Run debug prefilter preserved Metrics Query routing for specific query 전체 서버 상태 어때?",
+    "Cloud Run /monitoring returned 403 unauthenticated and 200 authenticated",
+    "Cloud Run free-tier guard script passed",
+    "Vercel usage check returned billed=0.0000 USD"
+  ],
+  "skippedSurfaces": [
+    "Browser conversational AI five-question QA was not repeated because this change was validated through deterministic prefilter smoke and local AI Engine regression tests without live LLM calls",
+    "Dashboard/modal route packs were not repeated in this targeted AI Engine deployment validation",
+    "Public GitHub snapshot sync was not requested"
+  ],
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [
+    {
+      "surface": "Cloud Run debug prefilter - 상태 어때?",
+      "route": "/debug/prefilter",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "preFilterResult shouldHandoff=false, confidence=0.9"
+    },
+    {
+      "surface": "Cloud Run debug prefilter - 전체 서버 상태 어때?",
+      "route": "/debug/prefilter",
+      "executionMode": "deterministic",
+      "latencyMs": 0,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "preFilterResult suggestedAgent=Metrics Query Agent, confidence=0.86"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The changed ambiguous-status query path was validated with local regression tests and production Cloud Run debug prefilter smoke without invoking live LLM routing.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline, Vercel deploy smoke, Cloud Run deploy smoke, frontend health/version, Cloud Run health, and resource guard checks all passed for v8.12.118.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Release propagation and admin observability auth behavior were confirmed through /api/version, /api/health, /health, /monitoring, and GitLab job inspection.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-08T16:19:47+09:00",
+      "summary": "Current billing period checked after v8.12.118 production deploy: effective=4.5381 USD, billed=0.0000 USD, chargeCount=4263.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "gcp-cloud-run",
+      "method": "script",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-08T16:19:50+09:00",
+      "summary": "Cloud Run guardrails passed: maxScale=1, concurrency=16, timeoutSeconds=300, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00615-znz.",
+      "evidence": "npm run check:cloud-run-guard",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.12.118 deployment and AI prefilter smoke evidence",
+      "path": "reports/qa/evidence/qa-20260608-v812118-deployment-ai-prefilter.md"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Pre-deploy local validation passed: root artifact audit, root type-check, lint, test:quick, test:contract, AI Engine type-check, AI Engine full test suite, and AI Engine Docker build-only preflight.",
+    "GitLab branch validation pipeline 2583998986 passed for code commit ac5994a0f3694318161f9acee8b09770eb5cef5b.",
+    "GitLab tag deployment pipeline 2584020593 completed successfully for v8.12.118.",
+    "Cloud Run /debug/prefilter authenticated smoke confirmed 상태 어때? returns direct clarification and 전체 서버 상태 어때? remains Metrics Query Agent.",
+    "No secret values or API keys were recorded."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "v8.12.118 GitLab tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2584020593"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run ai-engine health endpoint",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    }
+  ]
+}

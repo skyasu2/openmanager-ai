@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-08T06:18:28.191Z"
+    "updatedAt": "2026-06-08T07:22:56.182Z"
   },
   "sequence": {
-    "nextRunNumber": 695
+    "nextRunNumber": 696
   },
   "summary": {
-    "totalRecordedRuns": 692,
-    "totalRuns": 534,
+    "totalRecordedRuns": 693,
+    "totalRuns": 535,
     "excludedRuns": 158,
-    "totalChecks": 4746,
-    "totalPassed": 4534,
+    "totalChecks": 4759,
+    "totalPassed": 4547,
     "totalFailed": 167,
     "completionRate": 100,
     "completedItems": 792,
@@ -21,10 +21,10 @@
     "wontFixItems": 28,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260608-0694",
-    "lastRecordedAt": "2026-06-08T06:18:28.191Z",
-    "latestRecordedRunId": "QA-20260608-0694",
-    "latestRecordedAt": "2026-06-08T06:18:28.191Z"
+    "lastRunId": "QA-20260608-0695",
+    "lastRecordedAt": "2026-06-08T07:22:56.182Z",
+    "latestRecordedRunId": "QA-20260608-0695",
+    "latestRecordedAt": "2026-06-08T07:22:56.182Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -44499,6 +44499,151 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260608-0695",
+      "recordedAt": "2026-06-08T07:22:56.182Z",
+      "recordedAtKst": "2026-06-08 16:22:56 KST",
+      "title": "Production deploy validation - v8.12.118 ambiguous status prefilter",
+      "owner": "codex",
+      "source": "gitlab-ci-cloud-run-debug-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260608-0695.json",
+      "environment": {
+        "target": "vercel-production-and-cloud-run-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel production v8.12.118",
+        "backend": "Cloud Run ai-engine v8.12.118",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-2584020593",
+        "deploymentUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2584020593",
+        "commitSha": "0486fe674c36026ea40c3e422c22d5797d594f4b"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag pipeline 2584020593 succeeded for v8.12.118",
+        "GitLab deploy job succeeded for Vercel production",
+        "GitLab deploy_ai_engine job succeeded for Cloud Run ai-engine",
+        "GitLab post_deploy_smoke job succeeded",
+        "GitLab post_deploy_ai_engine_smoke job succeeded",
+        "Vercel production /api/version returned v8.12.118 and releaseTag v8.12.118",
+        "Vercel production /api/health returned success=true, status=healthy, and version 8.12.118",
+        "Cloud Run /health returned status ok and version 8.12.118",
+        "Cloud Run debug prefilter returned direct clarification for ambiguous query 상태 어때?",
+        "Cloud Run debug prefilter preserved Metrics Query routing for specific query 전체 서버 상태 어때?",
+        "Cloud Run /monitoring returned 403 unauthenticated and 200 authenticated",
+        "Cloud Run free-tier guard script passed",
+        "Vercel usage check returned billed=0.0000 USD"
+      ],
+      "skippedSurfaces": [
+        "Browser conversational AI five-question QA was not repeated because this change was validated through deterministic prefilter smoke and local AI Engine regression tests without live LLM calls",
+        "Dashboard/modal route packs were not repeated in this targeted AI Engine deployment validation",
+        "Public GitHub snapshot sync was not requested"
+      ],
+      "checks": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [
+        {
+          "surface": "Cloud Run debug prefilter - 상태 어때?",
+          "route": "/debug/prefilter",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "preFilterResult shouldHandoff=false, confidence=0.9"
+        },
+        {
+          "surface": "Cloud Run debug prefilter - 전체 서버 상태 어때?",
+          "route": "/debug/prefilter",
+          "executionMode": "deterministic",
+          "latencyMs": 0,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "preFilterResult suggestedAgent=Metrics Query Agent, confidence=0.86"
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The changed ambiguous-status query path was validated with local regression tests and production Cloud Run debug prefilter smoke without invoking live LLM routing.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline, Vercel deploy smoke, Cloud Run deploy smoke, frontend health/version, Cloud Run health, and resource guard checks all passed for v8.12.118.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Release propagation and admin observability auth behavior were confirmed through /api/version, /api/health, /health, /monitoring, and GitLab job inspection.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-08T16:19:47+09:00",
+          "summary": "Current billing period checked after v8.12.118 production deploy: effective=4.5381 USD, billed=0.0000 USD, chargeCount=4263.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "gcp-cloud-run",
+          "method": "script",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-08T16:19:50+09:00",
+          "summary": "Cloud Run guardrails passed: maxScale=1, concurrency=16, timeoutSeconds=300, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00615-znz.",
+          "evidence": "npm run check:cloud-run-guard",
+          "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.12.118 deployment and AI prefilter smoke evidence",
+          "path": "reports/qa/evidence/qa-20260608-v812118-deployment-ai-prefilter.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "v8.12.118 GitLab tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2584020593"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run ai-engine health endpoint",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -44507,16 +44652,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 382,
-      "appropriateCount": 330,
+      "seenCount": 383,
+      "appropriateCount": 331,
       "partialCount": 52,
       "inappropriateCount": 0,
       "improvementNeededCount": 75,
-      "lastRunId": "QA-20260608-0692",
-      "lastSeenAt": "2026-06-08T05:05:57.160Z",
+      "lastRunId": "QA-20260608-0695",
+      "lastSeenAt": "2026-06-08T07:22:56.182Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "5개 핵심 라우팅 경로(server-health, metric-ranking, metric-current, metric-trend, Analyst) 전 항목 PASS. 응답 내용 정확성 확인",
+      "lastRationale": "The changed ambiguous-status query path was validated with local regression tests and production Cloud Run debug prefilter smoke without invoking live LLM routing.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -44524,16 +44669,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 169,
-      "appropriateCount": 133,
+      "seenCount": 170,
+      "appropriateCount": 134,
       "partialCount": 36,
       "inappropriateCount": 0,
       "improvementNeededCount": 34,
-      "lastRunId": "QA-20260608-0693",
-      "lastSeenAt": "2026-06-08T06:06:26.263Z",
+      "lastRunId": "QA-20260608-0695",
+      "lastSeenAt": "2026-06-08T07:22:56.182Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Release propagation and runtime state were verified through /api/version, /api/health, Cloud Run /health, GitLab pipeline inspection, Vercel usage, and Cloud Run resource guard checks.",
+      "lastRationale": "Release propagation and admin observability auth behavior were confirmed through /api/version, /api/health, /health, /monitoring, and GitLab job inspection.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -44558,16 +44703,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 267,
-      "appropriateCount": 246,
+      "seenCount": 268,
+      "appropriateCount": 247,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260608-0694",
-      "lastSeenAt": "2026-06-08T06:18:28.191Z",
+      "lastRunId": "QA-20260608-0695",
+      "lastSeenAt": "2026-06-08T07:22:56.182Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production smoke stayed within the deployed v8.12.117 frontend and Vercel usage remained billed=0.0000 USD.",
+      "lastRationale": "GitLab tag pipeline, Vercel deploy smoke, Cloud Run deploy smoke, frontend health/version, Cloud Run health, and resource guard checks all passed for v8.12.118.",
       "lastNextAction": ""
     },
     "test-automation": {
