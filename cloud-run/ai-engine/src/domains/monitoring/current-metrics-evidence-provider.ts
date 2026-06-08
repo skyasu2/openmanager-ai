@@ -84,15 +84,21 @@ const SUPPORTED_MONITORING_SCOPE =
   'CPU, 메모리, 디스크, 네트워크, 서버 상태, 24시간 load 피크';
 
 function detectUnsupportedMetric(message: string): UnsupportedMetric | null {
-  if (/\bgpu\b|그래픽\s*카드|가속기/i.test(message)) {
+  if (/\bgpu\b|그래픽\s*카드|가속기|\bvram\b|\bcuda\b/i.test(message)) {
     return { id: 'gpu', label: 'GPU 사용률' };
   }
   if (
-    /(?:kubernetes|k8s|쿠버네티스|pod|pods|파드|container|컨테이너).{0,40}(?:restart|restarts?|재시작)/i.test(
+    /(?:kubernetes|k8s|쿠버네티스|pod|pods?|파드|container|컨테이너).{0,40}(?:restart|restarts?|재시작|횟수)/i.test(
       message
     )
   ) {
     return { id: 'kubernetes_pod_restart', label: 'Kubernetes pod restart' };
+  }
+  if (/\biops\b|초당\s*입출력/i.test(message)) {
+    return { id: 'iops', label: 'IOPS(입출력 횟수)' };
+  }
+  if (/패킷\s*손실|packet\s*loss/i.test(message)) {
+    return { id: 'packet_loss', label: '패킷 손실률' };
   }
   return null;
 }
@@ -147,7 +153,7 @@ function buildUnsupportedMetricEvidence(
   const answer = [
     `⚠️ **지원하지 않는 지표입니다: ${metric.label}**`,
     `• 현재 OpenManager AI의 결정적 monitoring snapshot은 ${SUPPORTED_MONITORING_SCOPE}만 근거로 제공합니다.`,
-    '• 실제 근거 없이 GPU, pod restart 같은 미수집 지표의 순위나 수치를 만들지 않겠습니다.',
+    '• 실제 근거 없이 GPU, IOPS, pod restart 같은 미수집 지표의 순위나 수치를 만들지 않겠습니다.',
     '• 지원 지표로 다시 질문해 주세요. 예: "네트워크 사용률 상위 서버 3대", "CPU 60% 이상인 서버".',
   ].join('\n');
 

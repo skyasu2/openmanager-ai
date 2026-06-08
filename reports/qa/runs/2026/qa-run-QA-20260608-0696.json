@@ -1,0 +1,40 @@
+{
+  "runId": "QA-20260608-0696",
+  "recordedAt": "2026-06-08T14:22:14.094Z",
+  "recordedAtKst": "2026-06-08 23:22:14 KST",
+  "runTitle": "AI 어시스턴트 타겟 QA — v8.12.118 ambiguous/unsupported 검증",
+  "owner": "Claude",
+  "source": "",
+  "environment": {
+    "target": "",
+    "url": "",
+    "frontend": "",
+    "backend": "",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "785de1744acebb32e3f231912d0cda3f96c43e8b"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [],
+  "coveredSurfaces": [],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

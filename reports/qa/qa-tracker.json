@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-08T07:22:56.182Z"
+    "updatedAt": "2026-06-08T14:22:14.094Z"
   },
   "sequence": {
-    "nextRunNumber": 696
+    "nextRunNumber": 697
   },
   "summary": {
-    "totalRecordedRuns": 693,
+    "totalRecordedRuns": 694,
     "totalRuns": 535,
-    "excludedRuns": 158,
+    "excludedRuns": 159,
     "totalChecks": 4759,
     "totalPassed": 4547,
     "totalFailed": 167,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260608-0695",
     "lastRecordedAt": "2026-06-08T07:22:56.182Z",
-    "latestRecordedRunId": "QA-20260608-0695",
-    "latestRecordedAt": "2026-06-08T07:22:56.182Z"
+    "latestRecordedRunId": "QA-20260608-0696",
+    "latestRecordedAt": "2026-06-08T14:22:14.094Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -44639,6 +44639,48 @@
         }
       ],
       "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260608-0696",
+      "recordedAt": "2026-06-08T14:22:14.094Z",
+      "recordedAtKst": "2026-06-08 23:22:14 KST",
+      "title": "AI 어시스턴트 타겟 QA — v8.12.118 ambiguous/unsupported 검증",
+      "owner": "Claude",
+      "source": "",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260608-0696.json",
+      "environment": {
+        "target": "",
+        "url": "",
+        "frontend": "",
+        "backend": "",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "785de1744acebb32e3f231912d0cda3f96c43e8b"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [],
+      "coveredSurfaces": [],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,

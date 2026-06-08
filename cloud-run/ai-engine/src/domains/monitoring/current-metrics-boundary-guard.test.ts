@@ -91,6 +91,42 @@ describe('current metrics domain evidence providers: boundary guard', () => {
     expect(evidence?.fallback).toContain('네트워크');
   });
 
+  it('returns deterministic clarification for unsupported IOPS metric requests', async () => {
+    const request = createEvidenceRequest('IOPS가 높은 서버 알려줘');
+
+    expect(monitoringBoundaryGuardEvidenceProvider.canHandle(request)).toBe(true);
+
+    const evidence = await monitoringBoundaryGuardEvidenceProvider.resolve(request);
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-boundary-guard',
+      metadata: {
+        responsePolicy: 'deterministic_clarification',
+        reason: 'unsupported_metric',
+        unsupportedMetric: 'iops',
+      },
+    });
+    expect(evidence?.fallback).toContain('지원하지 않는 지표');
+  });
+
+  it('returns deterministic clarification for packet loss metric requests', async () => {
+    const request = createEvidenceRequest('패킷 손실이 심한 서버는?');
+
+    expect(monitoringBoundaryGuardEvidenceProvider.canHandle(request)).toBe(true);
+
+    const evidence = await monitoringBoundaryGuardEvidenceProvider.resolve(request);
+
+    expect(evidence).toMatchObject({
+      id: 'monitoring-boundary-guard',
+      metadata: {
+        responsePolicy: 'deterministic_clarification',
+        reason: 'unsupported_metric',
+        unsupportedMetric: 'packet_loss',
+      },
+    });
+    expect(evidence?.fallback).toContain('지원하지 않는 지표');
+  });
+
   it('returns deterministic not-found guidance for explicit unknown server ids', async () => {
     const request = createEvidenceRequest('web-nginx-dc9-99 상태 알려줘', {
       timeLabel: '20:20',
