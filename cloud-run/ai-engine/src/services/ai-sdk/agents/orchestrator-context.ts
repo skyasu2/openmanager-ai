@@ -494,6 +494,9 @@ export function preFilterQuery(
   );
 
   const normalized = query.trim().toLowerCase();
+  const hasAttachmentVisionHint =
+    (context.hasImageAttachments || context.hasFileAttachments) &&
+    looksLikeAttachedVisionRequest(normalized);
 
   // 1. Check greeting patterns - direct response
   for (const pattern of GREETING_PATTERNS) {
@@ -562,6 +565,16 @@ export function preFilterQuery(
     }
   }
 
+  // Attached image/file analysis should keep the Vision path even if the text
+  // mentions a metric that the synthetic OTel dataset does not collect.
+  if (hasAttachmentVisionHint) {
+    return {
+      shouldHandoff: true,
+      suggestedAgent: 'Vision Agent',
+      confidence: 0.92,
+    };
+  }
+
   // 3. Ambiguous status query: short query with 상태/현황/상황 but no specific target.
   // Handled before hasServerKeyword so it catches queries where only "상태" is the keyword.
   if (isAmbiguousStatusQuery(normalized)) {
@@ -590,17 +603,6 @@ export function preFilterQuery(
     isForceKnowledgeBaseIntent ||
     isRestartNeededLookupIntent ||
     SERVER_KEYWORDS.some(kw => normalized.includes(kw));
-  const hasAttachmentVisionHint =
-    (context.hasImageAttachments || context.hasFileAttachments) &&
-    looksLikeAttachedVisionRequest(normalized);
-
-  if (hasAttachmentVisionHint) {
-    return {
-      shouldHandoff: true,
-      suggestedAgent: 'Vision Agent',
-      confidence: 0.92,
-    };
-  }
 
   if (hasServerKeyword) {
     const firstOnCallAnswer = buildFirstOnCallChecklistAnswer(query);

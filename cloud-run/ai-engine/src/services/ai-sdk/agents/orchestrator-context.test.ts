@@ -259,6 +259,16 @@ describe('preFilterQuery', () => {
       expect(result.directResponse).toContain('지원하지 않는 지표');
     });
 
+    it('keeps attached unsupported-metric screenshots on Vision routing', () => {
+      const result = preFilterQuery('첨부된 GPU 그래프 분석해줘', {
+        hasImageAttachments: true,
+      });
+
+      expect(result.shouldHandoff).toBe(true);
+      expect(result.suggestedAgent).toBe('Vision Agent');
+      expect(result.confidence).toBe(0.92);
+    });
+
     it('passes through supported metric queries unchanged', () => {
       const supported = [
         'CPU 사용률 상위 서버',
