@@ -424,6 +424,22 @@ function buildFirstOnCallChecklistAnswer(query: string): string | null {
   ].join('\n');
 }
 
+// 모호한 상태 쿼리 패턴: "상태/현황/상황"이 있지만 구체적 대상(서버·메트릭·그룹)이 없는 짧은 쿼리.
+// "상태 어때?", "지금 상태 어때?", "현황은?" 같은 케이스. LLM timeout FAIL 방지.
+const AMBIGUOUS_STATUS_WORD_PATTERN = /상태|현황|상황/;
+const AMBIGUOUS_STATUS_SPECIFIC_TARGET_PATTERN =
+  /서버|그룹|cpu|메모리|memory|디스크|disk|전체|모두|경고|위험|장애|온라인|오프라인|db|cache|web|api|lb|nginx|redis|mysql|nfs|haproxy|storage/i;
+const AMBIGUOUS_STATUS_MAX_LEN = 20;
+
+function isAmbiguousStatusQuery(normalizedQuery: string): boolean {
+  if (!AMBIGUOUS_STATUS_WORD_PATTERN.test(normalizedQuery)) return false;
+  if (normalizedQuery.length > AMBIGUOUS_STATUS_MAX_LEN) return false;
+  return !AMBIGUOUS_STATUS_SPECIFIC_TARGET_PATTERN.test(normalizedQuery);
+}
+
+const AMBIGUOUS_STATUS_CLARIFICATION =
+  '어떤 서버나 지표를 확인하고 싶으신가요? 더 구체적으로 질문해 주시면 바로 답변드릴게요.\n\n예시:\n• "전체 서버 상태 알려줘"\n• "DB 그룹 CPU 현황"\n• "cache-redis-dc1-01 메모리 얼마야?"\n• "경고 상태 서버 목록"';
+
 /**
  * Fast pre-filter before direct specialist routing
  * Handles simple queries without LLM call
@@ -515,7 +531,17 @@ export function preFilterQuery(
     }
   }
 
-  // 3. Check for server-related keywords - needs handoff
+  // 3. Ambiguous status query: short query with 상태/현황/상황 but no specific target.
+  // Handled before hasServerKeyword so it catches queries where only "상태" is the keyword.
+  if (isAmbiguousStatusQuery(normalized)) {
+    return {
+      shouldHandoff: false,
+      directResponse: AMBIGUOUS_STATUS_CLARIFICATION,
+      confidence: 0.9,
+    };
+  }
+
+  // 4. Check for server-related keywords - needs handoff (after ambiguous-status guard)
   const isForceKnowledgeBaseIntent = FORCE_KB_QUERY_PATTERN.test(query);
   const isRestartNeededLookupIntent = isRestartNeededLookup(query);
   const hasServerKeyword =
@@ -639,7 +665,7 @@ export function preFilterQuery(
     };
   }
 
-  // 4. Unknown - let LLM decide
+  // 5. Unknown - let LLM decide
   return {
     shouldHandoff: true,
     confidence: 0.5,

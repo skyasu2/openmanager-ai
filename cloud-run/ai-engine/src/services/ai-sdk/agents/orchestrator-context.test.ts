@@ -237,6 +237,36 @@ describe('preFilterQuery', () => {
     expect(result.confidence).toBe(0.85);
   });
 
+  describe('ambiguous status query clarification', () => {
+    const ambiguousCases = [
+      '상태 어때?',
+      '지금 상태 어때?',
+      '현황은?',
+      '상황 어때',
+    ];
+
+    it.each(ambiguousCases)('returns directResponse for "%s"', (query) => {
+      const result = preFilterQuery(query);
+      expect(result.shouldHandoff).toBe(false);
+      expect(result.directResponse).toContain('전체 서버 상태 알려줘');
+      expect(result.confidence).toBeGreaterThanOrEqual(0.9);
+    });
+
+    const specificCases = [
+      '전체 서버 상태 어때?',
+      '서버 상태 알려줘',
+      'DB 그룹 현황 알려줘',
+      'cache-redis-dc1-01 상태 어때?',
+      'CPU 상태 어때?',
+      '경고 상태 서버 목록',
+    ];
+
+    it.each(specificCases)('passes through specific query "%s"', (query) => {
+      const result = preFilterQuery(query);
+      expect(result.shouldHandoff).toBe(true);
+    });
+  });
+
   it('keeps pre-filter handoff confidence out of the LLM routing gray band', () => {
     const queries = [
       '서버 상태 알려줘',
