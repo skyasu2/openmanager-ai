@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-08T06:06:26.263Z"
+    "updatedAt": "2026-06-08T06:18:28.191Z"
   },
   "sequence": {
-    "nextRunNumber": 694
+    "nextRunNumber": 695
   },
   "summary": {
-    "totalRecordedRuns": 691,
-    "totalRuns": 533,
+    "totalRecordedRuns": 692,
+    "totalRuns": 534,
     "excludedRuns": 158,
-    "totalChecks": 4737,
-    "totalPassed": 4525,
+    "totalChecks": 4746,
+    "totalPassed": 4534,
     "totalFailed": 167,
     "completionRate": 100,
     "completedItems": 792,
@@ -21,10 +21,10 @@
     "wontFixItems": 28,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260608-0693",
-    "lastRecordedAt": "2026-06-08T06:06:26.263Z",
-    "latestRecordedRunId": "QA-20260608-0693",
-    "latestRecordedAt": "2026-06-08T06:06:26.263Z"
+    "lastRunId": "QA-20260608-0694",
+    "lastRecordedAt": "2026-06-08T06:18:28.191Z",
+    "latestRecordedRunId": "QA-20260608-0694",
+    "latestRecordedAt": "2026-06-08T06:18:28.191Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -44396,6 +44396,109 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260608-0694",
+      "recordedAt": "2026-06-08T06:18:28.191Z",
+      "recordedAtKst": "2026-06-08 15:18:28 KST",
+      "title": "Production browser smoke - v8.12.117 system boot loading page",
+      "owner": "codex",
+      "source": "playwright-cli-production-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260608-0694.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel production v8.12.117",
+        "backend": "Cloud Run ai-engine v8.12.116",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-2583876860",
+        "deploymentUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583876860",
+        "commitSha": "13a501c403565ada062815d7f10cca66258bc1d1"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /login guest flow created an authenticated browser session",
+        "Vercel production v8.12.117 landing/login shell rendered",
+        "Fresh sessionStorage boot intent openmanager:system-boot:intent was accepted",
+        "/system-boot rendered the boot loading page",
+        "Boot stage text was visible after navigation",
+        "The page remained on /system-boot after 1.8 seconds instead of immediately skipping to /dashboard",
+        "Visible stage reached AI 엔드포인트 웜업",
+        "Browser console errors were 0",
+        "Vercel usage recheck returned billed=0.0000 USD"
+      ],
+      "skippedSurfaces": [
+        "Full landing button click with GitHub OAuth was not exercised because automated production OAuth is not available in this run",
+        "Dashboard modal and AI sidebar packs were not repeated",
+        "Cloud Run admin observability endpoints were not queried because this run targets the frontend boot page render path"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The changed frontend boot render condition was validated in a real production browser session with deterministic route, visible stage, URL, and console checks.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production smoke stayed within the deployed v8.12.117 frontend and Vercel usage remained billed=0.0000 USD.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-08T15:17:15+09:00",
+          "summary": "Current billing period checked after v8.12.117 system boot browser smoke: effective=3.8906 USD, billed=0.0000 USD, chargeCount=3654.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.12.117 system boot browser smoke evidence",
+          "path": "reports/qa/evidence/qa-20260608-v812117-system-boot-browser-smoke.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production system boot route",
+          "url": "https://openmanager-ai.vercel.app/system-boot"
+        },
+        {
+          "type": "general",
+          "label": "v8.12.117 GitLab tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583876860"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -44455,16 +44558,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 266,
-      "appropriateCount": 245,
+      "seenCount": 267,
+      "appropriateCount": 246,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260608-0693",
-      "lastSeenAt": "2026-06-08T06:06:26.263Z",
+      "lastRunId": "QA-20260608-0694",
+      "lastSeenAt": "2026-06-08T06:18:28.191Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline, Vercel deploy smoke, Cloud Run deploy smoke, frontend health/version, Cloud Run health, and free-tier guardrails all passed for v8.12.117.",
+      "lastRationale": "Production smoke stayed within the deployed v8.12.117 frontend and Vercel usage remained billed=0.0000 USD.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -44472,16 +44575,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 282,
-      "appropriateCount": 255,
+      "seenCount": 283,
+      "appropriateCount": 256,
       "partialCount": 27,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260608-0693",
-      "lastSeenAt": "2026-06-08T06:06:26.263Z",
+      "lastRunId": "QA-20260608-0694",
+      "lastSeenAt": "2026-06-08T06:18:28.191Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Local regression coverage included system boot intent, landing start navigation, Redis running-flag TTL behavior, type-check, lint, quick tests, and contract tests before release.",
+      "lastRationale": "The changed frontend boot render condition was validated in a real production browser session with deterministic route, visible stage, URL, and console checks.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

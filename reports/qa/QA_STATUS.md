@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-08 15:06:26 KST
+> Generated at: 2026-06-08 15:18:28 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 691 |
-| Total Runs (Counted) | 533 |
+| Total Recorded Runs | 692 |
+| Total Runs (Counted) | 534 |
 | Non-counted Runs | 158 |
-| Total Checks | 4737 |
-| Passed | 4525 |
+| Total Checks | 4746 |
+| Passed | 4534 |
 | Failed | 167 |
 | Completed Items | 792 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260608-0693 (2026-06-08T06:06:26.263Z) |
-| Latest Recorded Run | QA-20260608-0693 (2026-06-08T06:06:26.263Z) |
+| Last Counted Run | QA-20260608-0694 (2026-06-08T06:18:28.191Z) |
+| Latest Recorded Run | QA-20260608-0694 (2026-06-08T06:18:28.191Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,24 +34,22 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260608-0693 (2026-06-08T06:06:26.263Z)
+Latest run: QA-20260608-0694 (2026-06-08T06:18:28.191Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after v8.12.117 production deploy: effective=3.8906 USD, billed=0.0000 USD, chargeCount=3654. |
-| gcp-cloud-run | script | checked | normal | Cloud Run guardrails passed: maxScale=1, concurrency=16, timeoutSeconds=300, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00614-xf4. |
+| vercel | cli | checked | normal | Current billing period checked after v8.12.117 system boot browser smoke: effective=3.8906 USD, billed=0.0000 USD, chargeCount=3654. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-07T06:06:26.263Z -> 2026-06-08T06:06:26.263Z (24h)
+- Window: 2026-06-07T06:18:28.191Z -> 2026-06-08T06:18:28.191Z (24h)
 - Runs with observations: 5 recorded / 1 counted
 - Samples: 24
 
@@ -68,7 +66,7 @@ Latest run: QA-20260608-0693 (2026-06-08T06:06:26.263Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-07T06:06:26.263Z -> 2026-06-08T06:06:26.263Z (24h)
+- Window: 2026-06-07T06:18:28.191Z -> 2026-06-08T06:18:28.191Z (24h)
 - Runs with observations: 6 recorded / 5 counted
 - Samples: 11
 - Drift rate: 27.27%
@@ -87,22 +85,22 @@ Latest run: QA-20260608-0693 (2026-06-08T06:06:26.263Z)
 - Release-Facing: yes
 - Counts Toward Summary: yes
 - Deployment: gitlab-pipeline-2583876860 / SHA 13a501c4
-- Coverage Packs: core-routes-smoke, observability-pack
-- Covered Surfaces: GitLab tag pipeline 2583876860 succeeded for v8.12.117, GitLab deploy job succeeded for Vercel production, GitLab deploy_ai_engine job succeeded for Cloud Run ai-engine, GitLab post_deploy_smoke job succeeded, GitLab post_deploy_ai_engine_smoke job succeeded, Vercel production /api/version returned v8.12.117 and releaseTag v8.12.117, Vercel production /api/version returned commit 13a501c403565ada062815d7f10cca66258bc1d1, Vercel production /api/health returned success=true, status=healthy, and version 8.12.117, Cloud Run /health returned status ok and version 8.12.116, Redis system running flag now uses a 1800s TTL when set true and no TTL when explicitly stopped, Local regression tests covered system boot intent display after the landing system start action, Cloud Run service limits remained cpu=1 and memory=512Mi, Cloud Run free-tier guard script passed, Vercel usage check returned billed=0.0000 USD
-- Skipped Surfaces: Browser conversational AI QA was not repeated because Claude run QA-20260608-0692 already covered the AI sidebar five-query target pack on v8.12.116, and this release only changed UI boot intent and serverless system-running TTL behavior, Dashboard/modal route packs were not repeated in this targeted deployment validation run, Cloud Run admin /monitoring and /monitoring/traces were not queried because the changed scope is frontend boot/system state and Redis expiry, not trace propagation, Public GitHub snapshot sync was not requested
+- Coverage Packs: core-routes-smoke
+- Covered Surfaces: Vercel production /login guest flow created an authenticated browser session, Vercel production v8.12.117 landing/login shell rendered, Fresh sessionStorage boot intent openmanager:system-boot:intent was accepted, /system-boot rendered the boot loading page, Boot stage text was visible after navigation, The page remained on /system-boot after 1.8 seconds instead of immediately skipping to /dashboard, Visible stage reached AI 엔드포인트 웜업, Browser console errors were 0, Vercel usage recheck returned billed=0.0000 USD
+- Skipped Surfaces: Full landing button click with GitHub OAuth was not exercised because automated production OAuth is not available in this run, Dashboard modal and AI sidebar packs were not repeated, Cloud Run admin observability endpoints were not queried because this run targets the frontend boot page render path
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
+| general | Production system boot route | [Production system boot route](https://openmanager-ai.vercel.app/system-boot) | - |
 | general | v8.12.117 GitLab tag pipeline | [v8.12.117 GitLab tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583876860) | - |
-| monitoring | Cloud Run ai-engine health endpoint | [Cloud Run ai-engine health endpoint](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.12.117 deployment validation evidence | `reports/qa/evidence/qa-20260608-v812117-deployment-validation.md` | - |
+| playwright-report | v8.12.117 system boot browser smoke evidence | `reports/qa/evidence/qa-20260608-v812117-system-boot-browser-smoke.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -203,6 +201,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260608-0694 | 2026-06-08T06:18:28.191Z | targeted | yes | yes | Production browser smoke - v8.12.117 system boot loading page | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260608-0693 | 2026-06-08T06:06:26.263Z | targeted | yes | yes | Production deploy validation - v8.12.117 boot flow and shutdown expiry | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260608-0692 | 2026-06-08T05:05:57.160Z | targeted | no | no | AI 어시스턴트 5-쿼리 타겟 QA — v8.12.116 | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260608-0691 | 2026-06-08T04:48:28.823Z | targeted | yes | yes | Production deploy validation - v8.12.116 session history and skill drift hardening | 11 | 0 | 0 | 0 | 0 | 0 |
@@ -222,4 +221,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260607-0677 | 2026-06-07T09:10:18.387Z | targeted | yes | yes | Cloud Run Direct API - v8.12.107 Q-NEW119/121/122 deterministic fix validation | 3 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260607-0676 | 2026-06-07T08:24:40.249Z | targeted | no | no | Cloud Run Direct API - 29차 추가 평가 (v8.12.106) | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260607-0675 | 2026-06-07T07:33:22.074Z | targeted | no | no | Vercel Production Playwright MCP - 29차 AI 어시스턴트 평가 (v8.12.106) | 7 | 0 | 0 | 0 | 1 | 0 |
-| QA-20260607-0674 | 2026-06-07T05:19:01.995Z | targeted | yes | yes | Vercel Production Playwright MCP - v8.12.106 WONT-FIX remediation release QA | 6 | 5 | 0 | 0 | 0 | 0 |
