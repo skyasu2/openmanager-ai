@@ -9,7 +9,7 @@
 > Tags: status,changelog,release
 
 <!-- AUTO:version-header -->
-**상태 스냅샷 기준일**: 2026-06-08 | **현재 버전 스냅샷**: v8.12.117
+**상태 스냅샷 기준일**: 2026-06-08 | **현재 버전 스냅샷**: v8.12.118
 <!-- /AUTO:version-header -->
 
 ## 상태 문서 역할 분리
@@ -55,11 +55,11 @@
 ## 최근 주요 릴리스 스냅샷
 
 <!-- AUTO:releases -->
+- **v8.12.118** (2026-06-08) — Bug Fixes: ai: add clarification for ambiguous status queries to prevent LLM timeout; Tests: qa: record system boot production smoke; Tests: qa: record v8.12.117 deployment validation
 - **v8.12.117** (2026-06-08) — Bug Fixes: system: restore boot flow and auto shutdown expiry; Tests: qa: record v8.12.116 deployment validation
 - **v8.12.116** (2026-06-08) — Bug Fixes: ai: harden session history and skill drift checks
 - **v8.12.115** (2026-06-08) — Bug Fixes: ai-engine: preserve healthy server top n through intent frame
 - **v8.12.114** (2026-06-08) — Bug Fixes: ai-engine: resolve 500 for 건강한/안정적인 서버 TOP N queries
-- **v8.12.113** (2026-06-08) — Features: ai-engine: raise supervisor per-minute rate limit 10 → 20
 <!-- /AUTO:releases -->
 
 세부 변경 이력은 Git history와 관련 plan/archive 문서를 기준으로 확인합니다.
