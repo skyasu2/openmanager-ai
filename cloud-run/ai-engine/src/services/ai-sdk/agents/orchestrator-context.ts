@@ -440,6 +440,37 @@ function isAmbiguousStatusQuery(normalizedQuery: string): boolean {
 const AMBIGUOUS_STATUS_CLARIFICATION =
   '어떤 서버나 지표를 확인하고 싶으신가요? 더 구체적으로 질문해 주시면 바로 답변드릴게요.\n\n예시:\n• "전체 서버 상태 알려줘"\n• "DB 그룹 CPU 현황"\n• "cache-redis-dc1-01 메모리 얼마야?"\n• "경고 상태 서버 목록"';
 
+// 미수집 메트릭 패턴: OTel snapshot에 없는 지표. evidence ranking provider까지 도달하면
+// GPU 데이터 부재로 FAIL이 발생하므로 preFilter에서 조기 차단.
+// 지원 범위: CPU, 메모리, 디스크, 네트워크, 서버 상태, 24h load 피크.
+const UNSUPPORTED_METRIC_PATTERNS: Array<{ pattern: RegExp; label: string }> = [
+  { pattern: /\bgpu\b|그래픽\s*카드|가속기|\bvram\b|\bcuda\b/i, label: 'GPU' },
+  {
+    pattern:
+      /(?:kubernetes|k8s|쿠버네티스|pod|pods?|파드|container|컨테이너).{0,40}(?:restart|restarts?|재시작|횟수)/i,
+    label: 'Kubernetes pod restart',
+  },
+  { pattern: /\biops\b|초당\s*입출력/i, label: 'IOPS' },
+  { pattern: /패킷\s*손실|packet\s*loss/i, label: '패킷 손실' },
+];
+
+const SUPPORTED_METRICS_HINT = 'CPU, 메모리, 디스크, 네트워크, 서버 상태';
+
+function detectUnsupportedMetric(query: string): string | null {
+  for (const { pattern, label } of UNSUPPORTED_METRIC_PATTERNS) {
+    if (pattern.test(query)) return label;
+  }
+  return null;
+}
+
+function buildUnsupportedMetricDirectResponse(label: string): string {
+  return (
+    `⚠️ **지원하지 않는 지표입니다: ${label}**\n` +
+    `현재 수집 중인 지표는 ${SUPPORTED_METRICS_HINT}입니다.\n` +
+    `지원 지표로 다시 질문해 주세요. 예: "네트워크 사용률 상위 서버 3대", "CPU 60% 이상인 서버"`
+  );
+}
+
 /**
  * Fast pre-filter before direct specialist routing
  * Handles simple queries without LLM call
@@ -538,6 +569,17 @@ export function preFilterQuery(
       shouldHandoff: false,
       directResponse: AMBIGUOUS_STATUS_CLARIFICATION,
       confidence: 0.9,
+    };
+  }
+
+  // 3.5. Unsupported metric: GPU, pod restart, IOPS 등 OTel에 없는 지표. ranking provider
+  // 까지 도달하면 FAIL이 되므로 여기서 조기 차단해 즉시 안내 응답 반환.
+  const unsupportedMetricLabel = detectUnsupportedMetric(query);
+  if (unsupportedMetricLabel) {
+    return {
+      shouldHandoff: false,
+      directResponse: buildUnsupportedMetricDirectResponse(unsupportedMetricLabel),
+      confidence: 0.95,
     };
   }
 

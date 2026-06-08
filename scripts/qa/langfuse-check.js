@@ -35,7 +35,7 @@ function loadEnvLocal() {
 
 // ── Langfuse REST API ─────────────────────────────────────────────────────────
 
-function fetchJson(url, authToken, timeoutMs = 12_000) {
+function fetchJson(url, authToken, timeoutMs = 25_000) {
   return new Promise((resolve, reject) => {
     const parsedUrl = new URL(url);
     const options = {
@@ -47,6 +47,7 @@ function fetchJson(url, authToken, timeoutMs = 12_000) {
         'User-Agent': 'openmanager-langfuse-check/1.0',
       },
       method: 'GET',
+      timeout: timeoutMs,  // socket-level timeout (TLS handshake 포함)
     };
 
     const req = https.request(options, (res) => {
@@ -63,10 +64,14 @@ function fetchJson(url, authToken, timeoutMs = 12_000) {
       });
     });
 
+    // application-level timeout (socket timeout이 발화하지 않는 경우 대비)
     const timer = setTimeout(() => {
       req.destroy(new Error('Request timed out'));
-    }, timeoutMs);
+    }, timeoutMs + 3_000);
 
+    req.on('timeout', () => {
+      req.destroy(new Error('Request timed out'));
+    });
     req.on('error', (err) => { clearTimeout(timer); reject(err); });
     req.end();
   });
@@ -275,7 +280,9 @@ async function main() {
 
   const authToken = Buffer.from(`${publicKey}:${secretKey}`).toString('base64');
   const fetchLimit = query ? Math.max(limit, 100) : limit;
-  const url = `${baseUrl}/api/public/traces?limit=${fetchLimit}`;
+  // 날짜 범위 필터: 기본 최근 7일. Langfuse Cloud는 날짜 범위 없는 요청을 422로 거부.
+  const fromTimestamp = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const url = `${baseUrl}/api/public/traces?limit=${fetchLimit}&orderBy=timestamp.desc&fromTimestamp=${encodeURIComponent(fromTimestamp)}`;
 
   if (!wantJson && IS_TTY) process.stdout.write(colorize(`Langfuse 조회 중 (limit=${fetchLimit})…`, DIM) + '\r');
 

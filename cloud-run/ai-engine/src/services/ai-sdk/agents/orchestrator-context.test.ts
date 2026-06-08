@@ -237,6 +237,42 @@ describe('preFilterQuery', () => {
     expect(result.confidence).toBe(0.85);
   });
 
+  describe('unsupported metric directResponse', () => {
+    const gpuCases = [
+      'GPU 사용률이 가장 높은 서버 3대 알려줘',
+      'gpu 사용량 상위 서버',
+      'CUDA 점유율 순위',
+      'VRAM 사용률 높은 서버',
+    ];
+
+    it.each(gpuCases)('blocks GPU query "%s" with directResponse', (query) => {
+      const result = preFilterQuery(query);
+      expect(result.shouldHandoff).toBe(false);
+      expect(result.directResponse).toContain('GPU');
+      expect(result.directResponse).toContain('지원하지 않는 지표');
+      expect(result.confidence).toBeGreaterThanOrEqual(0.9);
+    });
+
+    it('blocks Kubernetes pod restart query', () => {
+      const result = preFilterQuery('pod restart 횟수가 많은 서버 알려줘');
+      expect(result.shouldHandoff).toBe(false);
+      expect(result.directResponse).toContain('지원하지 않는 지표');
+    });
+
+    it('passes through supported metric queries unchanged', () => {
+      const supported = [
+        'CPU 사용률 상위 서버',
+        '메모리 높은 서버 3대',
+        '네트워크 사용률 상위 서버 3대',
+        '디스크 사용량 60% 이상 서버',
+      ];
+      for (const q of supported) {
+        const result = preFilterQuery(q);
+        expect(result.shouldHandoff).toBe(true);
+      }
+    });
+  });
+
   describe('ambiguous status query clarification', () => {
     const ambiguousCases = [
       '상태 어때?',
