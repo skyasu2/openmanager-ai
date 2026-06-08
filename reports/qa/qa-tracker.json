@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-08T04:48:28.823Z"
+    "updatedAt": "2026-06-08T06:06:26.263Z"
   },
   "sequence": {
-    "nextRunNumber": 692
+    "nextRunNumber": 694
   },
   "summary": {
-    "totalRecordedRuns": 689,
-    "totalRuns": 532,
-    "excludedRuns": 157,
-    "totalChecks": 4723,
-    "totalPassed": 4511,
+    "totalRecordedRuns": 691,
+    "totalRuns": 533,
+    "excludedRuns": 158,
+    "totalChecks": 4737,
+    "totalPassed": 4525,
     "totalFailed": 167,
     "completionRate": 100,
     "completedItems": 792,
@@ -21,10 +21,10 @@
     "wontFixItems": 28,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260608-0691",
-    "lastRecordedAt": "2026-06-08T04:48:28.823Z",
-    "latestRecordedRunId": "QA-20260608-0691",
-    "latestRecordedAt": "2026-06-08T04:48:28.823Z"
+    "lastRunId": "QA-20260608-0693",
+    "lastRecordedAt": "2026-06-08T06:06:26.263Z",
+    "latestRecordedRunId": "QA-20260608-0693",
+    "latestRecordedAt": "2026-06-08T06:06:26.263Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -44058,6 +44058,344 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260608-0692",
+      "recordedAt": "2026-06-08T05:05:57.160Z",
+      "recordedAtKst": "2026-06-08 14:05:57 KST",
+      "title": "AI 어시스턴트 5-쿼리 타겟 QA — v8.12.116",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260608-0692.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "openmanager-9dcyu2q16",
+        "deploymentUrl": "https://openmanager-9dcyu2q16-skyasus-projects.vercel.app",
+        "commitSha": "f3e88450938e12a428d16f7d4df2f1dd10a4c369"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/dashboard",
+        "AI Chat sidebar",
+        "monitoring-server-health",
+        "monitoring-metric-ranking",
+        "monitoring-metric-current",
+        "monitoring-metric-trend",
+        "Analyst Agent (Cloud Run)"
+      ],
+      "skippedSurfaces": [
+        "자동 보고서",
+        "이상감지"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Q1 전체 서버 상태 요약",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "playwright-mcp stopwatch",
+          "latencyMs": 15000
+        },
+        {
+          "surface": "Q2 CPU 상위 5개 서버",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "playwright-mcp stopwatch",
+          "latencyMs": 20000
+        },
+        {
+          "surface": "Q3 cache-redis-dc1-01 원인 분석",
+          "agent": "Analyst Agent",
+          "provider": "cerebras",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "playwright-mcp stopwatch",
+          "latencyMs": 30000
+        },
+        {
+          "surface": "Q4 DB 그룹 메모리 평균",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "playwright-mcp stopwatch",
+          "latencyMs": 20000
+        },
+        {
+          "surface": "Q5 CPU 꾸준히 증가 서버",
+          "agent": "Metrics Query Agent",
+          "provider": "deterministic",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "playwright-mcp stopwatch",
+          "latencyMs": 25000
+        }
+      ],
+      "plannerShadowObservations": [
+        {
+          "surface": "Q1 전체 서버 상태 요약",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 15000,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "분석 근거 도구: monitoring-server-health"
+        },
+        {
+          "surface": "Q2 CPU 상위 5개 서버",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 20000,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "분석 근거 도구: monitoring-metric-ranking"
+        },
+        {
+          "surface": "Q3 cache-redis-dc1-01 원인 분석",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "single-agent",
+          "latencyMs": 30000,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "Cloud Run AI · 서버 실시간 데이터 분석"
+        },
+        {
+          "surface": "Q4 DB 그룹 메모리 평균",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 20000,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "분석 근거 도구: monitoring-metric-current"
+        },
+        {
+          "surface": "Q5 CPU 꾸준히 증가 서버",
+          "route": "/api/ai/supervisor/stream/v2",
+          "executionMode": "deterministic",
+          "latencyMs": 25000,
+          "classification": "matched",
+          "driftReasonCodes": [],
+          "source": "분석 근거 도구: monitoring-metric-trend"
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "5개 핵심 라우팅 경로(server-health, metric-ranking, metric-current, metric-trend, Analyst) 전 항목 PASS. 응답 내용 정확성 확인",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel usage 정상($3.89 effective, $0 billed). Cloud Run Analyst Agent 응답 정상 (~30초)",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "서버 헬스/메트릭 랭킹/트렌드 데이터 대시보드 수치와 일치. OTel snapshot 슬롯 83/143 정상",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "",
+          "summary": "Vercel usage: 기간 2026-06-01~06-08, effective=$3.89, billed=$0.00, chargeCount=3654 — 정상 범위",
+          "evidence": "",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "playwright-screenshots",
+          "path": "reports/qa/evidence/QA-20260608-claude/qa-q1-response.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q2 response screenshot",
+          "path": "reports/qa/evidence/QA-20260608-claude/qa-q2-response.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q3 response screenshot",
+          "path": "reports/qa/evidence/QA-20260608-claude/qa-q3-response.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q4 response screenshot",
+          "path": "reports/qa/evidence/QA-20260608-claude/qa-q4-response.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Q5 response screenshot",
+          "path": "reports/qa/evidence/QA-20260608-claude/qa-q5-response.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production",
+          "url": "https://openmanager-ai.vercel.app/dashboard"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260608-0693",
+      "recordedAt": "2026-06-08T06:06:26.263Z",
+      "recordedAtKst": "2026-06-08 15:06:26 KST",
+      "title": "Production deploy validation - v8.12.117 boot flow and shutdown expiry",
+      "owner": "codex",
+      "source": "gitlab-ci-and-production-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260608-0693.json",
+      "environment": {
+        "target": "vercel-production-and-cloud-run-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel production v8.12.117",
+        "backend": "Cloud Run ai-engine v8.12.116",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-2583876860",
+        "deploymentUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583876860",
+        "commitSha": "13a501c403565ada062815d7f10cca66258bc1d1"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag pipeline 2583876860 succeeded for v8.12.117",
+        "GitLab deploy job succeeded for Vercel production",
+        "GitLab deploy_ai_engine job succeeded for Cloud Run ai-engine",
+        "GitLab post_deploy_smoke job succeeded",
+        "GitLab post_deploy_ai_engine_smoke job succeeded",
+        "Vercel production /api/version returned v8.12.117 and releaseTag v8.12.117",
+        "Vercel production /api/version returned commit 13a501c403565ada062815d7f10cca66258bc1d1",
+        "Vercel production /api/health returned success=true, status=healthy, and version 8.12.117",
+        "Cloud Run /health returned status ok and version 8.12.116",
+        "Redis system running flag now uses a 1800s TTL when set true and no TTL when explicitly stopped",
+        "Local regression tests covered system boot intent display after the landing system start action",
+        "Cloud Run service limits remained cpu=1 and memory=512Mi",
+        "Cloud Run free-tier guard script passed",
+        "Vercel usage check returned billed=0.0000 USD"
+      ],
+      "skippedSurfaces": [
+        "Browser conversational AI QA was not repeated because Claude run QA-20260608-0692 already covered the AI sidebar five-query target pack on v8.12.116, and this release only changed UI boot intent and serverless system-running TTL behavior",
+        "Dashboard/modal route packs were not repeated in this targeted deployment validation run",
+        "Cloud Run admin /monitoring and /monitoring/traces were not queried because the changed scope is frontend boot/system state and Redis expiry, not trace propagation",
+        "Public GitHub snapshot sync was not requested"
+      ],
+      "checks": {
+        "total": 14,
+        "passed": 14,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline, Vercel deploy smoke, Cloud Run deploy smoke, frontend health/version, Cloud Run health, and free-tier guardrails all passed for v8.12.117.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Local regression coverage included system boot intent, landing start navigation, Redis running-flag TTL behavior, type-check, lint, quick tests, and contract tests before release.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Release propagation and runtime state were verified through /api/version, /api/health, Cloud Run /health, GitLab pipeline inspection, Vercel usage, and Cloud Run resource guard checks.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-08T15:15:00+09:00",
+          "summary": "Current billing period checked after v8.12.117 production deploy: effective=3.8906 USD, billed=0.0000 USD, chargeCount=3654.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "gcp-cloud-run",
+          "method": "script",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-08T15:15:10+09:00",
+          "summary": "Cloud Run guardrails passed: maxScale=1, concurrency=16, timeoutSeconds=300, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00614-xf4.",
+          "evidence": "npm run check:cloud-run-guard",
+          "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.12.117 deployment validation evidence",
+          "path": "reports/qa/evidence/qa-20260608-v812117-deployment-validation.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "v8.12.117 GitLab tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583876860"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run ai-engine health endpoint",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -44066,16 +44404,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 381,
-      "appropriateCount": 329,
+      "seenCount": 382,
+      "appropriateCount": 330,
       "partialCount": 52,
       "inappropriateCount": 0,
       "improvementNeededCount": 75,
-      "lastRunId": "QA-20260608-0691",
-      "lastSeenAt": "2026-06-08T04:48:28.823Z",
+      "lastRunId": "QA-20260608-0692",
+      "lastSeenAt": "2026-06-08T05:05:57.160Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The AI Engine session-history hardening was covered by local targeted regression tests and the deployed Cloud Run service returned healthy v8.12.116 status.",
+      "lastRationale": "5개 핵심 라우팅 경로(server-health, metric-ranking, metric-current, metric-trend, Analyst) 전 항목 PASS. 응답 내용 정확성 확인",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -44083,16 +44421,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 167,
-      "appropriateCount": 131,
+      "seenCount": 169,
+      "appropriateCount": 133,
       "partialCount": 36,
       "inappropriateCount": 0,
       "improvementNeededCount": 34,
-      "lastRunId": "QA-20260608-0691",
-      "lastSeenAt": "2026-06-08T04:48:28.823Z",
+      "lastRunId": "QA-20260608-0693",
+      "lastSeenAt": "2026-06-08T06:06:26.263Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Release propagation was confirmed through /api/version, Cloud Run /health, GitLab pipeline inspection, and resource guard checks.",
+      "lastRationale": "Release propagation and runtime state were verified through /api/version, /api/health, Cloud Run /health, GitLab pipeline inspection, Vercel usage, and Cloud Run resource guard checks.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -44117,16 +44455,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 264,
-      "appropriateCount": 243,
+      "seenCount": 266,
+      "appropriateCount": 245,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260608-0691",
-      "lastSeenAt": "2026-06-08T04:48:28.823Z",
+      "lastRunId": "QA-20260608-0693",
+      "lastSeenAt": "2026-06-08T06:06:26.263Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline, Vercel deploy smoke, Cloud Run deploy smoke, service health, and free-tier limits all passed for v8.12.116.",
+      "lastRationale": "GitLab tag pipeline, Vercel deploy smoke, Cloud Run deploy smoke, frontend health/version, Cloud Run health, and free-tier guardrails all passed for v8.12.117.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -44134,16 +44472,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 281,
-      "appropriateCount": 254,
+      "seenCount": 282,
+      "appropriateCount": 255,
       "partialCount": 27,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260607-0684",
-      "lastSeenAt": "2026-06-07T12:21:48.095Z",
+      "lastRunId": "QA-20260608-0693",
+      "lastSeenAt": "2026-06-08T06:06:26.263Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The final review added a focused ambiguous-target regression and reran root plus AI Engine pre-commit gates successfully.",
+      "lastRationale": "Local regression coverage included system boot intent, landing start navigation, Redis running-flag TTL behavior, type-check, lint, quick tests, and contract tests before release.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

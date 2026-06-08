@@ -1,0 +1,208 @@
+{
+  "runId": "QA-20260608-0692",
+  "recordedAt": "2026-06-08T05:05:57.160Z",
+  "recordedAtKst": "2026-06-08 14:05:57 KST",
+  "runTitle": "AI 어시스턴트 5-쿼리 타겟 QA — v8.12.116",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "openmanager-9dcyu2q16",
+    "deploymentUrl": "https://openmanager-9dcyu2q16-skyasus-projects.vercel.app",
+    "commitSha": "f3e88450938e12a428d16f7d4df2f1dd10a4c369"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "/dashboard",
+    "AI Chat sidebar",
+    "monitoring-server-health",
+    "monitoring-metric-ranking",
+    "monitoring-metric-current",
+    "monitoring-metric-trend",
+    "Analyst Agent (Cloud Run)"
+  ],
+  "skippedSurfaces": [
+    "자동 보고서",
+    "이상감지"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Q1 전체 서버 상태 요약",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "playwright-mcp stopwatch",
+      "latencyMs": 15000
+    },
+    {
+      "surface": "Q2 CPU 상위 5개 서버",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "playwright-mcp stopwatch",
+      "latencyMs": 20000
+    },
+    {
+      "surface": "Q3 cache-redis-dc1-01 원인 분석",
+      "agent": "Analyst Agent",
+      "provider": "cerebras",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "playwright-mcp stopwatch",
+      "latencyMs": 30000
+    },
+    {
+      "surface": "Q4 DB 그룹 메모리 평균",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "playwright-mcp stopwatch",
+      "latencyMs": 20000
+    },
+    {
+      "surface": "Q5 CPU 꾸준히 증가 서버",
+      "agent": "Metrics Query Agent",
+      "provider": "deterministic",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "playwright-mcp stopwatch",
+      "latencyMs": 25000
+    }
+  ],
+  "plannerShadowObservations": [
+    {
+      "surface": "Q1 전체 서버 상태 요약",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 15000,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "분석 근거 도구: monitoring-server-health"
+    },
+    {
+      "surface": "Q2 CPU 상위 5개 서버",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 20000,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "분석 근거 도구: monitoring-metric-ranking"
+    },
+    {
+      "surface": "Q3 cache-redis-dc1-01 원인 분석",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 30000,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "Cloud Run AI · 서버 실시간 데이터 분석"
+    },
+    {
+      "surface": "Q4 DB 그룹 메모리 평균",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 20000,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "분석 근거 도구: monitoring-metric-current"
+    },
+    {
+      "surface": "Q5 CPU 꾸준히 증가 서버",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 25000,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "분석 근거 도구: monitoring-metric-trend"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "5개 핵심 라우팅 경로(server-health, metric-ranking, metric-current, metric-trend, Analyst) 전 항목 PASS. 응답 내용 정확성 확인",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel usage 정상($3.89 effective, $0 billed). Cloud Run Analyst Agent 응답 정상 (~30초)",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "서버 헬스/메트릭 랭킹/트렌드 데이터 대시보드 수치와 일치. OTel snapshot 슬롯 83/143 정상",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "",
+      "summary": "Vercel usage: 기간 2026-06-01~06-08, effective=$3.89, billed=$0.00, chargeCount=3654 — 정상 범위",
+      "evidence": "",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "playwright-screenshots",
+      "path": "reports/qa/evidence/QA-20260608-claude/qa-q1-response.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Q2 response screenshot",
+      "path": "reports/qa/evidence/QA-20260608-claude/qa-q2-response.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Q3 response screenshot",
+      "path": "reports/qa/evidence/QA-20260608-claude/qa-q3-response.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Q4 response screenshot",
+      "path": "reports/qa/evidence/QA-20260608-claude/qa-q4-response.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Q5 response screenshot",
+      "path": "reports/qa/evidence/QA-20260608-claude/qa-q5-response.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production",
+      "url": "https://openmanager-ai.vercel.app/dashboard"
+    }
+  ]
+}

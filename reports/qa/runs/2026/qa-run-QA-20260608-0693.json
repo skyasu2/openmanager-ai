@@ -1,0 +1,135 @@
+{
+  "runId": "QA-20260608-0693",
+  "recordedAt": "2026-06-08T06:06:26.263Z",
+  "recordedAtKst": "2026-06-08 15:06:26 KST",
+  "runTitle": "Production deploy validation - v8.12.117 boot flow and shutdown expiry",
+  "owner": "codex",
+  "source": "gitlab-ci-and-production-smoke",
+  "environment": {
+    "target": "vercel-production-and-cloud-run-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel production v8.12.117",
+    "backend": "Cloud Run ai-engine v8.12.116",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2583876860",
+    "deploymentUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583876860",
+    "commitSha": "13a501c403565ada062815d7f10cca66258bc1d1"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "GitLab tag pipeline 2583876860 succeeded for v8.12.117",
+    "GitLab deploy job succeeded for Vercel production",
+    "GitLab deploy_ai_engine job succeeded for Cloud Run ai-engine",
+    "GitLab post_deploy_smoke job succeeded",
+    "GitLab post_deploy_ai_engine_smoke job succeeded",
+    "Vercel production /api/version returned v8.12.117 and releaseTag v8.12.117",
+    "Vercel production /api/version returned commit 13a501c403565ada062815d7f10cca66258bc1d1",
+    "Vercel production /api/health returned success=true, status=healthy, and version 8.12.117",
+    "Cloud Run /health returned status ok and version 8.12.116",
+    "Redis system running flag now uses a 1800s TTL when set true and no TTL when explicitly stopped",
+    "Local regression tests covered system boot intent display after the landing system start action",
+    "Cloud Run service limits remained cpu=1 and memory=512Mi",
+    "Cloud Run free-tier guard script passed",
+    "Vercel usage check returned billed=0.0000 USD"
+  ],
+  "skippedSurfaces": [
+    "Browser conversational AI QA was not repeated because Claude run QA-20260608-0692 already covered the AI sidebar five-query target pack on v8.12.116, and this release only changed UI boot intent and serverless system-running TTL behavior",
+    "Dashboard/modal route packs were not repeated in this targeted deployment validation run",
+    "Cloud Run admin /monitoring and /monitoring/traces were not queried because the changed scope is frontend boot/system state and Redis expiry, not trace propagation",
+    "Public GitHub snapshot sync was not requested"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline, Vercel deploy smoke, Cloud Run deploy smoke, frontend health/version, Cloud Run health, and free-tier guardrails all passed for v8.12.117.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Local regression coverage included system boot intent, landing start navigation, Redis running-flag TTL behavior, type-check, lint, quick tests, and contract tests before release.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Release propagation and runtime state were verified through /api/version, /api/health, Cloud Run /health, GitLab pipeline inspection, Vercel usage, and Cloud Run resource guard checks.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-08T15:15:00+09:00",
+      "summary": "Current billing period checked after v8.12.117 production deploy: effective=3.8906 USD, billed=0.0000 USD, chargeCount=3654.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "gcp-cloud-run",
+      "method": "script",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-06-08T15:15:10+09:00",
+      "summary": "Cloud Run guardrails passed: maxScale=1, concurrency=16, timeoutSeconds=300, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00614-xf4.",
+      "evidence": "npm run check:cloud-run-guard",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.12.117 deployment validation evidence",
+      "path": "reports/qa/evidence/qa-20260608-v812117-deployment-validation.md"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Code commit 0eb30a1e4 restored the boot loading page after the landing system start button by adding a short-lived one-time sessionStorage boot intent.",
+    "Code commit 0eb30a1e4 changed the Redis system:running true flag to expire after 1800 seconds, matching the local 30-minute auto-shutdown policy for serverless/API state.",
+    "Pre-deploy local validation passed: targeted Vitest boot/Redis tests, npm run type-check, npm run lint, npm run test:quick, npm run test:contract, and git diff --check.",
+    "GitLab branch validation pipeline 2583870910 passed for the code commit.",
+    "GitLab tag pipeline 2583876860 completed successfully for v8.12.117.",
+    "Vercel production /api/version returned v8.12.117 and commit 13a501c403565ada062815d7f10cca66258bc1d1.",
+    "Cloud Run /health returned status ok and version 8.12.116; unchanged AI Engine version is expected because this release did not change cloud-run/ai-engine implementation metadata.",
+    "No secret values or API keys were recorded."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "v8.12.117 GitLab tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583876860"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run ai-engine health endpoint",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    }
+  ]
+}

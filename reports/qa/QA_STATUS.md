@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-06-08 13:48:29 KST
+> Generated at: 2026-06-08 15:06:26 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 689 |
-| Total Runs (Counted) | 532 |
-| Non-counted Runs | 157 |
-| Total Checks | 4723 |
-| Passed | 4511 |
+| Total Recorded Runs | 691 |
+| Total Runs (Counted) | 533 |
+| Non-counted Runs | 158 |
+| Total Checks | 4737 |
+| Passed | 4525 |
 | Failed | 167 |
 | Completed Items | 792 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 21 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260608-0691 (2026-06-08T04:48:28.823Z) |
-| Latest Recorded Run | QA-20260608-0691 (2026-06-08T04:48:28.823Z) |
+| Last Counted Run | QA-20260608-0693 (2026-06-08T06:06:26.263Z) |
+| Latest Recorded Run | QA-20260608-0693 (2026-06-08T06:06:26.263Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,49 +34,49 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260608-0691 (2026-06-08T04:48:28.823Z)
+Latest run: QA-20260608-0693 (2026-06-08T06:06:26.263Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | DevOps / SRE Engineer | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after v8.12.116 production deploy: effective=3.8906 USD, billed=0.0000 USD, chargeCount=3654. |
+| vercel | cli | checked | normal | Current billing period checked after v8.12.117 production deploy: effective=3.8906 USD, billed=0.0000 USD, chargeCount=3654. |
 | gcp-cloud-run | script | checked | normal | Cloud Run guardrails passed: maxScale=1, concurrency=16, timeoutSeconds=300, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00614-xf4. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-06-07T04:48:28.823Z -> 2026-06-08T04:48:28.823Z (24h)
-- Runs with observations: 5 recorded / 2 counted
-- Samples: 22
+- Window: 2026-06-07T06:06:26.263Z -> 2026-06-08T06:06:26.263Z (24h)
+- Runs with observations: 5 recorded / 1 counted
+- Samples: 24
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| Analyst Agent | cerebras | 2 | 18942ms | 30000ms | - | - | - | - | QA-20260608-0692 |
+| Metrics Query Agent | deterministic | 14 | 5759ms | 25000ms | - | - | - | - | QA-20260608-0692 |
 | Metrics Query Agent | zai | 1 | 17610ms | 17610ms | - | - | - | - | QA-20260607-0681 |
 | zai fallback | zai | 1 | 10495ms | 10495ms | - | - | - | - | QA-20260607-0678 |
-| Analyst Agent | cerebras | 1 | 7883ms | 7883ms | - | - | - | - | QA-20260607-0681 |
 | Metrics Query Agent | mistral | 2 | 3427ms | 3900ms | - | - | - | - | QA-20260607-0681 |
-| monitoring-metric-current | deterministic | 2 | 1128ms | 1352ms | - | - | - | - | QA-20260607-0674 |
-| monitoring-metric-ranking | deterministic | 1 | 838ms | 838ms | - | - | - | - | QA-20260607-0674 |
 | Supervisor | groq | 1 | 700ms | 700ms | - | - | - | - | QA-20260607-0681 |
-| Metrics Query Agent | deterministic | 10 | 63ms | 294ms | - | - | - | - | QA-20260607-0681 |
 | Metrics Query | deterministic | 2 | 5ms | 9ms | - | - | - | - | QA-20260607-0678 |
 | Supervisor | deterministic | 1 | 1ms | 1ms | - | - | - | - | QA-20260607-0681 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-06-07T04:48:28.823Z -> 2026-06-08T04:48:28.823Z (24h)
-- Runs with observations: 5 recorded / 5 counted
-- Samples: 6
-- Drift rate: 50%
+- Window: 2026-06-07T06:06:26.263Z -> 2026-06-08T06:06:26.263Z (24h)
+- Runs with observations: 6 recorded / 5 counted
+- Samples: 11
+- Drift rate: 27.27%
 
 | Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |
 |---|---|---:|---:|---:|---:|---|
+| /api/ai/supervisor/stream/v2 | single-agent | 1 | 0% | 30000ms | 30000ms | QA-20260608-0692 |
+| /api/ai/supervisor/stream/v2 | deterministic | 4 | 0% | 20000ms | 25000ms | QA-20260608-0692 |
 | /api/ai/supervisor | single-agent | 1 | 100% | 0ms | 0ms | QA-20260607-0686 |
 | /api/ai/supervisor | deterministic | 4 | 50% | 0ms | 0ms | QA-20260608-0690 |
 | /debug/prefilter | deterministic | 1 | 0% | 0ms | 0ms | QA-20260607-0689 |
@@ -86,23 +86,23 @@ Latest run: QA-20260608-0691 (2026-06-08T04:48:28.823Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: gitlab-pipeline-2583781368 / SHA 26829ed0
-- Coverage Packs: core-routes-smoke, ai-core, observability-pack
-- Covered Surfaces: GitLab tag pipeline 2583781368 succeeded for v8.12.116, GitLab deploy job succeeded for Vercel production, GitLab deploy_ai_engine job succeeded for Cloud Run ai-engine, GitLab post_deploy_smoke job succeeded, GitLab post_deploy_ai_engine_smoke job succeeded, Vercel production /api/version returned v8.12.116 and releaseTag v8.12.116, Vercel production /api/version returned commit 26829ed0c078c35ddd68c508cfa097e5419d03fc, Cloud Run /health returned status ok and version 8.12.116, Cloud Run service limits remained cpu=1 and memory=512Mi, Cloud Run free-tier guard script passed, Vercel usage check returned billed=0.0000 USD
-- Skipped Surfaces: Browser conversational AI QA was not repeated because this run validates deployment propagation, health, free-tier guardrails, and CI smoke for already locally tested AI Engine session-history hardening, Dashboard/modal route packs were not repeated in this targeted deployment validation run, Public GitHub snapshot sync was not requested
+- Deployment: gitlab-pipeline-2583876860 / SHA 13a501c4
+- Coverage Packs: core-routes-smoke, observability-pack
+- Covered Surfaces: GitLab tag pipeline 2583876860 succeeded for v8.12.117, GitLab deploy job succeeded for Vercel production, GitLab deploy_ai_engine job succeeded for Cloud Run ai-engine, GitLab post_deploy_smoke job succeeded, GitLab post_deploy_ai_engine_smoke job succeeded, Vercel production /api/version returned v8.12.117 and releaseTag v8.12.117, Vercel production /api/version returned commit 13a501c403565ada062815d7f10cca66258bc1d1, Vercel production /api/health returned success=true, status=healthy, and version 8.12.117, Cloud Run /health returned status ok and version 8.12.116, Redis system running flag now uses a 1800s TTL when set true and no TTL when explicitly stopped, Local regression tests covered system boot intent display after the landing system start action, Cloud Run service limits remained cpu=1 and memory=512Mi, Cloud Run free-tier guard script passed, Vercel usage check returned billed=0.0000 USD
+- Skipped Surfaces: Browser conversational AI QA was not repeated because Claude run QA-20260608-0692 already covered the AI sidebar five-query target pack on v8.12.116, and this release only changed UI boot intent and serverless system-running TTL behavior, Dashboard/modal route packs were not repeated in this targeted deployment validation run, Cloud Run admin /monitoring and /monitoring/traces were not queried because the changed scope is frontend boot/system state and Redis expiry, not trace propagation, Public GitHub snapshot sync was not requested
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | v8.12.116 GitLab tag pipeline | [v8.12.116 GitLab tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583781368) | - |
+| general | v8.12.117 GitLab tag pipeline | [v8.12.117 GitLab tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583876860) | - |
 | monitoring | Cloud Run ai-engine health endpoint | [Cloud Run ai-engine health endpoint](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.12.116 deployment validation evidence | `reports/qa/evidence/qa-20260608-v812116-deployment-validation.md` | - |
+| playwright-report | v8.12.117 deployment validation evidence | `reports/qa/evidence/qa-20260608-v812117-deployment-validation.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -203,6 +203,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260608-0693 | 2026-06-08T06:06:26.263Z | targeted | yes | yes | Production deploy validation - v8.12.117 boot flow and shutdown expiry | 14 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260608-0692 | 2026-06-08T05:05:57.160Z | targeted | no | no | AI 어시스턴트 5-쿼리 타겟 QA — v8.12.116 | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260608-0691 | 2026-06-08T04:48:28.823Z | targeted | yes | yes | Production deploy validation - v8.12.116 session history and skill drift hardening | 11 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260608-0690 | 2026-06-07T23:44:09.497Z | targeted | yes | yes | Production Cloud Run direct API post-deploy QA - v8.12.115 healthy TOP-N frame preservation | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260607-0689 | 2026-06-07T14:33:22.885Z | targeted | yes | yes | Production Cloud Run manual deploy smoke - v8.12.110 LLM intent prompt examples | 10 | 1 | 0 | 0 | 0 | 0 |
@@ -221,5 +223,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260607-0676 | 2026-06-07T08:24:40.249Z | targeted | no | no | Cloud Run Direct API - 29차 추가 평가 (v8.12.106) | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260607-0675 | 2026-06-07T07:33:22.074Z | targeted | no | no | Vercel Production Playwright MCP - 29차 AI 어시스턴트 평가 (v8.12.106) | 7 | 0 | 0 | 0 | 1 | 0 |
 | QA-20260607-0674 | 2026-06-07T05:19:01.995Z | targeted | yes | yes | Vercel Production Playwright MCP - v8.12.106 WONT-FIX remediation release QA | 6 | 5 | 0 | 0 | 0 | 0 |
-| QA-20260607-0673 | 2026-06-07T03:00:04.368Z | targeted | no | no | Production Playwright MCP - v8.12.104 P28/P30 fix validation | 2 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260607-0672 | 2026-06-07T02:33:52.729Z | targeted | no | no | Vercel Production Playwright MCP - 27차 AI 어시스턴트 평가 (v8.12.103) | 10 | 1 | 0 | 0 | 4 | 1 |
