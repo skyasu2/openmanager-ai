@@ -71,6 +71,17 @@
         "gemini": ".agents/skills/env-sync/SKILL.md"
       }
     },
+    "gemini-vision-audit": {
+      "purpose": "Analyze visually and review UI layout regressions using Gemini Vision capabilities when explicitly requested by the user.",
+      "invariants": [
+        "Use Vision capabilities only when explicitly requested or visual layout regressions are suspected.",
+        "Avoid redundant live API calls to preserve Free Tier quota.",
+        "Report visual audit results as part of reports/qa artifacts."
+      ],
+      "adapters": {
+        "geminiOverlay": ".gemini/skills/gemini-vision-audit/SKILL.md"
+      }
+    },
     "git-clean-gone": {
       "purpose": "Remove local branches whose upstream is gone, handling worktree-attached branches safely.",
       "invariants": [

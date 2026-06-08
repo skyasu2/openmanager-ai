@@ -122,7 +122,7 @@ async function getVisibleStarterPrompt(
     .first();
 }
 
-test.describe('AI 채팅 E2E 테스트', () => {
+test.describe('AI 채팅 E2E 테스트 @ai-test', () => {
   test.describe.configure({ timeout: TIMEOUTS.FULL_USER_FLOW });
 
   test.beforeEach(async ({ page }) => {

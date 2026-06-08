@@ -5,7 +5,7 @@
 > **AI-Native Server Monitoring Platform**
 > 자연어로 대화하며 서버를 모니터링하는 차세대 운영 플랫폼
 
-![Version](https://img.shields.io/badge/version-8.12.94-blue.svg?style=for-the-badge) ![License](https://img.shields.io/badge/License-GPL_v3-blue.svg?style=for-the-badge) ![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white) ![Supabase](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=3ECF8E) ![Google Cloud](https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
+![Version](https://img.shields.io/badge/version-8.12.115-blue.svg?style=for-the-badge) ![License](https://img.shields.io/badge/License-GPL_v3-blue.svg?style=for-the-badge) ![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white) ![Supabase](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=3ECF8E) ![Google Cloud](https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
 
 ---
 
@@ -15,8 +15,8 @@
   <i>Real-time Server Monitoring Dashboard</i>
 </div>
 
-> **Latest QA Snapshot (June 5, 2026 — v8.12.94)**
-> Targeted release-facing QA: QA-20260605-0660 | 상태 SSOT: `reports/qa/QA_STATUS.md`
+> **Latest QA Snapshot (June 8, 2026 — v8.12.115)**
+> Targeted release-facing QA: QA-20260608-0690 | 상태 SSOT: `reports/qa/QA_STATUS.md`
 > Production: [openmanager-ai.vercel.app](https://openmanager-ai.vercel.app)
 
 ## Overview
@@ -249,11 +249,11 @@ graph TD
 
 ## Validation Evidence
 
-As of **June 5, 2026 (v8.12.94)**, this project is backed by tracked QA runs, not screenshots alone.
+As of **June 8, 2026 (v8.12.115)**, this project is backed by tracked QA runs, not screenshots alone.
 
 - **QA SSOT**: [reports/qa/QA_STATUS.md](reports/qa/QA_STATUS.md)
-- **Latest release-facing QA**: [QA-20260605-0660](reports/qa/runs/2026/qa-run-QA-20260605-0660.json) — v8.12.94 targeted production QA, verifies Artifact BFF LLM classifier activation, deterministic fallback behavior, and Vercel/Cloud Run production routing
-- **CI pipeline**: GitLab CI validate(frontend+ai-engine) on self-hosted WSL2 runner, frontend deploy on shared runner via `vercel build --prod` + `vercel deploy --prebuilt --prod`
+- **Latest release-facing QA**: [QA-20260608-0690](reports/qa/runs/2026/qa-run-QA-20260608-0690.json) — v8.12.115 targeted production QA, verifies healthy TOP-N routing, Vercel `/api/version`, Cloud Run `/health`, and free-tier Cloud Run limits
+- **CI pipeline**: GitLab CI validate(frontend+ai-engine) and semver tag deploy on the self-hosted WSL2 runner; frontend deploy uses `vercel build --prod` + `vercel deploy --prebuilt --prod`
 
 Portfolio evidence includes:
 
@@ -335,5 +335,5 @@ This project is licensed under the **GNU General Public License v3.0** - see the
 <div align="center">
   <sub>Built with Vibe Coding</sub>
   <br/>
-  <sub>v8.12.94</sub>
+  <sub>v8.12.115</sub>
 </div>

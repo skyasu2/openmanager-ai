@@ -60,6 +60,54 @@ User Browser
 - 공통 skills 정본은 `.agents/skills/`, Gemini-only overlay는 `.gemini/skills/`다. 같은 이름을 중복 생성하지 않는다.
 - 스킬 변경 전 `docs/development/vibe-coding/skills.md`와 `config/ai/skill-baselines.json`을 확인하고, 변경 후 `npm run skills:check`를 실행한다.
 
+## 작업 계획서 및 SDD 게이트 규칙
+작업 시작 전 반드시 아래 순서로 확인한다.
+1. `reports/planning/TODO.md` 읽기 — Active Task, Backlog, On Hold 파악
+2. `reports/planning/*.md` 목록 확인 — 관련 plan 파일 존재 여부
+3. 기존 파일 있으면 수정, 없으면 신규 조건 충족 시만 생성
+
+**신규 plan 파일 생성 금지 조건** (하나라도 해당하면 생성 안 함):
+- 기존 plan 파일과 주제가 70%+ 겹침 → 기존 파일 Task 항목 추가
+- TODO.md Backlog에 이미 동일 항목 존재 → 항목 승격만
+- 단일 버그 수정 / 소규모 리팩터링 → TODO.md 1줄로 충분
+
+**Owner 규칙**: plan 파일 `Owner` 필드는 항상 `project`. AI 이름 금지.
+
+### SDD 게이트 (구현 착수 전 필수)
+아래 작업에는 strict TDD/SDD를 적용한다.
+- 신규 기능
+- 대규모 리팩터링
+- 계약 변경 (예: API shape, AI stream/tool schema, auth/session, monitoring pipeline, ai-engine tool/result schema)
+
+plan 파일이 있는 작업은 아래 순서를 따른다.
+1. plan 파일 Status 확인
+   - Draft    → 계약 섹션(Contract) 완성 후 Approved로 변경
+   - Approved → 구현 착수 가능
+2. Approved 확인 후 → 테스트 시나리오 failing test 먼저 커밋
+   커밋 메시지: `test(spec): [기능명] add failing tests before implementation`
+3. 이후 → 구현 커밋
+   커밋 메시지: `feat: [기능명] implement to pass specs`
+
+단순 버그 수정·소규모 리팩터링·UI copy/docs 변경은 게이트 없이 TODO.md 1줄 처리로 충분하다.
+가능하면 회귀 테스트를 추가하되, 테스트 추가가 비현실적이면 작업 보고에 이유를 명시한다.
+
+## 서브 에이전트 활용 규칙
+사용자가 명시적으로 허용하거나 병렬 검토를 요청한 경우 아래 기준으로 제한적으로 사용한다.
+- **사용 권장 상황**:
+  - 코드베이스 탐색, 회귀 위험 검토, 문서/API 확인처럼 서로 독립적인 read-heavy 작업을 병렬로 수행할 때
+  - 대규모 구현을 파일/모듈 ownership 단위로 충돌 없이 분리할 수 있을 때
+  - 브라우저 재현, 코드 경로 추적, 구현처럼 역할이 분명히 다른 작업을 병렬 또는 순차 협업으로 나눌 때
+- **사용 금지/회피 상황**:
+  - 단순 질문, 단일 파일 수정, 작은 문서/copy 변경
+  - 현재 Gemini가 직접 처리해야 하는 blocking 작업
+  - write scope가 겹쳐 merge conflict나 사용자 변경 되돌림 위험이 큰 작업
+  - 토큰/시간 비용 대비 병렬화 이점이 불명확한 작업
+- **위임 원칙**:
+  - 기본 내장 agent는 `research`(read-only 조사), `self`(구현/수정)를 목적에 맞게 선택한다.
+  - worker에게 코드 수정을 맡길 때는 담당 파일/모듈 ownership을 명시하고, 다른 작업자의 변경을 되돌리지 않도록 지시한다.
+  - parent Gemini는 subagent 결과를 그대로 믿지 않고, 핵심 근거를 직접 검토하여 최종 판단을 책임진다.
+  - 완료된 subagent thread는 더 필요 없으면 닫아서 자원을 관리한다.
+
 ## Common Commands
 ```bash
 npm run dev:network

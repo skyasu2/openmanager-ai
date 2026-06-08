@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-06-08
 > Canonical: docs/operations/README.md
 > Tags: operations,deployment,qa,troubleshooting
 
@@ -24,7 +24,7 @@
 | Docker/Cloud Run 로컬 실행 | [Docker](../development/docker.md) |
 | Git hooks | [Git Hooks Workflow](../development/git-hooks-workflow.md) |
 | 테스트 전략 | [Test Strategy](../guides/testing/test-strategy.md) |
-| QA evidence 기록 | `reports/qa/qa-tracker.json`, `npm run qa:record`, [QA Status](../../reports/qa/QA_STATUS.md) |
+| QA evidence 기록 | [QA Reports](../../reports/qa/README.md), `reports/qa/qa-tracker.json`, `npm run qa:record`, [QA Status](../../reports/qa/QA_STATUS.md) |
 | 공통 문제 해결 | [Common Issues](../troubleshooting/common-issues.md) |
 | 배포/운영 아키텍처 | [Deployment Architecture](../architecture/03-deployment-architecture.md) |
 | Health check 정책 | [Health Check Policy](../guides/standards/health-check-policy.md) |
@@ -47,7 +47,7 @@
 | 질문 | 먼저 확인할 문서 | 판단 기준 |
 |---|---|---|
 | 지금 배포 권위와 remote 기준은 무엇인가 | [Deployment Guide](./deployment-guide.md), [CI/CD](../development/ci-cd.md), [AI Standards](../guides/ai/ai-standards.md) | GitLab CI가 production deploy 권위, GitHub public은 snapshot |
-| 실환경 QA를 어떻게 기록하는가 | [QA Status](../../reports/qa/QA_STATUS.md), `reports/qa/qa-tracker.json` | 실행 결과는 QA tracker와 evidence 파일로 남김 |
+| 실환경 QA를 어떻게 기록하는가 | [QA Reports](../../reports/qa/README.md), [QA Status](../../reports/qa/QA_STATUS.md), `reports/qa/qa-tracker.json` | 실행 결과는 QA tracker와 evidence 파일로 남김 |
 | health check는 언제 실제 외부 서비스를 호출해도 되는가 | [Health Check Policy](../guides/standards/health-check-policy.md) | 기본은 deterministic/local, release gate에서만 실환경 smoke 허용 |
 | 장애 원인을 어디서부터 좁히는가 | [Rollback Guide](./rollback-guide.md), [Common Issues](../troubleshooting/common-issues.md), [Deployment Architecture](../architecture/03-deployment-architecture.md) | Vercel BFF, Cloud Run AI Engine, Redis/Cloud Tasks, Supabase 경계를 분리 |
 | 비용/쿼터 때문에 설계를 바꿔도 되는가 | [Free Tier Optimization](../reference/architecture/infrastructure/free-tier-optimization.md), [ADR](../adr/README.md) | 스펙 증설보다 routing/fallback/cache/queue 조정 우선 |

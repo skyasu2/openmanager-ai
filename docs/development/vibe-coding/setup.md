@@ -276,6 +276,60 @@ echo 'export BROWSER=wslview' >> ~/.bashrc
 
 ---
 
+## 7. WSL2 GitLab Runner 복구/이전 가이드 (1인 개발용)
+
+개발 컴퓨터 포맷, 교체, 또는 WSL2 재설치 등으로 로컬 `wsl2-docker` Runner가 미가동 상태일 때 빠르게 복구하는 절차입니다.
+
+### 1단계: Runner 상태 확인
+로컬 Runner 상태를 진단하여 복구가 필요한지 검사합니다.
+```bash
+bash scripts/ci/runner-health-check.sh
+```
+
+### 2단계: GitLab Runner 패키지 설치
+WSL2(Ubuntu 기준)에 패키지를 다시 등록합니다.
+```bash
+# GitLab 공식 레포지토리 추가 및 설치
+curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" | sudo bash
+sudo apt-get install gitlab-runner
+```
+
+### 3단계: Runner 신규 등록 (Register)
+GitLab 프로젝트 설정(`Settings > CI/CD > Runners`)에서 획득한 Registration Token을 이용하여 Runner를 로컬에 등록합니다.
+```bash
+sudo gitlab-runner register \
+  --non-interactive \
+  --url "https://gitlab.com/" \
+  --registration-token "YOUR_PROJECT_REGISTRATION_TOKEN" \
+  --executor "shell" \
+  --description "wsl2-local-developer" \
+  --tag-list "wsl2-docker" \
+  --run-untagged="true" \
+  --locked="false"
+```
+
+- **Executor**: `shell`로 설정하여 WSL2 내 설치된 Node, npm, vercel, gcloud 등을 가상화 오버헤드 없이 직접 호출합니다.
+- **Tag**: 반드시 `wsl2-docker`를 기재해야 파이프라인이 Job을 할당합니다.
+
+### 4단계: Docker 연동 및 권한 설정
+WSL2 내 Docker가 정상 기동되고 있는지 확인하고, `gitlab-runner` 사용자가 docker 그룹에 포함되어 있는지 확인합니다.
+```bash
+# Docker 서비스 상태 확인 및 기동
+sudo service docker status || sudo service docker start
+
+# gitlab-runner 사용자를 docker 그룹에 추가 (권한 에러 방지)
+sudo usermod -aG docker gitlab-runner
+sudo systemctl restart gitlab-runner
+```
+
+### 5단계: 로컬 동등성 검증
+파이프라인을 원격에 올리기 전에 로컬 환경에서 CI 정합성 검사를 수동으로 구동해 봅니다.
+```bash
+npm run ci:local
+```
+
+---
+
 ## 관련 문서
 
 - [Claude Code](./claude-code.md)

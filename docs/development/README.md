@@ -4,13 +4,38 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-05-16
+> Last reviewed: 2026-06-08
 > Canonical: docs/development/README.md
 > Tags: development,setup,index
 
 ## 개요
 
 이 프로젝트는 **WSL 2 + Claude Code + Codex + Gemini CLI** 기반의 AI-assisted 개발 환경을 사용합니다.
+
+## 일상 개발 루프
+
+개발 환경 문서는 설치 방법만 다루지 않고, 실제 작업이 검증과 배포로 이어지는 기준 경로를 함께 가리킵니다.
+
+```text
+WSL2 부트스트랩
+  -> .env.local / Cloud Run secret 경계 확인
+  -> npm run dev:network
+  -> 구현
+  -> type-check / lint / test:quick / test:contract
+  -> git push gitlab main
+  -> 필요 시 semver tag deploy
+  -> reports/qa 기록
+```
+
+| 단계 | 주 문서 | 보조 문서/명령 |
+|---|---|---|
+| 새 머신 준비 | [프로젝트 설정](./project-setup.md) | [개발 도구](./dev-tools.md), [AI 도구 설치](./vibe-coding/setup.md) |
+| 환경변수 구성 | [환경 변수 관리](./environment-variables.md) | `.env.example`, GCP Secret Manager, Vercel Env |
+| 로컬 실행 | [프로젝트 설정](./project-setup.md) | `npm run dev:network`, [Docker 개발 환경](./docker.md) |
+| 구현/협업 | [Vibe Coding 허브](./vibe-coding/README.md) | [개발 워크플로우](./vibe-coding/workflows.md), [코딩 표준](./coding-standards.md) |
+| 로컬 검증 | [테스트 전략](../guides/testing/test-strategy.md) | `npm run type-check`, `npm run lint`, `npm run test:quick`, `npm run test:contract` |
+| 배포 | [CI/CD 파이프라인](./ci-cd.md) | [배포 가이드](../operations/deployment-guide.md) |
+| QA 기록 | [QA Reports](../../reports/qa/README.md) | `npm run qa:record`, [QA Status](../../reports/qa/QA_STATUS.md) |
 
 ## 문서 구조
 

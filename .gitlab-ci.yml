@@ -485,7 +485,7 @@ deploy:
       vercel build --prod --token=$VERCEL_TOKEN
     - |
       set +e
-      timeout 300s vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN \
+      timeout 420s vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN \
         --env "APP_COMMIT_SHA=${CI_COMMIT_SHA:-}" \
         --env "APP_RELEASE_TAG=${CI_COMMIT_TAG:-}" \
         --env "APP_PIPELINE_URL=${CI_PIPELINE_URL:-}" \
@@ -510,7 +510,7 @@ deploy:
     name: production
     url: https://openmanager-ai.vercel.app
   resource_group: production  # production deploy 동시 실행 방지
-  timeout: 10 minutes
+  timeout: 15 minutes
   # validate 성공 시에만 실행 (GitLab이 stage 순서로 자동 보장)
 
 deploy_ai_engine:

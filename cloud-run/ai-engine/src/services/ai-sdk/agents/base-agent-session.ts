@@ -6,6 +6,18 @@ import type { AgentRunOptions } from './base-agent-types';
 
 const MAX_HISTORY_MESSAGES = 4;
 
+type ModelMessageWithProviderMetadata = ModelMessage & {
+  reasoning_content?: unknown;
+};
+
+function stripUnsupportedProviderFields(
+  message: ModelMessage
+): ModelMessage {
+  const cleanMessage: ModelMessageWithProviderMetadata = { ...message };
+  delete cleanMessage.reasoning_content;
+  return cleanMessage;
+}
+
 export async function buildAgentContext(
   _agentName: string,
   query: string,
@@ -33,7 +45,9 @@ export async function buildAgentContext(
           );
         }
 
-        messages.push(...trimmed);
+        const sanitizedTrimmed = trimmed.map(stripUnsupportedProviderFields);
+
+        messages.push(...sanitizedTrimmed);
       }
     } catch (error) {
       logger.error(
@@ -57,8 +71,10 @@ export function persistAgentHistory(
     return;
   }
 
+  const sanitizedMessages = messages.map(stripUnsupportedProviderFields);
+
   const updatedMessages: ModelMessage[] = [
-    ...messages,
+    ...sanitizedMessages,
     { role: 'assistant', content: responseText },
   ];
 

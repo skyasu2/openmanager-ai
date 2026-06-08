@@ -187,38 +187,63 @@ if (!fs.existsSync(baselinePath)) {
     }
 
     const adapters = config.adapters || {};
-    for (const adapterName of ['codex', 'claude', 'gemini']) {
-      const adapterRel = adapters[adapterName];
-      if (!adapterRel) {
-        fail(`${name}: missing ${adapterName} adapter path in baseline`);
-        continue;
-      }
+    const isOverlayOnly = !adapters.codex && !adapters.claude && !adapters.gemini && adapters.geminiOverlay;
 
-      const adapterAbs = path.join(root, adapterRel);
-      if (!fs.existsSync(adapterAbs)) {
-        fail(`${name}: missing ${adapterName} adapter file: ${adapterRel}`);
-        continue;
-      }
-
-      const content = fs.readFileSync(adapterAbs, 'utf8');
-      const frontmatter = parseFrontmatter(content);
-      if (!frontmatter.description) {
-        fail(`${adapterRel}: missing frontmatter description`);
-      }
-      for (const requiredRef of requiredRefs) {
-        if (!content.includes(requiredRef)) {
-          fail(`${adapterRel}: missing common baseline reference ${requiredRef}`);
+    if (isOverlayOnly) {
+      const adapterRel = adapters.geminiOverlay;
+      if (adapterRel) {
+        const adapterAbs = path.join(root, adapterRel);
+        if (!fs.existsSync(adapterAbs)) {
+          fail(`${name}: missing geminiOverlay adapter file: ${adapterRel}`);
+        } else {
+          const content = fs.readFileSync(adapterAbs, 'utf8');
+          const frontmatter = parseFrontmatter(content);
+          if (!frontmatter.description) {
+            fail(`${adapterRel}: missing frontmatter description`);
+          }
+          for (const requiredRef of requiredRefs) {
+            if (!content.includes(requiredRef)) {
+              fail(`${adapterRel}: missing common baseline reference ${requiredRef}`);
+            }
+          }
         }
       }
-    }
+    } else {
+      for (const adapterName of ['codex', 'claude', 'gemini']) {
+        const adapterRel = adapters[adapterName];
+        if (!adapterRel) {
+          fail(`${name}: missing ${adapterName} adapter path in baseline`);
+          continue;
+        }
 
-    if (!agentsSkills.includes(name)) fail(`${name}: missing .agents/skills adapter directory`);
-    if (!claudeSkills.includes(name)) fail(`${name}: missing .claude/skills adapter directory`);
+        const adapterAbs = path.join(root, adapterRel);
+        if (!fs.existsSync(adapterAbs)) {
+          fail(`${name}: missing ${adapterName} adapter file: ${adapterRel}`);
+          continue;
+        }
+
+        const content = fs.readFileSync(adapterAbs, 'utf8');
+        const frontmatter = parseFrontmatter(content);
+        if (!frontmatter.description) {
+          fail(`${adapterRel}: missing frontmatter description`);
+        }
+        for (const requiredRef of requiredRefs) {
+          if (!content.includes(requiredRef)) {
+            fail(`${adapterRel}: missing common baseline reference ${requiredRef}`);
+          }
+        }
+      }
+
+      if (!agentsSkills.includes(name)) fail(`${name}: missing .agents/skills adapter directory`);
+      if (!claudeSkills.includes(name)) fail(`${name}: missing .claude/skills adapter directory`);
+    }
   }
 
   for (const overlay of geminiOverlaySkills) {
     if (agentsSkills.includes(overlay)) {
       fail(`.gemini/skills/${overlay}: same-name overlay is shadowed by .agents/skills/${overlay}`);
+    } else if (!skills[overlay]) {
+      fail(`.gemini/skills/${overlay}: missing baseline entry in config/ai/skill-baselines.json`);
     } else {
       warn(`.gemini/skills/${overlay}: Gemini-only overlay present`);
     }
