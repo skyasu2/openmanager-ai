@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-06-07T23:44:09.497Z"
+    "updatedAt": "2026-06-08T04:48:28.823Z"
   },
   "sequence": {
-    "nextRunNumber": 691
+    "nextRunNumber": 692
   },
   "summary": {
-    "totalRecordedRuns": 688,
-    "totalRuns": 531,
+    "totalRecordedRuns": 689,
+    "totalRuns": 532,
     "excludedRuns": 157,
-    "totalChecks": 4712,
-    "totalPassed": 4500,
+    "totalChecks": 4723,
+    "totalPassed": 4511,
     "totalFailed": 167,
     "completionRate": 100,
     "completedItems": 792,
@@ -21,10 +21,10 @@
     "wontFixItems": 28,
     "expertDomainsTracked": 21,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260608-0690",
-    "lastRecordedAt": "2026-06-07T23:44:09.497Z",
-    "latestRecordedRunId": "QA-20260608-0690",
-    "latestRecordedAt": "2026-06-07T23:44:09.497Z"
+    "lastRunId": "QA-20260608-0691",
+    "lastRecordedAt": "2026-06-08T04:48:28.823Z",
+    "latestRecordedRunId": "QA-20260608-0691",
+    "latestRecordedAt": "2026-06-08T04:48:28.823Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -43933,6 +43933,131 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260608-0691",
+      "recordedAt": "2026-06-08T04:48:28.823Z",
+      "recordedAtKst": "2026-06-08 13:48:28 KST",
+      "title": "Production deploy validation - v8.12.116 session history and skill drift hardening",
+      "owner": "codex",
+      "source": "gitlab-ci-and-production-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260608-0691.json",
+      "environment": {
+        "target": "vercel-production-and-cloud-run-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel production v8.12.116",
+        "backend": "Cloud Run ai-engine v8.12.116",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-2583781368",
+        "deploymentUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583781368",
+        "commitSha": "26829ed0c078c35ddd68c508cfa097e5419d03fc"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag pipeline 2583781368 succeeded for v8.12.116",
+        "GitLab deploy job succeeded for Vercel production",
+        "GitLab deploy_ai_engine job succeeded for Cloud Run ai-engine",
+        "GitLab post_deploy_smoke job succeeded",
+        "GitLab post_deploy_ai_engine_smoke job succeeded",
+        "Vercel production /api/version returned v8.12.116 and releaseTag v8.12.116",
+        "Vercel production /api/version returned commit 26829ed0c078c35ddd68c508cfa097e5419d03fc",
+        "Cloud Run /health returned status ok and version 8.12.116",
+        "Cloud Run service limits remained cpu=1 and memory=512Mi",
+        "Cloud Run free-tier guard script passed",
+        "Vercel usage check returned billed=0.0000 USD"
+      ],
+      "skippedSurfaces": [
+        "Browser conversational AI QA was not repeated because this run validates deployment propagation, health, free-tier guardrails, and CI smoke for already locally tested AI Engine session-history hardening",
+        "Dashboard/modal route packs were not repeated in this targeted deployment validation run",
+        "Public GitHub snapshot sync was not requested"
+      ],
+      "checks": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline, Vercel deploy smoke, Cloud Run deploy smoke, service health, and free-tier limits all passed for v8.12.116.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The AI Engine session-history hardening was covered by local targeted regression tests and the deployed Cloud Run service returned healthy v8.12.116 status.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Release propagation was confirmed through /api/version, Cloud Run /health, GitLab pipeline inspection, and resource guard checks.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-08T13:46:20+09:00",
+          "summary": "Current billing period checked after v8.12.116 production deploy: effective=3.8906 USD, billed=0.0000 USD, chargeCount=3654.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "gcp-cloud-run",
+          "method": "script",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-06-08T13:46:30+09:00",
+          "summary": "Cloud Run guardrails passed: maxScale=1, concurrency=16, timeoutSeconds=300, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00614-xf4.",
+          "evidence": "npm run check:cloud-run-guard",
+          "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.12.116 deployment validation evidence",
+          "path": "reports/qa/evidence/qa-20260608-v812116-deployment-validation.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "v8.12.116 GitLab tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2583781368"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run ai-engine health endpoint",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -43941,16 +44066,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 380,
-      "appropriateCount": 328,
+      "seenCount": 381,
+      "appropriateCount": 329,
       "partialCount": 52,
       "inappropriateCount": 0,
       "improvementNeededCount": 75,
-      "lastRunId": "QA-20260608-0690",
-      "lastSeenAt": "2026-06-07T23:44:09.497Z",
+      "lastRunId": "QA-20260608-0691",
+      "lastSeenAt": "2026-06-08T04:48:28.823Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The production direct API now preserves healthy-only TOP-N through the intent-frame path and keeps the inverse healthy full-list behavior intact.",
+      "lastRationale": "The AI Engine session-history hardening was covered by local targeted regression tests and the deployed Cloud Run service returned healthy v8.12.116 status.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -43958,16 +44083,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 166,
-      "appropriateCount": 130,
+      "seenCount": 167,
+      "appropriateCount": 131,
       "partialCount": 36,
       "inappropriateCount": 0,
       "improvementNeededCount": 34,
-      "lastRunId": "QA-20260608-0690",
-      "lastSeenAt": "2026-06-07T23:44:09.497Z",
+      "lastRunId": "QA-20260608-0691",
+      "lastSeenAt": "2026-06-08T04:48:28.823Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Direct API response metadata confirmed deterministic provider/model/finalAgent for the affected prompt pack.",
+      "lastRationale": "Release propagation was confirmed through /api/version, Cloud Run /health, GitLab pipeline inspection, and resource guard checks.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -43992,16 +44117,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 263,
-      "appropriateCount": 242,
+      "seenCount": 264,
+      "appropriateCount": 243,
       "partialCount": 21,
       "inappropriateCount": 0,
       "improvementNeededCount": 25,
-      "lastRunId": "QA-20260608-0690",
-      "lastSeenAt": "2026-06-07T23:44:09.497Z",
+      "lastRunId": "QA-20260608-0691",
+      "lastSeenAt": "2026-06-08T04:48:28.823Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab release pipeline, Vercel version smoke, Cloud Run health, traffic, and free-tier resource limits were verified.",
+      "lastRationale": "GitLab tag pipeline, Vercel deploy smoke, Cloud Run deploy smoke, service health, and free-tier limits all passed for v8.12.116.",
       "lastNextAction": ""
     },
     "test-automation": {
