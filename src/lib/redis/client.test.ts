@@ -137,4 +137,24 @@ describe('redis/client timeouts', () => {
     expect(isRedisEnabled()).toBe(false);
     expect(mockRedisConstructor).not.toHaveBeenCalled();
   });
+
+  it('setSystemRunningFlag stores running=true with the 30 minute expiry', async () => {
+    mockSet.mockResolvedValueOnce('OK');
+    const { setSystemRunningFlag } = await import('./client');
+
+    await expect(setSystemRunningFlag(true)).resolves.toBe(true);
+
+    expect(mockSet).toHaveBeenCalledWith('system:running', '1', {
+      ex: 1800,
+    });
+  });
+
+  it('setSystemRunningFlag stores running=false without expiry', async () => {
+    mockSet.mockResolvedValueOnce('OK');
+    const { setSystemRunningFlag } = await import('./client');
+
+    await expect(setSystemRunningFlag(false)).resolves.toBe(true);
+
+    expect(mockSet).toHaveBeenCalledWith('system:running', '0');
+  });
 });

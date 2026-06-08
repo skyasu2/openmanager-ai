@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   routerPush: vi.fn(),
   useSystemStatus: vi.fn(),
   startLocalSystem: vi.fn(),
+  markSystemBootIntent: vi.fn(),
   triggerAIWarmup: vi.fn().mockResolvedValue(undefined),
   debugLog: vi.fn(),
   debugError: vi.fn(),
@@ -33,6 +34,10 @@ vi.mock('@/stores/useUnifiedAdminStore', () => ({
       isSystemStarted: false,
       startSystem: mocks.startLocalSystem,
     }),
+}));
+
+vi.mock('@/lib/system/system-boot-intent', () => ({
+  markSystemBootIntent: mocks.markSystemBootIntent,
 }));
 
 vi.mock('@/utils/ai-warmup', () => ({
@@ -101,6 +106,46 @@ describe('useSystemStart', () => {
     expect(result.current.showGuestRestriction).toBe(false);
     expect(startRemoteSystem).not.toHaveBeenCalled();
     expect(mocks.startLocalSystem).not.toHaveBeenCalled();
+  });
+
+  it('시스템 시작 성공 시 부팅 의도를 기록한 뒤 system-boot로 이동한다', async () => {
+    const startRemoteSystem = vi.fn().mockResolvedValue({
+      success: true,
+      action: 'start',
+    });
+
+    mocks.useSystemStatus.mockReturnValue({
+      status: { isRunning: false, isStarting: false },
+      isLoading: false,
+      startSystem: startRemoteSystem,
+    });
+
+    const { result } = renderHook(() =>
+      useSystemStart({
+        isAuthenticated: true,
+        isGitHubUser: true,
+        isGuestUser: false,
+        authLoading: false,
+        isMounted: true,
+      })
+    );
+
+    act(() => {
+      result.current.handleSystemToggle();
+    });
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(5_000);
+      await Promise.resolve();
+    });
+
+    expect(startRemoteSystem).toHaveBeenCalledTimes(1);
+    expect(mocks.startLocalSystem).toHaveBeenCalledTimes(1);
+    expect(mocks.markSystemBootIntent).toHaveBeenCalledTimes(1);
+    expect(mocks.startLocalSystem.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.markSystemBootIntent.mock.invocationCallOrder[0]
+    );
+    expect(mocks.routerPush).toHaveBeenCalledWith('/system-boot');
   });
 
   it('원격 시스템 시작이 실패하면 로컬 시작과 system-boot 이동을 실행하지 않는다', async () => {

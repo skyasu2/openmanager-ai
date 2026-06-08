@@ -13,6 +13,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStatus } from '@/hooks/useSystemStatus';
 import { logger } from '@/lib/logging';
+import { markSystemBootIntent } from '@/lib/system/system-boot-intent';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import debug from '@/utils/debug';
@@ -285,6 +286,7 @@ export function useSystemStart(options: UseSystemStartOptions) {
               return;
             }
             await startSystem();
+            markSystemBootIntent();
             setPendingNavigation(SYSTEM_BOOT_PATH);
           } catch (error) {
             debug.error('❌ 시스템 시작 실패:', error);
