@@ -2,7 +2,7 @@
   "name": "OpenManager AI v8 - AI Native Server Monitoring",
   "short_name": "OpenManager",
   "description": "AI-Powered Server Management with Fluid Compute Optimization",
-  "version": "8.0.0",
+  "version": "8.13.3",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
@@ -14,22 +14,6 @@
     "business",
     "productivity",
     "utilities"
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshots/dashboard-wide.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Dashboard Overview"
-    },
-    {
-      "src": "/screenshots/mobile-dashboard.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Mobile Dashboard"
-    }
   ],
   "icons": [
     {
@@ -62,22 +46,10 @@
       "name": "AI Assistant",
       "short_name": "AI",
       "description": "Chat with AI assistant",
-      "url": "/mcp-chat",
-      "icons": [
-        {
-          "src": "/ai-icon.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Server Monitor",
-      "short_name": "Servers",
-      "description": "Server monitoring dashboard",
       "url": "/dashboard",
       "icons": [
         {
-          "src": "/dashboard-icon.png",
+          "src": "/ai-icon.png",
           "sizes": "96x96"
         }
       ]

@@ -250,6 +250,7 @@ export default function AutoReportPage({
               type="button"
               key={filter.id}
               onClick={() => setSelectedSeverity(filter.id)}
+              aria-pressed={selectedSeverity === filter.id}
               className={`rounded-full px-3 py-1 text-sm transition-colors ${
                 selectedSeverity === filter.id
                   ? 'bg-red-500 text-white'

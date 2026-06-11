@@ -52,7 +52,8 @@ export interface JobQueryAsOf {
 
 /** Job 생성 요청 */
 export interface CreateJobRequest {
-  type: JobType;
+  type?: JobType;
+  idempotencyKey?: string;
   query: string;
   options?: {
     priority?: JobPriority;

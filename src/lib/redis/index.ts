@@ -25,6 +25,7 @@ export {
   isRedisDisabled,
   isRedisEnabled,
   parseSystemRunningFlag,
+  redisClaimKey,
   redisDel,
   redisGet,
   redisMGet,

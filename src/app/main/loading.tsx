@@ -8,5 +8,10 @@
 import MainPageSkeleton from '@/components/home/MainPageSkeleton';
 
 export default function MainLoading() {
-  return <MainPageSkeleton />;
+  return (
+    <div role="status" aria-busy="true" aria-live="polite">
+      <MainPageSkeleton />
+      <span className="sr-only">메인 페이지로 이동 중...</span>
+    </div>
+  );
 }

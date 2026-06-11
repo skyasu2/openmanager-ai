@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { MouseSpotlight } from '@/components/landing/MouseSpotlight';
 import { clearChatHistory } from '@/hooks/ai/utils/chat-history-storage';
+import { consumeSystemBootIntent } from '@/lib/system/system-boot-intent';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
@@ -73,6 +74,8 @@ const STAGE_FADE_DELAY_MS = 150;
 const BOOT_COMPLETE_DELAY_MS = 500;
 const DASHBOARD_REDIRECT_DELAY_MS = 1000;
 
+type BootIntentState = 'unknown' | 'requested' | 'none';
+
 export default function SystemBootClient() {
   const router = useRouter();
   const { isSystemStarted } = useUnifiedAdminStore();
@@ -81,9 +84,11 @@ export default function SystemBootClient() {
   );
   const [currentStage, setCurrentStage] = useState<string>('시스템 초기화');
   const [progress, setProgress] = useState(0);
-  const [currentIcon, setCurrentIcon] = useState<LucideIcon>(Loader2);
+  const [currentIcon, setCurrentIcon] = useState<LucideIcon>(() => Loader2);
   const [isClient, setIsClient] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [bootIntentState, setBootIntentState] =
+    useState<BootIntentState>('unknown');
   const timeoutScheduler = useMemo(() => createTrackedTimeoutScheduler(), []);
 
   const clearScheduledTimeouts = useCallback(() => {
@@ -98,15 +103,17 @@ export default function SystemBootClient() {
   );
 
   useEffect(() => {
+    const hasFreshBootIntent = consumeSystemBootIntent();
+    setBootIntentState(hasFreshBootIntent ? 'requested' : 'none');
     setIsClient(true);
   }, []);
 
-  // 3-A: 시스템 이미 가동 중이면 즉시 대시보드로 이동
+  // Direct visits while already running should skip the boot animation.
   useEffect(() => {
-    if (isSystemStarted) {
+    if (bootIntentState === 'none' && isSystemStarted) {
       router.replace('/dashboard');
     }
-  }, [isSystemStarted, router]);
+  }, [bootIntentState, isSystemStarted, router]);
 
   // 부팅 완료 - 부드러운 전환 후 대시보드로 이동
   const handleBootComplete = useCallback(() => {
@@ -115,7 +122,7 @@ export default function SystemBootClient() {
 
     // 완료 상태 표시
     setCurrentStage('시스템 시작 완료');
-    setCurrentIcon(CheckCircle);
+    setCurrentIcon(() => CheckCircle);
     setProgress(100);
     setIsTransitioning(false);
 
@@ -127,9 +134,10 @@ export default function SystemBootClient() {
 
   // 🚀 순수 타이머 기반 로딩 로직 (시간 벌기 용도)
   useEffect(() => {
-    if (!isClient) return;
-    // 시스템 이미 가동 중이면 부팅 로직 스킵 (채팅 기록 보호)
-    if (isSystemStarted) return;
+    if (!isClient || bootIntentState === 'unknown') return;
+    const isDirectVisitToRunningSystem =
+      isSystemStarted && bootIntentState !== 'requested';
+    if (isDirectVisitToRunningSystem) return;
 
     debug.log('🚀 OpenManager 시스템 로딩 시작');
 
@@ -149,7 +157,7 @@ export default function SystemBootClient() {
 
         scheduleTimeout(() => {
           setCurrentStage(name);
-          setCurrentIcon(icon);
+          setCurrentIcon(() => icon);
           const newProgress = ((index + 1) / BOOT_STAGES.length) * 100;
           setProgress(newProgress);
 
@@ -174,6 +182,7 @@ export default function SystemBootClient() {
   }, [
     clearScheduledTimeouts,
     handleBootComplete,
+    bootIntentState,
     isClient,
     isSystemStarted,
     scheduleTimeout,
@@ -188,13 +197,16 @@ export default function SystemBootClient() {
     };
   const CurrentIconComponent = currentIcon as FC<{ className?: string }>;
 
-  // 시스템 이미 가동 중이면 렌더링 스킵 (UI 플래시 방지)
-  if (isSystemStarted) {
+  const isDirectVisitToRunningSystem =
+    isSystemStarted && bootIntentState !== 'requested';
+
+  // 시스템 이미 가동 중인 직접 접근은 렌더링 스킵 (UI 플래시 방지)
+  if (isDirectVisitToRunningSystem) {
     return null;
   }
 
   // 클라이언트 렌더링이 준비되지 않았으면 로딩 표시
-  if (!isClient) {
+  if (!isClient || bootIntentState === 'unknown') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-black">
         <div className="text-white">Loading...</div>

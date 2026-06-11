@@ -4,7 +4,7 @@
  * Lightweight console wrapper with level filtering for client-side
  */
 
-import { LOG_LEVEL_PRIORITY, type LogLevel } from './config';
+import { LOG_LEVEL_PRIORITY, type LogLevel, normalizeLogLevel } from './config';
 
 type LogMethod = (...args: unknown[]) => void;
 
@@ -23,7 +23,9 @@ function getBrowserLogLevel(): LogLevel {
   if (typeof window === 'undefined') return 'info';
 
   // Check for explicit override
-  const override = (window as { __LOG_LEVEL__?: LogLevel }).__LOG_LEVEL__;
+  const override = normalizeLogLevel(
+    (window as { __LOG_LEVEL__?: string }).__LOG_LEVEL__
+  );
   if (override) return override;
 
   // Production: error only (DevTools Console 노출 최소화)

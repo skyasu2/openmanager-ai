@@ -5,7 +5,7 @@
  * - 실제 구현 기준: cloud-run/ai-engine/src/services/ai-sdk/model-provider.ts
  * - 에이전트별 선택 체인 기준: cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-model-selectors.ts
  * - UI에는 "현재 라우팅 정책"만 노출하며, 개별 요청의 실시간 선택 결과를 의미하지 않는다.
- * - 2026-04-15 최신화
+ * - 2026-06-10 런타임 provider policy와 동기화
  */
 
 export interface AIProviderConfig {
@@ -51,10 +51,10 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
   },
   {
     name: 'Cerebras',
-    role: 'Short-context text fallback + replacement candidate',
-    model: 'llama3.1-8b / gpt-oss-120b',
+    role: 'GPT-OSS text fallback + reasoning candidate',
+    model: 'gpt-oss-120b',
     description:
-      'Production Cerebras runtime retains llama3.1-8b as default and enables gpt-oss-120b as the confirmed replacement fallback candidate.',
+      'Production Cerebras runtime uses gpt-oss-120b; provider-native reasoning remains opt-in and freshness-guarded.',
     color: 'bg-blue-500',
     dailyTokenLimit: '1M tokens/day',
   },

@@ -67,6 +67,7 @@ class PyodideService {
     'matplotlib',
     'scipy',
   ];
+  private readonly REQUIRED_SETUP_PACKAGES = ['matplotlib'];
 
   /**
    * Load Pyodide runtime
@@ -118,16 +119,25 @@ class PyodideService {
         config?.indexURL || 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/',
     });
 
-    // Setup matplotlib for inline plotting
-    await this._setupMatplotlib();
-
     // Preload common packages
-    const packagesToLoad = config?.preloadPackages || this.DEFAULT_PACKAGES;
+    const packagesToLoad = this._getPackagesToLoad(config);
     logger.info(`🐍 [Pyodide] 패키지 로드 중: ${packagesToLoad.join(', ')}`);
     await this.pyodide.loadPackage(packagesToLoad);
 
+    // Setup matplotlib for inline plotting after its package is available.
+    await this._setupMatplotlib();
+
     const loadTime = Date.now() - startTime;
     logger.info(`🐍 [Pyodide] 초기화 완료 (${loadTime}ms)`);
+  }
+
+  private _getPackagesToLoad(config?: PyodideServiceConfig): string[] {
+    return Array.from(
+      new Set([
+        ...(config?.preloadPackages || this.DEFAULT_PACKAGES),
+        ...this.REQUIRED_SETUP_PACKAGES,
+      ])
+    );
   }
 
   private async _loadScript(src: string): Promise<void> {

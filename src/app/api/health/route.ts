@@ -23,6 +23,7 @@ import { NextResponse } from 'next/server';
 import { checkCloudRunHealth } from '@/lib/ai-proxy/proxy';
 import { createApiRoute } from '@/lib/api/zod-middleware';
 import { getCacheStats } from '@/lib/cache/unified-cache';
+import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import { getSiteUrl } from '@/lib/site-url';
 import { createClient } from '@/lib/supabase/server';
 import { probeSupabaseSession } from '@/lib/supabase/session-probe';
@@ -73,10 +74,19 @@ interface HealthApiRuntimeConfig {
 
 const HEALTH_CACHE_TTL = 60000; // 60초
 const SERVICE_CHECK_TIMEOUT_MS = 3000; // DB/캐시 연결 타임아웃
+const SERVICE_HEALTH_CACHE_TTL_SECONDS = 15;
 let healthCache: HealthCache = {
   data: null,
   timestamp: 0,
 };
+
+interface ServiceHealthCacheEntry {
+  body: Record<string, unknown>;
+  status: number;
+  timestamp: number;
+}
+
+const serviceHealthCache = new Map<string, ServiceHealthCacheEntry>();
 
 function getTrimmedProcessEnv(name: string): string {
   return process.env[name]?.trim() ?? '';
@@ -126,6 +136,37 @@ function updateCache(data: HealthRouteEnvelope): void {
     data,
     timestamp: Date.now(),
   };
+}
+
+export function __resetHealthRouteCachesForTests(): void {
+  healthCache = {
+    data: null,
+    timestamp: 0,
+  };
+  serviceHealthCache.clear();
+}
+
+function getServiceHealthCacheHeaders(cacheStatus: 'HIT' | 'MISS') {
+  return {
+    'Cache-Control': `public, max-age=${SERVICE_HEALTH_CACHE_TTL_SECONDS}, stale-while-revalidate=${SERVICE_HEALTH_CACHE_TTL_SECONDS}`,
+    'X-Cache': cacheStatus,
+  };
+}
+
+function buildServiceHealthCacheKey(service: string, soft: boolean): string {
+  return `${service}:${soft ? 'soft' : 'hard'}`;
+}
+
+function getValidServiceHealthCache(
+  key: string
+): ServiceHealthCacheEntry | null {
+  const entry = serviceHealthCache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.timestamp >= SERVICE_HEALTH_CACHE_TTL_SECONDS * 1000) {
+    serviceHealthCache.delete(key);
+    return null;
+  }
+  return entry;
 }
 
 // 서비스 상태 체크 함수들 - 실제 구현
@@ -324,11 +365,79 @@ const healthCheckHandler = createApiRoute()
     return response;
   });
 
+async function handleServiceHealth(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const service = searchParams.get('service') ?? 'ai';
+  const soft = searchParams.get('soft') === 'true';
+  const cacheKey = buildServiceHealthCacheKey(service, soft);
+  const cached = getValidServiceHealthCache(cacheKey);
+
+  if (cached) {
+    return NextResponse.json(cached.body, {
+      status: cached.status,
+      headers: getServiceHealthCacheHeaders('HIT'),
+    });
+  }
+
+  const result = await checkCloudRunHealth();
+  if (result.healthy) {
+    const aiEngine = {
+      service: result.service ?? 'ai-engine',
+      ...(result.version ? { version: result.version } : {}),
+    };
+    const body = {
+      status: 'ok',
+      healthy: true,
+      backend: 'cloud-run',
+      latency: result.latency,
+      service: aiEngine.service,
+      ...(result.version ? { version: result.version } : {}),
+      aiEngine,
+      timestamp: new Date().toISOString(),
+    };
+
+    serviceHealthCache.set(cacheKey, {
+      body,
+      status: 200,
+      timestamp: Date.now(),
+    });
+
+    return NextResponse.json(body, {
+      headers: getServiceHealthCacheHeaders('MISS'),
+    });
+  }
+
+  return NextResponse.json(
+    {
+      status: soft ? 'degraded' : 'error',
+      healthy: false,
+      backend: 'cloud-run',
+      ...(typeof result.latency === 'number'
+        ? { latency: result.latency }
+        : {}),
+      error: result.error,
+      ...(result.reasonCode ? { reasonCode: result.reasonCode } : {}),
+      ...(typeof result.recoverable === 'boolean'
+        ? { recoverable: result.recoverable }
+        : {}),
+      timestamp: new Date().toISOString(),
+    },
+    {
+      status: soft ? 200 : 503,
+      headers: getServiceHealthCacheHeaders('MISS'),
+    }
+  );
+}
+
+const rateLimitedServiceHealth = withRateLimit(
+  rateLimiters.monitoring,
+  handleServiceHealth
+);
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const simple = searchParams.get('simple') === 'true';
   const service = searchParams.get('service');
-  const soft = searchParams.get('soft') === 'true';
 
   // 1. Simple ping mode (?simple=true) - /api/ping 대체
   if (simple) {
@@ -370,41 +479,7 @@ export async function GET(request: NextRequest) {
 
   // 2b. Service-specific health check (?service=cloudrun|ai) - /api/ai/health 대체
   if (service === 'cloudrun' || service === 'ai') {
-    const result = await checkCloudRunHealth();
-    if (result.healthy) {
-      const aiEngine = {
-        service: result.service ?? 'ai-engine',
-        ...(result.version ? { version: result.version } : {}),
-      };
-
-      return NextResponse.json({
-        status: 'ok',
-        healthy: true,
-        backend: 'cloud-run',
-        latency: result.latency,
-        service: aiEngine.service,
-        ...(result.version ? { version: result.version } : {}),
-        aiEngine,
-        timestamp: new Date().toISOString(),
-      });
-    }
-    return NextResponse.json(
-      {
-        status: soft ? 'degraded' : 'error',
-        healthy: false,
-        backend: 'cloud-run',
-        ...(typeof result.latency === 'number'
-          ? { latency: result.latency }
-          : {}),
-        error: result.error,
-        ...(result.reasonCode ? { reasonCode: result.reasonCode } : {}),
-        ...(typeof result.recoverable === 'boolean'
-          ? { recoverable: result.recoverable }
-          : {}),
-        timestamp: new Date().toISOString(),
-      },
-      { status: soft ? 200 : 503 }
-    );
+    return rateLimitedServiceHealth(request);
   }
 
   // 3. Full system health check (default)

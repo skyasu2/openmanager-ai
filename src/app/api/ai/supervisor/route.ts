@@ -77,9 +77,8 @@ export const maxDuration = 60;
 // 🧠 Main Handler - Cloud Run AI Supervisor
 // ============================================================================
 
-export const POST = withRateLimit(
-  rateLimiters.aiAnalysis,
-  withAuth(async (req: NextRequest) => {
+export const POST = withAuth(
+  withRateLimit(rateLimiters.aiAnalysis, async (req: NextRequest) => {
     // 🎯 W3C Trace Context: traceparent 헤더 우선, X-Trace-Id 폴백
     const observabilityConfig = getObservabilityConfig();
     const traceparent = req.headers.get(TRACEPARENT_HEADER);

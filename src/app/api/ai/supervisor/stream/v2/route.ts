@@ -82,9 +82,8 @@ type CloudRunStreamFetchResult =
   | { type: 'upstream'; response: Response }
   | { type: 'terminal'; response: Response };
 
-export const GET = withRateLimit(
-  rateLimiters.aiAnalysis,
-  withAuth(async () =>
+export const GET = withAuth(
+  withRateLimit(rateLimiters.aiAnalysis, async () =>
     NextResponse.json(
       { error: 'Stream resume is not supported' },
       {
@@ -95,9 +94,8 @@ export const GET = withRateLimit(
   )
 );
 
-export const POST = withRateLimit(
-  rateLimiters.aiAnalysis,
-  withAuth(async (req: NextRequest) => {
+export const POST = withAuth(
+  withRateLimit(rateLimiters.aiAnalysis, async (req: NextRequest) => {
     try {
       const body = await req.json();
       const parseResult = requestSchema.safeParse(body);

@@ -129,4 +129,4 @@ async function handler(request: NextRequest): Promise<NextResponse> {
   }
 }
 
-export const POST = withRateLimit(rateLimiters.aiAnalysis, withAuth(handler));
+export const POST = withAuth(withRateLimit(rateLimiters.aiAnalysis, handler));

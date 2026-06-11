@@ -224,17 +224,16 @@ const ENVIRONMENT = {
 
 // 🔌 Codex MCP 서버 설정 (SSOT - .codex/config.toml 기준)
 export const MCP_SERVERS = {
-  // 활성화된 MCP 서버 목록 (9/9, 2026-04-17 동기화)
+  // 활성화된 MCP 서버 목록 (8/8, 2026-06-10 동기화)
   ACTIVE: [
-    'vercel', // 배포 관리
-    'supabase', // DB 관리
-    'context7', // 라이브러리 문서
-    'playwright', // E2E 테스트
-    'next-devtools', // Next.js 런타임 진단
+    'chrome-devtools', // 브라우저 런타임 진단
+    'diagram-converter', // Mermaid 렌더/검증
     'github', // 저장소 관리
-    'sequential-thinking', // 복잡한 추론
-    'stitch', // Google Stitch AI UI Design (2026-01-27)
-    'diagram-converter', // Mermaid 렌더/검증 (2026-04-17)
+    'next-devtools', // Next.js 런타임 진단
+    'openaiDeveloperDocs', // OpenAI 공식 문서
+    'playwright', // E2E 테스트
+    'supabase-db', // DB 관리
+    'vercel', // 배포 관리
   ] as const,
 
   // 온디맨드 MCP 서버 (상시 등록 아님)
@@ -242,12 +241,15 @@ export const MCP_SERVERS = {
     'storybook', // 컴포넌트 문서·스토리 조회 (Storybook dev 필요)
   ] as const,
 
-  // 제거된 MCP 서버 (2026-02-14 업데이트)
+  // 제거된 MCP 서버 (2026-06-10 업데이트)
   REMOVED: [
+    'context7', // 활용도 저하로 제거
     'filesystem', // Claude Code 내장 도구와 중복
     'memory', // Claude Code auto-memory로 대체
+    'sequential-thinking', // 활용도 저하로 제거
     'time', // 사용 빈도 낮음
-    'shadcn-ui', // Context7로 대체
+    'shadcn-ui', // 사용 빈도 낮음
+    'stitch', // 명시적 UI 개선 시 수동 구동
     'figma', // 미사용 (6회/월 Starter 제한)
     'brave-search', // built-in WebSearch로 대체
     'tavily', // built-in WebSearch로 대체
@@ -256,7 +258,7 @@ export const MCP_SERVERS = {
   ] as const,
 
   // 서버 수
-  TOTAL_ACTIVE: 9,
+  TOTAL_ACTIVE: 8,
 } as const;
 
 // MCP 서버 목록 타입 (타입 안전성)

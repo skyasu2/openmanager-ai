@@ -66,9 +66,9 @@ function extractRetryToolOptions(job: AIJob): RetryToolOptions {
   };
 }
 
-export const POST = withRateLimit<[{ params: Promise<{ id: string }> }]>(
-  rateLimiters.aiJobCreation,
-  withAuth(
+export const POST = withAuth(
+  withRateLimit<[{ params: Promise<{ id: string }> }]>(
+    rateLimiters.aiJobCreation,
     withCSRFProtection(async function POST(
       request: NextRequest,
       { params }: { params: Promise<{ id: string }> }

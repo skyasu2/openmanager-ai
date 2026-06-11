@@ -1,6 +1,8 @@
 import { MCP_SERVERS } from '@/config/constants';
 import type { VibeCodeData } from '../tech-stacks.types';
 
+const ACTIVE_MCP_SERVER_NAMES = MCP_SERVERS.ACTIVE.join(', ');
+
 export const VIBE_CODING_DATA: VibeCodeData = {
   current: [
     {
@@ -22,7 +24,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       importance: 'high',
       description:
         'Anthropic의 Model Context Protocol. AI가 외부 도구, 데이터 소스, API에 표준화된 방식으로 접근하는 오픈 프로토콜. 다양한 MCP 서버로 AI 기능 확장',
-      implementation: `→ ${MCP_SERVERS.TOTAL_ACTIVE}개 서버 상시 연동: vercel(배포), supabase(DB), context7(문서), playwright(E2E), next-devtools(Next.js진단), github(저장소), sequential-thinking(추론), stitch(UI디자인), diagram-converter(Mermaid). storybook은 온디맨드, Lighthouse는 CLI 스크립트로 사용`,
+      implementation: `→ ${MCP_SERVERS.TOTAL_ACTIVE}개 서버 상시 연동: ${ACTIVE_MCP_SERVER_NAMES}. storybook은 온디맨드, Lighthouse는 CLI 스크립트로 사용`,
       status: 'active',
       icon: '🔌',
       tags: ['MCP', 'Protocol', '확장기능'],
@@ -63,7 +65,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         'A lightweight coding agent that runs in your terminal (OpenAI)',
       implementation:
         'Generate, edit, and run code using natural language. ChatGPT Plus/Pro 플랜으로 사용. v8.10.x 이후 구현·리팩토링·테스트 보완을 집중 담당. bounded refactor와 배포 전 정리를 주로 담당',
-      version: 'v0.117.0',
+      version: 'v0.138.0',
       status: 'active',
       icon: '💎',
       tags: ['OpenAI', 'Lightweight', 'ChatGPT'],
@@ -77,7 +79,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         'An open-source AI agent that brings the power of Gemini directly into your terminal (Google)',
       implementation:
         'Lightweight access to Gemini - the most direct path from prompt to model. 1M 토큰 컨텍스트로 대규모 분석. Cross-Model 리뷰어',
-      version: 'v0.35.3',
+      version: 'v0.45.2',
       status: 'active',
       icon: '✨',
       tags: ['Google', 'OpenSource', '1M-Context'],

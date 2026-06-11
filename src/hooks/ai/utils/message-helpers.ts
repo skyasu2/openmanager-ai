@@ -43,6 +43,7 @@ import {
   normalizeToolNames,
   reorderToolPartsForDisplay,
   reorderToolResultSummariesForDisplay,
+  resolveAssistantContentFromToolFallback,
   shouldPrioritizeMetricRankingPresentation,
 } from './message-transform-internals';
 
@@ -119,7 +120,7 @@ export function transformUIMessageToEnhanced(
   const rawText = extractTextFromUIMessage(message);
   // 단일 정규화 지점: Cloud Run Agent가 { answer, confidence } JSON을 반환할 때
   // answer 필드만 추출. Streaming/Job Queue 양쪽 경로 모두 여기서 처리.
-  const textContent =
+  const normalizedTextContent =
     message.role === 'assistant' ? normalizeAIResponse(rawText) : rawText;
 
   const deferredMessageMetadata =
@@ -166,6 +167,13 @@ export function transformUIMessageToEnhanced(
     metadataToolResultSummaries ?? derivedToolResultSummaries,
     prioritizeMetricRankingPresentation
   );
+  const textContent =
+    message.role === 'assistant'
+      ? resolveAssistantContentFromToolFallback({
+          content: normalizedTextContent,
+          toolParts,
+        })
+      : normalizedTextContent;
 
   // ThinkingSteps 생성
   const thinkingSteps = toolParts.map((toolPart) => {

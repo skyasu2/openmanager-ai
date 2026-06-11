@@ -1,4 +1,5 @@
-import { type NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import { getSupabaseServerUrl } from '@/lib/supabase/env';
 import { createClient } from '@/lib/supabase/server';
 import { probeSupabaseSession } from '@/lib/supabase/session-probe';
@@ -8,8 +9,47 @@ import { getErrorMessage } from '@/types/type-utils';
 // MIGRATED: Removed export const dynamic = "force-dynamic" (now default)
 
 const CONNECTION_TIMEOUT_MS = 3000;
+const DATABASE_HEALTH_CACHE_TTL_SECONDS = 15;
 
 type DbStatus = 'online' | 'offline';
+type DatabaseHealthPayload = {
+  success: boolean;
+  healthy: boolean;
+  primary: {
+    status: DbStatus;
+    host: string;
+    latencyMs: number;
+  };
+  pool: {
+    size: number;
+    available: number;
+    waiting: number;
+  };
+  message?: string;
+  timestamp: string;
+};
+
+interface DatabaseHealthCacheEntry {
+  payload: DatabaseHealthPayload;
+  timestamp: number;
+}
+
+let databaseHealthCache: DatabaseHealthCacheEntry | null = null;
+
+function getDatabaseHealthCacheHeaders(cacheStatus: 'HIT' | 'MISS') {
+  return {
+    'Cache-Control': `public, max-age=${DATABASE_HEALTH_CACHE_TTL_SECONDS}, stale-while-revalidate=${DATABASE_HEALTH_CACHE_TTL_SECONDS}`,
+    'X-Cache': cacheStatus,
+  };
+}
+
+function isDatabaseHealthCacheValid(): boolean {
+  return (
+    databaseHealthCache !== null &&
+    Date.now() - databaseHealthCache.timestamp <
+      DATABASE_HEALTH_CACHE_TTL_SECONDS * 1000
+  );
+}
 
 async function getDatabaseHealth(): Promise<{
   status: DbStatus;
@@ -61,28 +101,54 @@ function getDatabaseHost(): string {
   }
 }
 
-export async function GET() {
-  const health = await getDatabaseHealth();
+async function databaseHealthHandler() {
+  if (isDatabaseHealthCacheValid() && databaseHealthCache) {
+    return NextResponse.json(databaseHealthCache.payload, {
+      status: databaseHealthCache.payload.healthy ? 200 : 503,
+      headers: getDatabaseHealthCacheHeaders('HIT'),
+    });
+  }
 
-  return NextResponse.json(
-    {
-      success: health.healthy,
-      healthy: health.healthy,
-      primary: {
-        status: health.status,
-        host: getDatabaseHost(),
-        latencyMs: health.latencyMs,
-      },
-      pool: {
-        size: 0,
-        available: 0,
-        waiting: 0,
-      },
-      ...(health.message ? { message: health.message } : {}),
-      timestamp: new Date().toISOString(),
+  const health = await getDatabaseHealth();
+  const payload: DatabaseHealthPayload = {
+    success: health.healthy,
+    healthy: health.healthy,
+    primary: {
+      status: health.status,
+      host: getDatabaseHost(),
+      latencyMs: health.latencyMs,
     },
-    { status: health.healthy ? 200 : 503 }
-  );
+    pool: {
+      size: 0,
+      available: 0,
+      waiting: 0,
+    },
+    ...(health.message ? { message: health.message } : {}),
+    timestamp: new Date().toISOString(),
+  };
+
+  if (health.healthy) {
+    databaseHealthCache = {
+      payload,
+      timestamp: Date.now(),
+    };
+  }
+
+  return NextResponse.json(payload, {
+    status: health.healthy ? 200 : 503,
+    headers: getDatabaseHealthCacheHeaders('MISS'),
+  });
+}
+
+const limitedDatabaseHealthHandler = withRateLimit(
+  rateLimiters.monitoring,
+  databaseHealthHandler
+);
+
+export function GET(
+  request: NextRequest = new NextRequest('http://localhost/api/database')
+) {
+  return limitedDatabaseHealthHandler(request);
 }
 
 export async function POST(request: NextRequest) {
@@ -91,7 +157,7 @@ export async function POST(request: NextRequest) {
     const action = body?.action;
 
     if (action === 'health_check') {
-      return GET();
+      return GET(request);
     }
 
     if (action === 'reset_pool') {

@@ -13,7 +13,6 @@ import {
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import ImprovedServerCard from '@/components/dashboard/ImprovedServerCard';
-import ServerCardErrorBoundary from '@/components/error/ServerCardErrorBoundary';
 import { logger } from '@/lib/logging';
 import type { Server } from '@/types/server';
 import { usePerformanceTracking } from '@/utils/performance';
@@ -721,21 +720,16 @@ export default function ServerDashboard({
                     const serverId = server.id || `server-${index}`;
 
                     return (
-                      <ServerCardErrorBoundary
-                        key={`boundary-${serverId}`}
-                        serverId={serverId}
-                      >
-                        <ImprovedServerCard
-                          key={serverId}
-                          server={server}
-                          variant="compact"
-                          showRealTimeUpdates={true}
-                          index={index}
-                          onClick={handleServerSelect}
-                          onOpenLogs={handleOpenLogs}
-                          metricsTimeRange={metricsTimeRange}
-                        />
-                      </ServerCardErrorBoundary>
+                      <ImprovedServerCard
+                        key={serverId}
+                        server={server}
+                        variant="compact"
+                        showRealTimeUpdates={true}
+                        index={index}
+                        onClick={handleServerSelect}
+                        onOpenLogs={handleOpenLogs}
+                        metricsTimeRange={metricsTimeRange}
+                      />
                     );
                   })}
                 </div>

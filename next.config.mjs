@@ -230,6 +230,7 @@ const nextConfig = {
         'https://vercel.live', // Vercel Toolbar
         'https://va.vercel-scripts.com', // Vercel Analytics
         'https://vitals.vercel-insights.com', // Speed Insights
+        'https://cdn.jsdelivr.net', // Pyodide runtime for browser code interpreter
         'blob:', // 동적 스크립트 허용
       ].filter(Boolean),
       'style-src': [
@@ -260,6 +261,7 @@ const nextConfig = {
         // Cloud Run AI Engine은 별도 도메인 사용 (CLOUD_RUN_AI_URL)
         'https://va.vercel-scripts.com', // Vercel Analytics
         'https://vitals.vercel-insights.com', // Speed Insights
+        'https://cdn.jsdelivr.net', // Pyodide packages/WASM fetches
         // 개발 환경 WebSocket/API는 early return으로 이미 제외됨
       ].filter(Boolean),
       'font-src': [

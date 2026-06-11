@@ -4,7 +4,8 @@
  * Environment-based log levels and settings
  */
 
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
+export const LOG_LEVELS = ['debug', 'info', 'warn', 'error', 'silent'] as const;
+export type LogLevel = (typeof LOG_LEVELS)[number];
 
 interface LoggerConfig {
   level: LogLevel;
@@ -14,14 +15,23 @@ interface LoggerConfig {
 
 const isDev = process.env.NODE_ENV === 'development';
 const isTest = process.env.NODE_ENV === 'test';
+const LOG_LEVEL_SET = new Set<string>(LOG_LEVELS);
+
+export function normalizeLogLevel(value: string | undefined): LogLevel | null {
+  const normalized = value?.trim().toLowerCase();
+  return normalized && LOG_LEVEL_SET.has(normalized)
+    ? (normalized as LogLevel)
+    : null;
+}
 
 /**
  * Get log level based on environment
  */
 function getLogLevel(): LogLevel {
   // Explicit override via env var
-  if (process.env.LOG_LEVEL) {
-    return process.env.LOG_LEVEL as LogLevel;
+  const envLogLevel = normalizeLogLevel(process.env.LOG_LEVEL);
+  if (envLogLevel) {
+    return envLogLevel;
   }
 
   if (isTest) return 'silent';

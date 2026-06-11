@@ -7,6 +7,12 @@ import { APP_VERSION } from '@/config/app-meta';
 
 const SUPPORTED_METRICS = ['CLS', 'INP', 'LCP', 'FCP', 'TTFB'] as const;
 const FLUSH_DELAY_MS = 1200;
+const TRACKED_PATHS = new Set([
+  '/',
+  '/login',
+  '/dashboard',
+  '/dashboard/ai-assistant',
+]);
 
 type SupportedMetricName = (typeof SUPPORTED_METRICS)[number];
 type SupportedMetricRating = 'good' | 'needs-improvement' | 'poor';
@@ -39,7 +45,7 @@ function isSupportedMetric(name: string): name is SupportedMetricName {
 }
 
 function isTrackedPath(pathname: string): boolean {
-  return pathname === '/';
+  return TRACKED_PATHS.has(pathname);
 }
 
 function roundMetricValue(name: SupportedMetricName, value: number): number {

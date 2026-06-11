@@ -359,7 +359,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
 ImprovedServerCardInner.displayName = 'ImprovedServerCardInner';
 
 const ImprovedServerCard: FC<ImprovedServerCardProps> = (props) => (
-  <ServerCardErrorBoundary>
+  <ServerCardErrorBoundary serverId={props.server?.id}>
     <ImprovedServerCardInner {...props} />
   </ServerCardErrorBoundary>
 );

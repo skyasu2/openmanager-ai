@@ -45,7 +45,7 @@ const calculateServerStats = (servers) => {
       averageMemory: 0,
       averageUptime: 0,
       totalBandwidth: 0,
-      typeDistribution: new Map(),
+      typeDistribution: {},
       performanceMetrics: {
         calculationTime: 0,
         serversProcessed: 0

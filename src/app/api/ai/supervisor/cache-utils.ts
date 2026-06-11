@@ -10,17 +10,19 @@
  * 실시간 데이터 요청 키워드
  * 이 키워드가 포함된 쿼리는 캐싱에서 제외됨
  */
-export const REALTIME_KEYWORDS = [
-  '지금',
-  '현재',
-  '방금',
-  '실시간',
+const KOREAN_REALTIME_KEYWORDS = ['지금', '현재', '방금', '실시간', '새로고침'];
+
+const ENGLISH_REALTIME_KEYWORDS = [
   'now',
   'current',
   'latest',
   'live',
   'refresh',
-  '새로고침',
+];
+
+export const REALTIME_KEYWORDS = [
+  ...KOREAN_REALTIME_KEYWORDS,
+  ...ENGLISH_REALTIME_KEYWORDS,
 ];
 
 /**
@@ -50,8 +52,15 @@ export function shouldSkipCache(query: string, messageCount: number): boolean {
 
   // 2. 실시간 데이터 요청 키워드 검사
   const lowerQuery = query.toLowerCase();
-  for (const keyword of REALTIME_KEYWORDS) {
+  for (const keyword of KOREAN_REALTIME_KEYWORDS) {
     if (lowerQuery.includes(keyword.toLowerCase())) {
+      return true;
+    }
+  }
+
+  for (const keyword of ENGLISH_REALTIME_KEYWORDS) {
+    const keywordPattern = new RegExp(`\\b${keyword}\\b`, 'i');
+    if (keywordPattern.test(query)) {
       return true;
     }
   }

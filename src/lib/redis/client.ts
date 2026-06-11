@@ -10,6 +10,7 @@
 
 import { Redis } from '@upstash/redis';
 import { getRedisTimeoutMs } from '@/config/redis-timeouts';
+import { SYSTEM_AUTO_SHUTDOWN_TIME } from '@/config/system-constants';
 import { logger } from '@/lib/logging';
 
 // Redis 클라이언트 인스턴스 (싱글톤)
@@ -19,6 +20,7 @@ let lastHealthCheck = 0;
 const HEALTH_CHECK_INTERVAL = 60_000; // 1분
 
 const SYSTEM_RUNNING_KEY = 'system:running';
+const SYSTEM_RUNNING_TTL_SECONDS = Math.ceil(SYSTEM_AUTO_SHUTDOWN_TIME / 1000);
 
 /**
  * Redis 연결 상태
@@ -225,7 +227,12 @@ export async function setSystemRunningFlag(
   try {
     await runRedisWithTimeout(
       'SET system running flag',
-      () => client.set(SYSTEM_RUNNING_KEY, isRunning ? '1' : '0'),
+      () =>
+        isRunning
+          ? client.set(SYSTEM_RUNNING_KEY, '1', {
+              ex: SYSTEM_RUNNING_TTL_SECONDS,
+            })
+          : client.set(SYSTEM_RUNNING_KEY, '0'),
       options
     );
     return true;
@@ -308,6 +315,32 @@ export async function redisSet<T>(
     return true;
   } catch (e) {
     logger.warn(`[Redis] SET failed for ${key}:`, e);
+    return false;
+  }
+}
+
+/**
+ * Safe Redis SET NX with expiry for idempotency claims and locks.
+ * @param ttlSeconds - TTL in seconds
+ */
+export async function redisClaimKey<T>(
+  key: string,
+  value: T,
+  ttlSeconds: number,
+  options?: RedisTimeoutOptions
+): Promise<boolean> {
+  const client = getRedisClient();
+  if (!client || !isRedisAvailable) return false;
+
+  try {
+    const result = await runRedisWithTimeout(
+      `SET NX ${key}`,
+      () => client.set(key, value, { ex: ttlSeconds, nx: true }),
+      options
+    );
+    return result === 'OK';
+  } catch (e) {
+    logger.warn(`[Redis] SET NX failed for ${key}:`, e);
     return false;
   }
 }

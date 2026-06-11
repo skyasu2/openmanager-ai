@@ -1,4 +1,4 @@
-import { Brain, ChevronDown, ChevronUp, User } from 'lucide-react';
+import { ArrowRight, Brain, ChevronDown, ChevronUp, User } from 'lucide-react';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { AnalysisBasisBadge } from '@/components/ai/AnalysisBasisBadge';
 import { AssistantAgentBadge } from '@/components/ai/AssistantAgentBadge';
@@ -17,6 +17,61 @@ import { MessageActions } from './MessageActions';
 import { ThinkingProcessVisualizer } from './ThinkingProcessVisualizer';
 
 const MemoizedThinkingProcessVisualizer = memo(ThinkingProcessVisualizer);
+
+function getLastOrderedListNumber(
+  content: string | null | undefined
+): number | null {
+  if (!content) return null;
+
+  const matches = Array.from(content.matchAll(/^\s*(\d+)[.)]\s+\S+/gm));
+  const lastMatch = matches.at(-1);
+  if (!lastMatch?.[1]) return null;
+
+  const value = Number(lastMatch[1]);
+  return Number.isInteger(value) && value > 0 ? value : null;
+}
+
+function startsWithOrderedList(content: string | null | undefined): boolean {
+  return typeof content === 'string' && /^\s*\d+[.)]\s+\S+/.test(content);
+}
+
+function normalizeSplitOrderedListBoundary(
+  summary: string,
+  details: string | null
+): { summary: string; details: string | null } {
+  if (!details || startsWithOrderedList(details)) {
+    return { summary, details };
+  }
+
+  const summaryLines = summary.split(/\r?\n/);
+  let danglingMarkerIndex = -1;
+  for (let index = summaryLines.length - 1; index >= 0; index -= 1) {
+    if (summaryLines[index]?.trim().length) {
+      danglingMarkerIndex = index;
+      break;
+    }
+  }
+  if (danglingMarkerIndex === -1) {
+    return { summary, details };
+  }
+
+  const danglingMarker =
+    summaryLines[danglingMarkerIndex]?.match(/^\s*(\d+)([.)])\s*$/);
+  if (!danglingMarker?.[1] || !danglingMarker[2]) {
+    return { summary, details };
+  }
+
+  const normalizedSummary = summaryLines
+    .slice(0, danglingMarkerIndex)
+    .join('\n')
+    .trimEnd();
+  const normalizedDetails = `${danglingMarker[1]}${danglingMarker[2]} ${details.trimStart()}`;
+
+  return {
+    summary: normalizedSummary || summary,
+    details: normalizedDetails,
+  };
+}
 
 const ThinkingToggle = memo<{
   steps: AIThinkingStep[];
@@ -61,251 +116,312 @@ ThinkingToggle.displayName = 'ThinkingToggle';
 export const AIWorkspaceMessage = memo<{
   message: EnhancedChatMessage;
   onRegenerateResponse?: (messageId: string) => void;
+  onArtifactGuidanceCta?: (
+    target: 'incident-report' | 'monitoring-analysis'
+  ) => void;
   isLastMessage?: boolean;
-}>(({ message, onRegenerateResponse, isLastMessage = false }) => {
-  const hasTextContent = Boolean(message.content?.trim());
-  const assistantResponseView = useMemo(() => {
-    if (message.role !== 'assistant' || message.isStreaming) {
+}>(
+  ({
+    message,
+    onRegenerateResponse,
+    onArtifactGuidanceCta,
+    isLastMessage = false,
+  }) => {
+    const hasTextContent = Boolean(message.content?.trim());
+    const assistantResponseView = useMemo(() => {
+      if (message.role !== 'assistant' || message.isStreaming) {
+        return null;
+      }
+      return resolveAssistantResponseView(message.content, message.metadata);
+    }, [message.content, message.metadata, message.isStreaming, message.role]);
+    const assistantResponseDetails = useMemo(
+      () =>
+        splitAssistantResponseDetails(assistantResponseView?.details ?? null),
+      [assistantResponseView?.details]
+    );
+    const analysisBasis = message.metadata?.analysisBasis ?? null;
+    const responseLatencyLabel = getResponseLatencyLabel(
+      message.metadata?.processingTime
+    );
+    const showAssistantMetaChips =
+      message.role === 'assistant' &&
+      !message.isStreaming &&
+      (Boolean(message.metadata?.handoffHistory?.length) ||
+        Boolean(responseLatencyLabel));
+    const userFacingAssistantDetails =
+      assistantResponseDetails.processDetails ??
+      (!assistantResponseDetails.debugDetails
+        ? (assistantResponseView?.details ?? null)
+        : null);
+    const inlineAssistantDetails = assistantResponseView?.shouldCollapse
+      ? userFacingAssistantDetails
+      : null;
+    const inlineAssistantResponseView = useMemo(
+      () =>
+        assistantResponseView?.shouldCollapse
+          ? normalizeSplitOrderedListBoundary(
+              assistantResponseView.summary,
+              inlineAssistantDetails
+            )
+          : {
+              summary: assistantResponseView?.summary ?? '',
+              details: inlineAssistantDetails,
+            },
+      [
+        assistantResponseView?.shouldCollapse,
+        assistantResponseView?.summary,
+        inlineAssistantDetails,
+      ]
+    );
+    const inlineAssistantDetailsOrderedListStart = useMemo(() => {
+      if (
+        !inlineAssistantResponseView.details ||
+        !startsWithOrderedList(inlineAssistantResponseView.details)
+      ) {
+        return undefined;
+      }
+
+      const lastSummaryNumber = getLastOrderedListNumber(
+        inlineAssistantResponseView.summary
+      );
+      return lastSummaryNumber ? lastSummaryNumber + 1 : undefined;
+    }, [inlineAssistantResponseView]);
+    const analysisBasisDetails =
+      analysisBasis && assistantResponseView?.details && !inlineAssistantDetails
+        ? userFacingAssistantDetails
+        : !assistantResponseView?.shouldCollapse
+          ? (assistantResponseView?.details ?? null)
+          : null;
+    const analysisBasisDebugDetails =
+      analysisBasis && assistantResponseView?.details
+        ? assistantResponseDetails.debugDetails
+        : null;
+    const guidanceCta = message.metadata?.guidanceCta ?? null;
+    const shouldShowActionBar = hasTextContent;
+
+    if (message.role === 'thinking' && !message.thinkingSteps?.length) {
       return null;
     }
-    return resolveAssistantResponseView(message.content, message.metadata);
-  }, [message.content, message.metadata, message.isStreaming, message.role]);
-  const assistantResponseDetails = useMemo(
-    () => splitAssistantResponseDetails(assistantResponseView?.details ?? null),
-    [assistantResponseView?.details]
-  );
-  const analysisBasis = message.metadata?.analysisBasis ?? null;
-  const responseLatencyLabel = getResponseLatencyLabel(
-    message.metadata?.processingTime
-  );
-  const showAssistantMetaChips =
-    message.role === 'assistant' &&
-    !message.isStreaming &&
-    (Boolean(message.metadata?.handoffHistory?.length) ||
-      Boolean(responseLatencyLabel));
-  const userFacingAssistantDetails =
-    assistantResponseDetails.processDetails ??
-    (!assistantResponseDetails.debugDetails
-      ? (assistantResponseView?.details ?? null)
-      : null);
-  const inlineAssistantDetails = assistantResponseView?.shouldCollapse
-    ? userFacingAssistantDetails
-    : null;
-  const analysisBasisDetails =
-    analysisBasis && assistantResponseView?.details && !inlineAssistantDetails
-      ? userFacingAssistantDetails
-      : !assistantResponseView?.shouldCollapse
-        ? (assistantResponseView?.details ?? null)
-        : null;
-  const analysisBasisDebugDetails =
-    analysisBasis && assistantResponseView?.details
-      ? assistantResponseDetails.debugDetails
-      : null;
-  const shouldShowActionBar = hasTextContent;
 
-  if (message.role === 'thinking' && !message.thinkingSteps?.length) {
-    return null;
-  }
+    if (message.role === 'thinking' && message.thinkingSteps?.length) {
+      return (
+        <div className="my-4">
+          <MemoizedThinkingProcessVisualizer
+            steps={message.thinkingSteps as AIThinkingStep[]}
+            isActive={message.isStreaming || false}
+            className="rounded-lg border border-purple-200 bg-linear-to-r from-purple-50 to-blue-50 p-4"
+          />
+        </div>
+      );
+    }
 
-  if (message.role === 'thinking' && message.thinkingSteps?.length) {
     return (
-      <div className="my-4">
-        <MemoizedThinkingProcessVisualizer
-          steps={message.thinkingSteps as AIThinkingStep[]}
-          isActive={message.isStreaming || false}
-          className="rounded-lg border border-purple-200 bg-linear-to-r from-purple-50 to-blue-50 p-4"
-        />
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className={`group flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-      data-testid={message.role === 'user' ? 'user-message' : 'ai-message'}
-    >
       <div
-        className={`flex max-w-[90%] min-w-0 items-start space-x-2 sm:max-w-[85%] ${
-          message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''
-        }`}
+        className={`group flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+        data-testid={message.role === 'user' ? 'user-message' : 'ai-message'}
       >
         <div
-          data-testid={
-            message.role === 'user' ? 'user-avatar' : 'assistant-avatar'
-          }
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-xs ${
-            message.role === 'user'
-              ? 'bg-slate-100 text-slate-600'
-              : 'bg-linear-to-br from-purple-500 to-pink-500 text-white'
+          className={`flex max-w-[90%] min-w-0 items-start space-x-2 sm:max-w-[85%] ${
+            message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''
           }`}
         >
-          {message.role === 'user' ? (
-            <User className="h-4 w-4" />
-          ) : (
-            <Brain className="h-4 w-4" />
-          )}
-        </div>
+          <div
+            data-testid={
+              message.role === 'user' ? 'user-avatar' : 'assistant-avatar'
+            }
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-xs ${
+              message.role === 'user'
+                ? 'bg-slate-100 text-slate-600'
+                : 'bg-linear-to-br from-purple-500 to-pink-500 text-white'
+            }`}
+          >
+            {message.role === 'user' ? (
+              <User className="h-4 w-4" />
+            ) : (
+              <Brain className="h-4 w-4" />
+            )}
+          </div>
 
-        <div className="min-w-0 flex-1">
-          {hasTextContent && (
-            <div
-              className={`${
-                message.role === 'user'
-                  ? 'overflow-hidden rounded-2xl rounded-tr-sm bg-slate-100 p-4 text-slate-900 shadow-xs'
-                  : 'overflow-visible px-0 py-1 text-slate-800'
-              }`}
-              data-testid={
-                message.role === 'assistant' ? 'ai-response' : 'user-response'
-              }
-            >
-              {message.role === 'assistant' ? (
-                <div className="relative">
-                  {assistantResponseView?.shouldCollapse ? (
-                    <div className="space-y-3">
-                      <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3">
-                        <p className="mb-2 text-xs font-semibold tracking-wide text-indigo-500 uppercase">
-                          핵심 요약
-                        </p>
-                        <MarkdownRenderer
-                          content={assistantResponseView.summary}
-                          className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words"
-                        />
-                      </div>
-                      {inlineAssistantDetails && (
-                        <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-                          <p className="mb-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">
-                            상세 분석
+          <div className="min-w-0 flex-1">
+            {hasTextContent && (
+              <div
+                className={`${
+                  message.role === 'user'
+                    ? 'overflow-hidden rounded-2xl rounded-tr-sm bg-slate-100 p-4 text-slate-900 shadow-xs'
+                    : 'overflow-visible px-0 py-1 text-slate-800'
+                }`}
+                data-testid={
+                  message.role === 'assistant' ? 'ai-response' : 'user-response'
+                }
+              >
+                {message.role === 'assistant' ? (
+                  <div className="relative">
+                    {assistantResponseView?.shouldCollapse ? (
+                      <div className="space-y-3">
+                        <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3">
+                          <p className="mb-2 text-xs font-semibold tracking-wide text-indigo-500 uppercase">
+                            핵심 요약
                           </p>
                           <MarkdownRenderer
-                            content={inlineAssistantDetails}
+                            content={inlineAssistantResponseView.summary}
                             className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words"
                           />
                         </div>
-                      )}
-                    </div>
-                  ) : (
-                    <MarkdownRenderer
-                      content={message.content}
-                      className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words"
-                    />
-                  )}
-                  {message.isStreaming && (
-                    <span
-                      aria-label="응답 작성 중"
-                      className="mt-2 inline-flex animate-pulse text-sm font-semibold text-purple-600"
-                      data-testid="assistant-typing-dots"
-                      role="status"
-                    >
-                      •••
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <div className="text-chat leading-relaxed wrap-break-word whitespace-pre-wrap">
-                  {message.content}
-                </div>
-              )}
-            </div>
-          )}
-
-          {message.role === 'assistant' && (
-            <ArtifactRendererHost metadata={message.metadata} />
-          )}
-
-          <div
-            className={`mt-1 flex items-center justify-between ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
-          >
-            <div className="flex items-center gap-2">
-              <p
-                className="text-xs text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
-                data-testid="message-timestamp"
-                suppressHydrationWarning
-              >
-                {formatTime(message.timestamp)}
-              </p>
-              {showAssistantMetaChips && (
-                <>
-                  <AssistantAgentBadge
-                    handoffHistory={message.metadata?.handoffHistory}
-                  />
-                  {responseLatencyLabel && (
-                    <span
-                      className={`rounded-full border px-2 py-0.5 text-xs font-medium ${responseLatencyLabel.className}`}
-                      title={responseLatencyLabel.title}
-                    >
-                      {responseLatencyLabel.label}
-                    </span>
-                  )}
-                </>
-              )}
-            </div>
-
-            <div className="flex items-center gap-1">
-              {shouldShowActionBar && hasTextContent && (
-                <MessageActions
-                  messageId={message.id}
-                  content={message.content}
-                  role={message.role}
-                  onRegenerate={onRegenerateResponse}
-                  showRegenerate={isLastMessage && message.role === 'assistant'}
-                />
-              )}
-            </div>
-          </div>
-
-          {message.role === 'assistant' &&
-            !message.isStreaming &&
-            message.metadata?.provider && (
-              <div className="mt-1.5 px-1">
-                <ProviderAttributionChip
-                  provider={message.metadata.provider}
-                  modelId={message.metadata.modelId}
-                  ttfbMs={message.metadata.ttfbMs}
-                  usedFallback={message.metadata.usedFallback}
-                  rotationSlot={message.metadata.rotationSlot}
-                />
+                        {inlineAssistantResponseView.details && (
+                          <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+                            <p className="mb-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                              상세 분석
+                            </p>
+                            <MarkdownRenderer
+                              content={inlineAssistantResponseView.details}
+                              orderedListStart={
+                                inlineAssistantDetailsOrderedListStart
+                              }
+                              className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <MarkdownRenderer
+                        content={message.content}
+                        className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words"
+                      />
+                    )}
+                    {message.isStreaming && (
+                      <span
+                        aria-label="응답 작성 중"
+                        className="mt-2 inline-flex animate-pulse text-sm font-semibold text-purple-600"
+                        data-testid="assistant-typing-dots"
+                        role="status"
+                      >
+                        •••
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-chat leading-relaxed wrap-break-word whitespace-pre-wrap">
+                    {message.content}
+                  </div>
+                )}
               </div>
             )}
 
-          {message.role === 'assistant' &&
-            !message.isStreaming &&
-            analysisBasis && (
-              <AnalysisBasisBadge
-                basis={analysisBasis}
-                details={analysisBasisDetails}
-                debugDetails={analysisBasisDebugDetails}
-                thinkingSteps={message.thinkingSteps}
-                traceId={message.metadata?.traceId}
-                processingTime={message.metadata?.processingTime}
-                latencyTier={message.metadata?.latencyTier}
-                resolvedMode={message.metadata?.resolvedMode}
-                modeSelectionSource={message.metadata?.modeSelectionSource}
-                provider={message.metadata?.provider}
-                modelId={message.metadata?.modelId}
-                providerAttempts={message.metadata?.providerAttempts}
-                usedFallback={message.metadata?.usedFallback}
-                fallbackReason={message.metadata?.fallbackReason}
-                ttfbMs={message.metadata?.ttfbMs}
-                handoffHistory={message.metadata?.handoffHistory}
-                toolResultSummaries={message.metadata?.toolResultSummaries}
-                className="mt-2"
-              />
+            {message.role === 'assistant' && (
+              <ArtifactRendererHost metadata={message.metadata} />
             )}
 
-          {message.role === 'assistant' &&
-            message.thinkingSteps &&
-            message.thinkingSteps.length > 0 &&
-            !analysisBasis && (
-              <ThinkingToggle
-                steps={message.thinkingSteps}
-                isStreaming={message.isStreaming || false}
-                defaultOpen={message.isStreaming || false}
-              />
-            )}
+            {message.role === 'assistant' &&
+              !message.isStreaming &&
+              guidanceCta &&
+              onArtifactGuidanceCta && (
+                <button
+                  type="button"
+                  onClick={() => onArtifactGuidanceCta(guidanceCta.target)}
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700 transition-colors hover:border-indigo-300 hover:bg-indigo-100"
+                >
+                  <span>{guidanceCta.label}</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+              )}
+
+            <div
+              className={`mt-1 flex items-center justify-between ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
+            >
+              <div className="flex items-center gap-2">
+                <p
+                  className="text-xs text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
+                  data-testid="message-timestamp"
+                  suppressHydrationWarning
+                >
+                  {formatTime(message.timestamp)}
+                </p>
+                {showAssistantMetaChips && (
+                  <>
+                    <AssistantAgentBadge
+                      handoffHistory={message.metadata?.handoffHistory}
+                    />
+                    {responseLatencyLabel && (
+                      <span
+                        className={`rounded-full border px-2 py-0.5 text-xs font-medium ${responseLatencyLabel.className}`}
+                        title={responseLatencyLabel.title}
+                      >
+                        {responseLatencyLabel.label}
+                      </span>
+                    )}
+                  </>
+                )}
+              </div>
+
+              <div className="flex items-center gap-1">
+                {shouldShowActionBar && hasTextContent && (
+                  <MessageActions
+                    messageId={message.id}
+                    content={message.content}
+                    role={message.role}
+                    onRegenerate={onRegenerateResponse}
+                    showRegenerate={
+                      isLastMessage && message.role === 'assistant'
+                    }
+                  />
+                )}
+              </div>
+            </div>
+
+            {message.role === 'assistant' &&
+              !message.isStreaming &&
+              message.metadata?.provider && (
+                <div className="mt-1.5 px-1">
+                  <ProviderAttributionChip
+                    provider={message.metadata.provider}
+                    modelId={message.metadata.modelId}
+                    ttfbMs={message.metadata.ttfbMs}
+                    usedFallback={message.metadata.usedFallback}
+                    rotationSlot={message.metadata.rotationSlot}
+                  />
+                </div>
+              )}
+
+            {message.role === 'assistant' &&
+              !message.isStreaming &&
+              analysisBasis && (
+                <AnalysisBasisBadge
+                  basis={analysisBasis}
+                  details={analysisBasisDetails}
+                  debugDetails={analysisBasisDebugDetails}
+                  thinkingSteps={message.thinkingSteps}
+                  traceId={message.metadata?.traceId}
+                  processingTime={message.metadata?.processingTime}
+                  latencyTier={message.metadata?.latencyTier}
+                  resolvedMode={message.metadata?.resolvedMode}
+                  modeSelectionSource={message.metadata?.modeSelectionSource}
+                  provider={message.metadata?.provider}
+                  modelId={message.metadata?.modelId}
+                  providerAttempts={message.metadata?.providerAttempts}
+                  usedFallback={message.metadata?.usedFallback}
+                  fallbackReason={message.metadata?.fallbackReason}
+                  ttfbMs={message.metadata?.ttfbMs}
+                  handoffHistory={message.metadata?.handoffHistory}
+                  toolResultSummaries={message.metadata?.toolResultSummaries}
+                  className="mt-2"
+                />
+              )}
+
+            {message.role === 'assistant' &&
+              message.thinkingSteps &&
+              message.thinkingSteps.length > 0 &&
+              !analysisBasis && (
+                <ThinkingToggle
+                  steps={message.thinkingSteps}
+                  isStreaming={message.isStreaming || false}
+                  defaultOpen={message.isStreaming || false}
+                />
+              )}
+          </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 AIWorkspaceMessage.displayName = 'AIWorkspaceMessage';

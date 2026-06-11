@@ -20,7 +20,7 @@
 
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { logger } from '@/lib/logging';
 import {
   type ExecutionResult,
@@ -44,10 +44,13 @@ export function useCodeInterpreter(): UseCodeInterpreterReturn {
   const [isReady, setIsReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const lastErrorRef = useRef<string | null>(null);
 
   const initialize = useCallback(async () => {
     if (pyodideService.isReady()) {
       setIsReady(true);
+      setError(null);
+      lastErrorRef.current = null;
       return;
     }
 
@@ -55,6 +58,7 @@ export function useCodeInterpreter(): UseCodeInterpreterReturn {
 
     setIsLoading(true);
     setError(null);
+    lastErrorRef.current = null;
 
     try {
       await pyodideService.initialize();
@@ -62,6 +66,7 @@ export function useCodeInterpreter(): UseCodeInterpreterReturn {
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Pyodide 초기화 실패';
+      lastErrorRef.current = errorMessage;
       setError(errorMessage);
       logger.error('🐍 [Pyodide] 초기화 오류:', err);
     } finally {
@@ -73,6 +78,8 @@ export function useCodeInterpreter(): UseCodeInterpreterReturn {
   useEffect(() => {
     if (pyodideService.isReady()) {
       setIsReady(true);
+      setError(null);
+      lastErrorRef.current = null;
     }
   }, []);
 
@@ -89,14 +96,17 @@ export function useCodeInterpreter(): UseCodeInterpreterReturn {
         return {
           success: false,
           output: '',
-          error: 'Pyodide가 아직 준비되지 않았습니다. 잠시 후 다시 시도하세요.',
+          error:
+            lastErrorRef.current ||
+            error ||
+            'Pyodide가 아직 준비되지 않았습니다. 잠시 후 다시 시도하세요.',
           executionTime: 0,
         };
       }
 
       return pyodideService.execute(code);
     },
-    [isReady, initialize]
+    [isReady, initialize, error]
   );
 
   return {

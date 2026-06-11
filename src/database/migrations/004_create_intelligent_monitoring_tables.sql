@@ -1,3 +1,8 @@
+-- HISTORICAL REFERENCE - DO NOT RUN.
+-- Current schema source is supabase/migrations/**.
+-- This legacy draft can be destructive or out of sync with the hosted schema.
+-- Keep for migration history only; revive via a new guarded Supabase migration.
+
 -- Intelligent Monitoring Tables for Predictive Analytics
 -- Phase 3: Intelligent Monitoring Backend
 

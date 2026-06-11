@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { verifyGuestSessionProof } from '@/lib/auth/guest-session-proof.server';
 import {
   AUTH_SESSION_ID_KEY,
   GUEST_AUTH_PROOF_COOKIE_KEY,
@@ -42,7 +43,10 @@ function isGuestAuth(request: NextRequest): boolean {
     cookieHeader,
     GUEST_AUTH_PROOF_COOKIE_KEY
   );
-  return Boolean(sessionId) && Boolean(proof);
+  if (!sessionId || !proof) return false;
+
+  const verifiedProof = verifyGuestSessionProof(proof);
+  return verifiedProof?.sessionId === sessionId;
 }
 
 export async function handleAuthenticatedProxy(

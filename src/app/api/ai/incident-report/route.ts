@@ -44,7 +44,6 @@ async function postHandler(request: NextRequest) {
   }
 }
 
-export const POST = withRateLimit(
-  rateLimiters.aiAnalysis,
-  withAuth(postHandler)
+export const POST = withAuth(
+  withRateLimit(rateLimiters.aiAnalysis, postHandler)
 );

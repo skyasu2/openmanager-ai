@@ -54,7 +54,7 @@ declare global {
 
       // 📊 모니터링 및 로깅
       readonly ENABLE_LOGGING?: string;
-      readonly LOG_LEVEL?: 'debug' | 'info' | 'warn' | 'error';
+      readonly LOG_LEVEL?: 'debug' | 'info' | 'warn' | 'error' | 'silent';
       readonly ANALYTICS_ID?: string;
       readonly NEXT_PUBLIC_ENABLE_VERCEL_WEB_ANALYTICS?: string;
 
@@ -104,7 +104,7 @@ export interface SecurityEnvConfig {
 
 export interface MonitoringEnvConfig {
   enableLogging: boolean;
-  logLevel: 'debug' | 'info' | 'warn' | 'error';
+  logLevel: 'debug' | 'info' | 'warn' | 'error' | 'silent';
   analyticsId?: string;
   isConfigured: boolean;
 }

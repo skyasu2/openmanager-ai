@@ -163,6 +163,7 @@ export interface AsyncQueryRequestOptions {
 }
 
 export interface AsyncQueryJobRequestBody {
+  idempotencyKey?: string;
   query: string;
   options: {
     sessionId?: string;
@@ -170,12 +171,31 @@ export interface AsyncQueryJobRequestBody {
   };
 }
 
+function createAsyncQueryIdempotencyKey(): string {
+  if (
+    typeof crypto !== 'undefined' &&
+    typeof crypto.randomUUID === 'function'
+  ) {
+    return crypto.randomUUID();
+  }
+
+  return `async-job-${Date.now().toString(36)}-${Math.random()
+    .toString(36)
+    .slice(2, 10)}`;
+}
+
 export function buildAsyncQueryJobRequestBody(
   query: string,
   sessionId?: string,
-  requestOptions?: AsyncQueryRequestOptions
+  requestOptions?: AsyncQueryRequestOptions,
+  idempotencyKey?: string
 ): AsyncQueryJobRequestBody {
+  const normalizedIdempotencyKey = idempotencyKey?.trim();
+
   return {
+    ...(normalizedIdempotencyKey && {
+      idempotencyKey: normalizedIdempotencyKey,
+    }),
     query,
     options: {
       sessionId,
@@ -370,6 +390,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
       return new Promise((resolve) => {
         // 🎯 Store jobId for closure access (Stale Closure 방지)
         let capturedJobId: string | null = null;
+        const idempotencyKey = createAsyncQueryIdempotencyKey();
         const { handleError, handleResult } = createCompletionHandlers(
           resolve,
           () => capturedJobId
@@ -389,7 +410,8 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
                   buildAsyncQueryJobRequestBody(
                     query,
                     sessionId,
-                    requestOptions
+                    requestOptions,
+                    idempotencyKey
                   )
                 ),
                 signal, // 🎯 P1 Fix: Pass abort signal for cancellation

@@ -20,7 +20,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'ai-assistant',
     title: '💬 AI 어시스턴트',
     description:
-      '시뮬레이션 OTel 관측 데이터를 기준으로 자연어 질의, 장애 보고서, 다운로드 가능한 장애/이상감지 아티팩트까지 연결합니다.',
+      '자연어 질의 하나로 서버 상태 분석, 장애 보고서, 이상감지 아티팩트를 즉시 받아볼 수 있습니다.',
     icon: Bot,
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     detailedContent: {
@@ -60,7 +60,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
       {
         title: '운영 사실 우선',
         description:
-          '시뮬레이션 OTel 관측 데이터를 먼저 조회하고, LLM은 수치와 판정이 나온 뒤 설명과 조치안을 합성합니다.',
+          '메트릭 수치와 판정은 결정론적 fact layer가 책임지고, LLM은 수치 기반의 설명과 조치안 합성에 집중합니다.',
         icon: Activity,
         gradient: 'from-sky-500 to-cyan-500',
         features: [

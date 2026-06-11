@@ -1,3 +1,8 @@
+-- HISTORICAL REFERENCE - DO NOT RUN.
+-- Current schema source is supabase/migrations/**.
+-- This legacy draft can be destructive or out of sync with the hosted schema.
+-- Keep for migration history only; revive via a new guarded Supabase migration.
+
 -- 🎯 Phase 4: AI Insight Center Database Migration
 -- AI 인사이트 센터를 위한 데이터베이스 스키마
 -- 생성일: 2025-08-05

@@ -183,7 +183,7 @@ export const JobProgressIndicator = memo<JobProgressIndicatorProps>(
       return null;
     }
 
-    const progressPercent = progress?.progress ?? 0;
+    const progressPercent = normalizeProgressPercent(progress?.progress);
     const stage = progress?.stage ?? 'init';
     const config = STAGE_CONFIG[stage] || DEFAULT_CONFIG;
     const executionPathLabel = formatExecutionPath(progress?.executionPath);
@@ -239,7 +239,13 @@ export const JobProgressIndicator = memo<JobProgressIndicatorProps>(
         </div>
 
         {/* Progress Bar */}
-        <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-blue-100">
+        <div
+          className="relative h-2.5 w-full overflow-hidden rounded-full bg-blue-100"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={progressPercent}
+        >
           <div
             className="absolute left-0 top-0 h-full rounded-full bg-linear-to-r from-blue-500 via-indigo-500 to-purple-500 transition-all duration-500 ease-out"
             style={{ width: `${progressPercent}%` }}
@@ -312,6 +318,14 @@ JobProgressIndicator.displayName = 'JobProgressIndicator';
 // ============================================================================
 // Helper Functions
 // ============================================================================
+
+function normalizeProgressPercent(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    return 0;
+  }
+
+  return Math.min(100, Math.max(0, Math.round(value)));
+}
 
 /**
  * 단계별 상세 설명 반환

@@ -28,7 +28,14 @@ import {
 import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { getAPIAuthContext, withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
-import { getRedisClient, redisGet, redisMGet, redisSet } from '@/lib/redis';
+import {
+  getRedisClient,
+  redisClaimKey,
+  redisDel,
+  redisGet,
+  redisMGet,
+  redisSet,
+} from '@/lib/redis';
 import {
   getRateLimitIdentity,
   RATE_LIMIT_IDENTITY_HEADER,
@@ -50,6 +57,15 @@ import {
   resolveSupervisorInternalDisclosureMode,
   type SupervisorInternalDisclosureMode,
 } from '../supervisor/internal-disclosure-mode';
+import {
+  buildJobIdempotencyRedisKey,
+  buildJobRequestFingerprint,
+  createExistingIdempotencyResponse,
+  createJobCreatedResponse,
+  JOB_IDEMPOTENCY_PENDING_TTL_SECONDS,
+  type JobIdempotencyRecord,
+  normalizeIdempotencyKey,
+} from './job-idempotency';
 import { buildScopedJobListKey, resolveJobOwnerKey } from './job-ownership';
 import {
   getSubstantiveJobResultContent,
@@ -167,6 +183,7 @@ async function handlePOST(request: NextRequest) {
     if (!query || query.trim().length === 0) {
       return NextResponse.json({ error: 'Query is required' }, { status: 400 });
     }
+    const normalizedQuery = query.trim();
 
     // Redis 가용성 확인
     const redis = getRedisClient();
@@ -179,6 +196,38 @@ async function handlePOST(request: NextRequest) {
 
     // Job 타입 자동 추론
     const jobType = body.type || inferJobType(query);
+    const now = new Date().toISOString();
+    const idempotencyKey = normalizeIdempotencyKey(body.idempotencyKey);
+    const idempotencyRedisKey = idempotencyKey
+      ? buildJobIdempotencyRedisKey(
+          ownerKey,
+          options?.sessionId,
+          idempotencyKey
+        )
+      : null;
+    const requestFingerprint = idempotencyRedisKey
+      ? buildJobRequestFingerprint(normalizedQuery, jobType, options)
+      : null;
+
+    if (idempotencyRedisKey && requestFingerprint) {
+      const claimed = await redisClaimKey<JobIdempotencyRecord>(
+        idempotencyRedisKey,
+        {
+          status: 'pending',
+          fingerprint: requestFingerprint,
+          createdAt: now,
+        },
+        JOB_IDEMPOTENCY_PENDING_TTL_SECONDS
+      );
+
+      if (!claimed) {
+        return createExistingIdempotencyResponse(
+          idempotencyRedisKey,
+          requestFingerprint
+        );
+      }
+    }
+
     const toolOptions = extractJobToolOptions(options?.metadata);
     const internalDisclosureMode = resolveSupervisorInternalDisclosureMode(
       getAPIAuthContext(request)
@@ -186,7 +235,6 @@ async function handlePOST(request: NextRequest) {
 
     // Job ID 생성
     const jobId = randomUUID();
-    const now = new Date().toISOString();
     const queryAsOf = buildJobQueryAsOf(
       now,
       options?.metadata?.queryAsOfDataSlot
@@ -212,7 +260,7 @@ async function handlePOST(request: NextRequest) {
     const job: AIJob = {
       id: jobId,
       type: jobType,
-      query: query.trim(),
+      query: normalizedQuery,
       status: 'queued',
       progress: 0,
       currentStep: null,
@@ -238,6 +286,9 @@ async function handlePOST(request: NextRequest) {
     const saved = await redisSet(`job:${jobId}`, job, JOB_TTL_SECONDS);
 
     if (!saved) {
+      if (idempotencyRedisKey) {
+        await redisDel(idempotencyRedisKey);
+      }
       logger.error('[AI Jobs] Failed to save job to Redis');
       return createJobQueueUnavailableResponse('redis_write_failed');
     }
@@ -267,13 +318,45 @@ async function handlePOST(request: NextRequest) {
       ? 'scheduled'
       : 'skipped';
 
+    const response: CreateJobResponse = {
+      jobId,
+      status: 'queued',
+      pollUrl: `/api/ai/jobs/${jobId}`,
+      estimatedTime: complexity.estimatedTime,
+      triggerStatus: initialTriggerStatus,
+      routingMode: 'job-queue',
+      complexity: complexity.level,
+      routeDecision,
+      assistantPlan,
+    };
+
+    if (idempotencyRedisKey && requestFingerprint) {
+      const finalized = await redisSet<JobIdempotencyRecord>(
+        idempotencyRedisKey,
+        {
+          status: 'created',
+          fingerprint: requestFingerprint,
+          createdAt: now,
+          jobId,
+          response,
+        },
+        JOB_TTL_SECONDS
+      );
+
+      if (!finalized) {
+        logger.warn(
+          `[AI Jobs] Failed to finalize idempotency record for job ${jobId}`
+        );
+      }
+    }
+
     after(async () => {
       const finalTriggerStatus =
         initialTriggerStatus === 'scheduled'
           ? (
               await triggerWorker(
                 jobId,
-                query,
+                normalizedQuery,
                 jobType,
                 options?.sessionId,
                 workerToolOptions,
@@ -291,27 +374,7 @@ async function handlePOST(request: NextRequest) {
       );
     });
 
-    const response: CreateJobResponse = {
-      jobId,
-      status: 'queued',
-      pollUrl: `/api/ai/jobs/${jobId}`,
-      estimatedTime: complexity.estimatedTime,
-      triggerStatus: initialTriggerStatus,
-      routingMode: 'job-queue',
-      complexity: complexity.level,
-      routeDecision,
-      assistantPlan,
-    };
-
-    return NextResponse.json(response, {
-      status: 201,
-      headers: {
-        'X-AI-Mode': 'job-queue',
-        'X-AI-Job-Complexity': complexity.level,
-        'X-AI-Estimated-Time-Sec': String(complexity.estimatedTime),
-        'X-AI-Trigger-Status': initialTriggerStatus,
-      },
-    });
+    return createJobCreatedResponse(response);
   } catch (error) {
     logger.error('[AI Jobs] Error creating job:', error);
     return NextResponse.json(
@@ -322,9 +385,8 @@ async function handlePOST(request: NextRequest) {
 }
 
 // Auth + Rate Limiting 적용
-export const POST = withRateLimit(
-  rateLimiters.aiJobCreation,
-  withAuth(withCSRFProtection(handlePOST))
+export const POST = withAuth(
+  withRateLimit(rateLimiters.aiJobCreation, withCSRFProtection(handlePOST))
 );
 
 // ============================================
@@ -389,7 +451,7 @@ async function handleGET(request: NextRequest) {
 }
 
 // Auth + Rate Limiting 적용
-export const GET = withRateLimit(rateLimiters.default, withAuth(handleGET));
+export const GET = withAuth(withRateLimit(rateLimiters.default, handleGET));
 
 // ============================================
 // 헬퍼 함수

@@ -571,8 +571,7 @@ async function getHandler(_request: NextRequest): Promise<NextResponse> {
 }
 
 // Export with authentication
-export const POST = withRateLimit(
-  rateLimiters.aiAnalysis,
-  withAuth(postHandler)
+export const POST = withAuth(
+  withRateLimit(rateLimiters.aiAnalysis, postHandler)
 );
 export const GET = withAuth(getHandler);

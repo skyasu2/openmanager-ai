@@ -136,6 +136,12 @@ const SERVER_ANALYSIS_TOOL_NAMES = new Set([
   'buildIncidentTimeline',
 ]);
 
+const EMPTY_ASSISTANT_RESPONSE_PATTERNS = [
+  /응답\s*본문이\s*비어\s*있어/i,
+  /substantive\s+response\s+body/i,
+  /completed\s+without\s+a\s+substantive\s+response/i,
+];
+
 export function getMessageMetadata(
   message: UIMessage
 ): MessageMetadata | undefined {
@@ -170,6 +176,200 @@ function normalizePreviewForDetection(preview: string | undefined): string {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
+}
+
+function toFiniteNumber(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function formatPercent(value: unknown): string | null {
+  const numeric = toFiniteNumber(value);
+  if (numeric === null) return null;
+  return `${Number.isInteger(numeric) ? numeric : numeric.toFixed(1)}%`;
+}
+
+function formatServerStatus(value: unknown): string {
+  if (typeof value !== 'string' || !value.trim()) return '확인됨';
+
+  const normalized = value.trim().toLowerCase();
+  const labels: Record<string, string> = {
+    online: '정상',
+    healthy: '정상',
+    normal: '정상',
+    ok: '정상',
+    warning: '경고',
+    critical: '위험',
+    danger: '위험',
+    offline: '오프라인',
+  };
+
+  return labels[normalized] ?? value.trim();
+}
+
+function isEmptyAssistantResponseText(content: string): boolean {
+  const normalized = content.trim();
+  return (
+    normalized.length === 0 ||
+    EMPTY_ASSISTANT_RESPONSE_PATTERNS.some((pattern) =>
+      pattern.test(normalized)
+    )
+  );
+}
+
+function metricLine(label: string, value: unknown): string | null {
+  const formatted = formatPercent(value);
+  return formatted ? `- ${label}: ${formatted}` : null;
+}
+
+function getDominantMetric(
+  server: Record<string, unknown>
+): { label: string; value: number } | null {
+  const metrics = [
+    { label: 'CPU', value: toFiniteNumber(server.cpu) },
+    { label: '메모리', value: toFiniteNumber(server.memory) },
+    { label: '디스크', value: toFiniteNumber(server.disk) },
+  ].filter(
+    (entry): entry is { label: string; value: number } => entry.value !== null
+  );
+
+  if (metrics.length === 0) return null;
+  return metrics.sort((left, right) => right.value - left.value)[0] ?? null;
+}
+
+function buildSingleServerMetricsFallback(
+  output: Record<string, unknown>,
+  server: Record<string, unknown>
+): string | null {
+  const id = typeof server.id === 'string' ? server.id.trim() : '';
+  const name = typeof server.name === 'string' ? server.name.trim() : '';
+  const title = name || id;
+  if (!title) return null;
+
+  const dataSlot = isRecord(output.dataSlot) ? output.dataSlot : null;
+  const timeLabel =
+    typeof dataSlot?.timeLabel === 'string' && dataSlot.timeLabel.trim()
+      ? dataSlot.timeLabel.trim()
+      : null;
+  const dominantMetric = getDominantMetric(server);
+  const status = formatServerStatus(server.status);
+  const metricLines = [
+    metricLine('CPU', server.cpu),
+    metricLine('메모리', server.memory),
+    metricLine('디스크', server.disk),
+  ].filter((line): line is string => line !== null);
+
+  const lines = [
+    `### ${title} 상태 상세`,
+    `- 상태: ${status}`,
+    ...metricLines,
+    ...(timeLabel ? [`- 기준 시각: ${timeLabel}`] : []),
+  ];
+
+  if (
+    dominantMetric &&
+    (dominantMetric.value >= 80 || status === '경고' || status === '위험')
+  ) {
+    lines.push(
+      '',
+      `권고: ${dominantMetric.label} ${formatPercent(dominantMetric.value)} 기준으로 우선 점검이 필요합니다. 상위 프로세스, 관련 로그, 캐시 eviction/OOM/GC 같은 직접 원인을 확인하세요.`
+    );
+  } else {
+    lines.push('', '권고: 현재 수치는 즉시 조치보다 관찰 유지에 가깝습니다.');
+  }
+
+  return lines.join('\n');
+}
+
+function buildMultiServerMetricsFallback(
+  output: Record<string, unknown>,
+  servers: Record<string, unknown>[]
+): string | null {
+  const summary = isRecord(output.summary) ? output.summary : null;
+  const total = toFiniteNumber(summary?.total) ?? servers.length;
+  const alertCount = toFiniteNumber(summary?.alertCount);
+  const topServer = [...servers]
+    .map((server) => ({ server, metric: getDominantMetric(server) }))
+    .filter(
+      (
+        entry
+      ): entry is {
+        server: Record<string, unknown>;
+        metric: { label: string; value: number };
+      } => entry.metric !== null
+    )
+    .sort((left, right) => right.metric.value - left.metric.value)[0];
+
+  const lines = [
+    '### 서버 메트릭 요약',
+    `- 조회 서버: ${total}대`,
+    ...(alertCount !== null ? [`- 경고/위험 상태: ${alertCount}대`] : []),
+  ];
+
+  if (topServer) {
+    const id =
+      typeof topServer.server.id === 'string'
+        ? topServer.server.id
+        : '식별되지 않은 서버';
+    lines.push(
+      `- 최상위 리소스: ${id} ${topServer.metric.label} ${formatPercent(topServer.metric.value)}`
+    );
+  }
+
+  return lines.join('\n');
+}
+
+function buildGetServerMetricsFallback(output: unknown): string | null {
+  if (!isRecord(output) || output.success === false) return null;
+  const servers = Array.isArray(output.servers)
+    ? output.servers.filter(isRecord)
+    : [];
+  if (servers.length === 0) return null;
+
+  if (servers.length === 1) {
+    return buildSingleServerMetricsFallback(
+      output,
+      servers[0] as Record<string, unknown>
+    );
+  }
+
+  return buildMultiServerMetricsFallback(output, servers);
+}
+
+function buildAssistantContentFromToolOutput(
+  toolName: string,
+  output: unknown
+): string | null {
+  if (toolName === 'getServerMetrics') {
+    return buildGetServerMetricsFallback(output);
+  }
+
+  if (toolName === 'getServerMetricsAdvanced' && isRecord(output)) {
+    if (typeof output.answer === 'string' && output.answer.trim()) {
+      return output.answer.trim();
+    }
+  }
+
+  return null;
+}
+
+export function resolveAssistantContentFromToolFallback(params: {
+  content: string;
+  toolParts: ToolPartWithCallId[];
+}): string {
+  if (!isEmptyAssistantResponseText(params.content)) {
+    return params.content;
+  }
+
+  for (const toolPart of [...params.toolParts].reverse()) {
+    const toolName = toolPart.type.slice(5);
+    const fallback = buildAssistantContentFromToolOutput(
+      toolName,
+      extractToolOutput(toolPart)
+    );
+    if (fallback) return fallback;
+  }
+
+  return params.content;
 }
 
 function isCurrentMetricRankingOutput(output: unknown): boolean {

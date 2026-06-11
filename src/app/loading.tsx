@@ -9,9 +9,17 @@ import { Loader2 } from 'lucide-react';
 
 export default function RootLoading() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div
+      className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-900 via-slate-800 to-slate-900"
+      role="status"
+      aria-busy="true"
+      aria-live="polite"
+    >
       <div className="text-center">
-        <Loader2 className="mx-auto mb-4 h-10 w-10 animate-spin text-blue-500" />
+        <Loader2
+          className="mx-auto mb-4 h-10 w-10 animate-spin text-blue-500"
+          aria-hidden="true"
+        />
         <p className="text-sm text-white/70">로딩 중...</p>
       </div>
     </div>
