@@ -225,7 +225,6 @@ function readArtifactFromMetadata(
     'incidentReportArtifact',
     'monitoringAnalysisArtifact',
     'serverMonitoringAnalysisArtifact',
-    'serverSnapshotArtifact',
     'opsProcedureArtifact',
   ];
   for (const artifactKey of legacyArtifactKeys) {

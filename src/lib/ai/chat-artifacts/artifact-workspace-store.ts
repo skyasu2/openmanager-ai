@@ -85,7 +85,6 @@ export interface ArtifactWorkspaceHistoryMetadata {
   incidentReportArtifact?: unknown;
   monitoringAnalysisArtifact?: unknown;
   serverMonitoringAnalysisArtifact?: unknown;
-  serverSnapshotArtifact?: unknown;
   opsProcedureArtifact?: unknown;
 }
 
@@ -227,7 +226,6 @@ function readLegacyArtifacts(
     metadata.incidentReportArtifact,
     metadata.monitoringAnalysisArtifact,
     metadata.serverMonitoringAnalysisArtifact,
-    metadata.serverSnapshotArtifact,
     metadata.opsProcedureArtifact,
   ]
     .filter(isSupportedChatArtifact)
