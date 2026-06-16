@@ -8,7 +8,6 @@ import type {
   ArtifactEnvelope,
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
-  ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
 import type { RouteDecision } from '@/lib/ai/route-decision';
 import type { SemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
@@ -71,7 +70,6 @@ export type MessageMetadata = {
   artifactIntentTarget?: 'incident-report' | 'monitoring-analysis';
   incidentReportArtifact?: IncidentReportArtifact;
   monitoringAnalysisArtifact?: MonitoringAnalysisArtifact;
-  serverSnapshotArtifact?: ServerSnapshotArtifact;
   artifactEnvelopes?: ArtifactEnvelope[];
   handoffHistory?: ResponseHandoff[];
   toolResultSummaries?: ToolResultSummary[];

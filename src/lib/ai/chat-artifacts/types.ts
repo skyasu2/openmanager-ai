@@ -8,6 +8,7 @@ import type {
   CloudRunAnalysisResponse,
   MonitoringBatchAnalysisResponse,
   MonitoringBatchCapacityAlert,
+  MonitoringBatchQueryFocusServer,
   ServerAnalysisResult,
 } from '@/types/intelligent-monitoring.types';
 
@@ -89,6 +90,7 @@ export interface MonitoringAnalysisArtifact extends ArtifactContractMetadata {
   warningServers: number;
   criticalServers: number;
   analysis: MonitoringBatchAnalysisResponse;
+  queryFocusServer?: MonitoringBatchQueryFocusServer;
   capacityAlerts?: MonitoringBatchCapacityAlert[];
   roleGroupSummary?: MonitoringRoleGroupSummary[];
   source?: string;
@@ -134,46 +136,6 @@ export interface ServerMonitoringAnalysisArtifact
   server: ServerAnalysisResult;
   source?: string;
   queryAsOfDataSlot?: JobDataSlot;
-}
-
-export interface ServerSnapshotArtifact extends ArtifactContractMetadata {
-  kind: 'server-snapshot';
-  generatedAt: string;
-  title: string;
-  summary: string;
-  source: 'otel-static';
-  queryAsOfDataSlot?: JobDataSlot;
-  slot: JobDataSlot;
-  totals: {
-    total: number;
-    online: number;
-    warning: number;
-    critical: number;
-    offline: number;
-  };
-  averages: {
-    cpu: number;
-    memory: number;
-    disk: number;
-    network: number;
-  };
-  topServers: Array<{
-    id: string;
-    name: string;
-    status: 'online' | 'warning' | 'critical' | 'offline';
-    cpu: number;
-    memory: number;
-    disk: number;
-    network: number;
-    primaryRisk: 'cpu' | 'memory' | 'disk' | 'network';
-  }>;
-  alerts: Array<{
-    serverId: string;
-    metric: 'cpu' | 'memory' | 'disk' | 'network';
-    value: number;
-    severity: 'warning' | 'critical';
-    summary: string;
-  }>;
 }
 
 export interface OpsProcedureArtifact extends ArtifactContractMetadata {
@@ -272,12 +234,6 @@ function readArtifactDataSlot(artifact: ChatArtifact): string | undefined {
   if (artifact.dataSlot) return artifact.dataSlot;
   if (artifact.queryAsOfDataSlot?.timeLabel) {
     return artifact.queryAsOfDataSlot.timeLabel;
-  }
-
-  const snapshotSlot = (artifact as { slot?: unknown }).slot;
-  if (artifact.kind === 'server-snapshot' && isRecord(snapshotSlot)) {
-    const timeLabel = readPublicString(snapshotSlot.timeLabel);
-    if (timeLabel) return timeLabel;
   }
 
   const analysis = (artifact as { analysis?: unknown }).analysis;

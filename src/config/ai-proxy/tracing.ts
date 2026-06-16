@@ -15,7 +15,21 @@
 export const TRACEPARENT_HEADER = 'traceparent';
 
 const TRACE_ID_HEX_REGEX = /^[0-9a-f]{32}$/;
+const PARENT_ID_HEX_REGEX = /^[0-9a-f]{16}$/;
 const INVALID_TRACE_ID = '0'.repeat(32);
+const INVALID_PARENT_ID = '0'.repeat(16);
+const TRACEPARENT_REGEX =
+  /^00-([0-9a-f]{32})-([0-9a-f]{16})-([0-9a-f]{2})$/i;
+const DEFAULT_TRACE_FLAGS = '01';
+
+interface TraceparentOptions {
+  traceFlags?: string | null;
+}
+
+export interface ParsedTraceparent {
+  traceId: string;
+  traceFlags: string;
+}
 
 /**
  * 16진수 랜덤 문자열 생성
@@ -57,6 +71,17 @@ export function generateTraceId(): string {
   return randomHex(16);
 }
 
+function normalizeTraceFlags(traceFlags?: string | null): string {
+  if (typeof traceFlags !== 'string') {
+    return DEFAULT_TRACE_FLAGS;
+  }
+
+  const normalized = traceFlags.trim().toLowerCase();
+  return /^[0-9a-f]{2}$/.test(normalized)
+    ? normalized
+    : DEFAULT_TRACE_FLAGS;
+}
+
 // ============================================================================
 // W3C Trace Context (traceparent)
 // ============================================================================
@@ -66,10 +91,39 @@ export function generateTraceId(): string {
  * @format `00-{trace-id 32hex}-{parent-id 16hex}-{flags 2hex}`
  * @param traceId - 기존 trace ID. UUID/32-hex 모두 허용하며, 불일치 시 새로 생성합니다.
  */
-export function generateTraceparent(traceId?: string): string {
+export function generateTraceparent(
+  traceId?: string,
+  options?: TraceparentOptions
+): string {
   const tid = normalizeTraceId(traceId) ?? generateTraceId();
   const parentId = randomHex(8);
-  return `00-${tid}-${parentId}-01`;
+  return `00-${tid}-${parentId}-${normalizeTraceFlags(options?.traceFlags)}`;
+}
+
+/**
+ * W3C traceparent 헤더를 파싱합니다.
+ * @returns normalized trace-id/flags 또는 null
+ */
+export function parseTraceparent(traceparent: string): ParsedTraceparent | null {
+  const match = traceparent.trim().match(TRACEPARENT_REGEX);
+  if (!match?.[1] || !match[2] || !match[3]) return null;
+
+  const traceId = match[1].toLowerCase();
+  const parentId = match[2].toLowerCase();
+  if (!TRACE_ID_HEX_REGEX.test(traceId) || traceId === INVALID_TRACE_ID) {
+    return null;
+  }
+  if (
+    !PARENT_ID_HEX_REGEX.test(parentId) ||
+    parentId === INVALID_PARENT_ID
+  ) {
+    return null;
+  }
+
+  return {
+    traceId,
+    traceFlags: match[3].toLowerCase(),
+  };
 }
 
 /**
@@ -77,10 +131,17 @@ export function generateTraceparent(traceId?: string): string {
  * @returns trace-id (32 hex) 또는 null
  */
 export function parseTraceparentTraceId(traceparent: string): string | null {
-  const match = traceparent.match(
-    /^00-([0-9a-f]{32})-[0-9a-f]{16}-[0-9a-f]{2}$/
-  );
-  return normalizeTraceId(match?.[1]) ?? null;
+  return parseTraceparent(traceparent)?.traceId ?? null;
+}
+
+/**
+ * W3C traceparent 헤더에서 trace flags 추출
+ * @returns trace flags (2 hex) 또는 null
+ */
+export function parseTraceparentTraceFlags(
+  traceparent: string
+): string | null {
+  return parseTraceparent(traceparent)?.traceFlags ?? null;
 }
 
 /**

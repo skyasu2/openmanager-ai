@@ -384,7 +384,7 @@ export default function DashboardInteractiveShell({
           hideAIAssistantButton={dashboardView === 'ai-assistant'}
         />
 
-        <div className="min-w-0 flex-1 overflow-hidden pt-6">
+        <div className="dashboard-dot-bg min-w-0 flex-1 overflow-hidden pt-6">
           {deferDashboardContent ? (
             <ContentLoadingSkeleton />
           ) : (

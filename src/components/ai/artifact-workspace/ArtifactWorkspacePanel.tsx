@@ -144,7 +144,9 @@ export function ArtifactWorkspacePanel({
 
     workspaceStore.saveReplayPack(currentReplayPack);
     refreshReplayPacks();
-    setStatusMessage('현재 대화 replay pack을 저장했습니다.');
+    setStatusMessage(
+      '현재 대화 replay pack을 이 브라우저 세션에 저장했습니다.'
+    );
   };
 
   const handleExport = () => {
@@ -242,18 +244,27 @@ export function ArtifactWorkspacePanel({
           <h4 className="text-sm font-semibold text-slate-900">
             아티팩트 워크스페이스
           </h4>
-          <p className="mt-0.5 text-xs text-slate-500">
-            replay pack {replayPacks.length}개 · 현재 대화{' '}
-            {supportedCurrentArtifactCount}개
+          <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-slate-500">
+            <span>
+              replay pack {replayPacks.length}개 · 현재 대화{' '}
+              {supportedCurrentArtifactCount}개
+            </span>
+            <span
+              data-testid="artifact-workspace-storage-policy"
+              className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[11px] font-medium text-slate-600"
+              title="서버/DB에 저장하지 않고 이 브라우저 sessionStorage에만 보관합니다."
+            >
+              로컬 세션
+            </span>
             <span
               role="img"
               aria-label="replay pack 설명"
-              className="ml-1 inline-flex align-[-2px] text-slate-400"
+              className="inline-flex align-[-2px] text-slate-400"
               title="대화 이력과 분석 결과를 저장·불러오는 스냅샷"
             >
               <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
             </span>
-          </p>
+          </div>
         </div>
         <button
           type="button"

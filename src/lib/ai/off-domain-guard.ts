@@ -32,6 +32,15 @@ const LIVE_FACT_PATTERN =
 const LOCAL_RECOMMENDATION_PATTERN =
   /(맛집|restaurant|카페|cafe|병원|약국|장소|근처).*(추천|찾아|알려)|(추천).*(맛집|restaurant|카페|cafe|병원|약국|장소|근처)/i;
 
+const PERSONAL_FINANCE_PATTERN =
+  /투자\s*(조언|추천)|주식\s*(포트폴리오|추천|투자|리밸런싱)|포트폴리오\s*(리밸런싱|추천|자산\s*배분)|자산\s*배분|financial\s*advice|investment\s*(advice|recommendation|strategy)|portfolio\s*(rebalance|allocation)/i;
+
+const AMBIGUOUS_PERSONAL_FINANCE_PATTERN =
+  /투자\s*(전략|결론)|리밸런싱\s*(추천|조언)/i;
+
+const OFF_DOMAIN_FINANCE_CONTEXT_PATTERN =
+  /내\s*투자|나의\s*투자|개인\s*투자|재테크|자산\s*관리|주식|펀드|etf|코인|암호화폐|비트코인|부동산|연금|퇴직연금|isa|계좌|서버\s*상태\s*말고|운영\s*말고|인프라\s*말고|모니터링\s*말고/i;
+
 const PERSONAL_GENERAL_PATTERN =
   /운세|horoscope|점심|저녁|아침|메뉴|뭐\s*먹|번역|translate|일정\s*정리/i;
 
@@ -52,6 +61,19 @@ function isGeneralCodingRequest(query: string): boolean {
     GENERAL_CODING_TOPIC_PATTERN.test(query) &&
     GENERAL_CODING_REQUEST_PATTERN.test(query)
   );
+}
+
+function isPersonalFinanceQuery(query: string): boolean {
+  if (PERSONAL_FINANCE_PATTERN.test(query)) {
+    return true;
+  }
+  if (!AMBIGUOUS_PERSONAL_FINANCE_PATTERN.test(query)) {
+    return false;
+  }
+  if (OFF_DOMAIN_FINANCE_CONTEXT_PATTERN.test(query)) {
+    return true;
+  }
+  return !hasOperationalContext(query);
 }
 
 function buildResponse(category: OffDomainGuardCategory): string {
@@ -80,7 +102,7 @@ function buildResponse(category: OffDomainGuardCategory): string {
       ].join('\n');
     case 'personal_general':
       return [
-        '저는 서버 운영·모니터링 중심 AI라 이 질문은 정확도와 최신성이 제한됩니다.',
+        '저는 서버 운영·모니터링 중심 AI라 이 질문은 지원 범위 밖입니다.',
         '운영 범위 안에서는 서버 상태, 장애 징후, 로그, 리소스 사용률, 조치 명령어를 근거와 함께 분석할 수 있습니다.',
       ].join('\n');
     case 'general_coding':
@@ -99,6 +121,16 @@ export function getOffDomainGuardrail(
   const trimmedQuery = query.trim();
   if (!trimmedQuery) {
     return null;
+  }
+
+  if (isPersonalFinanceQuery(trimmedQuery)) {
+    return {
+      category: 'personal_general',
+      action: 'block',
+      shouldShortCircuit: true,
+      warning: OFF_DOMAIN_WARNING,
+      response: buildResponse('personal_general'),
+    };
   }
 
   if (hasOperationalContext(trimmedQuery)) {

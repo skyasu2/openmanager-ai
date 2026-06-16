@@ -301,7 +301,6 @@ function isExecutableChatArtifactIntent(
     intent.kind === 'incident-report' ||
     intent.kind === 'monitoring-analysis' ||
     intent.kind === 'server-monitoring-analysis' ||
-    intent.kind === 'server-snapshot' ||
     intent.kind === 'ops-procedure'
   );
 }

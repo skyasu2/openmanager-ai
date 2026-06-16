@@ -1,10 +1,15 @@
 import { z } from 'zod';
+import {
+  getRegisteredServerAliases,
+  resolveRegisteredServerId,
+} from '@/config/server-registry';
 import { createQueryAsOf } from '@/lib/ai/query-as-of';
 import type {
   CloudRunAnalysisResponse,
   MetricAnomalyResult,
   MonitoringBatchAnalysisResponse,
   MonitoringBatchEvidenceRef,
+  MonitoringBatchQueryFocusServer,
   ServerAnalysisResult,
 } from '@/types/intelligent-monitoring.types';
 import type { OTelResourceCatalog } from '@/types/otel-metrics';
@@ -45,6 +50,18 @@ const MonitoringBatchRiskSignalSchema = z
     evidenceRefId: z.string(),
   })
   .passthrough();
+
+const MonitoringBatchQueryFocusServerSchema = z.object({
+  serverId: z.string(),
+  serverName: z.string(),
+  serverType: z.string(),
+  status: z.enum(['online', 'warning', 'critical', 'offline']),
+  cpu: z.number(),
+  memory: z.number(),
+  disk: z.number(),
+  network: z.number(),
+  matchedBy: z.literal('query'),
+});
 
 const MonitoringBatchCapacityAlertSchema = z.object({
   id: z.string(),
@@ -165,6 +182,7 @@ const MonitoringBatchAnalysisResponseSchema = z
     summary: z.string(),
     servers: z.array(MonitoringBatchServerSchema),
     riskSignals: z.array(MonitoringBatchRiskSignalSchema),
+    queryFocusServer: MonitoringBatchQueryFocusServerSchema.optional(),
     evidenceRefs: z.array(MonitoringBatchEvidenceRefSchema),
     dataFreshness: z
       .object({
@@ -393,6 +411,69 @@ function mapMonitoringFactPackEvidence(
   }));
 }
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function queryContainsServerReference(
+  query: string,
+  reference: string | undefined
+): boolean {
+  const normalizedReference = reference?.trim().toLowerCase();
+  if (!normalizedReference) return false;
+
+  return new RegExp(
+    `(^|[^a-z0-9])${escapeRegExp(normalizedReference)}([^a-z0-9]|$)`,
+    'i'
+  ).test(query);
+}
+
+function buildServerReferenceCandidates(serverId: string, serverName: string) {
+  const candidates = new Set<string>([serverId, serverName]);
+
+  for (const alias of getRegisteredServerAliases()) {
+    if (resolveRegisteredServerId(alias) === serverId) {
+      candidates.add(alias);
+    }
+  }
+
+  return Array.from(candidates);
+}
+
+function resolveQueryFocusServer({
+  analysis,
+  query,
+}: {
+  analysis: MonitoringBatchAnalysisResponse;
+  query: string;
+}): MonitoringBatchQueryFocusServer | undefined {
+  if (analysis.queryFocusServer) {
+    return analysis.queryFocusServer;
+  }
+
+  const normalizedQuery = query.trim().toLowerCase();
+  if (!normalizedQuery) return undefined;
+
+  const focusedServer = analysis.servers.find((server) =>
+    buildServerReferenceCandidates(server.id, server.name).some((reference) =>
+      queryContainsServerReference(normalizedQuery, reference)
+    )
+  );
+  if (!focusedServer) return undefined;
+
+  return {
+    serverId: focusedServer.id,
+    serverName: focusedServer.name || focusedServer.id,
+    serverType: focusedServer.type,
+    status: focusedServer.status,
+    cpu: focusedServer.cpu,
+    memory: focusedServer.memory,
+    disk: focusedServer.disk,
+    network: focusedServer.network,
+    matchedBy: 'query',
+  };
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -543,6 +624,7 @@ export async function generateMonitoringAnalysisArtifact({
   const summary = summarizeMonitoringAnalysis(analysis);
   const roleGroupSummary = buildMonitoringRoleGroupSummary(analysis);
   const capacityAlerts = analysis.capacityAlerts ?? [];
+  const queryFocusServer = resolveQueryFocusServer({ analysis, query });
   const evidence = mapMonitoringFactPackEvidence(
     analysis.factPack?.evidenceRefs
   );
@@ -553,6 +635,7 @@ export async function generateMonitoringAnalysisArtifact({
       generatedAt: new Date().toISOString(),
       ...summary,
       analysis,
+      ...(queryFocusServer ? { queryFocusServer } : {}),
       ...(capacityAlerts.length > 0 ? { capacityAlerts } : {}),
       ...(roleGroupSummary.length > 0 ? { roleGroupSummary } : {}),
       source:

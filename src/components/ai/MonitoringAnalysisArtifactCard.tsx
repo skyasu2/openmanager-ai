@@ -50,6 +50,16 @@ function buildCapacityAlertsMarkdown(
     .join('\n');
 }
 
+function formatQueryFocusServer(
+  artifact: MonitoringAnalysisArtifact
+): string | null {
+  const focusServer =
+    artifact.queryFocusServer ?? artifact.analysis.queryFocusServer;
+  if (!focusServer) return null;
+
+  return `${focusServer.serverName || focusServer.serverId} (${formatStatusLabel(focusServer.status)}, CPU ${Math.round(focusServer.cpu)}%, MEM ${Math.round(focusServer.memory)}%, DISK ${Math.round(focusServer.disk)}%)`;
+}
+
 export function buildAnalysisMarkdown(
   artifact: MonitoringAnalysisArtifact
 ): string {
@@ -57,6 +67,7 @@ export function buildAnalysisMarkdown(
   const timeLabel = readTimeLabel(artifact);
   const roleGroupLines = buildRoleGroupMarkdown(artifact);
   const capacityAlertLines = buildCapacityAlertsMarkdown(artifact);
+  const queryFocusServer = formatQueryFocusServer(artifact);
   const warningLines =
     riskSignals.length > 0
       ? riskSignals
@@ -76,6 +87,7 @@ export function buildAnalysisMarkdown(
     `- 위험 신호: ${artifact.riskSignalCount}건`,
     `- 주의 서버: ${artifact.warningServers}대`,
     `- 위험 서버: ${artifact.criticalServers}대`,
+    ...(queryFocusServer ? [`- 기준(origin) 서버: ${queryFocusServer}`] : []),
     '',
     '## 요약',
     '',
@@ -190,6 +202,21 @@ function formatMonitoringSourceLabel(sourceMode: string): string {
   return 'Monitoring snapshot';
 }
 
+function formatStatusLabel(status: string): string {
+  switch (status) {
+    case 'online':
+      return '정상';
+    case 'warning':
+      return '주의';
+    case 'critical':
+      return '위험';
+    case 'offline':
+      return '오프라인';
+    default:
+      return status;
+  }
+}
+
 function formatCapacityEta(minutes: number | null): string {
   if (minutes === null) {
     return '예측 없음';
@@ -216,6 +243,32 @@ function formatCapacityTarget(alert: MonitoringBatchCapacityAlert): string {
   return `주의 도달 ${formatCapacityEta(alert.timeToWarningMinutes)}`;
 }
 
+function clampCapacityPercent(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
+
+  return Math.min(100, Math.max(0, value));
+}
+
+export function calculateCapacityBarSegments(
+  currentValue: number,
+  predictedValue: number
+): {
+  currentPercent: number;
+  predictedLeftPercent: number;
+  predictedDeltaPercent: number;
+} {
+  const currentPercent = clampCapacityPercent(Math.round(currentValue));
+  const predictedPercent = clampCapacityPercent(Math.round(predictedValue));
+
+  return {
+    currentPercent,
+    predictedLeftPercent: currentPercent,
+    predictedDeltaPercent: Math.max(0, predictedPercent - currentPercent),
+  };
+}
+
 export function MonitoringAnalysisArtifactCard({
   artifact,
 }: {
@@ -229,6 +282,7 @@ export function MonitoringAnalysisArtifactCard({
   const timeLabel = readTimeLabel(artifact);
   const sourceMode = artifact.analysis.sourceMode ?? 'unknown';
   const isStale = artifact.analysis.dataFreshness?.stale === true;
+  const queryFocusServer = formatQueryFocusServer(artifact);
   const openInMonitoringTab = () => {
     const saveResult = saveArtifactExecutionReplayPack({
       artifact,
@@ -265,6 +319,11 @@ export function MonitoringAnalysisArtifactCard({
             <span>기준 {timeLabel}</span>
             {isStale && <span className="text-amber-700">stale data</span>}
           </div>
+          {queryFocusServer && (
+            <p className="mt-2 text-xs leading-5 text-slate-600">
+              기준(origin) 서버: {queryFocusServer}
+            </p>
+          )}
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
             <div className="rounded-md border border-slate-100 bg-slate-50 px-2 py-1.5">
               <p className="text-[11px] text-slate-500">분석 서버</p>
@@ -327,31 +386,68 @@ export function MonitoringAnalysisArtifactCard({
               <p className="text-xs font-semibold text-slate-700">
                 용량 소진 예측
               </p>
-              <div className="mt-2 space-y-2">
-                {capacityAlerts.map((alert) => (
-                  <div
-                    key={alert.id}
-                    className={`rounded-md border px-2.5 py-2 ${capacityAlertClass(alert.severity)}`}
-                  >
-                    <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                      <Link
-                        href={`/dashboard/servers/${encodeURIComponent(alert.serverId)}`}
-                        className="font-semibold underline decoration-slate-300 underline-offset-2 hover:text-cyan-700"
-                      >
-                        {alert.serverName || alert.serverId}
-                      </Link>
-                      <span className="rounded-md bg-white/70 px-2 py-1 font-medium">
-                        {alert.metric.toUpperCase()}{' '}
-                        {Math.round(alert.currentValue)}%
-                      </span>
-                      <span>{formatCapacityTarget(alert)}</span>
+              <div className="mt-2 space-y-2.5">
+                {capacityAlerts.map((alert) => {
+                  const current = Math.round(alert.currentValue);
+                  const predicted = Math.round(alert.predictedValue);
+                  const capacityBar = calculateCapacityBarSegments(
+                    current,
+                    predicted
+                  );
+                  const isCritical = alert.severity === 'critical';
+                  const barColor = isCritical ? 'bg-red-500' : 'bg-amber-500';
+                  const predictedBarColor = isCritical
+                    ? 'bg-red-300'
+                    : 'bg-amber-300';
+                  return (
+                    <div
+                      key={alert.id}
+                      className={`rounded-md border px-2.5 py-2.5 ${capacityAlertClass(alert.severity)}`}
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <Link
+                            href={`/dashboard/servers/${encodeURIComponent(alert.serverId)}`}
+                            className="font-semibold underline decoration-slate-300 underline-offset-2 hover:text-cyan-700"
+                          >
+                            {alert.serverName || alert.serverId}
+                          </Link>
+                          <span className="rounded bg-white/70 px-1.5 py-0.5 font-mono font-medium">
+                            {alert.metric.toUpperCase()}
+                          </span>
+                        </div>
+                        <span className="shrink-0 font-medium">
+                          {formatCapacityTarget(alert)}
+                        </span>
+                      </div>
+                      {/* 진행 바 */}
+                      <div className="relative mt-2 h-2 overflow-hidden rounded-full bg-white/50">
+                        <div
+                          className={`absolute inset-y-0 left-0 rounded-full ${barColor} transition-all`}
+                          style={{ width: `${capacityBar.currentPercent}%` }}
+                        />
+                        {capacityBar.predictedDeltaPercent > 0 && (
+                          <div
+                            className={`absolute inset-y-0 rounded-full ${predictedBarColor}`}
+                            style={{
+                              left: `${capacityBar.predictedLeftPercent}%`,
+                              width: `${capacityBar.predictedDeltaPercent}%`,
+                            }}
+                          />
+                        )}
+                        {/* 임계선 80% */}
+                        <div
+                          className="absolute inset-y-0 w-px bg-slate-400/60"
+                          style={{ left: '80%' }}
+                        />
+                      </div>
+                      <div className="mt-1 flex justify-between text-[10px] text-inherit opacity-70">
+                        <span>현재 {current}%</span>
+                        <span>예측 {predicted}%</span>
+                      </div>
                     </div>
-                    <p className="mt-1 text-[11px] leading-4">
-                      예측 {Math.round(alert.predictedValue)}% ·{' '}
-                      {alert.humanReadable}
-                    </p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

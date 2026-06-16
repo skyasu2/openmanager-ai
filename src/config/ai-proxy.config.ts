@@ -134,6 +134,8 @@ export {
   normalizeTraceId,
   generateTraceparent,
   parseTraceparentTraceId,
+  parseTraceparentTraceFlags,
+  parseTraceparent,
   TRACEPARENT_HEADER,
   traceIdToUUID,
 } from './ai-proxy/tracing';

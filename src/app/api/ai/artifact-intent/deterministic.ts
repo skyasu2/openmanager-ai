@@ -1,3 +1,4 @@
+import { intentPatterns } from '@/config/intent-rules';
 import { resolveRegisteredServerId } from '@/config/server-registry';
 import {
   type ChatArtifactIntent,
@@ -5,48 +6,49 @@ import {
   withArtifactIntentRuleVersion,
 } from '@/lib/ai/chat-artifacts/artifact-intent-contract';
 
-const ARTIFACT_NEGATION_PATTERN =
-  /(말고|아니고|없이|나중에|필요\s*없|하지\s*마|하지\s*말|제외)/i;
-const ARTIFACT_FORMATTING_ONLY_PATTERN =
-  /(보고서용|리포트용|문장으로|문장만|다시\s*작성|재작성|고쳐\s*써|다듬어|rewrite|rephrase|paraphrase)/i;
-const ARTIFACT_EXPLICIT_EXECUTION_PATTERN =
-  /(아티팩트|artifact|생성|만들|다운로드|내려받|실행|돌려|뽑아|출력|export|generate|download|create|run)/i;
-const REPORT_PATTERN =
-  /(장애\s*(보고서|리포트|보고)|인시던트\s*(보고서|리포트)|incident\s*report)/i;
-const REPORT_ACTION_PATTERN =
-  /(작성(?!\s*(방법|법|기능|설명|안내))|생성(?!\s*(방법|법|기능|설명|안내))|만들|만들어|다운로드(?!\s*(방법|법|기능|설명|안내))|내려받|부탁|요청|실행|돌려|뽑아|출력|export|generate|download|run)/i;
-
-const MONITORING_PATTERN =
-  /(이상\s*감지|이상감지|이상\s*탐지|추세|트렌드|리스크\s*(추세|분석)|예측|예상|anomaly|forecast|trend)/i;
-// 용량 예측·임계치 도달 시점 쿼리는 artifact가 아닌 일반 AI 경로로 처리
-const CAPACITY_FORECAST_EXCLUSION_PATTERN =
-  /(?:언제.{0,24}\d+\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d+\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|(?:넘|초과|도달|돌파).{0,16}(?:시점|예측)|(?:위험\s*(?:수준|레벨|임계|단계)|critical\s*(?:level|threshold)).{0,24}(?:도달|초과|넘|시점|예측|reach|hit)|용량\s*(?:예측|계획|부족|고갈)|capacity\s*(?:forecast|plan|planning|projection)|임계(?:치|값)?.{0,24}(?:도달|초과|넘|시점)|(?:고갈|포화|가득\s*차|가득\s*찰).{0,16}(?:예측|시점|언제|예상|알려)|디스크\s*(?:가득|고갈|부족)\s*(?:언제|예상))/i;
-const MONITORING_ACTION_PATTERN =
-  /(분석\s*(해|해줘|해주세요|해줄래|좀|부탁|요청)|분석해|실행|돌려|요약\s*(해|해줘|해주세요|해줄래|부탁|요청)|요약해|확인\s*(해|해줘|해주세요|해줄래|부탁|요청)|확인해|생성(?!\s*(방법|법|기능|설명|안내))|만들|다운로드(?!\s*(방법|법|기능|설명|안내))|예측\s*(해|해줘|해주세요|해줄래|부탁|요청)|예측해|forecast|analy[sz]e|run)/i;
-const MONITORING_ARTIFACT_PATTERN =
-  /(이상\s*감지|이상감지|이상\s*탐지|추세\s*(분석|리포트|보고서)|트렌드\s*(분석|리포트|보고서)|리스크\s*(추세|분석)|장애\s*(예측|예상)|예측\s*(분석|리포트|보고서)|anomaly\s*detection|forecast|trend\s*(analysis|report)?)/i;
-const SERVER_MONITORING_ID_PATTERN =
-  /\b((?:api|web|db|cache|storage|lb|monitoring|batch|worker)-[a-z0-9]+(?:-[a-z0-9]+)*)\b/i;
-const SERVER_SNAPSHOT_SUBJECT_PATTERN =
-  /(서버\s*상태|인프라\s*상태|전체\s*인프라|운영\s*(현황|상태)|server\s*status|server\s*snapshot|infrastructure\s*status|operational\s*status)/i;
-const SERVER_SNAPSHOT_ARTIFACT_PATTERN =
-  /(스냅샷|상태\s*(카드|리포트|보고서)|현황\s*카드|요약\s*카드|snapshot|status\s*(card|report)|export)/i;
-const SERVER_SNAPSHOT_ACTION_PATTERN =
-  /(생성(?!\s*(방법|법|기능|설명|안내))|만들|만들어|보여줘|다운로드(?!\s*(방법|법|기능|설명|안내))|내려받|요청|뽑아|출력|export|generate|download|create)/i;
-const OPS_PROCEDURE_OPERATIONAL_CONTEXT_PATTERN =
-  /(서버|인프라|운영|모니터링|장애|로그|에러|경고|cpu|메모리|memory|디스크|disk|네트워크|network|promql|prometheus|alertmanager|slack|슬랙|webhook|runbook|런북)/i;
-const OPS_PROCEDURE_SHAPE_PATTERN =
-  /(스크립트|script|bash|shell|쉘|slack|슬랙|webhook|alertmanager|prometheus|promql|알림\s*(규칙|설정|스크립트)?|runbook|런북|대응\s*(순서|절차)|원인과\s*대응|확인\s*명령어)/i;
-const OPS_PROCEDURE_ACTION_PATTERN =
-  /(짜줘|작성|생성|만들|만들어|알려줘|정리|출력|generate|create|write|build|draft)/i;
-const OPS_PROCEDURE_FOLLOWUP_EDIT_PATTERN =
-  /(이\s*)?(스크립트|설정|룰|rule|runbook|런북|절차).*(임계치|임계값|threshold).*(바꿔|변경|수정|올려|낮춰|change|update)/i;
-const LLM_ARTIFACT_CANDIDATE_PATTERN =
-  /(장애|인시던트|incident|보고서|리포트|report|이상\s*(감지|탐지)|이상감지|추세|트렌드|리스크|예측|모니터링|anomaly|forecast|trend|risk)/i;
-const LLM_ARTIFACT_ACTION_HINT_PATTERN =
-  /(작성|생성|만들|부탁|요청|뽑아|출력|다운로드|내려받|실행|돌려|요약|확인|해줘|해주세요|해줄래|분석\s*(해|해줘|해주세요|좀|부탁|요청)|export|generate|download|create|write|analy[sz]e|run)/i;
-const LLM_ARTIFACT_SHAPE_PATTERN =
-  /(보고서|리포트|report|이상\s*감지|이상감지|이상\s*탐지|추세\s*(분석|리포트|보고서)|트렌드\s*(분석|리포트|보고서)|리스크\s*(추세|분석)|장애\s*(예측|예상)|예측\s*(분석|리포트|보고서)|anomaly\s*detection|forecast|trend\s*(analysis|report)|risk\s*analysis)/i;
+const ARTIFACT_NEGATION_PATTERN = intentPatterns.pattern('artifact_negation');
+const ARTIFACT_FORMATTING_ONLY_PATTERN = intentPatterns.pattern(
+  'artifact_formatting_only'
+);
+const ARTIFACT_EXPLICIT_EXECUTION_PATTERN = intentPatterns.pattern(
+  'artifact_explicit_execution'
+);
+const ARTIFACT_HOW_TO_REQUEST_PATTERN = intentPatterns.pattern(
+  'artifact_how_to_request'
+);
+const REPORT_PATTERN = intentPatterns.pattern('incident_report');
+const REPORT_ACTION_PATTERN = intentPatterns.pattern('incident_report_action');
+const MONITORING_PATTERN = intentPatterns.pattern('monitoring');
+const CAPACITY_FORECAST_EXCLUSION_PATTERN = intentPatterns.pattern(
+  'capacity_forecast_exclusion'
+);
+const MONITORING_ACTION_PATTERN = intentPatterns.pattern('monitoring_action');
+const MONITORING_ARTIFACT_PATTERN = intentPatterns.pattern(
+  'monitoring_artifact'
+);
+const WHOLE_SYSTEM_MONITORING_PATTERN = intentPatterns.pattern(
+  'whole_system_monitoring'
+);
+const SERVER_MONITORING_ID_PATTERN = intentPatterns.serverId();
+const OPS_PROCEDURE_OPERATIONAL_CONTEXT_PATTERN = intentPatterns.pattern(
+  'ops_procedure_operational_context'
+);
+const OPS_PROCEDURE_SHAPE_PATTERN = intentPatterns.pattern(
+  'ops_procedure_shape'
+);
+const OPS_PROCEDURE_ACTION_PATTERN = intentPatterns.pattern(
+  'ops_procedure_action'
+);
+const OPS_PROCEDURE_FOLLOWUP_EDIT_PATTERN = intentPatterns.pattern(
+  'ops_procedure_followup_edit'
+);
+const LLM_ARTIFACT_CANDIDATE_PATTERN = intentPatterns.pattern(
+  'llm_artifact_candidate'
+);
+const LLM_ARTIFACT_ACTION_HINT_PATTERN = intentPatterns.pattern(
+  'llm_artifact_action_hint'
+);
+const LLM_ARTIFACT_SHAPE_PATTERN = intentPatterns.pattern('llm_artifact_shape');
 
 function withRuleVersion(
   intent: ChatArtifactIntentWithoutVersion
@@ -66,9 +68,7 @@ function isImplicitKeywordRequest(query: string): boolean {
  * "기능"은 제외: "기능 실행해줘"처럼 실행 요청에도 등장하므로 별도 처리.
  */
 function isHowToRequest(query: string): boolean {
-  return /(설명|안내|어떻게|방법|사용법|어디\s*(?:서|에서)?|가능|되나|뭐야|무엇|무슨|지원|위치|어떤)/i.test(
-    query
-  );
+  return ARTIFACT_HOW_TO_REQUEST_PATTERN.test(query);
 }
 
 function isFormattingOnlyRequest(query: string): boolean {
@@ -150,34 +150,12 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
     });
   }
 
-  if (
-    SERVER_SNAPSHOT_SUBJECT_PATTERN.test(normalized) &&
-    SERVER_SNAPSHOT_ARTIFACT_PATTERN.test(normalized)
-  ) {
-    if (
-      !isNegated &&
-      !isHowToRequest(normalized) &&
-      SERVER_SNAPSHOT_ACTION_PATTERN.test(normalized)
-    ) {
-      return withRuleVersion({
-        kind: 'server-snapshot',
-        reason: 'server_snapshot_action_pattern',
-      });
-    }
-    if (
-      !isNegated &&
-      !isHowToRequest(normalized) &&
-      isImplicitKeywordRequest(normalized)
-    ) {
-      return withRuleVersion({
-        kind: 'server-snapshot',
-        reason: 'server_snapshot_implicit_artifact_keyword',
-      });
-    }
-  }
-
   const serverMonitoringServerId = readServerMonitoringServerId(normalized);
-  if (serverMonitoringServerId && MONITORING_PATTERN.test(normalized)) {
+  if (
+    serverMonitoringServerId &&
+    MONITORING_PATTERN.test(normalized) &&
+    !WHOLE_SYSTEM_MONITORING_PATTERN.test(normalized)
+  ) {
     if (!isNegated && isServerMonitoringArtifactRequest(normalized)) {
       return withRuleVersion({
         kind: 'server-monitoring-analysis',

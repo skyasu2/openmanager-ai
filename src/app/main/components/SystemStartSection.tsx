@@ -16,6 +16,7 @@ const START_EXAMPLES = [
   { q: '향후 장애 가능성 있는 서버 예측해줘', icon: '🔮' },
   { q: '전체 서버 상태를 한눈에 요약해줘', icon: '📋' },
   { q: '지금 당장 점검해야 할 서버는?', icon: '🚨' },
+  { q: 'CPU 알림 bash 스크립트 짜줘', icon: '🔧' },
 ] as const;
 
 interface SystemStartSectionProps {

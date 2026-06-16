@@ -1,3 +1,4 @@
+import { createServerIdPattern } from '@/config/server-id-pattern';
 import { resolveRegisteredServerId } from '@/config/server-registry';
 import {
   type ChatArtifactIntent,
@@ -16,8 +17,7 @@ type ExecutableChatArtifactIntent = Extract<
 >;
 
 const POST_DECISION_REASON = 'llm_artifact_classification';
-const SERVER_MONITORING_ID_PATTERN =
-  /\b((?:api|web|db|cache|storage|lb|monitoring|batch|worker)-[a-z0-9]+(?:-[a-z0-9]+)*)\b/i;
+const SERVER_MONITORING_ID_PATTERN = createServerIdPattern();
 
 type ResolvedPostDecisionArtifact = {
   artifactKind: RouteDecisionArtifactKind;
@@ -45,10 +45,19 @@ function resolvePostDecisionArtifact(
   const assistantPlanRouteDecision = result.assistantPlan?.routeDecision;
 
   const assistantResultKind = readArtifactFromRouteDecision(
-    result.assistantResult?.routeDecision ?? resultRouteDecision,
+    assistantResultRouteDecision,
     result.assistantResult?.artifactKind
   );
   if (assistantResultKind) return assistantResultKind;
+
+  const legacyAssistantResultKind =
+    assistantResultRouteDecision === undefined
+      ? readArtifactFromRouteDecision(
+          resultRouteDecision,
+          result.assistantResult?.artifactKind
+        )
+      : null;
+  if (legacyAssistantResultKind) return legacyAssistantResultKind;
 
   const assistantPlanKind =
     result.assistantPlan?.executionPath === 'client-artifact'
@@ -74,13 +83,7 @@ function resolvePostDecisionArtifact(
     resultRouteDecision,
     resultRouteDecision?.artifactKind
   );
-  if (routeDecisionKind) return routeDecisionKind;
-
-  const assistantResultRouteKind = readArtifactFromRouteDecision(
-    assistantResultRouteDecision,
-    assistantResultRouteDecision?.artifactKind
-  );
-  return assistantResultRouteKind ?? null;
+  return routeDecisionKind ?? null;
 }
 
 function readArtifactFromRouteDecision(
@@ -103,7 +106,6 @@ function createPostDecisionArtifactIntent(
   switch (artifact.artifactKind) {
     case 'incident-report':
     case 'monitoring-analysis':
-    case 'server-snapshot':
       return withArtifactIntentRuleVersion(
         {
           kind: artifact.artifactKind,

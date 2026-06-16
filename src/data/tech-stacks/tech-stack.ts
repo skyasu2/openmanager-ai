@@ -8,7 +8,7 @@ export const TECH_STACK_ITEMS: TechItem[] = [
     description:
       'Meta의 UI 라이브러리. Concurrent Rendering, Server Components, Suspense, Transitions 등 최신 렌더링 패턴 제공',
     implementation: '→ Concurrent 기능과 Server Components로 성능 최적화 적용',
-    version: '19.2.4',
+    version: '19.2.6',
     status: 'active',
     icon: '⚛️',
     tags: ['프레임워크', '오픈소스', 'React'],
@@ -22,7 +22,7 @@ export const TECH_STACK_ITEMS: TechItem[] = [
       'Vercel의 React 풀스택 프레임워크. App Router, Server Actions, Partial Prerendering, Edge Runtime, 자동 코드 분할 제공',
     implementation:
       '→ App Router + Server Actions + PPR로 최적화된 렌더링 구현',
-    version: '16.1.6',
+    version: '16.2.6',
     status: 'active',
     icon: '▲',
     tags: ['프레임워크', '오픈소스', 'SSR'],
@@ -35,7 +35,7 @@ export const TECH_STACK_ITEMS: TechItem[] = [
     description:
       'Microsoft의 정적 타입 언어. JavaScript 슈퍼셋으로 컴파일 타임 타입 검사, IDE 자동완성, 리팩토링 안전성 제공',
     implementation: '→ strict 모드로 컴파일 타임 오류 방지 및 개발 생산성 향상',
-    version: '6.0.2',
+    version: '6.0.3',
     status: 'active',
     icon: '🔷',
     tags: ['언어', '오픈소스', '타입안전'],

@@ -43,11 +43,20 @@ function normalizeLogSeverity(value: string): 'ERROR' | 'WARNING' | 'INFO' {
   return 'INFO';
 }
 
-function normalizeLogMessage(message: string): string {
+function normalizeLogGroupingKey(message: string): string {
   return message
     .replace(/\[[0-9]+\]/g, '[pid]')
     .replace(/\b[0-9]+(?:\.[0-9]+)?%/g, '<pct>%')
     .replace(/\b[0-9]{3,}\b/g, '<num>')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 180);
+}
+
+function normalizeLogDisplayMessage(message: string): string {
+  return message
+    .replace(/\[[0-9]+\]/g, '[pid]')
+    .replace(/\b[0-9]{3,}\b(?!\s*%)/g, '<num>')
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, 180);
@@ -107,9 +116,10 @@ export function buildIncidentLogPatternsFromSlots(
     }
 
     const severity = normalizeLogSeverity(log.severityText);
-    const message = normalizeLogMessage(log.body);
+    const groupingKey = normalizeLogGroupingKey(log.body);
+    const message = normalizeLogDisplayMessage(log.body);
     const seenAt = nanoTimeToIso(log.timeUnixNano);
-    const key = `${severity}:${log.resource}:${message}`;
+    const key = `${severity}:${log.resource}:${groupingKey}`;
     const group = groups.get(key) ?? {
       message,
       count: 0,
@@ -121,7 +131,10 @@ export function buildIncidentLogPatternsFromSlots(
 
     group.count += 1;
     if (seenAt < group.firstSeen) group.firstSeen = seenAt;
-    if (seenAt > group.lastSeen) group.lastSeen = seenAt;
+    if (seenAt >= group.lastSeen) {
+      group.lastSeen = seenAt;
+      group.message = message;
+    }
     groups.set(key, group);
   }
 

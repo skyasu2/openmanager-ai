@@ -264,7 +264,7 @@ export const AIWorkspaceMessage = memo<{
                           </p>
                           <MarkdownRenderer
                             content={inlineAssistantResponseView.summary}
-                            className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words"
+                            className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words break-keep"
                           />
                         </div>
                         {inlineAssistantResponseView.details && (
@@ -277,7 +277,7 @@ export const AIWorkspaceMessage = memo<{
                               orderedListStart={
                                 inlineAssistantDetailsOrderedListStart
                               }
-                              className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words"
+                              className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words break-keep"
                             />
                           </div>
                         )}
@@ -285,7 +285,7 @@ export const AIWorkspaceMessage = memo<{
                     ) : (
                       <MarkdownRenderer
                         content={message.content}
-                        className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words"
+                        className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words break-keep"
                       />
                     )}
                     {message.isStreaming && (
@@ -300,7 +300,7 @@ export const AIWorkspaceMessage = memo<{
                     )}
                   </div>
                 ) : (
-                  <div className="text-chat leading-relaxed wrap-break-word whitespace-pre-wrap">
+                  <div className="text-chat leading-relaxed wrap-break-word whitespace-pre-wrap break-keep">
                     {message.content}
                   </div>
                 )}

@@ -1,7 +1,7 @@
 /**
  * Feature Cards 데이터
  * 메인 페이지에 표시되는 4개의 주요 기능 카드 데이터
- * @updated 2026-05-05 - AI assistant taxonomy synced with deterministic-first runtime
+ * @updated 2026-06-13 - AI assistant runtime diagrams synced with artifact origin context
  */
 
 import {
@@ -20,7 +20,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'ai-assistant',
     title: '💬 AI 어시스턴트',
     description:
-      '자연어 질의 하나로 서버 상태 분석, 장애 보고서, 이상감지 아티팩트를 즉시 받아볼 수 있습니다.',
+      '자연어 질의, 장애 보고서, 다운로드 가능한 장애/이상감지 아티팩트를 하나의 AI 워크스페이스에서 즉시 받아볼 수 있습니다.',
     icon: Bot,
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     detailedContent: {
@@ -64,7 +64,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         icon: Activity,
         gradient: 'from-sky-500 to-cyan-500',
         features: [
-          'Synthetic OTel dataset과 precomputed state를 fact layer로 사용',
+          '시뮬레이션 OTel 관측 데이터와 precomputed state를 fact layer로 사용',
           'metric ranking, anomaly, artifact는 deterministic 경로 우선',
           '근거는 analysis basis와 artifact metadata로 추적',
         ],

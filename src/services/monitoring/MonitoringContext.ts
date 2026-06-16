@@ -2,7 +2,7 @@
  * MonitoringContext - 모니터링 파이프라인 통합
  *
  * AlertManager + MetricsAggregator + HealthCalculator → AI/Dashboard 출력
- * 런타임 계산 (15서버 집계 <1ms, Edge Runtime 호환)
+ * 런타임 계산 (18서버 집계 <1ms, Edge Runtime 호환)
  *
  * @created 2026-02-04
  * @updated 2026-02-15 - OTel-native SSOT 전환 (getHourlyData → getOTelHourlyData)
@@ -46,7 +46,7 @@ export class MonitoringContext {
   }
 
   /**
-   * 분석 실행: 런타임 계산 (15서버 집계 <1ms)
+   * 분석 실행: 런타임 계산 (18서버 집계 <1ms)
    */
   async analyze(): Promise<MonitoringReport> {
     const timestamp = getKSTTimestamp();

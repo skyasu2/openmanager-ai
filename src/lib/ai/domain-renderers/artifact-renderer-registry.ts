@@ -352,7 +352,6 @@ export function resolveArtifactRendererEntries(
     metadata.incidentReportArtifact,
     metadata.monitoringAnalysisArtifact,
     metadata.serverMonitoringAnalysisArtifact,
-    metadata.serverSnapshotArtifact,
     metadata.opsProcedureArtifact,
   ];
 

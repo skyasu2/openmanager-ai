@@ -74,10 +74,6 @@ const TOOL_PRESENTATIONS: Record<string, ToolPresentation> = {
     label: '단일 서버 이상감지 분석',
     description: '선택한 서버의 이상 신호와 추세를 아티팩트로 정리합니다.',
   },
-  generateServerSnapshotArtifact: {
-    label: '서버 현황 스냅샷',
-    description: '현재 서버 상태를 스냅샷 아티팩트로 정리합니다.',
-  },
   generateOpsProcedureArtifact: {
     label: '운영 절차 생성',
     description: '운영 대응 절차와 검증 항목을 아티팩트로 정리합니다.',

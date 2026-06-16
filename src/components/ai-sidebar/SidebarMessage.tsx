@@ -4,10 +4,8 @@ import { Bot, Cpu, User } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { AnalysisBasisBadge } from '@/components/ai/AnalysisBasisBadge';
 import { AssistantAgentBadge } from '@/components/ai/AssistantAgentBadge';
-import { IncidentReportArtifactCard } from '@/components/ai/IncidentReportArtifactCard';
+import { ArtifactRendererHost } from '@/components/ai/domain-renderers/ArtifactRendererHost';
 import { MessageActions } from '@/components/ai/MessageActions';
-import { MonitoringAnalysisArtifactCard } from '@/components/ai/MonitoringAnalysisArtifactCard';
-import { ServerSnapshotArtifactCard } from '@/components/ai/ServerSnapshotArtifactCard';
 import { WebSourceCards } from '@/components/ai/WebSourceCards';
 import { convertThinkingStepsToUI } from '@/hooks/ai/useAIChatCore';
 import { getResponseLatencyLabel } from '@/lib/ai/response-latency-label';
@@ -40,18 +38,6 @@ export const MessageComponent = memo<{
   isLastMessage?: boolean;
 }>(({ message, onRegenerateResponse, isLastMessage }) => {
   const hasTextContent = Boolean(message.content?.trim());
-  const incidentReportArtifact =
-    message.role === 'assistant'
-      ? message.metadata?.incidentReportArtifact
-      : undefined;
-  const monitoringAnalysisArtifact =
-    message.role === 'assistant'
-      ? message.metadata?.monitoringAnalysisArtifact
-      : undefined;
-  const serverSnapshotArtifact =
-    message.role === 'assistant'
-      ? message.metadata?.serverSnapshotArtifact
-      : undefined;
   const agentSteps = useMemo(
     () => convertToAgentSteps(message.thinkingSteps),
     [message.thinkingSteps]
@@ -184,7 +170,7 @@ export const MessageComponent = memo<{
                         </p>
                         <RenderMarkdownContent
                           content={collapsibleResponse.summary}
-                          className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words"
+                          className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words break-keep"
                         />
                       </div>
                       {inlineAssistantDetails && (
@@ -194,16 +180,16 @@ export const MessageComponent = memo<{
                           </p>
                           <RenderMarkdownContent
                             content={inlineAssistantDetails}
-                            className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words"
+                            className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words break-keep"
                           />
                         </div>
                       )}
                     </div>
                   ) : (
-                    <div className="min-h-[44px] [overflow-wrap:anywhere] break-words">
+                    <div className="min-h-[44px] [overflow-wrap:anywhere] break-words break-keep">
                       <RenderMarkdownContent
                         content={message.content}
-                        className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words"
+                        className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words break-keep"
                       />
                     </div>
                   )}
@@ -213,23 +199,15 @@ export const MessageComponent = memo<{
                   )}
                 </div>
               ) : (
-                <div className="text-chat leading-relaxed wrap-break-word whitespace-pre-wrap">
+                <div className="text-chat leading-relaxed wrap-break-word whitespace-pre-wrap break-keep">
                   {message.content}
                 </div>
               )}
             </div>
           )}
 
-          {incidentReportArtifact && (
-            <IncidentReportArtifactCard artifact={incidentReportArtifact} />
-          )}
-          {monitoringAnalysisArtifact && (
-            <MonitoringAnalysisArtifactCard
-              artifact={monitoringAnalysisArtifact}
-            />
-          )}
-          {serverSnapshotArtifact && (
-            <ServerSnapshotArtifactCard artifact={serverSnapshotArtifact} />
+          {message.role === 'assistant' && (
+            <ArtifactRendererHost metadata={message.metadata} />
           )}
 
           {/* 타임스탬프 & 메타데이터 */}

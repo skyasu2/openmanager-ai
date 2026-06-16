@@ -22,7 +22,6 @@ import type {
   ArtifactEnvelope,
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
-  ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
 import type { RouteDecision } from '@/lib/ai/route-decision';
 import type { SemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
@@ -221,8 +220,6 @@ export interface ChatMessage {
     incidentReportArtifact?: IncidentReportArtifact;
     /** 채팅에서 생성한 사용자 다운로드 가능 이상감지/추세 분석 */
     monitoringAnalysisArtifact?: MonitoringAnalysisArtifact;
-    /** 채팅에서 생성한 사용자 다운로드 가능 서버 상태 스냅샷 */
-    serverSnapshotArtifact?: ServerSnapshotArtifact;
     /** domain renderer registry가 복원할 수 있는 generic artifact envelope */
     artifactEnvelopes?: ArtifactEnvelope[];
     /** 도구 실행 결과 요약 */

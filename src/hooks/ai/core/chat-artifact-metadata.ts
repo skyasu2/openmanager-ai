@@ -95,8 +95,6 @@ export function getArtifactLoadingText(kind: ChatArtifact['kind']): string {
       return '이상감지/추세 분석을 실행하고 있습니다.';
     case 'server-monitoring-analysis':
       return '단일 서버 이상감지/추세 분석을 실행하고 있습니다.';
-    case 'server-snapshot':
-      return '서버 상태 스냅샷을 생성하고 있습니다.';
     case 'ops-procedure':
       return '운영 절차 아티팩트를 생성하고 있습니다.';
   }
@@ -149,21 +147,6 @@ export function getArtifactSuccessText(artifact: ChatArtifact): string {
     ].join('\n');
   }
 
-  if (artifact.kind === 'server-snapshot') {
-    return [
-      '서버 상태 스냅샷을 생성했습니다.',
-      '',
-      `- 총 서버: ${artifact.totals.total}대`,
-      `- 주의/위험: ${
-        artifact.totals.warning +
-        artifact.totals.critical +
-        artifact.totals.offline
-      }대`,
-      '',
-      '아래 카드에서 MD/JSON 파일로 내려받을 수 있습니다.',
-    ].join('\n');
-  }
-
   if (artifact.kind === 'ops-procedure') {
     return [
       '운영 절차 아티팩트를 생성했습니다.',
@@ -189,14 +172,42 @@ export function getArtifactSuccessText(artifact: ChatArtifact): string {
     ].join('\n');
   }
 
+  const queryFocusServerLine = formatMonitoringQueryFocusServerLine(artifact);
+
   return [
     '이상감지/추세 분석을 완료했습니다.',
     '',
     `- 분석 서버: ${artifact.serverCount}대`,
     `- 위험 신호: ${artifact.riskSignalCount}건`,
+    ...(queryFocusServerLine ? [queryFocusServerLine] : []),
     '',
     '아래 카드에서 MD/JSON 파일로 내려받거나 이상감지/추세 화면에서 확인할 수 있습니다.',
   ].join('\n');
+}
+
+function formatMonitoringQueryFocusServerLine(
+  artifact: Extract<ChatArtifact, { kind: 'monitoring-analysis' }>
+): string | undefined {
+  const focusServer =
+    artifact.queryFocusServer ?? artifact.analysis.queryFocusServer;
+  if (!focusServer) return undefined;
+
+  return `- 기준(origin) 서버: ${focusServer.serverName || focusServer.serverId} (${formatMonitoringStatusLabel(focusServer.status)}, CPU ${Math.round(focusServer.cpu)}%, MEM ${Math.round(focusServer.memory)}%, DISK ${Math.round(focusServer.disk)}%)`;
+}
+
+function formatMonitoringStatusLabel(status: string): string {
+  switch (status) {
+    case 'online':
+      return '정상';
+    case 'warning':
+      return '주의';
+    case 'critical':
+      return '위험';
+    case 'offline':
+      return '오프라인';
+    default:
+      return status;
+  }
 }
 
 export function isAbortError(error: unknown): boolean {
@@ -237,9 +248,7 @@ export function buildArtifactMetadata(
   const assistantResult = buildAssistantResultFromRouteDecision(routeDecision);
   const artifactEnvelope = createArtifactEnvelope(artifact, {
     domainId: MONITORING_ARTIFACT_RENDERER_DOMAIN_ID,
-    sourceMode:
-      artifact.sourceMode ??
-      (artifact.kind === 'server-snapshot' ? 'otel-static' : 'tool-result'),
+    sourceMode: artifact.sourceMode ?? 'tool-result',
     ...(queryAsOfDataSlot?.timeLabel && {
       dataSlot: queryAsOfDataSlot.timeLabel,
     }),
@@ -259,26 +268,6 @@ export function buildArtifactMetadata(
           toolName: 'generateIncidentReportArtifact',
           label: '장애 보고서 작성',
           summary: `${artifact.report.title} 보고서를 생성했습니다.`,
-          status: 'completed' as const,
-        },
-      ],
-    };
-  }
-
-  if (artifact.kind === 'server-snapshot') {
-    return {
-      artifactIntentReason: intentReason,
-      routeDecision,
-      assistantPlan,
-      assistantResult,
-      artifactEnvelopes: [artifactEnvelope],
-      serverSnapshotArtifact: artifact,
-      toolsCalled: ['generateServerSnapshotArtifact'],
-      toolResultSummaries: [
-        {
-          toolName: 'generateServerSnapshotArtifact',
-          label: '서버 상태 스냅샷',
-          summary: `${artifact.totals.total}대 서버 상태 스냅샷을 생성했습니다.`,
           status: 'completed' as const,
         },
       ],
@@ -416,11 +405,6 @@ function getArtifactToolDescriptor(kind: ChatArtifact['kind']): {
         toolName: 'generateIncidentReportArtifact',
         label: '장애 보고서 작성',
       };
-    case 'server-snapshot':
-      return {
-        toolName: 'generateServerSnapshotArtifact',
-        label: '서버 상태 스냅샷',
-      };
     case 'ops-procedure':
       return {
         toolName: 'generateOpsProcedureArtifact',
@@ -443,8 +427,6 @@ function getArtifactActionLabel(kind: ChatArtifact['kind']): string {
   switch (kind) {
     case 'incident-report':
       return '장애 보고서 작성';
-    case 'server-snapshot':
-      return '서버 상태 스냅샷 생성';
     case 'ops-procedure':
       return '운영 절차 생성';
     case 'monitoring-analysis':

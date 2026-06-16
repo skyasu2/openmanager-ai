@@ -4,7 +4,6 @@ import {
   type MonitoringAnalysisArtifact,
   type OpsProcedureArtifact,
   type ServerMonitoringAnalysisArtifact,
-  type ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
 import {
   MONITORING_ARTIFACT_RENDERER_DOMAIN_ID,
@@ -14,7 +13,6 @@ import { IncidentReportArtifactCard } from '../IncidentReportArtifactCard';
 import { MonitoringAnalysisArtifactCard } from '../MonitoringAnalysisArtifactCard';
 import { OpsProcedureArtifactCard } from '../OpsProcedureArtifactCard';
 import { ServerMonitoringAnalysisArtifactCard } from '../ServerMonitoringAnalysisArtifactCard';
-import { ServerSnapshotArtifactCard } from '../ServerSnapshotArtifactCard';
 
 let monitoringArtifactRenderersRegistered = false;
 
@@ -49,14 +47,6 @@ export function registerMonitoringArtifactRenderers(): void {
     (artifact) => (
       <ServerMonitoringAnalysisArtifactCard
         artifact={artifact as ServerMonitoringAnalysisArtifact}
-      />
-    )
-  );
-  registerArtifactRenderer(
-    { domainId, artifactKind: 'server-snapshot', artifactVersion },
-    (artifact) => (
-      <ServerSnapshotArtifactCard
-        artifact={artifact as ServerSnapshotArtifact}
       />
     )
   );

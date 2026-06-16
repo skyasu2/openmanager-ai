@@ -211,6 +211,7 @@ Rules:
 - Set intent "capacity_forecast" for resource exhaustion/capacity forecasts such as disk/memory/cpu saturation, "고갈", "임계치 넘기 전", "언제 포화", "위험 수준 도달", or "언제 90% 넘을까".
 - Set intent "failure_risk" for broad failure-risk questions such as "장애 날 것 같은 서버", "장애 위험", or "불안정한 서버".
 - Set intent "root_cause" for RCA, causality, correlation, incident cause, "왜", "원인", "근본 원인" questions.
+- Set intent "root_cause" for dependency impact and cascading-failure questions such as "다른 서버에 영향", "영향 미치고 있어", "연쇄", "전파", "cascade", or "impact on other servers".
 - Set intent "incident_report" for incident/failure report creation or timeline report requests.
 - Set intent "ops_advice" for runbooks, commands, remediation, troubleshooting, or action-plan advice.
 - Set intent "log_analysis" for pasted logs or requests to analyze error/warning logs.
@@ -346,12 +347,26 @@ function inferGroupTargetFromQuery(query: string): string | undefined {
 
 const CAPACITY_FORECAST_QUERY_PATTERN =
   /(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?|(?:위험\s*(?:수준|레벨|임계|단계)|critical\s*(?:level|threshold)).{0,24}(?:도달|초과|넘|시점|예측|reach|hit)|용량\s*(?:예측|계획|부족|고갈)|capacity\s*(?:forecast|plan|planning|projection)|임계(?:치|값)?.{0,24}(?:도달|초과|넘|시점)|고갈|포화|saturat(?:e|ion)|run\s*out|full\s*capacity)/i;
+const FORECAST_INTENT_QUERY_PATTERN =
+  /(?:언제|시점|예측|전망|이\s*추세|추세라면|앞으로|미래|미리|사전|전에|전\b|이내|안에|\d+\s*(?:시간|분|일|h|m|d)|넘을까|초과할까|도달할까|포화|고갈|when|how\s+soon|forecast|predict|projection|future|before|within|will\s+\w+)/i;
+// 현재/지금 prefix 없이도 과거형·형용사형으로 임계값 초과 여부를 묻는 표현 커버
+const PAST_THRESHOLD_EXCEEDED_QUERY_PATTERN =
+  /(?:임계(?:치|값)?|threshold|위험\s*(?:수준|레벨|단계)|기준치).{0,48}(?:넘었|넘었는지|넘었어|초과했|초과했는지|초과했어|도달했|돌파했|넘은|초과한|도달한|돌파한|breached?|exceeded?|reached?|over|above)|(?:(?:넘었|초과했|도달했|돌파했|넘은|초과한|돌파한).{0,32}(?:임계(?:치|값)?|threshold|기준치))/i;
+
+function isCurrentThresholdStatusQuery(query: string): boolean {
+  return (
+    PAST_THRESHOLD_EXCEEDED_QUERY_PATTERN.test(query) &&
+    !FORECAST_INTENT_QUERY_PATTERN.test(query)
+  );
+}
 
 const ANOMALY_PREDICTION_QUERY_PATTERN =
   /(?:이상|비정상|위험|장애)?\s*징후.{0,24}(?:예측|전망|미리|앞으로|사전)|(?:예측|전망|미리|사전).{0,24}(?:이상|비정상|위험|장애)?\s*징후/i;
 const ANOMALY_DETECTION_QUERY_PATTERN =
   /(?:이상|비정상|징후|스파이크|급증|급감|anomal).{0,32}(?:분석|탐지|감지|찾|확인|스캔|scan|detect|있)|(?:분석|탐지|감지|확인|스캔|scan|detect).{0,32}(?:이상|비정상|징후|스파이크|anomal)|(?:전체|모든|all).{0,24}(?:서버|fleet|systems?)?.{0,24}(?:스캔|scan)/i;
 const ROOT_CAUSE_QUERY_PATTERN = /왜|원인|근본|rca|root.?cause|cause/i;
+const CASCADE_IMPACT_QUERY_PATTERN =
+  /(?:다른|타|의존|상류|하류|upstream|downstream|other).{0,32}(?:영향|impact)|(?:영향|impact).{0,32}(?:다른|타|의존|상류|하류|서버|server|서비스|service|범위)|연쇄|전파|파급|cascade|cascading/i;
 
 function inferCapacityMetricForQuery(
   query: string,
@@ -380,6 +395,7 @@ function buildCapacityForecastCorrection(
   entities: ExtractedEntities,
   query: string
 ): ExtractedEntities | null {
+  if (isCurrentThresholdStatusQuery(query)) return null;
   if (!CAPACITY_FORECAST_QUERY_PATTERN.test(query)) return null;
 
   const groupTarget = inferGroupTargetFromQuery(query);
@@ -485,11 +501,69 @@ function buildAnomalyIntentCorrection(
   };
 }
 
+function buildCascadeImpactCorrection(
+  entities: ExtractedEntities,
+  query: string
+): ExtractedEntities | null {
+  if (!CASCADE_IMPACT_QUERY_PATTERN.test(query)) return null;
+
+  const groupTarget = inferGroupTargetFromQuery(query);
+  const inferredServer = entities.server ?? inferKnownServerIdFromQuery(query);
+  const targets = inferredServer
+    ? [inferredServer]
+    : groupTarget
+      ? [groupTarget]
+      : (entities.intentFrame?.targets ?? []);
+  const scope: SemanticScope = inferredServer
+    ? 'server'
+    : groupTarget
+      ? 'group'
+      : 'whole_fleet';
+  const metric = inferAnomalyMetricForQuery(query, entities);
+  const confidence = Math.max(
+    entities.intentFrame?.confidence ?? 0,
+    entities.confidence,
+    80
+  );
+
+  const { intentFrame: _intentFrame, server: _server, ...rest } = entities;
+  return {
+    ...rest,
+    ...(inferredServer ? { server: inferredServer } : {}),
+    intentFrame: {
+      domain: 'monitoring',
+      intent: 'root_cause',
+      scope,
+      targets,
+      metric,
+      timeWindow: 'current',
+      aggregation: 'summary',
+      ambiguity: 'low',
+      executionMode: 'multi',
+      confidence,
+    },
+    confidence,
+  };
+}
+
 export function normalizeExtractedEntitiesForQuery(
   data: unknown,
   query: string
 ): ExtractedEntities {
   const entities = normalizeExtractedEntities(data);
+  if (
+    isCurrentThresholdStatusQuery(query) &&
+    entities.intentFrame?.intent === 'capacity_forecast'
+  ) {
+    const { intentFrame: _intentFrame, ...rest } = entities;
+    return rest;
+  }
+
+  const cascadeImpactCorrection = buildCascadeImpactCorrection(entities, query);
+  if (cascadeImpactCorrection) {
+    return cascadeImpactCorrection;
+  }
+
   const anomalyCorrection = buildAnomalyIntentCorrection(entities, query);
   if (anomalyCorrection) {
     return anomalyCorrection;

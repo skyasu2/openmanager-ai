@@ -85,7 +85,6 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         !metadata?.artifactIntentTarget &&
         !metadata?.incidentReportArtifact &&
         !metadata?.monitoringAnalysisArtifact &&
-        !metadata?.serverSnapshotArtifact &&
         !(
           Array.isArray(metadata?.artifactEnvelopes) &&
           metadata.artifactEnvelopes.length > 0
@@ -142,9 +141,6 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         }),
         ...(metadata?.monitoringAnalysisArtifact && {
           monitoringAnalysisArtifact: metadata.monitoringAnalysisArtifact,
-        }),
-        ...(metadata?.serverSnapshotArtifact && {
-          serverSnapshotArtifact: metadata.serverSnapshotArtifact,
         }),
         ...(Array.isArray(metadata?.artifactEnvelopes) &&
           metadata.artifactEnvelopes.length > 0 && {

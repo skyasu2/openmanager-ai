@@ -174,6 +174,18 @@ export interface MonitoringBatchRiskSignal {
   evidenceRefId: string;
 }
 
+export interface MonitoringBatchQueryFocusServer {
+  serverId: string;
+  serverName: string;
+  serverType: string;
+  status: MonitoringBatchServer['status'];
+  cpu: number;
+  memory: number;
+  disk: number;
+  network: number;
+  matchedBy: 'query';
+}
+
 export interface MonitoringBatchCapacityAlert {
   id: string;
   serverId: string;
@@ -267,6 +279,7 @@ export interface MonitoringBatchAnalysisResponse {
   summary: string;
   servers: MonitoringBatchServer[];
   riskSignals: MonitoringBatchRiskSignal[];
+  queryFocusServer?: MonitoringBatchQueryFocusServer;
   capacityAlerts?: MonitoringBatchCapacityAlert[];
   evidenceRefs: MonitoringBatchEvidenceRef[];
   factPack?: MonitoringBatchFactPack;

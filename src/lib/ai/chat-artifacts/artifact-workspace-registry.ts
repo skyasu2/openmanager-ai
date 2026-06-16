@@ -33,7 +33,6 @@ export interface ArtifactSchemaEntry<
     | 'incidentReportArtifact'
     | 'monitoringAnalysisArtifact'
     | 'serverMonitoringAnalysisArtifact'
-    | 'serverSnapshotArtifact'
     | 'opsProcedureArtifact';
   replayPolicy: ArtifactReplayPolicy;
   isPayload: (value: unknown) => value is TArtifact;
@@ -145,24 +144,6 @@ function isServerMonitoringAnalysisArtifact(
   );
 }
 
-function isServerSnapshotArtifact(
-  value: unknown
-): value is Extract<MonitoringChatArtifact, { kind: 'server-snapshot' }> {
-  return (
-    isRecord(value) &&
-    value.kind === 'server-snapshot' &&
-    !!readString(value.generatedAt) &&
-    !!readString(value.title) &&
-    !!readString(value.summary) &&
-    value.source === 'otel-static' &&
-    isRecord(value.slot) &&
-    isRecord(value.totals) &&
-    isRecord(value.averages) &&
-    Array.isArray(value.topServers) &&
-    Array.isArray(value.alerts)
-  );
-}
-
 function isOpsProcedureArtifact(
   value: unknown
 ): value is Extract<MonitoringChatArtifact, { kind: 'ops-procedure' }> {
@@ -209,15 +190,6 @@ const ARTIFACT_SCHEMA_ENTRIES: ArtifactSchemaEntry[] = [
     legacyMetadataKey: 'serverMonitoringAnalysisArtifact',
     replayPolicy: REPLAY_POLICY,
     isPayload: isServerMonitoringAnalysisArtifact,
-  },
-  {
-    domainId: MONITORING_ARTIFACT_DOMAIN_ID,
-    familyId: 'server-snapshot',
-    artifactKind: 'server-snapshot',
-    artifactVersion: ARTIFACT_CONTRACT_VERSION,
-    legacyMetadataKey: 'serverSnapshotArtifact',
-    replayPolicy: REPLAY_POLICY,
-    isPayload: isServerSnapshotArtifact,
   },
   {
     domainId: MONITORING_ARTIFACT_DOMAIN_ID,

@@ -15,7 +15,6 @@ import type {
   ArtifactEnvelope,
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
-  ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
 import {
   normalizeRouteDecision,
@@ -71,7 +70,6 @@ export interface StoredMessageMetadata {
   artifactIntentTarget?: 'incident-report' | 'monitoring-analysis';
   incidentReportArtifact?: IncidentReportArtifact;
   monitoringAnalysisArtifact?: MonitoringAnalysisArtifact;
-  serverSnapshotArtifact?: ServerSnapshotArtifact;
   artifactEnvelopes?: ArtifactEnvelope[];
   handoffHistory?: Array<{
     from: string;
@@ -180,7 +178,6 @@ export function saveChatHistory(
           metadata?.artifactIntentTarget ||
           metadata?.incidentReportArtifact ||
           metadata?.monitoringAnalysisArtifact ||
-          metadata?.serverSnapshotArtifact ||
           (Array.isArray(metadata?.artifactEnvelopes) &&
             metadata.artifactEnvelopes.length > 0) ||
           hasExplicitHandoffHistory ||
@@ -230,9 +227,6 @@ export function saveChatHistory(
                 ...(metadata?.monitoringAnalysisArtifact && {
                   monitoringAnalysisArtifact:
                     metadata.monitoringAnalysisArtifact,
-                }),
-                ...(metadata?.serverSnapshotArtifact && {
-                  serverSnapshotArtifact: metadata.serverSnapshotArtifact,
                 }),
                 ...(Array.isArray(metadata?.artifactEnvelopes) &&
                   metadata.artifactEnvelopes.length > 0 && {

@@ -16,6 +16,7 @@ import {
   Bot,
   FileText,
   Server,
+  Terminal,
   TrendingUp,
 } from 'lucide-react';
 import { memo } from 'react';
@@ -108,6 +109,15 @@ export const STARTER_PROMPTS: StarterPrompt[] = [
     description: '최근 알림과 메트릭 변화 확인',
     iconBg: 'bg-blue-50',
     iconColor: 'text-blue-600',
+    tone: 'analysis',
+  },
+  {
+    icon: Terminal,
+    title: '운영 스크립트',
+    prompt: '🔧 CPU 알림 bash 스크립트 짜줘',
+    description: 'CPU 알림 bash/runbook/alert-rule 생성',
+    iconBg: 'bg-slate-100',
+    iconColor: 'text-slate-600',
     tone: 'analysis',
   },
 ];

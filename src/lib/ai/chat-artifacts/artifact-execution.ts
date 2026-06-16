@@ -22,10 +22,21 @@ import {
   type ServerMonitoringArtifactRequest,
 } from './types';
 
-export type ExecutableSurfaceArtifactKind =
+/**
+ * Artifact kinds generated through existing BFF/Cloud Run-backed APIs.
+ * Locally generated artifacts such as ops-procedure are
+ * registered through artifact-executors.ts instead of this wrapper.
+ */
+export type RemoteToolArtifactKind =
   | 'incident-report'
   | 'monitoring-analysis'
   | 'server-monitoring-analysis';
+
+/**
+ * @deprecated Use RemoteToolArtifactKind. This alias is kept for existing
+ * surface callers that still use the older name.
+ */
+export type ExecutableSurfaceArtifactKind = RemoteToolArtifactKind;
 
 type ExecuteChatArtifactRequestByKind = {
   'incident-report': ChatArtifactRequest & { kind: 'incident-report' };
@@ -36,7 +47,7 @@ type ExecuteChatArtifactRequestByKind = {
 };
 
 export type ExecuteChatArtifactRequest<
-  TKind extends ExecutableSurfaceArtifactKind = ExecutableSurfaceArtifactKind,
+  TKind extends RemoteToolArtifactKind = RemoteToolArtifactKind,
 > = ExecuteChatArtifactRequestByKind[TKind];
 
 export type SaveArtifactExecutionReplayPackResult =
@@ -123,9 +134,7 @@ export function saveArtifactExecutionReplayPack({
 }): SaveArtifactExecutionReplayPackResult {
   const envelope = createArtifactEnvelope(artifact, {
     domainId: MONITORING_ARTIFACT_DOMAIN_ID,
-    sourceMode:
-      artifact.sourceMode ??
-      (artifact.kind === 'server-snapshot' ? 'otel-static' : 'tool-result'),
+    sourceMode: artifact.sourceMode ?? 'tool-result',
   });
   const replayPack = createArtifactReplayPack({
     workspaceId,

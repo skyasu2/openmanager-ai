@@ -7,7 +7,6 @@ import {
   generateOpsProcedureArtifact,
   patchOpsProcedureArtifactFromQuery,
 } from '@/lib/ai/chat-artifacts/ops-procedure-artifact';
-import { generateServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
 import type { OpsProcedureArtifact } from '@/lib/ai/chat-artifacts/types';
 
 let monitoringArtifactExecutorsRegistered = false;
@@ -80,9 +79,6 @@ export function registerMonitoringArtifactExecutors(): void {
           context.artifactIntent.serverName ?? context.artifactIntent.serverId,
       });
     }
-  );
-  registerArtifactExecutor({ kind: 'server-snapshot' }, (context) =>
-    generateServerSnapshotArtifact(readBaseRequest(context))
   );
   registerArtifactExecutor({ kind: 'ops-procedure' }, (context) =>
     executeOpsProcedureArtifact(context)

@@ -3,11 +3,9 @@ import type {
   MonitoringAnalysisArtifact,
   OpsProcedureArtifact,
   ServerMonitoringAnalysisArtifact,
-  ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
 
 export const MONITORING_ROUTE_DECISION_ARTIFACT_KINDS = [
-  'server-snapshot',
   'incident-report',
   'monitoring-analysis',
   'server-monitoring-analysis',
@@ -21,5 +19,4 @@ export type MonitoringChatArtifact =
   | IncidentReportArtifact
   | MonitoringAnalysisArtifact
   | ServerMonitoringAnalysisArtifact
-  | ServerSnapshotArtifact
   | OpsProcedureArtifact;

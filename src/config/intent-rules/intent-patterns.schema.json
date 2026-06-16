@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openmanager.local/schemas/intent-patterns.schema.json",
+  "title": "OpenManager Artifact Intent Patterns",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "lastUpdated",
+    "ruleVersion",
+    "patterns"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lastUpdated": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "ruleVersion": {
+      "const": "bff"
+    },
+    "patterns": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_negation",
+        "artifact_formatting_only",
+        "artifact_explicit_execution",
+        "artifact_how_to_request",
+        "incident_report",
+        "incident_report_action",
+        "monitoring",
+        "capacity_forecast_exclusion",
+        "monitoring_action",
+        "monitoring_artifact",
+        "whole_system_monitoring",
+        "ops_procedure_operational_context",
+        "ops_procedure_shape",
+        "ops_procedure_action",
+        "ops_procedure_followup_edit",
+        "llm_artifact_candidate",
+        "llm_artifact_action_hint",
+        "llm_artifact_shape",
+        "future_time_reference"
+      ],
+      "properties": {
+        "artifact_negation": { "$ref": "#/$defs/patternEntry" },
+        "artifact_formatting_only": { "$ref": "#/$defs/patternEntry" },
+        "artifact_explicit_execution": { "$ref": "#/$defs/patternEntry" },
+        "artifact_how_to_request": { "$ref": "#/$defs/patternEntry" },
+        "incident_report": { "$ref": "#/$defs/patternEntry" },
+        "incident_report_action": { "$ref": "#/$defs/patternEntry" },
+        "monitoring": { "$ref": "#/$defs/patternEntry" },
+        "capacity_forecast_exclusion": { "$ref": "#/$defs/patternEntry" },
+        "monitoring_action": { "$ref": "#/$defs/patternEntry" },
+        "monitoring_artifact": { "$ref": "#/$defs/patternEntry" },
+        "whole_system_monitoring": { "$ref": "#/$defs/patternEntry" },
+        "ops_procedure_operational_context": { "$ref": "#/$defs/patternEntry" },
+        "ops_procedure_shape": { "$ref": "#/$defs/patternEntry" },
+        "ops_procedure_action": { "$ref": "#/$defs/patternEntry" },
+        "ops_procedure_followup_edit": { "$ref": "#/$defs/patternEntry" },
+        "llm_artifact_candidate": { "$ref": "#/$defs/patternEntry" },
+        "llm_artifact_action_hint": { "$ref": "#/$defs/patternEntry" },
+        "llm_artifact_shape": { "$ref": "#/$defs/patternEntry" },
+        "future_time_reference": { "$ref": "#/$defs/patternEntry" }
+      }
+    }
+  },
+  "$defs": {
+    "patternEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "flags", "description"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "flags": {
+          "type": "string",
+          "pattern": "^(?!.*(.).*\\1)[imsu]*$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "counterExamples": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

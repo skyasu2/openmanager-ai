@@ -14,8 +14,6 @@ export type ChatArtifactIntentReason =
   | 'ops_procedure_action_pattern'
   | 'ops_procedure_followup_edit_pattern'
   | 'server_monitoring_action_pattern'
-  | 'server_snapshot_action_pattern'
-  | 'server_snapshot_implicit_artifact_keyword'
   | 'llm_artifact_classification'
   | 'llm_unavailable';
 
@@ -29,7 +27,6 @@ export type ChatArtifactIntentWithoutVersion =
       serverName?: string;
       reason: ChatArtifactIntentReason;
     }
-  | { kind: 'server-snapshot'; reason: ChatArtifactIntentReason }
   | {
       kind: 'ops-procedure';
       procedureType: 'runbook' | 'alert-rule' | 'script';
@@ -57,7 +54,6 @@ export type ExecutableChatArtifactIntent = Extract<
       | 'incident-report'
       | 'monitoring-analysis'
       | 'server-monitoring-analysis'
-      | 'server-snapshot'
       | 'ops-procedure';
   }
 >;
@@ -70,8 +66,6 @@ const CHAT_ARTIFACT_INTENT_REASONS = new Set<ChatArtifactIntentReason>([
   'ops_procedure_action_pattern',
   'ops_procedure_followup_edit_pattern',
   'server_monitoring_action_pattern',
-  'server_snapshot_action_pattern',
-  'server_snapshot_implicit_artifact_keyword',
   'llm_artifact_classification',
   'llm_unavailable',
 ]);
@@ -106,7 +100,6 @@ export function normalizeChatArtifactIntent(
   switch (record.kind) {
     case 'incident-report':
     case 'monitoring-analysis':
-    case 'server-snapshot':
       return withArtifactIntentRuleVersion(
         {
           kind: record.kind,
