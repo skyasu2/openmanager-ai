@@ -5,7 +5,7 @@
  *
  * @description
  * - ChatGPT 스타일 제안 프롬프트 카드 컴포넌트
- * - 2x2 그리드 레이아웃
+ * - 2열 그리드 레이아웃
  * - EnhancedAIChat에서 분리하여 재사용 가능
  */
 
@@ -60,6 +60,16 @@ interface WelcomeSystemSnapshot {
   };
 }
 
+const OPS_PROCEDURE_STARTER_PROMPT: StarterPrompt = {
+  icon: Terminal,
+  title: '운영 스크립트',
+  prompt: '🔧 CPU 알림 bash 스크립트 짜줘',
+  description: 'CPU 알림 bash/runbook/alert-rule 생성',
+  iconBg: 'bg-slate-100',
+  iconColor: 'text-slate-600',
+  tone: 'analysis',
+};
+
 /**
  * 기본 제안 프롬프트 목록
  * - 서버 모니터링 도메인에 최적화
@@ -111,15 +121,7 @@ export const STARTER_PROMPTS: StarterPrompt[] = [
     iconColor: 'text-blue-600',
     tone: 'analysis',
   },
-  {
-    icon: Terminal,
-    title: '운영 스크립트',
-    prompt: '🔧 CPU 알림 bash 스크립트 짜줘',
-    description: 'CPU 알림 bash/runbook/alert-rule 생성',
-    iconBg: 'bg-slate-100',
-    iconColor: 'text-slate-600',
-    tone: 'analysis',
-  },
+  OPS_PROCEDURE_STARTER_PROMPT,
 ];
 
 function toFinitePercent(value: number | undefined): number {
@@ -251,6 +253,7 @@ function buildDynamicPrompts(snapshot: WelcomeSystemSnapshot | null) {
       iconColor: 'text-slate-700',
       tone: 'report',
     },
+    OPS_PROCEDURE_STARTER_PROMPT,
   ];
 }
 
@@ -317,7 +320,7 @@ export const WelcomePromptCards = memo(function WelcomePromptCards({
         </span>
       </div>
 
-      {/* 제안 프롬프트 카드 2x2 그리드 */}
+      {/* 제안 프롬프트 카드 그리드 */}
       <div className="grid max-w-xl grid-cols-1 gap-3 px-4 sm:grid-cols-2">
         {promptCards.map((card, index) => {
           const Icon = card.icon;
