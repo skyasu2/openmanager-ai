@@ -9,8 +9,8 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       '세계 최대 AI 칩 Wafer-Scale Engine(WSE-3) 기반 추론 서비스. 850,000개 코어가 단일 웨이퍼에 집적되어 GPU 클러스터의 통신 병목 없이 초고속 추론 제공',
     implementation:
-      '→ 짧은 컨텍스트 fallback 및 structured route 보조. llama3.1-8b 기본값을 유지하면서 gpt-oss-120b를 replacement fallback 후보로 활성화',
-    version: 'Llama 3.1 8B / GPT-OSS 120B',
+      '→ 짧은 routing/context/evidence-classifier 같은 structured-output analysis pool 선두 후보. 일반 답변/tool-loop text rotation에서는 제외',
+    version: 'gpt-oss-120b',
     status: 'active',
     icon: '🧠',
     tags: ['WSE-3', 'Planning', '웨이퍼스케일'],
@@ -23,7 +23,7 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       'LPU(Language Processing Unit) 기반 초고속 추론 인프라. GPU 대비 일관된 응답 속도와 낮은 지연시간으로 500 Tokens/s 속도 제공',
     implementation:
-      '→ Metrics Query + Analyst + Tool-calling 1순위 모델. 고도의 도구 실행력으로 실시간 메트릭 조회 및 이상 분석 전담',
+      '→ text pool fallback 및 agent 정책별 tool-calling 경로. 높은 도구 실행력으로 실시간 메트릭 조회와 이상 분석을 보조',
     version: 'Llama 4 Scout (17B)',
     status: 'active',
     icon: '⚡',
@@ -37,7 +37,7 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       '프랑스 AI 스타트업의 효율적인 오픈웨이트 LLM. 무료 티어 보호를 위해 Large 대신 Small 계열을 text fallback 기본값으로 사용',
     implementation:
-      '→ Groq/Cerebras 장애 또는 쿼터 초과 시 text last-resort fallback. 내부 지식 검색 runtime과 임베딩 경로에서는 제외',
+      '→ 일반 답변/tool-loop text pool 구성원. 내부 지식 검색 runtime과 임베딩 경로에서는 제외',
     version: 'mistral-small-latest',
     status: 'active',
     icon: '🛡️',
@@ -132,20 +132,6 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     tags: ['시계열', '선형회귀', 'ETA'],
     type: 'custom',
   },
-  {
-    name: 'Mistral Embedding',
-    category: 'ai',
-    importance: 'low',
-    description:
-      '과거 그래프/벡터 인덱싱 경로에서 사용하던 텍스트 임베딩 모델. 현재 AI assistant Knowledge Retrieval Lite request path에서는 사용하지 않음',
-    implementation:
-      '→ Cloud Run embedding endpoint와 runtime helper는 제거됨. 운영 질의의 지식 검색은 BM25 + metadata boost 중심으로 처리',
-    version: 'mistral-embed (1024d)',
-    status: 'history',
-    icon: '🔍',
-    tags: ['Embedding', '1024d', 'Legacy'],
-    type: 'commercial',
-  },
   // ========== Observability ==========
   {
     name: 'Langfuse',
@@ -166,13 +152,12 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     category: 'database',
     importance: 'medium',
     description:
-      'Serverless Redis 서비스. Edge에서 동작하는 초저지연 캐싱과 Rate Limiting 제공',
+      'Serverless Redis 서비스. 짧게 유지되는 카운터와 상태를 빠르게 읽고 써서 AI 호출 흐름을 조율',
     implementation:
-      '→ AI 응답 캐싱(3시간 TTL), API Rate Limiting, 세션 저장에 사용. 무료 티어 500K commands/month',
-    version: '@upstash/redis v1.36',
+      '→ 요청 제한, AI 제공자별 쿼터/쿨다운, AI job 중복 방지, Langfuse 사용량 카운터, 일부 단기 cache/session 상태에 사용. 무료 티어 500K commands/month',
     status: 'active',
     icon: '⚡',
-    tags: ['Redis', 'Cache', 'RateLimiting'],
+    tags: ['Redis', 'RateLimit', 'Quota', 'Jobs'],
     type: 'commercial',
   },
   // ========== Deployment ==========

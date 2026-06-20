@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { isVercel } from '@/env-client';
-import type { AuthUser } from '@/lib/auth/auth-state-manager-types';
+import type { AuthState, AuthUser } from '@/lib/auth/auth-state-manager-types';
 import { logger } from '@/lib/logging';
 
 // This logic is now inlined from the old vercel-env.ts
@@ -47,6 +47,7 @@ export function useInitialAuth() {
   const [state, setState] = useState<InitialAuthState>(initialState);
   const pathname = usePathname();
   const initRef = useRef(false);
+  const authRequestIdRef = useRef(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // 상태 업데이트 헬퍼
@@ -54,42 +55,13 @@ export function useInitialAuth() {
     setState((prev) => ({ ...prev, ...updates }));
   }, []);
 
-  // 통합 초기화 프로세스
-  const initializeAuth = useCallback(async () => {
-    if (initRef.current) return;
-    initRef.current = true;
+  const isCurrentAuthRequest = useCallback((requestId: number) => {
+    return initRef.current && authRequestIdRef.current === requestId;
+  }, []);
 
-    try {
-      updateState({ currentStep: 'auth-check', isLoading: true });
-      logger.info(debugWithEnv('🔄 인증 상태 확인 중...'));
-
-      // 🔧 타임아웃이 있는 인증 체크 - 느린 네트워크에서도 빠르게 페이지 표시
-      const timeoutPromise = new Promise<null>((resolve) =>
-        setTimeout(() => resolve(null), AUTH_TIMEOUT_MS)
-      );
-
-      const authStateRequest = import('@/lib/auth/auth-state-manager').then(
-        ({ getAuthState }) => getAuthState()
-      );
-      const authState = await Promise.race([authStateRequest, timeoutPromise]);
-
-      // 타임아웃 발생 시 비인증 상태로 페이지 표시
-      if (!authState) {
-        logger.warn(
-          debugWithEnv(
-            `⏱️ 인증 체크 타임아웃 (${AUTH_TIMEOUT_MS}ms) - 비인증 상태로 진행`
-          )
-        );
-        updateState({
-          currentStep: 'complete',
-          isLoading: false,
-          isAuthenticated: false,
-          user: null,
-          isGitHubConnected: false,
-          error: null,
-        });
-        return;
-      }
+  const applyAuthState = useCallback(
+    (authState: AuthState, requestId: number) => {
+      if (!isCurrentAuthRequest(requestId)) return;
 
       const user = authState.user;
 
@@ -137,7 +109,75 @@ export function useInitialAuth() {
           `(${user.provider})`
         );
       }
+    },
+    [isCurrentAuthRequest, pathname, updateState]
+  );
+
+  // 통합 초기화 프로세스
+  const initializeAuth = useCallback(async () => {
+    if (initRef.current) return;
+    initRef.current = true;
+    const requestId = ++authRequestIdRef.current;
+    let authTimeoutId: NodeJS.Timeout | null = null;
+    const clearAuthTimeout = () => {
+      if (authTimeoutId) {
+        clearTimeout(authTimeoutId);
+      }
+      if (timeoutRef.current === authTimeoutId) {
+        timeoutRef.current = null;
+      }
+      authTimeoutId = null;
+    };
+
+    try {
+      updateState({ currentStep: 'auth-check', isLoading: true });
+      logger.info(debugWithEnv('🔄 인증 상태 확인 중...'));
+
+      // 🔧 타임아웃이 있는 인증 체크 - 느린 네트워크에서도 빠르게 페이지 표시
+      const timeoutPromise = new Promise<null>((resolve) => {
+        authTimeoutId = setTimeout(() => resolve(null), AUTH_TIMEOUT_MS);
+        timeoutRef.current = authTimeoutId;
+      });
+
+      const authStateRequest = import('@/lib/auth/auth-state-manager').then(
+        ({ getAuthState }) => getAuthState()
+      );
+      const authState = await Promise.race([authStateRequest, timeoutPromise]);
+
+      clearAuthTimeout();
+
+      // 타임아웃 발생 시 비인증 상태로 페이지 표시
+      if (!authState) {
+        logger.warn(
+          debugWithEnv(
+            `⏱️ 인증 체크 타임아웃 (${AUTH_TIMEOUT_MS}ms) - 비인증 상태로 진행`
+          )
+        );
+        updateState({
+          currentStep: 'complete',
+          isLoading: false,
+          isAuthenticated: false,
+          user: null,
+          isGitHubConnected: false,
+          error: null,
+        });
+
+        void authStateRequest
+          .then((lateAuthState) => {
+            applyAuthState(lateAuthState, requestId);
+          })
+          .catch((error) => {
+            if (!isCurrentAuthRequest(requestId)) return;
+            logger.warn(debugWithEnv('⚠️ 지연된 인증 결과 처리 실패:'), error);
+          });
+        return;
+      }
+
+      applyAuthState(authState, requestId);
     } catch (error) {
+      clearAuthTimeout();
+      if (!isCurrentAuthRequest(requestId)) return;
+
       logger.error('Authentication initialization failed:', error);
       updateState({
         currentStep: 'complete',
@@ -152,7 +192,7 @@ export function useInitialAuth() {
         debugWithEnv('⚠️ 인증 에러 - 메인 페이지에서 로그인 버튼 표시')
       );
     }
-  }, [pathname, updateState]);
+  }, [applyAuthState, isCurrentAuthRequest, updateState]);
 
   useEffect(() => {
     logger.info(debugWithEnv('🔄 useInitialAuth 초기화 시작'));
@@ -189,6 +229,11 @@ export function useInitialAuth() {
 
   const retry = useCallback(() => {
     initRef.current = false;
+    authRequestIdRef.current += 1;
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
     setState(initialState);
     void initializeAuth();
   }, [initializeAuth]);

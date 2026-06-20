@@ -21,7 +21,7 @@ export const CLOUD_PLATFORM_TECH_STACK: TechItem[] = [
     description:
       '오픈소스 Firebase 대안 BaaS. PostgreSQL 기반으로 인증, 스토리지, 실시간 구독, Row Level Security를 통합 제공',
     implementation:
-      '→ 운영 지식/사용자 상태 저장, search_knowledge_text RPC, RLS 기반 접근 제어에 사용. 과거 vector 컬럼은 호환 데이터로만 유지',
+      '→ 운영 지식/사용자 상태 저장, search_knowledge_text RPC, Auth/RLS 기반 접근 제어에 사용. 지식 검색은 Postgres FTS serving index로 단순화',
     status: 'active',
     icon: '🐘',
     tags: ['데이터베이스', 'PostgreSQL', 'RLS', 'BaaS'],
@@ -85,12 +85,12 @@ export const CLOUD_PLATFORM_TECH_STACK: TechItem[] = [
     category: 'cache',
     importance: 'critical',
     description:
-      'Serverless Redis 서비스. 글로벌 복제, 초저지연 캐싱, 사용량 기반 과금. REST API로 Edge 환경에서도 접근 가능',
+      'Serverless Redis 서비스. 글로벌 복제, 초저지연 상태 저장, 사용량 기반 과금. REST API로 Edge 환경에서도 접근 가능',
     implementation:
-      '→ AI 응답 캐싱(3시간 TTL), API Rate Limiting으로 할당량 보호',
+      '→ 요청 제한, AI 제공자별 쿼터/쿨다운, AI job 중복 방지, Langfuse 사용량 카운터, 단기 cache/session 상태로 호출 폭주와 중복 실행 제어',
     status: 'active',
     icon: '⚡',
-    tags: ['Redis', 'Serverless', 'Cache', 'Rate-Limit'],
+    tags: ['Redis', 'Serverless', 'Rate-Limit', 'Quota'],
     type: 'commercial',
   },
   {

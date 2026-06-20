@@ -23,6 +23,9 @@ const OFF_DOMAIN_WARNING =
 const OPERATIONAL_CONTEXT_PATTERN =
   /서버|서벼|썹|인프라|시스템|시스탬|모니터링|장애|알림|로그|오류|에러|토폴로지|아키텍처|구성도|배치도|운영|점검|명령어|cpu|씨피유|메모리|메머리|멤|디스크|용량|트래픽|네트워크|지연|응답|latency|response|server|servr|sever|infra|monitoring|incident|alert|log|memory|memroy|disk|traffic|network|load|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat|database|\bdb\b|promql|otel|runbook|krl|rag/i;
 
+const NEGATED_OPERATIONAL_CONTEXT_PATTERN =
+  /(?:서버|서벼|썹|인프라|시스템|시스탬|모니터링|장애|알림|로그|오류|에러|토폴로지|아키텍처|구성도|배치도|운영|점검|명령어|cpu|씨피유|메모리|메머리|멤|디스크|용량|트래픽|네트워크|지연|응답|server|servr|sever|infra|monitoring|incident|alert|log|memory|disk|traffic|network|load|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat|database|\bdb\b|promql|otel|runbook|krl|rag)(?:\s*(?:상태|현황|정보|문맥|컨텍스트|내용|관련))?\s*(?:은|는|이|가|을|를)?\s*(?:말고|말구|제외(?:하고|한)?|빼고|대신|아니고|아닌)/i;
+
 const EXTERNAL_ACTION_PATTERN =
   /((캘린더|calendar|일정|회의|미팅).*(잡아|등록|추가|넣어|만들어|생성|예약|schedule))|(예약해|예약\s*(잡아|잡|해줘|해)|\bbook\b|\breserve\b)|(메일|이메일|email|문자|sms|슬랙|slack).*(보내|발송|전송|공유|send)/i;
 
@@ -74,6 +77,10 @@ function isPersonalFinanceQuery(query: string): boolean {
     return true;
   }
   return !hasOperationalContext(query);
+}
+
+function hasNegatedOperationalContext(query: string): boolean {
+  return NEGATED_OPERATIONAL_CONTEXT_PATTERN.test(query);
 }
 
 function buildResponse(category: OffDomainGuardCategory): string {
@@ -130,6 +137,32 @@ export function getOffDomainGuardrail(
       shouldShortCircuit: true,
       warning: OFF_DOMAIN_WARNING,
       response: buildResponse('personal_general'),
+    };
+  }
+
+  if (
+    hasNegatedOperationalContext(trimmedQuery) &&
+    LIVE_FACT_PATTERN.test(trimmedQuery)
+  ) {
+    return {
+      category: 'live_fact',
+      action: 'block',
+      shouldShortCircuit: true,
+      warning: OFF_DOMAIN_WARNING,
+      response: buildResponse('live_fact'),
+    };
+  }
+
+  if (
+    hasNegatedOperationalContext(trimmedQuery) &&
+    LOCAL_RECOMMENDATION_PATTERN.test(trimmedQuery)
+  ) {
+    return {
+      category: 'local_recommendation',
+      action: 'block',
+      shouldShortCircuit: true,
+      warning: OFF_DOMAIN_WARNING,
+      response: buildResponse('local_recommendation'),
     };
   }
 

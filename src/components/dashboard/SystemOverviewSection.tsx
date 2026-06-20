@@ -112,7 +112,7 @@ export function SystemOverviewSection({ servers }: SystemOverviewSectionProps) {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* 좌: 시스템 리소스 평균 게이지 */}
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-400">
+          <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-500">
             시스템 리소스
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-evenly sm:gap-2 px-2 sm:px-0">
@@ -129,7 +129,7 @@ export function SystemOverviewSection({ servers }: SystemOverviewSectionProps) {
 
         {/* 우: 주요 경고 Top 5 */}
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-400">
+          <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-500">
             리소스 경고 (Top 5)
           </p>
           <div className="space-y-0">
@@ -174,7 +174,7 @@ export function SystemOverviewSection({ servers }: SystemOverviewSectionProps) {
               );
             })}
             {topAlerts.length === 0 && (
-              <div className="flex items-center gap-2 px-2 py-3 text-sm text-slate-400">
+              <div className="flex items-center gap-2 px-2 py-3 text-sm text-slate-500">
                 <CheckCircle2 className="h-4 w-4 text-green-500" />
                 경고 없음
               </div>

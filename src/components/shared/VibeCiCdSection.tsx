@@ -198,7 +198,7 @@ const SCENARIOS = [
 ] as const;
 
 export function VibeCiCdSection({
-  diagram: _diagram,
+  diagram,
 }: {
   diagram?: ArchitectureDiagram | null;
 }) {
@@ -216,6 +216,26 @@ export function VibeCiCdSection({
           </span>{' '}
           소진합니다.
         </p>
+
+        {diagram && (
+          <section
+            className="mx-auto mt-4 max-w-2xl rounded-xl border border-amber-500/15 bg-amber-500/5 px-4 py-3 text-center"
+            aria-label="AI 개발 워크플로우 아키텍처 요약"
+          >
+            <p className="text-[10px] font-bold uppercase tracking-widest text-amber-300/55">
+              Architecture
+            </p>
+            <p className="mt-1 text-sm font-semibold text-white/85">
+              {diagram.title}
+            </p>
+            <p className="mt-1 text-[11px] leading-relaxed text-white/60">
+              {diagram.description}
+            </p>
+            <p className="mt-2 text-[10px] text-white/40">
+              {`${diagram.layers.length}개 레이어 · ${diagram.connections?.length ?? 0}개 연결`}
+            </p>
+          </section>
+        )}
 
         <div className="mt-6">
           {/* Zone indicator — desktop only */}

@@ -1,9 +1,10 @@
 'use client';
 
 import { FileText, Network, X } from 'lucide-react';
+import type { KeyboardEvent } from 'react';
 import type { ArchitectureDiagram } from '@/data/architecture-diagrams.types';
 
-type VibeView = 'current' | 'history' | 'cicd';
+export type VibeView = 'current' | 'history' | 'cicd';
 
 type FeatureCardModalHeaderProps = {
   title: string;
@@ -24,6 +25,11 @@ const VIBE_VIEWS: { id: VibeView; label: string }[] = [
   { id: 'cicd', label: 'CI/CD' },
 ];
 
+export const getVibeTabId = (view: VibeView) => `feature-card-vibe-tab-${view}`;
+
+export const getVibePanelId = (view: VibeView) =>
+  `feature-card-vibe-panel-${view}`;
+
 export function FeatureCardModalHeader({
   title,
   Icon,
@@ -37,6 +43,33 @@ export function FeatureCardModalHeader({
   onClose,
 }: FeatureCardModalHeaderProps) {
   const DiagramToggleIcon = showDiagram ? FileText : Network;
+
+  const handleVibeTabKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const currentIndex = VIBE_VIEWS.findIndex((view) => view.id === vibeView);
+    if (currentIndex === -1) return;
+
+    let nextIndex: number | null = null;
+    if (event.key === 'ArrowLeft') {
+      nextIndex = (currentIndex - 1 + VIBE_VIEWS.length) % VIBE_VIEWS.length;
+    } else if (event.key === 'ArrowRight') {
+      nextIndex = (currentIndex + 1) % VIBE_VIEWS.length;
+    } else if (event.key === 'Home') {
+      nextIndex = 0;
+    } else if (event.key === 'End') {
+      nextIndex = VIBE_VIEWS.length - 1;
+    }
+
+    if (nextIndex === null) return;
+
+    event.preventDefault();
+    const nextView = VIBE_VIEWS[nextIndex]?.id;
+    if (!nextView) return;
+
+    onSetVibeView(nextView);
+    window.requestAnimationFrame(() => {
+      document.getElementById(getVibeTabId(nextView))?.focus();
+    });
+  };
 
   return (
     <header
@@ -78,20 +111,29 @@ export function FeatureCardModalHeader({
         )}
 
         {cardId === 'vibe-coding' && (
-          <div className="flex flex-1 flex-wrap items-center justify-end gap-1 rounded-xl border border-white/10 bg-black/20 p-1 sm:flex-none sm:flex-nowrap">
+          <div
+            className="flex flex-1 flex-wrap items-center justify-end gap-1 rounded-xl border border-white/10 bg-black/20 p-1 sm:flex-none sm:flex-nowrap"
+            role="tablist"
+            aria-label="AI 개발 워크플로우 보기"
+            onKeyDown={handleVibeTabKeyDown}
+          >
             {VIBE_VIEWS.map((view) => {
               const isActive = vibeView === view.id;
               return (
                 <button
                   key={view.id}
                   type="button"
+                  role="tab"
+                  id={getVibeTabId(view.id)}
                   onClick={() => onSetVibeView(view.id)}
                   className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all duration-200 focus:outline-hidden focus:ring-2 focus:ring-amber-500/40 sm:px-3 sm:text-sm ${
                     isActive
                       ? 'bg-linear-to-r from-amber-600 to-orange-600 text-white shadow-lg shadow-amber-950/30'
                       : 'text-white/70 hover:bg-white/10 hover:text-white'
                   }`}
-                  aria-pressed={isActive}
+                  aria-selected={isActive}
+                  aria-controls={getVibePanelId(view.id)}
+                  tabIndex={isActive ? 0 : -1}
                 >
                   {view.label}
                 </button>

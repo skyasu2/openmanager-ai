@@ -97,7 +97,6 @@ function StatusCard({
       data-testid={`status-card-${status}`}
       onClick={handleClick}
       disabled={!isInteractive}
-      aria-label={`${label} ${count}대 필터`}
       aria-pressed={isInteractive ? activeFilter === status : undefined}
       className={cn(
         'group relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-md p-3 text-left min-h-[72px]',
@@ -136,6 +135,7 @@ function StatusCard({
         >
           {count}
         </span>
+        <span className="sr-only">대 상태 필터</span>
       </div>
     </button>
   );

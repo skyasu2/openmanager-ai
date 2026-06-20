@@ -13,7 +13,11 @@ import {
   getSafeCardData,
   sanitizeModalText,
 } from './FeatureCardModal.utils';
-import { FeatureCardModalHeader } from './FeatureCardModalHeader';
+import {
+  FeatureCardModalHeader,
+  getVibePanelId,
+  getVibeTabId,
+} from './FeatureCardModalHeader';
 import { StaticArchitectureDiagram } from './StaticArchitectureDiagram';
 import { TechStackSection } from './TechStackSection';
 import { VibeCiCdSection } from './VibeCiCdSection';
@@ -199,6 +203,16 @@ export default function FeatureCardModal({
     return getDiagramByCardId(cardData.id);
   }, [cardData.id]);
 
+  const vibePanelProps =
+    cardData.id === 'vibe-coding' && !showDiagram
+      ? {
+          role: 'tabpanel' as const,
+          id: getVibePanelId(vibeView),
+          'aria-labelledby': getVibeTabId(vibeView),
+          tabIndex: 0,
+        }
+      : {};
+
   // 🎯 이전 AI 리뷰 제안: 메모리 효율성 개선 - 단일 순회로 모든 중요도별 분류 처리
   const categorizedTechData = React.useMemo(() => {
     return buildCategorizedTechData(cardData.id, vibeView === 'history');
@@ -216,7 +230,10 @@ export default function FeatureCardModal({
   const vibeHistoryStages = categorizedTechData.historyStages;
 
   const mainContent = (
-    <div className={showDiagram ? 'p-3 text-white sm:p-4' : 'p-6 text-white'}>
+    <div
+      className={showDiagram ? 'p-3 text-white sm:p-4' : 'p-6 text-white'}
+      {...vibePanelProps}
+    >
       {showDiagram && diagramData ? (
         <div className="space-y-3">
           <FeatureCardDiagramSummary diagram={diagramData} />
@@ -387,6 +404,8 @@ export default function FeatureCardModal({
       {/* 개선된 배경 블러 효과 */}
       <div
         className="absolute inset-0 bg-black/85 backdrop-blur-sm"
+        data-testid="feature-card-modal-backdrop"
+        onMouseDown={onClose}
         aria-hidden
       />
 

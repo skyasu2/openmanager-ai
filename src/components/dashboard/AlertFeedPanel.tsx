@@ -229,7 +229,7 @@ function AlertFeedRow({ alert }: { alert: MonitoringAlert }) {
             {formatMetricValue(alert.metric, alert.value)}
           </p>
         </div>
-        <span className="shrink-0 whitespace-nowrap text-xs tabular-nums text-slate-400">
+        <span className="shrink-0 whitespace-nowrap text-xs tabular-nums text-slate-500">
           {formatElapsedDuration(alert.duration)}
         </span>
       </div>

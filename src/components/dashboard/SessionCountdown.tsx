@@ -135,7 +135,7 @@ export const SessionCountdown = memo(function SessionCountdown() {
       <span className="font-mono tabular-nums">
         {formatTime(remainingTime)}
       </span>
-      <span className={cn('text-xs', isCritical ? 'font-bold' : 'opacity-80')}>
+      <span className={cn('text-xs', isCritical ? 'font-bold' : 'font-normal')}>
         {visibleStatusText}
       </span>
     </div>

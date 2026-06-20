@@ -179,10 +179,36 @@ export const getDisplayModeConfig = (
 export const generateDisplayInfo = (
   currentMode: ServerDisplayMode,
   currentPage: number = 1,
-  totalServers: number = ACTIVE_SERVER_CONFIG.maxServers
+  totalServers: number = ACTIVE_SERVER_CONFIG.maxServers,
+  screenWidth: number = 1280
 ) => {
-  const config = getDisplayModeConfig(currentMode);
+  const config = getDisplayModeConfig(currentMode, screenWidth);
   const totalPages = Math.ceil(totalServers / config.cardsPerPage);
+
+  if (totalServers <= 0) {
+    return {
+      // 📊 기본 정보
+      totalServers: 0,
+      cardsPerPage: config.cardsPerPage,
+      totalPages: 0,
+      currentPage: 1,
+
+      // 🎯 표시 정보
+      displayedCount: 0,
+      displayRange: '0-0',
+
+      // 📝 사용자 친화적 메시지
+      statusMessage: '전체 0개 서버 중 0개 표시',
+      paginationMessage: '전체 표시',
+      modeDescription: config.description,
+
+      // 🎛️ 설정 정보
+      hasPagination: false,
+      hasNextPage: false,
+      hasPrevPage: false,
+    };
+  }
+
   const startIndex = (currentPage - 1) * config.cardsPerPage + 1;
   const endIndex = Math.min(currentPage * config.cardsPerPage, totalServers);
 

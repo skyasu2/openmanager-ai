@@ -25,7 +25,7 @@ export interface AIProviderConfig {
 
 export const GROQ_TEXT_MODEL_ID =
   'meta-llama/llama-4-scout-17b-16e-instruct';
-export const ZAI_TEXT_MODEL_ID = 'glm-4.5-flash';
+export const ZAI_TEXT_MODEL_ID = 'glm-4.7-flash';
 export const ZAI_VISION_MODEL_ID = 'glm-4.6v-flash';
 
 /**

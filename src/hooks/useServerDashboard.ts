@@ -220,18 +220,47 @@ export function useEnhancedServerDashboard({
   // 🏗️ Clean Architecture: 필터링 훅 사용
   const {
     searchTerm,
-    setSearchTerm,
+    setSearchTerm: setSearchTermValue,
     statusFilter,
-    setStatusFilter,
+    setStatusFilter: setStatusFilterValue,
     locationFilter,
-    setLocationFilter,
+    setLocationFilter: setLocationFilterValue,
     filteredServers,
     uniqueLocations,
-    resetFilters,
+    resetFilters: resetFilterValues,
   } = useServerFilter(servers);
 
   // 📄 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
+
+  const setSearchTerm = useCallback(
+    (term: string) => {
+      setSearchTermValue(term);
+      setCurrentPage(1);
+    },
+    [setSearchTermValue]
+  );
+
+  const setStatusFilter = useCallback(
+    (status: string) => {
+      setStatusFilterValue(status);
+      setCurrentPage(1);
+    },
+    [setStatusFilterValue]
+  );
+
+  const setLocationFilter = useCallback(
+    (location: string) => {
+      setLocationFilterValue(location);
+      setCurrentPage(1);
+    },
+    [setLocationFilterValue]
+  );
+
+  const resetFilters = useCallback(() => {
+    resetFilterValues();
+    setCurrentPage(1);
+  }, [resetFilterValues]);
 
   // 🔄 로딩 상태
   const [isLoading, setIsLoading] = useState(false);
@@ -289,6 +318,11 @@ export function useEnhancedServerDashboard({
     return Math.ceil(safeLength / displayConfig.cardsPerPage);
   }, [filteredServers, displayConfig.cardsPerPage]);
 
+  const effectiveCurrentPage =
+    calculatedTotalPages > 0
+      ? Math.max(1, Math.min(currentPage, calculatedTotalPages))
+      : 1;
+
   const calculatedPaginatedServers = useMemo(() => {
     if (
       !filteredServers ||
@@ -298,10 +332,10 @@ export function useEnhancedServerDashboard({
       return [];
     }
 
-    const startIndex = (currentPage - 1) * displayConfig.cardsPerPage;
+    const startIndex = (effectiveCurrentPage - 1) * displayConfig.cardsPerPage;
     const endIndex = startIndex + displayConfig.cardsPerPage;
     return filteredServers.slice(startIndex, endIndex);
-  }, [filteredServers, currentPage, displayConfig.cardsPerPage]);
+  }, [filteredServers, effectiveCurrentPage, displayConfig.cardsPerPage]);
 
   // 📊 표시 정보 생성 (UI/UX 개선)
   const displayInfo = useMemo(() => {
@@ -309,13 +343,20 @@ export function useEnhancedServerDashboard({
       filteredServers && Array.isArray(filteredServers)
         ? filteredServers.length
         : 0;
-    return generateDisplayInfo(displayMode, currentPage, safeFilteredLength);
-  }, [displayMode, currentPage, filteredServers]);
+    return generateDisplayInfo(
+      displayMode,
+      effectiveCurrentPage,
+      safeFilteredLength,
+      screenWidth
+    );
+  }, [displayMode, effectiveCurrentPage, filteredServers, screenWidth]);
 
-  // 🔄 페이지 리셋 (필터 변경 시)
+  // 필터 또는 반응형 page size 변경으로 페이지 수가 줄거나 invalid page가 들어온 경우 보정
   useEffect(() => {
-    setCurrentPage(1);
-  }, []);
+    if (currentPage !== effectiveCurrentPage) {
+      setCurrentPage(effectiveCurrentPage);
+    }
+  }, [currentPage, effectiveCurrentPage]);
 
   // 🔄 레이아웃 새로고침
   const refreshLayout = () => {
@@ -334,7 +375,7 @@ export function useEnhancedServerDashboard({
     statusFilter,
     locationFilter,
     uniqueLocations,
-    currentPage,
+    currentPage: effectiveCurrentPage,
     totalPages: calculatedTotalPages,
     displayInfo,
     gridLayout,

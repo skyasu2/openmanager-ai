@@ -66,8 +66,7 @@ const FeatureCardItem = memo(
       <button
         type="button"
         key={card.id}
-        aria-labelledby={`${titleId} ${actionId}`}
-        aria-describedby={descriptionId}
+        aria-labelledby={`${titleId} ${descriptionId} ${actionId}`}
         className="group relative h-full w-full cursor-pointer rounded-lg text-left focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
         onClick={() => onCardClick(card.id)}
       >
