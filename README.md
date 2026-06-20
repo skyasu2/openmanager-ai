@@ -1,15 +1,15 @@
 # OpenManager AI
 
-> **AI-Native Server Monitoring Platform**
-> 자연어로 대화하며 서버를 모니터링하는 차세대 운영 플랫폼
+> **Personal AI-assisted Server Monitoring Dashboard**
+> 자연어 질의와 대시보드를 결합해 만든 개인 토이·학습용 포트폴리오 프로젝트
 
 [![Version](https://img.shields.io/badge/version-8.13.58-blue.svg?style=for-the-badge)](https://openmanager-ai.vercel.app)
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://openmanager-ai.vercel.app)
+[![Deployed Demo](https://img.shields.io/badge/Deployed_Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://openmanager-ai.vercel.app)
 [![License](https://img.shields.io/badge/License-GPL_v3-blue.svg?style=for-the-badge)](LICENSE)
 
 ![Next.js](https://img.shields.io/badge/Next.js_16-black?style=flat-square&logo=next.js&logoColor=white)
 ![React](https://img.shields.io/badge/React_19-20232A?style=flat-square&logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript_5-007ACC?style=flat-square&logo=typescript&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript_6-007ACC?style=flat-square&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-181818?style=flat-square&logo=supabase&logoColor=3ECF8E)
 ![Google Cloud](https://img.shields.io/badge/Cloud_Run-4285F4?style=flat-square&logo=google-cloud&logoColor=white)
@@ -19,18 +19,18 @@
 
 ## What is this?
 
-OpenManager AI는 서버 모니터링의 패러다임을 **"차트 해석"에서 "질문과 답변"으로** 바꾸는 AI 기반 플랫폼입니다.
+OpenManager AI는 서버 모니터링 dashboard에 자연어 질의 UI를 결합해 본 개인 토이·학습용 포트폴리오 프로젝트입니다.
 
-이 공개 저장소는 **Vercel에 배포되는 Next.js 프론트엔드와 공개 데이터 스냅샷**만 공유합니다. 운영자는 CPU/메모리 그래프를 직접 읽는 대신, 자연어로 질문합니다:
+이 공개 저장소는 **Vercel에 배포된 데모용 Next.js 프론트엔드와 공개 데이터 스냅샷**만 공유합니다. 학습용 시나리오에서는 CPU/메모리 그래프를 직접 읽는 대신, 자연어로 질문합니다:
 
 ```
 "서버 상태 어때?"           → 전체 헬스 요약
 "왜 web-01이 느려졌어?"     → 이상 탐지 + 원인 분석
-"장애 보고서 만들어줘"      → 마크다운 리포트 자동 생성
+"장애 보고서 만들어줘"      → 마크다운 리포트 초안
 "CPU 80% 넘는 서버 있어?"  → 메트릭 쿼리 + 필터
 ```
 
-**🔗 Live Demo**: [openmanager-ai.vercel.app](https://openmanager-ai.vercel.app)
+**Deployed demo**: [openmanager-ai.vercel.app](https://openmanager-ai.vercel.app)
 
 > **Public snapshot note**
 > 이 저장소는 브라우저에서 확인 가능한 UI 코드, 공개용 정적 데이터, 최소 실행 설정만 포함합니다.
@@ -43,9 +43,9 @@ OpenManager AI는 서버 모니터링의 패러다임을 **"차트 해석"에서
 | Feature | Description |
 |---------|-------------|
 | **AI Workspace UI** | 자연어 질의, 스트리밍 상태, agent handoff UI 제공 |
-| **Real-time Dashboard** | 서버 카드, 시계열 차트, 경보/상태 요약 |
+| **Snapshot Dashboard** | 서버 카드, 시계열 차트, 경보/상태 요약 |
 | **Precomputed OTel Data** | 공개 데모와 fallback 경로에 쓰이는 모니터링 샘플 데이터 포함 |
-| **Production Shell** | Vercel production에서 동작하는 frontend shell과 API proxy 포함 |
+| **Deployed Frontend Shell** | Vercel 배포 데모에서 동작하는 frontend shell과 API proxy 포함 |
 
 ---
 
@@ -77,7 +77,7 @@ User (Natural Language Query)
 이 저장소는 frontend shell과 공개 데이터만 제공하므로, AI backend 내부 구현과 모델 구성은 설명 대상에서 제외합니다. 공개 범위에서 중요한 점은 다음 두 가지입니다.
 
 - dashboard, login, public data 경로는 이 저장소만으로 확인 가능
-- 실제 AI 응답 생성과 agent orchestration은 private runtime 의존
+- 전체 AI 응답 생성과 agent orchestration은 private runtime 의존
 
 ---
 
@@ -85,12 +85,12 @@ User (Natural Language Query)
 
 | Layer | Technology |
 |-------|-----------|
-| **Frontend** | Next.js 16.1, React 19.2, TypeScript 5.9 |
+| **Frontend** | Next.js 16.2, React 19.2, TypeScript 6 |
 | **Styling** | Tailwind CSS, shadcn/ui, Radix UI |
 | **State** | Zustand, TanStack Query |
 | **Frontend AI Integration** | Vercel AI SDK v6 client and streaming UI |
 | **Backend Dependencies** | Supabase, Upstash Redis, private AI runtime |
-| **Deployment** | Vercel production frontend + external private services |
+| **Demo Deployment** | Vercel frontend demo + external private services |
 | **Monitoring Data** | Precomputed OTel metrics shipped under `public/data/otel-data/` |
 
 ---
@@ -108,7 +108,7 @@ User (Natural Language Query)
 - Private Cloud Run AI runtime source
 - Internal QA run records and CI operational assets
 - Internal maintenance scripts, test harnesses, and component-only notes
-- Secrets and production-only environment configuration
+- Secrets and deployed-demo-only environment configuration
 
 ---
 
@@ -123,14 +123,14 @@ npm run type-check
 npm run lint
 ```
 
-기본 UI, 로그인, 대시보드는 공개 데이터와 fallback 경로로 확인할 수 있습니다. AI chat과 production-equivalent backend 동작은 private runtime과 유효한 secrets가 있어야 합니다.
+기본 UI, 로그인, 대시보드는 공개 데이터와 fallback 경로로 확인할 수 있습니다. AI chat의 전체 backend 흐름은 private runtime과 유효한 secrets가 있어야 합니다.
 
 ---
 
 ## Known Limits
 
 - 공개 저장소만으로 private AI backend 전체를 재현할 수는 없습니다
-- 일부 API route는 production에서 external runtime 의존성을 전제로 합니다
+- 일부 API route는 배포된 데모 환경에서 external runtime 의존성을 전제로 합니다
 - public snapshot은 canonical 개발 저장소가 아니라 읽기/분석용 배포 코드 snapshot입니다
 
 ---
@@ -141,8 +141,6 @@ GNU General Public License v3.0 — see [LICENSE](LICENSE) for details.
 
 ---
 
-<div align="center">
-  <a href="https://openmanager-ai.vercel.app"><strong>🚀 Live Demo</strong></a>
-  &nbsp;·&nbsp;
-  <sub>Public Snapshot · v8.13.58</sub>
-</div>
+**Deployed demo**: [openmanager-ai.vercel.app](https://openmanager-ai.vercel.app)
+
+Public Snapshot · v8.13.58
