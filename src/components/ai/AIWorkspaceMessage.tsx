@@ -120,12 +120,16 @@ export const AIWorkspaceMessage = memo<{
     target: 'incident-report' | 'monitoring-analysis'
   ) => void;
   isLastMessage?: boolean;
+  regenerateDisabled?: boolean;
+  regenerateDisabledReason?: string;
 }>(
   ({
     message,
     onRegenerateResponse,
     onArtifactGuidanceCta,
     isLastMessage = false,
+    regenerateDisabled,
+    regenerateDisabledReason,
   }) => {
     const hasTextContent = Boolean(message.content?.trim());
     const assistantResponseView = useMemo(() => {
@@ -363,6 +367,8 @@ export const AIWorkspaceMessage = memo<{
                     showRegenerate={
                       isLastMessage && message.role === 'assistant'
                     }
+                    regenerateDisabled={regenerateDisabled}
+                    regenerateDisabledReason={regenerateDisabledReason}
                   />
                 )}
               </div>

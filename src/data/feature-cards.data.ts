@@ -24,9 +24,9 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     icon: Bot,
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     detailedContent: {
-      overview: `운영자가 메트릭 그래프를 직접 해석하지 않아도, 질문 하나로 현재 상태, 원인 분석, 다음 조치안을 받을 수 있도록 설계한 운영 의사결정 AI 어시스턴트입니다. 핵심 수치와 판정은 deterministic fact layer가 책임지고, LLM은 tool-calling과 설명·보고서·조치안 생성을 맡습니다. 내부 지식은 Supabase Postgres Full Text Search를 감싼 search_knowledge_text RPC로 검색하고, 원본 지식은 repo 문서와 seed JSON에 남겨 재생성 가능한 인덱스로 관리합니다. 일반 답변과 tool-loop 생성은 Z.AI·Mistral·Groq text pool을 capability-aware Round-Robin으로 순환하고, 짧은 structured-output 판단은 Cerebras·Mistral·Z.AI·Groq analysis pool로 분리합니다. Vision은 Gemini Flash-Lite 전용 경로를 씁니다. RCA/report/advisor/vision처럼 복잡한 요청만 5개 라우팅 에이전트로 escalation합니다. 경량 커스텀 TypeScript ML, Knowledge Retrieval Lite(Postgres FTS + metadata boost), 요청 기반 웹 검색을 분리해 무료 티어 사용량을 예측 가능하게 유지합니다.`,
+      overview: `운영자가 메트릭 그래프를 직접 해석하지 않아도, 질문 하나로 현재 상태, 원인 분석, 다음 조치안을 받을 수 있도록 설계한 운영 의사결정 AI 어시스턴트입니다. 핵심 수치와 판정은 deterministic fact layer가 책임지고, LLM은 tool-calling과 설명·보고서·조치안 생성을 맡습니다. 내부 지식은 Supabase Postgres Full Text Search를 감싼 search_knowledge_text RPC로 검색하고, 원본 지식은 repo 문서와 seed JSON에 남겨 재생성 가능한 인덱스로 관리합니다. 일반 답변과 tool-loop 생성은 Z.AI·Mistral·Groq text pool을 capability-aware Round-Robin으로 순환하고, 짧은 structured-output 판단은 Cerebras·Mistral·second Z.AI account·Groq analysis pool로 분리합니다. Vision은 Gemini Flash-Lite 전용 경로를 씁니다. RCA/report/advisor/vision처럼 복잡한 요청만 5개 라우팅 에이전트로 escalation합니다. 경량 커스텀 TypeScript ML, Knowledge Retrieval Lite(Postgres FTS + metadata boost), 요청 기반 웹 검색을 분리해 무료 티어 사용량을 예측 가능하게 유지합니다.`,
       features: [
-        '✨ Z.AI: GLM Flash (128K ctx) — 일반 답변/tool-loop text pool 구성원, 긴 컨텍스트 텍스트 처리',
+        '✨ Z.AI: GLM Flash (128K ctx) — 일반 답변/tool-loop text pool 구성원, second account key는 analysis pool 쿼터 분리용',
         '🌊 Mistral AI: mistral-small-latest (32K ctx) — 일반 답변/tool-loop text pool 구성원, 무료 티어 친화적 텍스트 처리',
         '⚡ Groq Cloud: LPU 기반 초고속 추론 (meta-llama/llama-4-scout-17b-16e-instruct, 131K ctx) — text pool fallback 및 agent 정책별 tool-calling 경로',
         '🧠 Cerebras Inference: gpt-oss-120b — 짧은 structured-output routing/context/evidence 판단용 analysis pool 선두 후보',
@@ -41,7 +41,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         '☁️ GCP Cloud Run: Node.js 24 + Hono 서버리스 컨테이너 — Vercel 컴퓨팅 부하 분산 및 AI 백엔드 전담, Scale-to-Zero 하이브리드 운영',
       ],
       technologies: [
-        'Z.AI GLM Flash (Text Pool, 128K)',
+        'Z.AI GLM Flash (Text Pool + second-key Analysis bucket, 128K)',
         'Mistral AI (Text Pool, 32K)',
         'Groq Cloud (Text Pool / Tool-calling, 131K)',
         'Cerebras Inference gpt-oss-120b (Analysis Pool)',

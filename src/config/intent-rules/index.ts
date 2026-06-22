@@ -9,5 +9,4 @@ export {
   INTENT_PATTERN_NAMES,
   IntentPatternEntrySchema,
   IntentPatternsSchema,
-  type IntentPatternEntry,
 } from './schema';

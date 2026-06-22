@@ -391,7 +391,6 @@ export default function DashboardInteractiveShell({
             <Suspense fallback={<ContentLoadingSkeleton />}>
               {dashboardView === 'overview' ? (
                 <DashboardContent
-                  showSequentialGeneration={false}
                   servers={realServers}
                   allServers={allServers}
                   displayServers={filteredServers}
@@ -405,7 +404,6 @@ export default function DashboardInteractiveShell({
                   onPageSizeChange={changePageSize}
                   status={{ type: 'idle' }}
                   onStatsUpdate={handleStatsUpdate}
-                  onShowSequentialChange={() => {}}
                   statusFilter={statusFilter}
                   onStatusFilterChange={setStatusFilter}
                 />

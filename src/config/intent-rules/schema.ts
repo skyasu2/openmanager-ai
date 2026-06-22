@@ -439,4 +439,3 @@ export const IntentPatternsSchema = z
   .strict();
 
 export type IntentPatternsConfig = z.infer<typeof IntentPatternsSchema>;
-export type IntentPatternEntry = z.infer<typeof IntentPatternEntrySchema>;

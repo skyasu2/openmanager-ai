@@ -126,55 +126,6 @@ export function submitArtifactGuidanceCta({
   return true;
 }
 
-export function runArtifactGuidanceCta({
-  target,
-  disableSessionLimit,
-  sessionLimitReached,
-  sessionMessageCount,
-  hybridIsLoading,
-  artifactIntentInFlightRef,
-  resetRequestState,
-  onSessionLimitReached,
-  ...runtime
-}: ArtifactGenerationRuntimeContext & {
-  target: GuidanceCtaTarget;
-  disableSessionLimit: boolean | undefined;
-  sessionLimitReached: boolean;
-  sessionMessageCount: number;
-  hybridIsLoading: boolean;
-  artifactIntentInFlightRef: MutableRefObject<boolean>;
-  resetRequestState: ResetRequestState;
-  onSessionLimitReached?: (messageCount: number) => void;
-}): boolean {
-  return submitArtifactGuidanceCta({
-    target,
-    disableSessionLimit,
-    sessionLimitReached,
-    sessionMessageCount,
-    hybridIsLoading,
-    artifactInFlight: runtime.artifactInFlightRef.current,
-    artifactIntentInFlight: artifactIntentInFlightRef.current,
-    setError: runtime.setError,
-    resetRequestState,
-    onSessionLimitReached,
-    startArtifactGeneration: ({ artifactIntent, query }) =>
-      startChatArtifactGeneration({
-        artifactIntent,
-        query,
-        sessionId: runtime.sessionId,
-        queryAsOfDataSlot: runtime.queryAsOfDataSlot,
-        messages: runtime.messagesRef.current,
-        messagesRef: runtime.messagesRef,
-        setMessages: runtime.setMessages,
-        setError: runtime.setError,
-        setArtifactIsLoading: runtime.setArtifactIsLoading,
-        artifactRequestIdRef: runtime.artifactRequestIdRef,
-        artifactAbortControllerRef: runtime.artifactAbortControllerRef,
-        artifactInFlightRef: runtime.artifactInFlightRef,
-      }),
-  });
-}
-
 export async function tryHandleChatArtifactRequest({
   query,
   attachments,

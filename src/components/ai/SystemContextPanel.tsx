@@ -31,6 +31,41 @@ type AIProviderStatus = Pick<AIProviderConfig, 'name' | 'role' | 'color'> & {
   status: 'active' | 'configured' | 'error';
 };
 
+function normalizeProviderKey(name: string): string {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+function providerAliases(name: string): string[] {
+  const key = normalizeProviderKey(name);
+  return key === 'zai' ? ['zai', 'zai2'] : [key];
+}
+
+function matchesProviderAlias(candidate: string, configName: string): boolean {
+  return providerAliases(configName).includes(normalizeProviderKey(candidate));
+}
+
+function resolveProviderStatus(
+  healthProviders: ReturnType<typeof useHealthCheck>['providers'],
+  configName: string
+): AIProviderStatus['status'] {
+  const matchingProviders = healthProviders.filter((provider) =>
+    matchesProviderAlias(provider.name, configName)
+  );
+
+  if (matchingProviders.some((provider) => provider.status === 'active')) {
+    return 'active';
+  }
+
+  if (matchingProviders.some((provider) => provider.status === 'error')) {
+    return 'error';
+  }
+
+  return 'configured';
+}
+
 type SystemContextPanelProps = {
   children?: ReactNode;
   className?: string;
@@ -63,26 +98,14 @@ const SystemContextPanel = memo(function SystemContextPanel({
   // Provider 상태 매핑 (config + health 병합)
   const providers: AIProviderStatus[] = useMemo(() => {
     return AI_PROVIDERS.map((configProvider) => {
-      const healthProvider = healthProviders.find(
-        (hp) => hp.name.toLowerCase() === configProvider.name.toLowerCase()
-      );
-      const status: AIProviderStatus['status'] =
-        healthProvider?.status === 'active'
-          ? 'active'
-          : healthProvider?.status === 'error'
-            ? 'error'
-            : 'configured';
-
       return {
         name: configProvider.name,
         role: configProvider.role,
         color: configProvider.color,
-        status,
+        status: resolveProviderStatus(healthProviders, configProvider.name),
       };
     });
   }, [healthProviders]);
-
-  const activeProviderKey = finalProvider?.trim().toLowerCase() ?? '';
 
   const getStatusBadge = (status: AIProviderStatus['status']) => {
     switch (status) {
@@ -178,7 +201,9 @@ const SystemContextPanel = memo(function SystemContextPanel({
           <div className="space-y-2.5 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
             {providers.map((provider) => {
               const providerKey = provider.name.toLowerCase();
-              const isActiveProvider = activeProviderKey === providerKey;
+              const isActiveProvider = finalProvider
+                ? matchesProviderAlias(finalProvider, provider.name)
+                : false;
 
               return (
                 <div

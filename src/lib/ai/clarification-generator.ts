@@ -95,6 +95,9 @@ const INTERNAL_KNOWLEDGE_PATTERNS =
 const OPERATIONS_COMMAND_GUIDANCE_PATTERNS =
   /(?:haproxy|nginx|mysql|redis|nfs|access\.log|slow_query|show\s+(?:stat|processlist|replica|slave)\s+status|redis-cli|showmount|findmnt|mount\s+-t|df\s+-h|awk|grep).*(?:명령어|방법|순서|확인|분석|재마운트)|(?:명령어|방법|순서|확인|분석|재마운트).*(?:haproxy|nginx|mysql|redis|nfs|access\.log|slow_query|show\s+(?:stat|processlist|replica|slave)\s+status|redis-cli|showmount|findmnt|mount\s+-t|df\s+-h|awk|grep)/i;
 
+const ASSISTANT_META_CLARIFICATION_BYPASS_PATTERN =
+  /(?:^|\b)(?:너|넌|너는|당신|OpenManager\s*AI|오픈매니저\s*AI).{0,32}(?:뭐야|누구|정체|소개|만들|제작|동작|작동|구성|모델|자동|자율|혼자|사람\s*없이|배포|실행|권한|한계|제한|model|built|made|work|works|created)|(?:^|\b)(?:how\s+(?:are|were)\s+you\s+(?:built|made|created)|how\s+do\s+you\s+work|what\s+(?:are|is)\s+you|what\s+model\s+are\s+you)/i;
+
 /**
  * 쿼리가 이미 구체적인 조건을 포함하는지 확인
  */
@@ -184,6 +187,10 @@ export function generateClarification(
   }
 
   if (OPERATIONS_COMMAND_GUIDANCE_PATTERNS.test(query)) {
+    return null;
+  }
+
+  if (ASSISTANT_META_CLARIFICATION_BYPASS_PATTERN.test(query)) {
     return null;
   }
 

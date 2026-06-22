@@ -54,6 +54,8 @@ export interface UseAIChatCoreReturn {
 
   // 액션
   regenerateLastResponse: () => void;
+  canRegenerateLastResponse: boolean;
+  regenerateCooldownSeconds: number;
   /** 마지막 쿼리 재시도 (파일 첨부 포함) */
   retryLastQuery: () => void;
   stop: () => void;

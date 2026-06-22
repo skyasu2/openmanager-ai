@@ -46,6 +46,8 @@ interface EnhancedAIChatProps {
     message: EnhancedChatMessage;
     onRegenerateResponse?: (messageId: string) => void;
     isLastMessage?: boolean;
+    regenerateDisabled?: boolean;
+    regenerateDisabledReason?: string;
   }>;
   inputValue: string;
   setInputValue: (value: string) => void;
@@ -54,6 +56,8 @@ interface EnhancedAIChatProps {
   isGenerating: boolean;
   streamStatus?: AIStreamStatus;
   regenerateResponse: (messageId: string) => void;
+  canRegenerateResponse?: boolean;
+  regenerateCooldownSeconds?: number;
   sessionState?: SessionState;
   onNewSession?: () => void;
   onStopGeneration?: () => void;
@@ -103,6 +107,8 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   isGenerating,
   streamStatus,
   regenerateResponse,
+  canRegenerateResponse = true,
+  regenerateCooldownSeconds = 0,
   sessionState,
   onNewSession,
   onStopGeneration,
@@ -211,6 +217,13 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
           : sessionState?.isLimitReached
             ? 'session-limit'
             : null;
+  const regenerateDisabledReason = isGenerating
+    ? '응답 생성이 끝난 뒤 다시 생성할 수 있습니다'
+    : regenerateCooldownSeconds > 0
+      ? `빠른 반복 재생성을 줄이기 위해 ${regenerateCooldownSeconds}초 후 다시 시도해주세요`
+      : !canRegenerateResponse
+        ? '잠시 후 다시 생성할 수 있습니다'
+        : undefined;
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-gray-50/50">
@@ -252,6 +265,12 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
           MessageComponent={MessageComponent}
           isGenerating={isGenerating}
           regenerateResponse={regenerateResponse}
+          regenerateDisabled={
+            isGenerating ||
+            !canRegenerateResponse ||
+            regenerateCooldownSeconds > 0
+          }
+          regenerateDisabledReason={regenerateDisabledReason}
           setInputValue={setInputValue}
           onStarterPromptSubmit={onStarterPromptSubmit}
           welcomeServers={welcomeServers}

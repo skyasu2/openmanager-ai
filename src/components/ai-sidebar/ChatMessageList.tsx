@@ -28,9 +28,13 @@ interface ChatMessageListProps {
     message: EnhancedChatMessage;
     onRegenerateResponse?: (messageId: string) => void;
     isLastMessage?: boolean;
+    regenerateDisabled?: boolean;
+    regenerateDisabledReason?: string;
   }>;
   isGenerating: boolean;
   regenerateResponse: (messageId: string) => void;
+  regenerateDisabled?: boolean;
+  regenerateDisabledReason?: string;
   setInputValue: (value: string) => void;
   onStarterPromptSubmit?: (prompt: string) => void;
   welcomeServers?: readonly WelcomeServerMetric[];
@@ -45,6 +49,8 @@ export const ChatMessageList = memo(function ChatMessageList({
   MessageComponent,
   isGenerating,
   regenerateResponse,
+  regenerateDisabled = false,
+  regenerateDisabledReason,
   setInputValue,
   onStarterPromptSubmit,
   welcomeServers,
@@ -142,6 +148,8 @@ export const ChatMessageList = memo(function ChatMessageList({
                 message={message}
                 onRegenerateResponse={regenerateResponse}
                 isLastMessage={isLastMessage}
+                regenerateDisabled={regenerateDisabled}
+                regenerateDisabledReason={regenerateDisabledReason}
               />
             );
           })}

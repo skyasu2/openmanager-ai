@@ -1,6 +1,5 @@
 'use client';
 
-import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Maximize2, X } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { Suspense, useEffect, useMemo, useState } from 'react';
@@ -14,12 +13,6 @@ const ReactFlowDiagramDynamic = dynamic(
   () => import('@/components/shared/react-flow-diagram'),
   { ssr: false }
 );
-
-interface TopologyModalProps {
-  open: boolean;
-  onClose: () => void;
-  servers: Server[];
-}
 
 interface TopologyViewProps {
   servers: Server[];
@@ -295,28 +288,5 @@ export function TopologyView({
         </div>
       </div>
     </div>
-  );
-}
-
-export function TopologyModal({ open, onClose, servers }: TopologyModalProps) {
-  return (
-    <DialogPrimitive.Root
-      open={open}
-      onOpenChange={(v) => {
-        if (!v) onClose();
-      }}
-    >
-      <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-slate-500/25 backdrop-blur-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <DialogPrimitive.Content
-          aria-label="인프라 토폴로지 맵"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 focus:outline-none"
-        >
-          <div className="relative h-[94vh] w-[96vw] max-w-7xl">
-            <TopologyView servers={servers} active={open} onClose={onClose} />
-          </div>
-        </DialogPrimitive.Content>
-      </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
   );
 }

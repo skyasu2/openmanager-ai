@@ -26,7 +26,6 @@ export interface AIProviderConfig {
 export const GROQ_TEXT_MODEL_ID =
   'meta-llama/llama-4-scout-17b-16e-instruct';
 export const ZAI_TEXT_MODEL_ID = 'glm-4.7-flash';
-export const ZAI_VISION_MODEL_ID = 'glm-4.6v-flash';
 
 /**
  * 현재 활성화된 AI Provider 목록
@@ -43,10 +42,10 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
   },
   {
     name: 'Z.AI',
-    role: 'Free GLM Flash fallback',
-    model: `${ZAI_TEXT_MODEL_ID} / ${ZAI_VISION_MODEL_ID}`,
+    role: 'Free GLM Flash text pool + analysis quota bucket',
+    model: ZAI_TEXT_MODEL_ID,
     description:
-      'Free GLM Flash text and vision fallback. Runtime disables thinking for short tool-calling and structured-output tasks.',
+      'Free GLM Flash text provider. Optional second Z.AI key is tracked as an analysis quota bucket; Vision stays Gemini-only.',
     color: 'bg-cyan-500',
   },
   {

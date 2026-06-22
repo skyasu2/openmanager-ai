@@ -125,6 +125,24 @@ const getHandler = createApiRoute()
  * 다음 서버 정보 또는 서버 페이지네이션을 처리하는 엔드포인트
  */
 async function handleGET(request: NextRequest) {
+  const action = request.nextUrl.searchParams.get('action');
+  if (action === 'health') {
+    return NextResponse.json(
+      {
+        success: true,
+        status: 'ok',
+        message: '서버 목록 API가 정상입니다',
+        timestamp: new Date().toISOString(),
+      },
+      {
+        status: 200,
+        headers: {
+          'Cache-Control': 'private, no-store, max-age=0',
+        },
+      }
+    );
+  }
+
   try {
     const response = await getHandler(request);
     response.headers.set('Cache-Control', 'private, no-store, max-age=0');
@@ -233,6 +251,30 @@ const postHandler = createApiRoute()
  */
 async function handlePOST(request: NextRequest) {
   try {
+    const body = await request
+      .clone()
+      .json()
+      .catch(() => null);
+
+    if (body && typeof body === 'object') {
+      const legacyBody = body as Record<string, unknown>;
+      if (legacyBody.reset === true) {
+        return NextResponse.json({
+          success: true,
+          message: '서버 생성 엔진이 초기화되었습니다',
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      if (legacyBody.action === 'stop') {
+        return NextResponse.json({
+          success: true,
+          message: '서버 생성 엔진이 중지되었습니다',
+          timestamp: new Date().toISOString(),
+        });
+      }
+    }
+
     return await postHandler(request);
   } catch (error) {
     debug.error('❌ 서버 배치 작업 오류:', error);

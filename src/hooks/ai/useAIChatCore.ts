@@ -53,6 +53,8 @@ export { convertThinkingStepsToUI };
 export interface UseAIChatCoreOptions extends UseAIChatCoreOptionsBase {}
 export interface UseAIChatCoreReturn extends UseAIChatCoreReturnBase {}
 
+const REGENERATE_COOLDOWN_MS = 5_000;
+
 // ============================================================================
 // Hook
 // ============================================================================
@@ -110,6 +112,10 @@ export function useAIChatCore(
   const [developerPanelData, setDeveloperPanelData] =
     useState<DeveloperPanelData | null>(null);
   const developerPanelDataRef = useRef<DeveloperPanelData | null>(null);
+  const [regenerateCooldownUntilMs, setRegenerateCooldownUntilMs] = useState(0);
+  const regenerateCooldownTimeoutRef = useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null);
 
   // Refs
   const lastQueryRef = useRef<string>('');
@@ -231,6 +237,36 @@ export function useAIChatCore(
   });
   setHybridMessagesRef.current = setMessages;
   const isGenerating = hybridIsLoading || artifactIsLoading;
+  const regenerateCooldownRemainingMs = Math.max(
+    0,
+    regenerateCooldownUntilMs - Date.now()
+  );
+  const regenerateCooldownSeconds =
+    regenerateCooldownRemainingMs > 0
+      ? Math.ceil(regenerateCooldownRemainingMs / 1000)
+      : 0;
+  const canRegenerateLastResponse =
+    !isGenerating && regenerateCooldownSeconds === 0;
+
+  const clearRegenerateCooldown = useCallback(() => {
+    if (regenerateCooldownTimeoutRef.current) {
+      clearTimeout(regenerateCooldownTimeoutRef.current);
+      regenerateCooldownTimeoutRef.current = null;
+    }
+    setRegenerateCooldownUntilMs(0);
+  }, []);
+
+  const startRegenerateCooldown = useCallback(() => {
+    if (regenerateCooldownTimeoutRef.current) {
+      clearTimeout(regenerateCooldownTimeoutRef.current);
+    }
+
+    setRegenerateCooldownUntilMs(Date.now() + REGENERATE_COOLDOWN_MS);
+    regenerateCooldownTimeoutRef.current = setTimeout(() => {
+      regenerateCooldownTimeoutRef.current = null;
+      setRegenerateCooldownUntilMs(0);
+    }, REGENERATE_COOLDOWN_MS);
+  }, []);
 
   const {
     streamTraceIds,
@@ -353,6 +389,7 @@ export function useAIChatCore(
     pendingQueryRef.current = '';
     lastAttachmentsRef.current = null;
     resetArtifactManager();
+    clearRegenerateCooldown();
     clearHistory();
     clearQueue();
     syncChatSnapshot([], nextSessionId);
@@ -365,6 +402,7 @@ export function useAIChatCore(
     syncChatSnapshot,
     updateDeveloperPanelData,
     resetArtifactManager,
+    clearRegenerateCooldown,
   ]);
 
   const clearError = useCallback(() => {
@@ -373,6 +411,20 @@ export function useAIChatCore(
   }, [clearHybridError]);
 
   const regenerateLastResponse = useCallback(() => {
+    if (isGenerating) {
+      setError('현재 응답 생성 중입니다. 완료 후 다시 생성해주세요.');
+      return;
+    }
+
+    const remainingMs = regenerateCooldownUntilMs - Date.now();
+    if (remainingMs > 0) {
+      const remainingSeconds = Math.ceil(remainingMs / 1000);
+      setError(
+        `AI provider 요청이 너무 많습니다. ${remainingSeconds}초 후 다시 생성해주세요.`
+      );
+      return;
+    }
+
     if (messages.length < 2) return;
     const lastUserMessageIndex = [...messages]
       .reverse()
@@ -389,12 +441,28 @@ export function useAIChatCore(
     const textContent = textPart?.text;
 
     if (textContent) {
+      startRegenerateCooldown();
       setMessages(messages.slice(0, actualIndex));
       setError(null);
       // BUG-7 fix: setMessages는 비동기 상태 업데이트이므로 sendQuery를 microtask로 지연
       queueMicrotask(() => sendQuery(textContent));
     }
-  }, [messages, setMessages, sendQuery]);
+  }, [
+    isGenerating,
+    regenerateCooldownUntilMs,
+    messages,
+    setMessages,
+    sendQuery,
+    startRegenerateCooldown,
+  ]);
+
+  useEffect(() => {
+    return () => {
+      if (regenerateCooldownTimeoutRef.current) {
+        clearTimeout(regenerateCooldownTimeoutRef.current);
+      }
+    };
+  }, []);
 
   /**
    * 마지막 쿼리 재시도
@@ -534,6 +602,8 @@ export function useAIChatCore(
     sessionState,
     handleNewSession,
     regenerateLastResponse,
+    canRegenerateLastResponse,
+    regenerateCooldownSeconds,
     retryLastQuery,
     stop: stopGeneration,
     cancel,

@@ -34,7 +34,6 @@ export const AIModelSchema = z.enum([
   'mistral-small-latest',
   'mistral-large-latest',
   'glm-4.7-flash',
-  'glm-4.6v-flash',
   'mistral-embed',
   // Vision / auxiliary
   'gemini-2.5-flash',

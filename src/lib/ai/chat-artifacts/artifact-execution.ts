@@ -32,12 +32,6 @@ export type RemoteToolArtifactKind =
   | 'monitoring-analysis'
   | 'server-monitoring-analysis';
 
-/**
- * @deprecated Use RemoteToolArtifactKind. This alias is kept for existing
- * surface callers that still use the older name.
- */
-export type ExecutableSurfaceArtifactKind = RemoteToolArtifactKind;
-
 type ExecuteChatArtifactRequestByKind = {
   'incident-report': ChatArtifactRequest & { kind: 'incident-report' };
   'monitoring-analysis': ChatArtifactRequest & { kind: 'monitoring-analysis' };

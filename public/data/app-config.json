@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "OpenManager AI",
-    "version": "8.0.0",
+    "version": "8.13.58",
     "environment": "production",
     "debugMode": false,
     "apiTimeout": 30000,

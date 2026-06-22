@@ -48,7 +48,6 @@ interface DashboardStatus {
  * - 중복 fetch 제거 (useServerDashboard 호출 최소화)
  */
 interface DashboardContentProps {
-  showSequentialGeneration: boolean;
   /** 페이지네이션된 서버 목록 */
   servers: Server[];
   /** 전체 서버 목록 (통계 계산용) */
@@ -73,7 +72,6 @@ interface DashboardContentProps {
   onPageSizeChange: (size: number) => void;
   status: DashboardStatus;
   onStatsUpdate: (stats: DashboardStats) => void;
-  onShowSequentialChange: (show: boolean) => void;
   /** 현재 활성 상태 필터 */
   statusFilter?: string | null;
   /** 상태 필터 변경 핸들러 */
@@ -81,7 +79,6 @@ interface DashboardContentProps {
 }
 
 export default memo(function DashboardContent({
-  showSequentialGeneration,
   servers,
   allServers,
   displayServers,
@@ -95,7 +92,6 @@ export default memo(function DashboardContent({
   onPageSizeChange,
   status,
   onStatsUpdate,
-  onShowSequentialChange,
   statusFilter,
   onStatusFilterChange,
 }: DashboardContentProps) {
@@ -115,7 +111,6 @@ export default memo(function DashboardContent({
   // biome-ignore lint/correctness/useExhaustiveDependencies: Intentional initial mount log
   useEffect(() => {
     debug.log('🔍 DashboardContent 초기 렌더링:', {
-      showSequentialGeneration,
       serversCount: currentPageServers.length,
       status: status?.type,
       timestamp: new Date().toISOString(),
@@ -175,32 +170,6 @@ export default memo(function DashboardContent({
       onStatsUpdateRef.current(serverStats);
     }
   }, [serverStats]);
-
-  // 시퀀셜 생성 모드
-  if (showSequentialGeneration) {
-    debug.log('🔄 시퀀셜 생성 모드 렌더링');
-    return (
-      <div className="min-h-screen bg-linear-to-br from-purple-50 to-blue-50 p-6">
-        <div className="mx-auto max-w-7xl">
-          <div className="rounded-lg bg-white p-6 shadow-lg">
-            <h2 className="mb-4 text-2xl font-semibold text-gray-900">
-              🔄 서버 생성 중...
-            </h2>
-            <p className="text-gray-600">
-              시퀀셜 서버 생성 모드가 활성화되었습니다.
-            </p>
-            <button
-              type="button"
-              onClick={() => onShowSequentialChange(false)}
-              className="mt-4 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-            >
-              일반 모드로 전환
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // 일반 대시보드 모드 - 반응형 그리드 레이아웃
   return (

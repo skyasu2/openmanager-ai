@@ -47,17 +47,6 @@ export type ChatArtifactIntent =
       : never
     : never;
 
-export type ExecutableChatArtifactIntent = Extract<
-  ChatArtifactIntent,
-  {
-    kind:
-      | 'incident-report'
-      | 'monitoring-analysis'
-      | 'server-monitoring-analysis'
-      | 'ops-procedure';
-  }
->;
-
 const CHAT_ARTIFACT_INTENT_REASONS = new Set<ChatArtifactIntentReason>([
   'incident_report_action_pattern',
   'incident_report_implicit_keyword',
