@@ -93,6 +93,39 @@ export function createStreamErrorResponse(errorMessage: string): Response {
   return createUIMessageStreamResponse({ stream });
 }
 
+interface StreamTextResponseOptions {
+  message: string;
+  headers?: Record<string, string>;
+  dataParts?: Array<{ type: `data-${string}`; data: unknown }>;
+}
+
+export function createStreamTextResponse(
+  options: StreamTextResponseOptions
+): Response {
+  const { message, headers = {}, dataParts = [] } = options;
+
+  const stream = createUIMessageStream({
+    execute: async ({ writer }) => {
+      for (const dataPart of dataParts) {
+        writer.write(dataPart);
+      }
+      const messageId = `cached-${generateId()}`;
+      writer.write({ type: 'text-start', id: messageId });
+      writer.write({ type: 'text-delta', id: messageId, delta: message });
+      writer.write({ type: 'text-end', id: messageId });
+      writer.write({
+        type: 'data-done',
+        data: {
+          success: true,
+          cached: true,
+        },
+      });
+    },
+  });
+
+  return createUIMessageStreamResponse({ stream, headers });
+}
+
 interface StreamFallbackResponseOptions {
   message: string;
   reason?: string;

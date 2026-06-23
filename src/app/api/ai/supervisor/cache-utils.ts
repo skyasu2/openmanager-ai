@@ -10,7 +10,15 @@
  * 실시간 데이터 요청 키워드
  * 이 키워드가 포함된 쿼리는 캐싱에서 제외됨
  */
-const KOREAN_REALTIME_KEYWORDS = ['지금', '현재', '방금', '실시간', '새로고침'];
+const KOREAN_REALTIME_KEYWORDS = [
+  '지금',
+  '현재',
+  '방금',
+  '실시간',
+  '새로고침',
+  '최신',
+  '최근',
+];
 
 const ENGLISH_REALTIME_KEYWORDS = [
   'now',
