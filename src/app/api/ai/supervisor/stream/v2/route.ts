@@ -27,6 +27,7 @@ import {
   TRACEPARENT_HEADER,
 } from '@/config/ai-proxy.config';
 import {
+  type AIEndpoint,
   type CacheableAIResponse,
   getAICache,
   setAICache,
@@ -93,12 +94,16 @@ import {
 export const maxDuration = 60;
 
 const STREAM_CIRCUIT_BREAKER_SERVICE = 'cloud-run-supervisor-stream';
-const STREAM_CACHE_ENDPOINT = 'supervisor';
+const STREAM_CACHE_ENDPOINT: AIEndpoint = 'supervisor';
+const GENERAL_INTRO_CACHE_ENDPOINT: AIEndpoint = 'supervisor-intro';
+const GLOBAL_GENERAL_INTRO_CACHE_SCOPE = 'global:general-intro:v1';
 const MAX_STREAM_CACHE_TEXT_CHARS = 32 * 1024;
 const GENERAL_INTRO_QUERY_PATTERN =
   /(소개|설명|무엇|뭐야|뭔지|알려줘|what\s+is|explain|introduce|overview)/i;
 const OPERATIONAL_QUERY_PATTERN =
   /(서버|시스템|목록|상태|장애|원인|분석|보고서|상관관계|영향|조치|권고|복구|알람|경고|로그|사용률|메트릭|트래픽|server|system|list|metric|cpu|메모리|memory|disk|디스크|load|latency|critical|warning|incident|outage|root\s+cause|report|remediation)/i;
+const ASSISTANT_META_QUERY_PATTERN =
+  /(너|넌|네가|당신|너희|자기소개|누구|무슨\s*일|뭐\s*할|할\s*수\s*있|어시스턴트|챗봇|이\s*ai|너.*ai|who\s+are\s+you|what\s+can\s+you\s+do|your\s+role|about\s+you|assistant)/i;
 
 type CloudRunStreamFetchResult =
   | { type: 'upstream'; response: Response }
@@ -108,6 +113,12 @@ type NormalizedStreamMessage = {
   content: string;
   images?: unknown[];
   files?: unknown[];
+};
+
+type StreamCachePolicy = {
+  enabled: boolean;
+  cacheSessionId: string;
+  endpoint: AIEndpoint;
 };
 
 function hasStreamAttachments(messages: NormalizedStreamMessage[]): boolean {
@@ -122,23 +133,44 @@ function isGeneralIntroCacheCandidate(query: string): boolean {
   return (
     GENERAL_INTRO_QUERY_PATTERN.test(query) &&
     !OPERATIONAL_QUERY_PATTERN.test(query) &&
+    !ASSISTANT_META_QUERY_PATTERN.test(query) &&
     !isStatusQuery(query)
   );
 }
 
-function shouldUseStreamCache(params: {
+function resolveStreamCachePolicy(params: {
   query: string;
   messageCount: number;
   messages: NormalizedStreamMessage[];
   enableWebSearch?: boolean;
   enableRAG?: boolean;
   internalDisclosureMode: string | null | undefined;
-}): boolean {
-  if (shouldSkipCache(params.query, params.messageCount)) return false;
-  if (params.enableWebSearch || params.enableRAG) return false;
-  if (params.internalDisclosureMode) return false;
-  if (hasStreamAttachments(params.messages)) return false;
-  return isGeneralIntroCacheCandidate(params.query);
+  defaultCacheSessionId: string;
+}): StreamCachePolicy {
+  const disabledPolicy: StreamCachePolicy = {
+    enabled: false,
+    cacheSessionId: params.defaultCacheSessionId,
+    endpoint: STREAM_CACHE_ENDPOINT,
+  };
+
+  if (shouldSkipCache(params.query, params.messageCount)) return disabledPolicy;
+  if (params.enableWebSearch || params.enableRAG) return disabledPolicy;
+  if (hasStreamAttachments(params.messages)) return disabledPolicy;
+  if (!isGeneralIntroCacheCandidate(params.query)) return disabledPolicy;
+
+  if (params.internalDisclosureMode) {
+    return {
+      enabled: true,
+      cacheSessionId: GLOBAL_GENERAL_INTRO_CACHE_SCOPE,
+      endpoint: GENERAL_INTRO_CACHE_ENDPOINT,
+    };
+  }
+
+  return {
+    enabled: true,
+    cacheSessionId: params.defaultCacheSessionId,
+    endpoint: STREAM_CACHE_ENDPOINT,
+  };
 }
 
 function extractTextDeltaFromStreamEvent(value: unknown): string | null {
@@ -258,6 +290,7 @@ function persistStreamCache(params: {
   body: ReadableStream<Uint8Array>;
   cacheSessionId: string;
   userQuery: string;
+  endpoint: AIEndpoint;
 }) {
   void collectCacheableTextFromStream(params.body)
     .then((text) => {
@@ -271,7 +304,7 @@ function persistStreamCache(params: {
         params.cacheSessionId,
         params.userQuery,
         response,
-        STREAM_CACHE_ENDPOINT
+        params.endpoint
       );
     })
     .catch((error) => {
@@ -454,14 +487,16 @@ export const POST = withAuth(
           );
         }
 
-        const useStreamCache = shouldUseStreamCache({
+        const streamCachePolicy = resolveStreamCachePolicy({
           query: userQuery,
           messageCount: messages.length,
           messages: normalizedParse.data,
           enableWebSearch,
           enableRAG,
           internalDisclosureMode,
+          defaultCacheSessionId: cacheSessionId,
         });
+        const useStreamCache = streamCachePolicy.enabled;
 
         const cloudRunConfig = getRequiredCloudRunConfig();
         if (!cloudRunConfig.ok) {
@@ -491,9 +526,9 @@ export const POST = withAuth(
 
         if (useStreamCache) {
           const cacheResult = await getAICache(
-            cacheSessionId,
+            streamCachePolicy.cacheSessionId,
             userQuery,
-            STREAM_CACHE_ENDPOINT
+            streamCachePolicy.endpoint
           );
 
           if (cacheResult.hit && cacheResult.data?.response) {
@@ -513,6 +548,7 @@ export const POST = withAuth(
                   source: 'cache',
                 }),
               }) as Record<string, string>,
+              dataParts: createDeveloperContextDataParts(true),
             });
           }
 
@@ -733,8 +769,9 @@ export const POST = withAuth(
         if (cacheStreamBody) {
           persistStreamCache({
             body: cacheStreamBody,
-            cacheSessionId,
+            cacheSessionId: streamCachePolicy.cacheSessionId,
             userQuery,
+            endpoint: streamCachePolicy.endpoint,
           });
         }
 

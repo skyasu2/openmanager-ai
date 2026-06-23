@@ -65,6 +65,8 @@ const CACHE_CONFIG = {
   },
 } as const;
 
+const EXACT_ONLY_ENDPOINTS = new Set(['supervisor-intro']);
+
 const REDIS_TIMEOUTS = (() => {
   const timeouts = getRedisTimeoutConfig();
   return {
@@ -241,6 +243,10 @@ function getSemanticScanPattern(sessionId: string, endpoint?: string): string {
   }
 
   return `${prefix}:${sessionHash}:*`;
+}
+
+function isExactOnlyEndpoint(endpoint?: string): boolean {
+  return typeof endpoint === 'string' && EXACT_ONLY_ENDPOINTS.has(endpoint);
 }
 
 async function findSemanticMatch(
@@ -438,13 +444,9 @@ export async function getAIResponseCache(
       };
     }
 
-    const semanticMatch = await findSemanticMatch(
-      client,
-      sessionId,
-      query,
-      endpoint,
-      cacheKey
-    );
+    const semanticMatch = isExactOnlyEndpoint(endpoint)
+      ? null
+      : await findSemanticMatch(client, sessionId, query, endpoint, cacheKey);
 
     if (semanticMatch) {
       const latencyMs = Math.round(performance.now() - startTime);
@@ -498,19 +500,25 @@ export async function setAIResponseCache(
   const cacheKey = `${CACHE_CONFIG.PREFIX.AI_RESPONSE}:${queryHash}`;
 
   try {
-    const semantic = buildSemanticQueryEmbedding(query);
-    const responseWithSemanticMetadata: CachedAIResponse = {
-      ...response,
-      metadata: {
-        ...(response.metadata ?? {}),
-        __semanticCache: {
-          algorithm: semantic.algorithm,
-          normalizedQuery: semantic.normalizedQuery,
-          embedding: semantic.vector,
-          createdAt: Date.now(),
-        } satisfies SemanticCacheMetadata,
-      },
-    };
+    const responseWithSemanticMetadata: CachedAIResponse = isExactOnlyEndpoint(
+      endpoint
+    )
+      ? response
+      : (() => {
+          const semantic = buildSemanticQueryEmbedding(query);
+          return {
+            ...response,
+            metadata: {
+              ...(response.metadata ?? {}),
+              __semanticCache: {
+                algorithm: semantic.algorithm,
+                normalizedQuery: semantic.normalizedQuery,
+                embedding: semantic.vector,
+                createdAt: Date.now(),
+              } satisfies SemanticCacheMetadata,
+            },
+          };
+        })();
 
     await runRedisWithTimeout(
       `AI cache SET ${cacheKey}`,

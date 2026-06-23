@@ -77,6 +77,8 @@ function sanitizePublicMetadata(
 export const AI_CACHE_TTL = {
   /** 일반 supervisor 응답: 5분 (대화 맥락 민감) */
   supervisor: 300,
+  /** 보편 기술 소개 응답: 1시간 (세션 비의존, Free Tier 보호) */
+  'supervisor-intro': 3600,
   /** 상태 조회 응답: 1분 (서버 상태는 빈번히 변경) */
   'supervisor-status': 60,
   /** 지능형 모니터링: 30분 (예측 안정적) */
