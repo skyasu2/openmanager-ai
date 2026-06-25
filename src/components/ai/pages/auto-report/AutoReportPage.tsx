@@ -19,7 +19,7 @@ import {
   saveArtifactExecutionReplayPack,
 } from '@/lib/ai/chat-artifacts/artifact-execution';
 import { createArtifactWorkspaceStore } from '@/lib/ai/chat-artifacts/artifact-workspace-store';
-import type { IncidentReportArtifact } from '@/lib/ai/chat-artifacts/types';
+import type { IncidentReportArtifact } from '@/lib/ai/domains/monitoring/artifact-types';
 import { logger } from '@/lib/logging';
 import type { JobDataSlot } from '@/types/ai-jobs';
 

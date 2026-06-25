@@ -19,7 +19,7 @@ import {
   createArtifactExecutionWorkspaceId,
   saveArtifactExecutionReplayPack,
 } from '@/lib/ai/chat-artifacts/artifact-execution';
-import type { IncidentReportArtifact } from '@/lib/ai/chat-artifacts/types';
+import type { IncidentReportArtifact } from '@/lib/ai/domains/monitoring/artifact-types';
 
 function normalizeReportForDownload(report: IncidentReport): IncidentReport {
   return {

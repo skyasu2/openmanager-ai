@@ -6,7 +6,7 @@ import {
   buildOpsProcedureJson,
   buildOpsProcedureMarkdown,
 } from '@/lib/ai/chat-artifacts/ops-procedure-artifact';
-import type { OpsProcedureArtifact } from '@/lib/ai/chat-artifacts/types';
+import type { OpsProcedureArtifact } from '@/lib/ai/domains/monitoring/artifact-types';
 
 function downloadProcedure(
   artifact: OpsProcedureArtifact,

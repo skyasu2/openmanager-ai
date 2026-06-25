@@ -1,14 +1,14 @@
-import {
-  ARTIFACT_CONTRACT_VERSION,
-  type IncidentReportArtifact,
-  type MonitoringAnalysisArtifact,
-  type OpsProcedureArtifact,
-  type ServerMonitoringAnalysisArtifact,
-} from '@/lib/ai/chat-artifacts/types';
+import { ARTIFACT_CONTRACT_VERSION } from '@/lib/ai/chat-artifacts/types';
 import {
   MONITORING_ARTIFACT_RENDERER_DOMAIN_ID,
   registerArtifactRenderer,
 } from '@/lib/ai/domain-renderers/artifact-renderer-registry';
+import type {
+  IncidentReportArtifact,
+  MonitoringAnalysisArtifact,
+  OpsProcedureArtifact,
+  ServerMonitoringAnalysisArtifact,
+} from '@/lib/ai/domains/monitoring/artifact-types';
 import { IncidentReportArtifactCard } from '../IncidentReportArtifactCard';
 import { MonitoringAnalysisArtifactCard } from '../MonitoringAnalysisArtifactCard';
 import { OpsProcedureArtifactCard } from '../OpsProcedureArtifactCard';

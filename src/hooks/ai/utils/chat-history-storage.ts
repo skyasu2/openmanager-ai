@@ -11,11 +11,11 @@ import {
   normalizeAssistantResult,
 } from '@/lib/ai/assistant-contract';
 import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/artifact-intent-contract';
+import type { ArtifactEnvelope } from '@/lib/ai/chat-artifacts/types';
 import type {
-  ArtifactEnvelope,
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
-} from '@/lib/ai/chat-artifacts/types';
+} from '@/lib/ai/domains/monitoring/artifact-types';
 import {
   normalizeRouteDecision,
   type RouteDecision,

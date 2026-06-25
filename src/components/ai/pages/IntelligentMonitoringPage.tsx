@@ -25,7 +25,7 @@ import { createArtifactWorkspaceStore } from '@/lib/ai/chat-artifacts/artifact-w
 import type {
   MonitoringAnalysisArtifact,
   ServerMonitoringCurrentMetrics,
-} from '@/lib/ai/chat-artifacts/types';
+} from '@/lib/ai/domains/monitoring/artifact-types';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
   AnalysisResponse,

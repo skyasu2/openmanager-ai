@@ -177,6 +177,13 @@ function isFinalAnswerPseudoToolFrame(value: unknown): boolean {
   return false;
 }
 
+function mayContainFinalAnswerPseudoToolArtifact(content: string): boolean {
+  const normalized = content.toLowerCase();
+  return Array.from(FINAL_ANSWER_TOOL_NAMES).some((toolName) =>
+    normalized.includes(toolName)
+  );
+}
+
 function scrubFinalAnswerDoneData(value: unknown): unknown {
   if (!isRecord(value) || value.type !== 'data-done') {
     return value;
@@ -209,7 +216,8 @@ function filterSseContent(content: string): string | null {
   const hasMaliciousOutput = containsMaliciousOutput(initialFilter.filtered);
   const hasRawModelArtifacts = containsRawModelArtifacts(content);
   const hasRawXmlToolCallArtifacts = containsRawXmlToolCallArtifacts(content);
-  const hasFinalAnswerPseudoToolArtifact = content.includes('finalAnswer');
+  const hasFinalAnswerPseudoToolArtifact =
+    mayContainFinalAnswerPseudoToolArtifact(content);
 
   if (hasFinalAnswerPseudoToolArtifact) {
     try {

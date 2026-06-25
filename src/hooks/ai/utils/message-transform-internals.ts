@@ -4,11 +4,11 @@ import type {
   AssistantResult,
 } from '@/lib/ai/assistant-contract';
 import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/artifact-intent-contract';
+import type { ArtifactEnvelope } from '@/lib/ai/chat-artifacts/types';
 import type {
-  ArtifactEnvelope,
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
-} from '@/lib/ai/chat-artifacts/types';
+} from '@/lib/ai/domains/monitoring/artifact-types';
 import type { RouteDecision } from '@/lib/ai/route-decision';
 import type { SemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
 import type { StructuredAssistantResponse } from '@/lib/ai/utils/assistant-response-view';

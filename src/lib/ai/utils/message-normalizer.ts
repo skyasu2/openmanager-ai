@@ -326,41 +326,43 @@ export function extractImagesFromFileParts(
 export function normalizeMessagesForCloudRun(
   messages: HybridMessage[]
 ): NormalizedMessage[] {
-  return messages.map((msg) => {
-    const content = extractTextFromHybridMessage(msg);
+  return messages
+    .filter((msg) => msg.role !== 'system')
+    .map((msg) => {
+      const content = extractTextFromHybridMessage(msg);
 
-    // 🎯 Fix: type='image' 파트 + type='file' 파트 중 이미지 MIME 타입 모두 수집
-    // 🎯 P0 Fix: data 기준 중복 제거 (동일 이미지가 image/file 파트 모두에 있을 수 있음)
-    const imagesFromImageParts = extractImagesFromHybridMessage(msg);
-    const imagesFromFileParts = extractImagesFromFileParts(msg);
+      // 🎯 Fix: type='image' 파트 + type='file' 파트 중 이미지 MIME 타입 모두 수집
+      // 🎯 P0 Fix: data 기준 중복 제거 (동일 이미지가 image/file 파트 모두에 있을 수 있음)
+      const imagesFromImageParts = extractImagesFromHybridMessage(msg);
+      const imagesFromFileParts = extractImagesFromFileParts(msg);
 
-    // data 필드 기준 중복 제거
-    const seenData = new Set(imagesFromImageParts.map((img) => img.data));
-    const uniqueFileParts = imagesFromFileParts.filter(
-      (img) => !seenData.has(img.data)
-    );
-    const allImages = [...imagesFromImageParts, ...uniqueFileParts];
+      // data 필드 기준 중복 제거
+      const seenData = new Set(imagesFromImageParts.map((img) => img.data));
+      const uniqueFileParts = imagesFromFileParts.filter(
+        (img) => !seenData.has(img.data)
+      );
+      const allImages = [...imagesFromImageParts, ...uniqueFileParts];
 
-    const files = extractFilesFromHybridMessage(msg);
+      const files = extractFilesFromHybridMessage(msg);
 
-    // 기본 메시지 구성
-    const normalizedMessage: NormalizedMessage = {
-      role: msg.role,
-      content: content || '[Non-text content]',
-    };
+      // 기본 메시지 구성
+      const normalizedMessage: NormalizedMessage = {
+        role: msg.role,
+        content: content || '[Non-text content]',
+      };
 
-    // 이미지가 있으면 추가 (image 파트 + file 파트에서 승격된 이미지)
-    if (allImages.length > 0) {
-      normalizedMessage.images = allImages;
-    }
+      // 이미지가 있으면 추가 (image 파트 + file 파트에서 승격된 이미지)
+      if (allImages.length > 0) {
+        normalizedMessage.images = allImages;
+      }
 
-    // 파일이 있으면 추가 (이미지 제외)
-    if (files.length > 0) {
-      normalizedMessage.files = files;
-    }
+      // 파일이 있으면 추가 (이미지 제외)
+      if (files.length > 0) {
+        normalizedMessage.files = files;
+      }
 
-    return normalizedMessage;
-  });
+      return normalizedMessage;
+    });
 }
 
 // ============================================================================

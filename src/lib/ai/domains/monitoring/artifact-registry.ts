@@ -3,7 +3,17 @@ import type {
   MonitoringAnalysisArtifact,
   OpsProcedureArtifact,
   ServerMonitoringAnalysisArtifact,
-} from '@/lib/ai/chat-artifacts/types';
+} from './artifact-types';
+
+export type {
+  IncidentReportArtifact,
+  MonitoringAnalysisArtifact,
+  MonitoringRoleGroupSummary,
+  OpsProcedureArtifact,
+  ServerMonitoringAnalysisArtifact,
+  ServerMonitoringArtifactRequest,
+  ServerMonitoringCurrentMetrics,
+} from './artifact-types';
 
 export const MONITORING_ROUTE_DECISION_ARTIFACT_KINDS = [
   'incident-report',

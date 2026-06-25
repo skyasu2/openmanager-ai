@@ -6,12 +6,12 @@ import {
   normalizeReporterDegradationReasonCode,
   normalizeReporterFallbackSource,
 } from '@/lib/ai/degradation-metadata';
+import type { IncidentReportArtifact } from '@/lib/ai/domains/monitoring/artifact-types';
 import { createQueryAsOf } from '@/lib/ai/query-as-of';
 import {
   type ArtifactDegradationSummary,
   attachArtifactEnvelopeMetadata,
   type ChatArtifactRequest,
-  type IncidentReportArtifact,
 } from './types';
 
 function isRecord(value: unknown): value is Record<string, unknown> {

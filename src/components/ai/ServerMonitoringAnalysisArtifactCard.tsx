@@ -3,7 +3,7 @@
 import { Activity, Download, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { downloadBlobContent } from '@/lib/ai/chat-artifacts/download-utils';
-import type { ServerMonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/types';
+import type { ServerMonitoringAnalysisArtifact } from '@/lib/ai/domains/monitoring/artifact-types';
 
 function statusClass(
   status: ServerMonitoringAnalysisArtifact['overallStatus']

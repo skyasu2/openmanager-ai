@@ -30,6 +30,12 @@ import {
   setAIResponseCache,
 } from '@/lib/redis/ai-cache';
 
+export {
+  buildCacheStatKey,
+  type CacheOutcome,
+  recordCacheOutcome,
+} from '@/lib/redis/ai-cache';
+
 // ============================================================================
 // 타입 정의
 // ============================================================================

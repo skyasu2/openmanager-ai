@@ -1,4 +1,5 @@
 import { generateTraceId } from '@/config/ai-proxy/tracing';
+import type { OpsProcedureArtifact } from '@/lib/ai/domains/monitoring/artifact-types';
 import type { ApiServerMetrics } from '@/services/metrics/MetricsProvider';
 import { metricsProvider } from '@/services/metrics/MetricsProvider';
 import { generateServerLogs } from '@/services/server-data/server-data-logs';
@@ -6,7 +7,6 @@ import {
   type ArtifactEvidence,
   attachArtifactEnvelopeMetadata,
   type ChatArtifactRequest,
-  type OpsProcedureArtifact,
 } from './types';
 
 const DEFAULT_THRESHOLD = 80;

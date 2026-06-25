@@ -8,7 +8,7 @@ import {
   saveArtifactExecutionReplayPack,
 } from '@/lib/ai/chat-artifacts/artifact-execution';
 import { downloadBlobContent } from '@/lib/ai/chat-artifacts/download-utils';
-import type { MonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/types';
+import type { MonitoringAnalysisArtifact } from '@/lib/ai/domains/monitoring/artifact-types';
 import type {
   MonitoringBatchCapacityAlert,
   MonitoringBatchEvidenceRef,

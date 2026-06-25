@@ -13,6 +13,7 @@
 import type { Redis } from '@upstash/redis';
 import { getRedisTimeoutConfig } from '@/config/redis-timeouts';
 import { hashString, normalizeQueryForCache } from '@/lib/cache/cache-helpers';
+import { normalizeIntroCacheQuery } from '@/lib/cache/query-normalizer';
 import { logger } from '@/lib/logging';
 import {
   getRedisClient,
@@ -66,6 +67,12 @@ const CACHE_CONFIG = {
 } as const;
 
 const EXACT_ONLY_ENDPOINTS = new Set(['supervisor-intro']);
+
+/**
+ * intro 전용 정규화(조사 분리 + 의도어 흡수)를 적용할 endpoint.
+ * exact-only(semantic off)와는 별개 개념이므로 상수를 분리한다.
+ */
+const INTRO_NORMALIZE_ENDPOINTS = new Set(['supervisor-intro']);
 
 const REDIS_TIMEOUTS = (() => {
   const timeouts = getRedisTimeoutConfig();
@@ -340,7 +347,10 @@ export function generateQueryHash(
   query: string,
   endpoint?: string
 ): string {
-  const normalized = normalizeQueryForCache(query);
+  const normalized =
+    typeof endpoint === 'string' && INTRO_NORMALIZE_ENDPOINTS.has(endpoint)
+      ? normalizeIntroCacheQuery(query)
+      : normalizeQueryForCache(query);
   const endpointSegment = endpoint ? `${endpoint}:` : '';
   return `${endpointSegment}${hashString(sessionId)}:${hashString(normalized)}`;
 }
@@ -536,6 +546,63 @@ export async function setAIResponseCache(
     logger.error('[AI Cache] Set error:', error);
     return false;
   }
+}
+
+// ==============================================
+// 📊 캐시 통계 카운터 (endpoint별 HIT/MISS/BYPASS)
+// ==============================================
+
+/** 통계 카운터 키 prefix */
+export const CACHE_STAT_PREFIX = 'v2:ai:cache:stat';
+/** 통계 카운터 TTL: 7일 (일별 키 자동 만료) */
+const CACHE_STAT_TTL_SECONDS = 7 * 24 * 60 * 60;
+
+export type CacheOutcome = 'HIT' | 'MISS' | 'BYPASS';
+
+/**
+ * 통계 카운터 키 생성
+ * 형식: `v2:ai:cache:stat:{endpoint}:{outcome}:{YYYYMMDD}` (날짜는 UTC 기준)
+ */
+export function buildCacheStatKey(
+  endpoint: string,
+  outcome: CacheOutcome,
+  date: Date = new Date()
+): string {
+  const day = date.toISOString().slice(0, 10).replace(/-/g, '');
+  return `${CACHE_STAT_PREFIX}:${endpoint}:${outcome}:${day}`;
+}
+
+/**
+ * 캐시 결과 카운터 증가 (fire-and-forget)
+ *
+ * - 본 응답 경로를 절대 막지 않는다: await 하지 않고 에러/타임아웃은 무시.
+ * - INCR + EXPIRE를 매번 함께 호출한다. EXPIRE를 "최초 생성 시 1회"로 제한하면
+ *   그 단발 호출이 실패할 경우 TTL 없는 키가 영구 잔존할 수 있어, 매 증가마다
+ *   TTL을 갱신한다. 일별 키라 갱신돼도 다음날 키가 바뀌므로 누적 영향은 없다.
+ */
+export function recordCacheOutcome(
+  endpoint: string,
+  outcome: CacheOutcome
+): void {
+  if (isRedisDisabled() || !isRedisEnabled()) {
+    return;
+  }
+  const client = getRedisClient();
+  if (!client) {
+    return;
+  }
+  const key = buildCacheStatKey(endpoint, outcome);
+  void runRedisWithTimeout(
+    `AI cache stat INCR ${key}`,
+    async () => {
+      const count = await client.incr(key);
+      await client.expire(key, CACHE_STAT_TTL_SECONDS);
+      return count;
+    },
+    { timeoutMs: REDIS_TIMEOUTS.SET }
+  ).catch(() => {
+    // fire-and-forget: 통계 실패가 응답에 영향을 주지 않도록 무시
+  });
 }
 
 /**

@@ -7,7 +7,7 @@ import {
   generateOpsProcedureArtifact,
   patchOpsProcedureArtifactFromQuery,
 } from '@/lib/ai/chat-artifacts/ops-procedure-artifact';
-import type { OpsProcedureArtifact } from '@/lib/ai/chat-artifacts/types';
+import type { OpsProcedureArtifact } from './artifact-types';
 
 let monitoringArtifactExecutorsRegistered = false;
 

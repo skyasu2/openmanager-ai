@@ -3,6 +3,12 @@ import {
   getRegisteredServerAliases,
   resolveRegisteredServerId,
 } from '@/config/server-registry';
+import type {
+  MonitoringAnalysisArtifact,
+  MonitoringRoleGroupSummary,
+  ServerMonitoringAnalysisArtifact,
+  ServerMonitoringArtifactRequest,
+} from '@/lib/ai/domains/monitoring/artifact-types';
 import { createQueryAsOf } from '@/lib/ai/query-as-of';
 import type {
   CloudRunAnalysisResponse,
@@ -17,10 +23,6 @@ import {
   type ArtifactEvidence,
   attachArtifactEnvelopeMetadata,
   type ChatArtifactRequest,
-  type MonitoringAnalysisArtifact,
-  type MonitoringRoleGroupSummary,
-  type ServerMonitoringAnalysisArtifact,
-  type ServerMonitoringArtifactRequest,
 } from './types';
 
 const MonitoringBatchServerSchema = z

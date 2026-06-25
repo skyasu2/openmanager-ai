@@ -1,4 +1,10 @@
 import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
+import type {
+  IncidentReportArtifact,
+  MonitoringAnalysisArtifact,
+  ServerMonitoringAnalysisArtifact,
+  ServerMonitoringArtifactRequest,
+} from '@/lib/ai/domains/monitoring/artifact-types';
 import {
   createArtifactReplayPack,
   MONITORING_ARTIFACT_DOMAIN_ID,
@@ -16,10 +22,6 @@ import {
   type ChatArtifact,
   type ChatArtifactRequest,
   createArtifactEnvelope,
-  type IncidentReportArtifact,
-  type MonitoringAnalysisArtifact,
-  type ServerMonitoringAnalysisArtifact,
-  type ServerMonitoringArtifactRequest,
 } from './types';
 
 /**

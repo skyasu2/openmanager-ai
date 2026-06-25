@@ -30,6 +30,7 @@ import {
   type AIEndpoint,
   type CacheableAIResponse,
   getAICache,
+  recordCacheOutcome,
   setAICache,
 } from '@/lib/ai/cache/ai-response-cache';
 import { executeWithCircuitBreakerAndFallback } from '@/lib/ai/circuit-breaker';
@@ -532,6 +533,7 @@ export const POST = withAuth(
           );
 
           if (cacheResult.hit && cacheResult.data?.response) {
+            recordCacheOutcome(streamCachePolicy.endpoint, 'HIT');
             logger.info(
               `📦 [SupervisorStreamV2] Cache HIT (${cacheResult.source}, ${cacheResult.latencyMs}ms)`
             );
@@ -552,7 +554,10 @@ export const POST = withAuth(
             });
           }
 
+          recordCacheOutcome(streamCachePolicy.endpoint, 'MISS');
           logger.info('📦 [SupervisorStreamV2] Cache MISS');
+        } else {
+          recordCacheOutcome(streamCachePolicy.endpoint, 'BYPASS');
         }
 
         const primaryTimeoutMs = getSupervisorStreamAbortTimeoutMs({
