@@ -325,7 +325,7 @@ export default function UnifiedProfileHeader({
         className={`relative z-50 ${className}`}
         aria-hidden="true"
       >
-        <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 sm:h-12 sm:w-32" />
+        <div className="h-11 w-11 animate-pulse rounded-full bg-gray-200 sm:h-12 sm:w-32" />
       </div>
     );
   }
@@ -338,7 +338,7 @@ export default function UnifiedProfileHeader({
           type="button"
           onClick={navigateToLogin}
           aria-label="로그인"
-          className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:w-auto sm:gap-2 sm:px-4"
+          className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-600 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:h-10 sm:w-auto sm:gap-2 sm:px-4"
           data-testid="login-button"
         >
           <User className="h-4 w-4" aria-hidden="true" />
@@ -365,7 +365,7 @@ export default function UnifiedProfileHeader({
           toggleMenu();
         }}
         disabled={isAuthResolving}
-        className="group pointer-events-auto relative z-50 flex h-10 w-10 items-center justify-center rounded-lg p-0 transition-all duration-200 hover:bg-gray-100 disabled:cursor-wait disabled:hover:bg-transparent sm:h-auto sm:w-auto sm:justify-start sm:space-x-3 sm:p-3"
+        className="group pointer-events-auto relative z-50 flex h-11 w-11 items-center justify-center rounded-lg p-0 transition-all duration-200 hover:bg-gray-100 disabled:cursor-wait disabled:hover:bg-transparent sm:h-auto sm:w-auto sm:justify-start sm:space-x-3 sm:p-3"
         aria-label={profileButtonLabel}
         aria-expanded={menuState.showProfileMenu}
         aria-haspopup="true"

@@ -379,9 +379,9 @@ export default function IntelligentMonitoringPage({
 
       {/* 컨트롤 영역 */}
       <div className="border-b border-gray-100 bg-white p-4">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
           {/* 서버 선택 */}
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <label
               htmlFor="server-select"
               className="mb-1 block text-sm font-medium text-gray-700"

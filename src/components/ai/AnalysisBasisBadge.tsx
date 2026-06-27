@@ -19,6 +19,7 @@ import {
   buildDebugBundle,
   buildExecutionPath,
   buildFailureReasons,
+  buildGroundingChip,
   buildReferencedServers,
   buildRuntimeSummaryItems,
   buildTechnicalExecutionPath,
@@ -161,6 +162,10 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
       }),
     [basis, executionPath, handoffHistory?.length, meaningfulTools, toolCount]
   );
+  const groundingChip = useMemo(
+    () => buildGroundingChip({ dataSource: basis.dataSource, toolCount }),
+    [basis.dataSource, toolCount]
+  );
   const runtimeSummaryItems = useMemo(
     () =>
       buildRuntimeSummaryItems({
@@ -249,9 +254,29 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
         aria-expanded={isExpanded}
         aria-label="분석 근거 상세 보기"
       >
-        <span className="flex items-center gap-2 text-gray-600">
-          <Database className="h-4 w-4" />
-          <span className="font-medium">분석 근거</span>
+        <span className="flex min-w-0 items-center gap-2 text-gray-600">
+          <Database className="h-4 w-4 shrink-0" />
+          <span className="shrink-0 font-medium">분석 근거</span>
+          {groundingChip && (
+            <span
+              className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium ${
+                groundingChip.tone === 'grounded'
+                  ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                  : 'border-amber-200 bg-amber-50 text-amber-700'
+              }`}
+              title={groundingChip.title}
+            >
+              <span
+                aria-hidden="true"
+                className={`h-1.5 w-1.5 rounded-full ${
+                  groundingChip.tone === 'grounded'
+                    ? 'bg-emerald-500'
+                    : 'bg-amber-500'
+                }`}
+              />
+              {groundingChip.label}
+            </span>
+          )}
         </span>
         {isExpanded ? (
           <ChevronUp className="h-4 w-4 text-gray-400" />

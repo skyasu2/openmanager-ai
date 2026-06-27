@@ -2,6 +2,7 @@
 
 import type React from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
 import { CodeExecutionBlock } from '@/components/ai/CodeExecutionBlock';
 
@@ -311,7 +312,7 @@ export function RenderMarkdownContent({
   return (
     <div className={`text-chat leading-relaxed wrap-break-word ${className}`}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkBreaks]}
         components={markdownComponents}
       >
         {normalized}

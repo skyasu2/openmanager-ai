@@ -1,6 +1,6 @@
 {
   "name": "openmanager-ai",
-  "version": "8.13.97",
+  "version": "8.13.105",
   "private": true,
   "license": "GPL-3.0-only",
   "author": "skyasu2 (https://github.com/skyasu2)",
@@ -53,6 +53,7 @@
     "react-hot-toast": "^2.6.0",
     "react-markdown": "^10.1.0",
     "rehype-highlight": "^7.0.2",
+    "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",
     "server-only": "^0.0.1",
     "sharp": "^0.34.5",

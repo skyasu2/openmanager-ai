@@ -105,6 +105,15 @@ export type ArtifactStepMessage = {
   text: string;
 };
 
+// Cloud Run cold start can push artifact generation past the initial 9s step.
+// Keep emitting elapsed-time progress up to just before the 30s route
+// maxDuration so the UI never looks stuck on "거의 완료됐습니다...".
+const DELAYED_PROGRESS_STEPS: ArtifactStepMessage[] = [
+  { delayMs: 14000, text: '분석이 조금 더 걸리고 있습니다... (약 14초 경과)' },
+  { delayMs: 20000, text: '거의 다 왔습니다... (약 20초 경과)' },
+  { delayMs: 28000, text: '최종 결과를 정리하고 있습니다... (약 28초 경과)' },
+];
+
 export function getArtifactStepMessages(
   kind: ChatArtifact['kind']
 ): ArtifactStepMessage[] {
@@ -112,15 +121,9 @@ export function getArtifactStepMessages(
     delayMs: 0,
     text: getArtifactLoadingText(kind),
   };
-  const finalStep: ArtifactStepMessage = {
-    delayMs: 9000,
-    text: '거의 완료됐습니다...',
-  };
-  const steps: ArtifactStepMessage[] = [
-    loadingStep,
-    { delayMs: 3000, text: '데이터를 수집하고 있습니다...' },
-    { delayMs: 6000, text: '분석 결과를 정리하고 있습니다...' },
-    finalStep,
+  const tailSteps: ArtifactStepMessage[] = [
+    { delayMs: 9000, text: '거의 완료됐습니다...' },
+    ...DELAYED_PROGRESS_STEPS,
   ];
 
   if (kind === 'incident-report') {
@@ -128,11 +131,16 @@ export function getArtifactStepMessages(
       loadingStep,
       { delayMs: 3000, text: '장애 데이터를 수집하고 있습니다...' },
       { delayMs: 6000, text: '보고서를 작성하고 있습니다...' },
-      finalStep,
+      ...tailSteps,
     ];
   }
 
-  return steps;
+  return [
+    loadingStep,
+    { delayMs: 3000, text: '데이터를 수집하고 있습니다...' },
+    { delayMs: 6000, text: '분석 결과를 정리하고 있습니다...' },
+    ...tailSteps,
+  ];
 }
 
 export function getArtifactSuccessText(artifact: ChatArtifact): string {

@@ -16,6 +16,8 @@ import type {
   MonitoringBatchAnalysisResponse,
   MonitoringBatchEvidenceRef,
   MonitoringBatchQueryFocusServer,
+  MonitoringBatchRiskSignal,
+  MonitoringBatchServer,
   ServerAnalysisResult,
 } from '@/types/intelligent-monitoring.types';
 import type { OTelResourceCatalog } from '@/types/otel-metrics';
@@ -413,6 +415,186 @@ function mapMonitoringFactPackEvidence(
   }));
 }
 
+function readFallbackServers(value: unknown): MonitoringBatchServer[] {
+  return readRecordArray(value)
+    .map((server): MonitoringBatchServer | undefined => {
+      const id = readString(server.id);
+      if (!id) return undefined;
+      const name = readString(server.name) ?? id;
+
+      return {
+        id,
+        name,
+        type: readString(server.type) ?? 'unknown',
+        status: normalizeBatchStatus(server.status),
+        cpu: readNumber(server.cpu) ?? 0,
+        memory: readNumber(server.memory) ?? 0,
+        disk: readNumber(server.disk) ?? 0,
+        network: readNumber(server.network) ?? 0,
+      };
+    })
+    .filter((server): server is MonitoringBatchServer => server !== undefined);
+}
+
+function readFallbackRiskSignals(value: unknown): MonitoringBatchRiskSignal[] {
+  return readRecordArray(value)
+    .map((signal, index): MonitoringBatchRiskSignal | undefined => {
+      const serverId = readString(signal.serverId);
+      const metric = normalizeBatchMetric(signal.metric);
+      const severity = normalizeBatchRiskSeverity(signal.severity);
+      if (!serverId || !metric || !severity) return undefined;
+
+      return {
+        id: readString(signal.id) ?? `degraded-risk-${index + 1}`,
+        serverId,
+        serverName: readString(signal.serverName) ?? serverId,
+        serverType: readString(signal.serverType) ?? 'unknown',
+        metric,
+        value: readNumber(signal.value) ?? 0,
+        threshold: readNumber(signal.threshold) ?? 0,
+        trend: normalizeBatchTrend(signal.trend),
+        severity,
+        evidenceRefId:
+          readString(signal.evidenceRefId) ?? `degraded-evidence-${index + 1}`,
+      };
+    })
+    .filter(
+      (signal): signal is MonitoringBatchRiskSignal => signal !== undefined
+    );
+}
+
+function readFallbackEvidenceRefs(
+  value: unknown
+): MonitoringBatchEvidenceRef[] {
+  return readRecordArray(value)
+    .map((evidence, index): MonitoringBatchEvidenceRef | undefined => {
+      const summary = readString(evidence.summary);
+      if (!summary) return undefined;
+      const timeRange = isRecord(evidence.timeRange) ? evidence.timeRange : {};
+      const serverId = readString(evidence.serverId);
+      const metric = readString(evidence.metric);
+      const numericValue = readNumber(evidence.value);
+      const stringValue = readString(evidence.value);
+      const threshold = readNumber(evidence.threshold);
+
+      return {
+        id: readString(evidence.id) ?? `degraded-evidence-${index + 1}`,
+        kind: normalizeEvidenceKind(evidence.kind),
+        ...(serverId && { serverId }),
+        ...(metric && { metric }),
+        timeRange: {
+          from: readString(timeRange.from) ?? '',
+          to: readString(timeRange.to) ?? '',
+        },
+        summary,
+        ...(numericValue !== undefined
+          ? { value: numericValue }
+          : stringValue
+            ? { value: stringValue }
+            : {}),
+        ...(threshold !== undefined && { threshold }),
+        severity: normalizeEvidenceSeverity(evidence.severity),
+      };
+    })
+    .filter(
+      (evidence): evidence is MonitoringBatchEvidenceRef =>
+        evidence !== undefined
+    );
+}
+
+function buildFallbackSlot(
+  value: unknown,
+  queryAsOfDataSlot: ChatArtifactRequest['queryAsOfDataSlot']
+): MonitoringBatchAnalysisResponse['slot'] {
+  const slot = isRecord(value) ? value : {};
+  const timeLabel =
+    readString(slot.timeLabel) ?? queryAsOfDataSlot?.timeLabel ?? '현재';
+
+  return {
+    slotIndex: readNumber(slot.slotIndex) ?? queryAsOfDataSlot?.slotIndex ?? 0,
+    hour: readNumber(slot.hour) ?? 0,
+    slotInHour: readNumber(slot.slotInHour) ?? 0,
+    minuteOfDay:
+      readNumber(slot.minuteOfDay) ?? queryAsOfDataSlot?.minuteOfDay ?? 0,
+    timeLabel,
+    startTime: readString(slot.startTime) ?? '',
+    endTime: readString(slot.endTime) ?? '',
+  };
+}
+
+function buildDegradedMonitoringBatchAnalysisResponse(
+  value: unknown,
+  queryAsOfDataSlot: ChatArtifactRequest['queryAsOfDataSlot']
+): MonitoringBatchAnalysisResponse | null {
+  if (!isRecord(value) || value.success !== true) return null;
+
+  const servers = readFallbackServers(value.servers);
+  const riskSignals = readFallbackRiskSignals(value.riskSignals);
+  const evidenceRefs = readFallbackEvidenceRefs(value.evidenceRefs);
+  const dataFreshness = isRecord(value.dataFreshness)
+    ? value.dataFreshness
+    : {};
+
+  return {
+    success: true,
+    sourceMode: value.sourceMode === 'live-otel' ? 'live-otel' : 'replay-json',
+    queryAsOf: readString(value.queryAsOf) ?? '',
+    slot: buildFallbackSlot(value.slot, queryAsOfDataSlot),
+    summary:
+      readString(value.summary) ??
+      '원격 분석 응답 스키마가 일부 변경되어 수신 가능한 필드만 표시합니다.',
+    servers,
+    riskSignals,
+    evidenceRefs,
+    dataFreshness: {
+      generatedAt: readString(dataFreshness.generatedAt) ?? null,
+      sourceUpdatedAt: readString(dataFreshness.sourceUpdatedAt) ?? null,
+      stale: readBoolean(dataFreshness.stale) ?? true,
+    },
+    ...(readString(value._source) && { _source: readString(value._source) }),
+  };
+}
+
+function buildDegradedServerMonitoringResponse(
+  value: unknown,
+  serverId: string
+): (CloudRunAnalysisResponse & { _source?: string }) | null {
+  if (!isRecord(value) || value.success !== true) return null;
+
+  // Single-server responses are passthrough by contract, so preserve every
+  // received field and only repair the required envelope keys.
+  return {
+    ...value,
+    success: true,
+    serverId: readString(value.serverId) ?? serverId,
+    analysisType: normalizeServerAnalysisType(value.analysisType),
+    timestamp: readString(value.timestamp) ?? new Date().toISOString(),
+  } as CloudRunAnalysisResponse & { _source?: string };
+}
+
+function normalizeServerAnalysisType(
+  value: unknown
+): CloudRunAnalysisResponse['analysisType'] {
+  return value === 'full' ||
+    value === 'anomaly' ||
+    value === 'trend' ||
+    value === 'pattern'
+    ? value
+    : 'full';
+}
+
+function createSchemaDriftEvidence(): ArtifactEvidence[] {
+  return [
+    {
+      id: 'monitoring-schema-drift',
+      kind: 'rule',
+      summary:
+        'Cloud Run 분석 응답 스키마가 일부 변경되어 수신 가능한 필드만 표시했습니다.',
+      severity: 'warning',
+    },
+  ];
+}
+
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -478,6 +660,80 @@ function resolveQueryFocusServer({
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function readString(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim().length > 0
+    ? value.trim()
+    : undefined;
+}
+
+function readNumber(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value)
+    ? value
+    : undefined;
+}
+
+function readBoolean(value: unknown): boolean | undefined {
+  return typeof value === 'boolean' ? value : undefined;
+}
+
+function readRecordArray(value: unknown): Record<string, unknown>[] {
+  return Array.isArray(value) ? value.filter(isRecord) : [];
+}
+
+function normalizeBatchStatus(value: unknown): MonitoringBatchServer['status'] {
+  return value === 'warning' ||
+    value === 'critical' ||
+    value === 'offline' ||
+    value === 'online'
+    ? value
+    : 'online';
+}
+
+function normalizeBatchMetric(
+  value: unknown
+): MonitoringBatchRiskSignal['metric'] | undefined {
+  return value === 'cpu' ||
+    value === 'memory' ||
+    value === 'disk' ||
+    value === 'network'
+    ? value
+    : undefined;
+}
+
+function normalizeBatchTrend(
+  value: unknown
+): MonitoringBatchRiskSignal['trend'] {
+  return value === 'up' || value === 'down' || value === 'stable'
+    ? value
+    : 'stable';
+}
+
+function normalizeBatchRiskSeverity(
+  value: unknown
+): MonitoringBatchRiskSignal['severity'] | undefined {
+  return value === 'warning' || value === 'critical' ? value : undefined;
+}
+
+function normalizeEvidenceKind(
+  value: unknown
+): MonitoringBatchEvidenceRef['kind'] {
+  return value === 'metric' ||
+    value === 'log' ||
+    value === 'topology' ||
+    value === 'rule' ||
+    value === 'prediction'
+    ? value
+    : 'rule';
+}
+
+function normalizeEvidenceSeverity(
+  value: unknown
+): MonitoringBatchEvidenceRef['severity'] {
+  return value === 'warning' || value === 'critical' || value === 'info'
+    ? value
+    : 'warning';
 }
 
 function normalizePublicSeverity(
@@ -618,18 +874,26 @@ export async function generateMonitoringAnalysisArtifact({
     data?: unknown;
     _source?: unknown;
   };
-  const analysis = parseMonitoringBatchAnalysisResponse(data.data);
-  if (!data.success || !analysis) {
+  if (!data.success) {
     throw new Error('이상감지/추세 분석 데이터를 받지 못했습니다.');
   }
+
+  const parsedAnalysis = parseMonitoringBatchAnalysisResponse(data.data);
+  const analysis =
+    parsedAnalysis ??
+    buildDegradedMonitoringBatchAnalysisResponse(data.data, queryAsOfDataSlot);
+  if (!analysis) {
+    throw new Error('이상감지/추세 분석 데이터를 받지 못했습니다.');
+  }
+  const degraded = parsedAnalysis === null;
 
   const summary = summarizeMonitoringAnalysis(analysis);
   const roleGroupSummary = buildMonitoringRoleGroupSummary(analysis);
   const capacityAlerts = analysis.capacityAlerts ?? [];
   const queryFocusServer = resolveQueryFocusServer({ analysis, query });
-  const evidence = mapMonitoringFactPackEvidence(
-    analysis.factPack?.evidenceRefs
-  );
+  const evidence =
+    mapMonitoringFactPackEvidence(analysis.factPack?.evidenceRefs) ??
+    (degraded ? createSchemaDriftEvidence() : undefined);
 
   return attachArtifactEnvelopeMetadata<MonitoringAnalysisArtifact>(
     {
@@ -649,6 +913,13 @@ export async function generateMonitoringAnalysisArtifact({
       sourceMode: 'tool-result',
       dataSlot: analysis.slot.timeLabel,
       evidence,
+      ...(degraded && {
+        degradation: {
+          degraded: true,
+          reasonCode: 'provider_schema_drift',
+          fallbackSource: 'tool-based',
+        },
+      }),
     }
   );
 }
@@ -689,10 +960,18 @@ export async function generateServerMonitoringArtifact({
     data?: unknown;
     _source?: unknown;
   };
-  const analysis = parseServerMonitoringAnalysisResponse(data.data);
-  if (!data.success || !analysis) {
+  if (!data.success) {
     throw new Error('단일 서버 이상감지/추세 분석 데이터를 받지 못했습니다.');
   }
+
+  const parsedAnalysis = parseServerMonitoringAnalysisResponse(data.data);
+  const analysis =
+    parsedAnalysis ??
+    buildDegradedServerMonitoringResponse(data.data, serverId);
+  if (!analysis) {
+    throw new Error('단일 서버 이상감지/추세 분석 데이터를 받지 못했습니다.');
+  }
+  const degraded = parsedAnalysis === null;
 
   const server: ServerAnalysisResult = {
     ...analysis,
@@ -703,6 +982,9 @@ export async function generateServerMonitoringArtifact({
   const source =
     analysis._source ||
     (typeof data._source === 'string' ? data._source : undefined);
+  const evidence =
+    mapServerMonitoringEvidence(server) ??
+    (degraded ? createSchemaDriftEvidence() : undefined);
 
   return attachArtifactEnvelopeMetadata<ServerMonitoringAnalysisArtifact>(
     {
@@ -720,7 +1002,14 @@ export async function generateServerMonitoringArtifact({
     {
       sourceMode: 'tool-result',
       dataSlot: queryAsOfDataSlot?.timeLabel,
-      evidence: mapServerMonitoringEvidence(server),
+      evidence,
+      ...(degraded && {
+        degradation: {
+          degraded: true,
+          reasonCode: 'provider_schema_drift',
+          fallbackSource: 'tool-based',
+        },
+      }),
     }
   );
 }

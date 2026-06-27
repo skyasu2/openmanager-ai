@@ -119,17 +119,22 @@ const DashboardHeader = memo(function DashboardHeader({
     return (
       <header
         suppressHydrationWarning
-        className="sticky top-0 z-40 border-b border-gray-200 bg-white shadow-xs"
+        className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/95 shadow-sm backdrop-blur-md"
       >
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="h-10 w-32 animate-pulse rounded-lg bg-gray-200" />
-          <div className="hidden items-center gap-6 md:flex">
-            <div className="h-6 w-24 animate-pulse rounded bg-gray-200" />
+        <div className="absolute inset-x-0 top-0 h-[2px] bg-linear-to-r from-blue-500 via-indigo-500 to-violet-500" />
+        <div className="flex min-w-0 items-center justify-between gap-2 py-4 pr-3 pl-14 sm:gap-4 sm:pr-6 sm:pl-16 lg:px-6">
+          <div className="flex min-w-0 flex-1 basis-0 items-center gap-2 overflow-hidden sm:gap-4">
+            <div className="h-9 w-9 shrink-0 animate-pulse rounded-lg bg-gray-200 sm:h-10 sm:w-10" />
+            <div className="hidden h-5 w-36 animate-pulse rounded bg-gray-200 sm:block" />
+            <div className="ml-auto h-6 w-16 shrink-0 animate-pulse rounded bg-gray-200 lg:hidden" />
+          </div>
+          <div className="hidden min-w-0 shrink items-center justify-center gap-3 overflow-hidden px-2 lg:flex xl:gap-4">
+            <div className="hidden h-6 w-24 animate-pulse rounded bg-gray-200 xl:block" />
             <div className="h-6 w-32 animate-pulse rounded bg-gray-200" />
           </div>
-          <div className="flex items-center gap-4">
-            <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200" />
-            <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200" />
+          <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+            <div className="h-11 w-11 animate-pulse rounded-xl bg-gray-200 sm:w-28" />
+            <div className="h-11 w-11 animate-pulse rounded-lg bg-gray-200 sm:w-32" />
           </div>
         </div>
       </header>
@@ -152,6 +157,7 @@ const DashboardHeader = memo(function DashboardHeader({
           <OpenManagerLogo
             variant="light"
             compactOnMobile
+            hideTitleOnMobile
             href="/"
             titleWeight="semibold"
             showSubtitle={false}

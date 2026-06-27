@@ -132,6 +132,10 @@ const SERVER_ANALYSIS_TOOL_NAMES = new Set([
   'correlateMetrics',
   'findRootCause',
   'buildIncidentTimeline',
+  'generateIncidentReportArtifact',
+  'generateOpsProcedureArtifact',
+  'generateMonitoringAnalysisArtifact',
+  'generateServerMonitoringArtifact',
 ]);
 
 const EMPTY_ASSISTANT_RESPONSE_PATTERNS = [

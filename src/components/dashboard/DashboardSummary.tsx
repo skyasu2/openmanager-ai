@@ -206,7 +206,7 @@ function TimeRangePicker({
             aria-pressed={isActive}
             onClick={() => onChange(option.value)}
             className={cn(
-              'min-h-8 min-w-10 rounded-lg px-2.5 text-xs font-semibold tabular-nums transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-300',
+              'min-h-10 min-w-12 rounded-lg px-3 text-sm font-semibold tabular-nums transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-300 sm:min-h-8 sm:min-w-10 sm:px-2.5 sm:text-xs',
               isActive
                 ? 'bg-slate-900 text-white shadow-sm'
                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'

@@ -4,6 +4,7 @@ import { Check, Copy } from 'lucide-react';
 import { memo, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
+import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
 import { AgentHandoffBadge, parseHandoffMarker } from './AgentHandoffBadge';
 
@@ -155,7 +156,7 @@ export const MarkdownRenderer = memo(function MarkdownRenderer({
   return (
     <div className={`markdown-content min-w-0 ${className}`}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkBreaks]}
         rehypePlugins={[rehypeHighlight]} // Syntax Highlighting 추가
         components={{
           // pre 태그 제거 (CodeBlock이 자체적으로 pre를 포함하므로 중첩 방지)

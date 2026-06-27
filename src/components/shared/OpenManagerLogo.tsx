@@ -22,6 +22,8 @@ interface OpenManagerLogoProps {
   className?: string;
   /** 좁은 앱 헤더에서 모바일 로고 폭을 줄일지 여부 */
   compactOnMobile?: boolean;
+  /** 모바일에서 로고 제목을 숨기고 마크만 표시할지 여부 */
+  hideTitleOnMobile?: boolean;
   /** 클릭 시 이동할 경로 (기본: /) */
   href?: string;
   /** Link prefetch 여부 (기본: false, 로고는 저우선 탐색 링크로 취급) */
@@ -44,6 +46,7 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
   showSubtitle = true,
   className = '',
   compactOnMobile = false,
+  hideTitleOnMobile = false,
   href,
   prefetch = false,
   titleAs = 'h1',
@@ -89,7 +92,10 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
       />
 
       {/* 텍스트 영역 - suppressHydrationWarning for dynamic subtitle */}
-      <div className="min-w-0 text-left" suppressHydrationWarning>
+      <div
+        className={`min-w-0 text-left ${hideTitleOnMobile ? 'hidden sm:block' : ''}`}
+        suppressHydrationWarning
+      >
         <TitleTag
           className={`truncate ${titleWeightClass} ${
             compactOnMobile ? 'text-base sm:text-xl' : 'text-xl'
@@ -123,6 +129,7 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
       <Link
         href={href}
         prefetch={prefetch}
+        aria-label={hideTitleOnMobile ? 'OpenManager AI 홈' : undefined}
         className="min-w-0 transition-opacity hover:opacity-80"
       >
         {content}

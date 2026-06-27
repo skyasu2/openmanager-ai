@@ -245,9 +245,16 @@ export default function LoginClient() {
                   <span>에 로그인</span>
                 </h1>
                 <p className="text-sm text-white/75">
-                  {currentProvider
-                    ? '다른 방법으로 로그인하세요'
-                    : 'AI 서버 모니터링 시스템에 오신 것을 환영합니다'}
+                  {currentProvider ? (
+                    '다른 방법으로 로그인하세요'
+                  ) : (
+                    <>
+                      <span className="inline-block">
+                        AI 서버 모니터링 시스템에
+                      </span>{' '}
+                      <span className="inline-block">오신 것을 환영합니다</span>
+                    </>
+                  )}
                 </p>
               </div>
 

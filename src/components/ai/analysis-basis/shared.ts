@@ -581,6 +581,53 @@ export function buildCollapsedSummary(params: {
   };
 }
 
+export type GroundingTone = 'grounded' | 'general';
+
+export interface GroundingChipInfo {
+  tone: GroundingTone;
+  label: string;
+  title: string;
+}
+
+/**
+ * 응답이 도구·서버 근거에 기반했는지(grounded) 근거 없는 일반 직답인지(general)를
+ * 한눈에 보이는 칩 정보로 환산한다.
+ *
+ * 신규 데이터 없이 `dataSource`(evidence-source-helpers의 최종 라벨)와 `toolCount`로
+ * 파생한다. dataSource가 "일반 대화 응답…"으로 시작하면 근거 0 → general,
+ * 그 외(서버 실시간 데이터 분석/지식 근거 검색/웹 검색/도메인 근거…)는 grounded.
+ */
+export function buildGroundingChip(params: {
+  dataSource: string;
+  toolCount: number;
+}): GroundingChipInfo | null {
+  const dataSource = params.dataSource?.trim();
+  if (!dataSource) return null;
+
+  if (dataSource.startsWith('일반 대화 응답')) {
+    return {
+      tone: 'general',
+      label: '일반 응답 · 근거 없음',
+      title:
+        '도구·서버 근거 없이 작성된 일반 응답입니다. 수치는 재확인을 권장합니다.',
+    };
+  }
+
+  if (params.toolCount > 0) {
+    return {
+      tone: 'grounded',
+      label: `근거 도구 ${params.toolCount}`,
+      title: `${params.toolCount}개 도구 근거로 작성된 응답입니다.`,
+    };
+  }
+
+  return {
+    tone: 'grounded',
+    label: '근거 있음',
+    title: `${dataSource} 기반 응답입니다.`,
+  };
+}
+
 export function hasTechnicalAnalysisDetails(params: {
   debugDetails?: string | null;
   handoffHistory?: ResponseHandoff[];
