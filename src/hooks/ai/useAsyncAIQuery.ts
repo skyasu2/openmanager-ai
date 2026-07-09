@@ -47,7 +47,7 @@ import type {
   EvidenceCard,
   RetrievalMetadata,
 } from '@/types/ai/retrieval-status';
-import type { JobDataSlot } from '@/types/ai-jobs';
+import type { JobConversationMessage, JobDataSlot } from '@/types/ai-jobs';
 import { createCSRFHeaders } from '@/utils/security/csrf-client';
 import {
   closeTrackedEventSource,
@@ -156,6 +156,7 @@ export interface AsyncQueryRequestOptions {
   enableRAG?: boolean;
   enableWebSearch?: boolean;
   queryAsOfDataSlot?: JobDataSlot;
+  messages?: JobConversationMessage[];
   intentFrame?: DomainIntentFramePayload;
   semanticQueryTrace?: SemanticQueryTrace;
   inputType?: SemanticPreprocessingMetadata['inputType'];
@@ -165,6 +166,7 @@ export interface AsyncQueryRequestOptions {
 export interface AsyncQueryJobRequestBody {
   idempotencyKey?: string;
   query: string;
+  messages?: JobConversationMessage[];
   options: {
     sessionId?: string;
     metadata: Record<string, unknown>;
@@ -197,6 +199,10 @@ export function buildAsyncQueryJobRequestBody(
       idempotencyKey: normalizedIdempotencyKey,
     }),
     query,
+    ...(requestOptions?.messages &&
+      requestOptions.messages.length > 0 && {
+        messages: requestOptions.messages,
+      }),
     options: {
       sessionId,
       metadata: {

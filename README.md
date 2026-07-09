@@ -3,7 +3,7 @@
 > **Personal AI-assisted Server Monitoring Dashboard**
 > 자연어 질의와 대시보드를 결합해 만든 개인 토이·학습용 포트폴리오 프로젝트
 
-[![Version](https://img.shields.io/badge/version-8.13.105-blue.svg?style=for-the-badge)](https://openmanager-ai.vercel.app)
+[![Version](https://img.shields.io/badge/version-8.13.145-blue.svg?style=for-the-badge)](https://openmanager-ai.vercel.app)
 [![Deployed Demo](https://img.shields.io/badge/Deployed_Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://openmanager-ai.vercel.app)
 [![License](https://img.shields.io/badge/License-GPL_v3-blue.svg?style=for-the-badge)](LICENSE)
 
@@ -143,4 +143,4 @@ GNU General Public License v3.0 — see [LICENSE](LICENSE) for details.
 
 **Deployed demo**: [openmanager-ai.vercel.app](https://openmanager-ai.vercel.app)
 
-Public Snapshot · v8.13.105
+Public Snapshot · v8.13.145

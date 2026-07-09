@@ -41,12 +41,7 @@ function readThreshold(query: string, fallback = DEFAULT_THRESHOLD): number {
     if (Number.isFinite(value) && value >= 0 && value <= 100) return value;
   }
 
-  const match = query.match(/(\d{1,3})(?:\s*%|퍼센트|프로)?/);
-  if (!match) return fallback;
-  const value = Number(match[1]);
-  return Number.isFinite(value) && value >= 0 && value <= 100
-    ? value
-    : fallback;
+  return fallback;
 }
 
 function readProcedureType(query: string): OpsProcedureType {
@@ -63,6 +58,32 @@ function readProcedureType(query: string): OpsProcedureType {
     return 'runbook';
   }
   return 'script';
+}
+
+// 재시작·중지·삭제·배포 같은 직접 실행 제어를 "해줘/실행" 형태로 요청한 경우를
+// 감지한다. 이런 요청에도 운영 절차 산출물은 제공하되, 직접 실행은 하지 않는다는
+// 점을 요약 맨 앞에 명시해 "이미 실행됐다"는 오해를 막는다. (read-only 보장 안내)
+const DIRECT_CONTROL_VERB =
+  '(?:재시작|재기동|리부트|reboot|restart|중지|정지|종료|kill|죽여|삭제|지워|제거|드롭|롤백|rollback|배포|deploy|스케일\\s*(?:아웃|업))';
+
+const DIRECT_EXECUTION_IMMEDIATE_PATTERN = new RegExp(
+  `${DIRECT_CONTROL_VERB}\\s*(?:해줘|해\\s*줘|시켜)`,
+  'i'
+);
+
+const DIRECT_EXECUTION_WITH_RUN_VERB_PATTERN = new RegExp(
+  `${DIRECT_CONTROL_VERB}[\\s\\S]{0,40}(?:실행|수행|처리|진행|돌려)(?:해줘|해\\s*줘|시켜)?`,
+  'i'
+);
+
+const EXECUTION_CONTROL_NOTICE =
+  '⚠️ 재시작·중지·삭제 같은 직접 실행 제어는 수행하지 않습니다. 아래는 검토 후 승인된 절차로 수동 적용할 운영 산출물입니다.';
+
+function requestsDirectExecutionControl(query: string): boolean {
+  return (
+    DIRECT_EXECUTION_IMMEDIATE_PATTERN.test(query) ||
+    DIRECT_EXECUTION_WITH_RUN_VERB_PATTERN.test(query)
+  );
 }
 
 function readTimeLabel(minuteOfDay?: number): string | undefined {
@@ -395,6 +416,13 @@ export async function generateOpsProcedureArtifact({
   const validation = validateOpsProcedureArtifact({ codeBlocks });
   const metricLabel = METRIC_LABELS[metric];
   const generatedAt = new Date().toISOString();
+  const baseSummary =
+    procedureType === 'runbook'
+      ? 'warning/error 로그와 현재 메트릭을 근거로 원인 후보, 대응 순서, 검증 절차를 정리했습니다.'
+      : `${metricLabel} ${threshold}% 이상 조건을 기준으로 알림 산출물을 생성했습니다.`;
+  const summaryText = requestsDirectExecutionControl(query)
+    ? `${EXECUTION_CONTROL_NOTICE}\n\n${baseSummary}`
+    : baseSummary;
 
   return attachArtifactEnvelopeMetadata<OpsProcedureArtifact>(
     {
@@ -406,10 +434,7 @@ export async function generateOpsProcedureArtifact({
           : procedureType === 'runbook'
             ? '로그 기반 원인/대응 runbook'
             : `${metricLabel} ${threshold}% Slack 알림 운영 절차`,
-      summary:
-        procedureType === 'runbook'
-          ? 'warning/error 로그와 현재 메트릭을 근거로 원인 후보, 대응 순서, 검증 절차를 정리했습니다.'
-          : `${metricLabel} ${threshold}% 이상 조건을 기준으로 알림 산출물을 생성했습니다.`,
+      summary: summaryText,
       procedureType,
       source: 'otel-static',
       queryAsOfDataSlot,

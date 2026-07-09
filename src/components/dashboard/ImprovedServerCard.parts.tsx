@@ -1,4 +1,5 @@
 import { getThreshold } from '@/config/rules';
+import { METRIC_SEVERITY_COLORS } from '@/styles/design-constants';
 import type { Server as ServerType } from '@/types/server';
 import { formatMetricValue } from '@/utils/metric-formatters';
 import { SvgSparkline } from '../shared/SvgSparkline';
@@ -95,20 +96,20 @@ export const MetricItem = ({ type, value, history }: MetricItemProps) => {
 
     if (val >= threshold.critical) {
       return {
-        chartColor: '#ef4444',
+        chartColor: METRIC_SEVERITY_COLORS.critical,
         textClass: 'text-red-700 font-semibold',
         strokeWidth: 2.2,
       };
     }
     if (val >= threshold.warning) {
       return {
-        chartColor: '#f97316',
+        chartColor: METRIC_SEVERITY_COLORS.warning,
         textClass: 'text-amber-700 font-medium',
         strokeWidth: 1.8,
       };
     }
     return {
-      chartColor: '#10b981',
+      chartColor: METRIC_SEVERITY_COLORS.normal,
       textClass: 'text-slate-600 font-medium',
       strokeWidth: 1.2,
     };
@@ -126,14 +127,14 @@ export const MetricItem = ({ type, value, history }: MetricItemProps) => {
             {labels[type]}
           </span>
           <span
-            className={`text-sm tracking-tight tabular-nums transition-all duration-700 ease-in-out ${metricSeverity.textClass}`}
+            className={`font-mono text-sm tracking-tight tabular-nums transition-all duration-700 ease-in-out ${metricSeverity.textClass}`}
           >
             {formatMetricValue(type, value)}
           </span>
         </div>
         <span
           aria-label={metricTrend.accessibleLabel}
-          className={`block h-3 text-right text-[10px] font-semibold leading-none tabular-nums ${metricTrendClass}`}
+          className={`block h-3 text-right font-mono text-[10px] font-semibold leading-none tabular-nums ${metricTrendClass}`}
           role="img"
           title={metricTrend.title}
         >
@@ -166,7 +167,7 @@ export const CompactMetricChip = ({
     <div className="text-2xs font-medium tracking-wide text-gray-500">
       {label}
     </div>
-    <div className="text-xs font-medium tabular-nums text-gray-800">
+    <div className="font-mono text-xs font-medium tabular-nums text-gray-800">
       {Math.round(value)}%
     </div>
   </div>
@@ -263,14 +264,17 @@ export const SecondaryMetrics = ({
     >
       {hasLoad && (
         <span
-          className={loadColor}
+          className={`font-mono tabular-nums ${loadColor}`}
           title={`Load Average (1분): ${server.load1?.toFixed(2)} / ${server.cpuCores} cores`}
         >
           Load: {server.load1?.toFixed(1)}/{server.cpuCores}
         </span>
       )}
       {hasResponse && (
-        <span className={respColor} title={`응답 시간: ${respMs}ms`}>
+        <span
+          className={`font-mono tabular-nums ${respColor}`}
+          title={`응답 시간: ${respMs}ms`}
+        >
           Resp:{' '}
           {respMs >= 1000 ? `${(respMs / 1000).toFixed(1)}s` : `${respMs}ms`}
         </span>
@@ -281,7 +285,7 @@ export const SecondaryMetrics = ({
           title={`최근 24시간 가동률: ${uptimePercentLabel}`}
         >
           <span>가동률</span>
-          <span className="font-medium tabular-nums text-gray-700">
+          <span className="font-mono font-medium tabular-nums text-gray-700">
             {uptimePercentLabel} / 24h
           </span>
         </span>

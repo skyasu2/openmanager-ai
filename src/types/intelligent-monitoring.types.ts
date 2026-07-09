@@ -239,6 +239,35 @@ export interface MonitoringBatchFactSummary {
   offline: number;
 }
 
+export interface MonitoringBatch24hMetricSummary {
+  metric: MonitoringBatchFactMetric;
+  unit: '%';
+  current: number;
+  avg24h: number;
+  p95: number;
+  max: number;
+  min: number;
+  peakSlot: string;
+  currentSlotTimestamp?: string;
+  peakTimestamp?: string;
+  windowFrom?: string;
+  windowTo?: string;
+  timezone?: 'Asia/Seoul';
+  warningSlots: number;
+  criticalSlots: number;
+  deltaFromAvg: number;
+  distanceToWarning: number;
+  distanceToCritical: number;
+  samples: number;
+  slotIntervalMinutes: number;
+}
+
+export interface MonitoringBatchFactCorrelatedLog {
+  evidenceRefId: string;
+  severity: MonitoringBatchFactSeverity;
+  summary: string;
+}
+
 export interface MonitoringBatchFactSignal {
   id: string;
   serverId: string;
@@ -250,6 +279,8 @@ export interface MonitoringBatchFactSignal {
   thresholdLevel: MonitoringBatchFactSeverity;
   severity: MonitoringBatchFactSeverity;
   evidenceRefId?: string;
+  baseline24h?: MonitoringBatch24hMetricSummary;
+  correlatedLogs?: MonitoringBatchFactCorrelatedLog[];
 }
 
 export interface MonitoringBatchFactPack {

@@ -8,7 +8,13 @@
  * @updated 2026-02-10 - KoreanTimeUtil 재사용으로 UTC+9 중복 제거
  */
 
+import {
+  formatKSTOffsetTimestampFromShiftedDate,
+  formatKSTTimestampLabel,
+} from '@/lib/utils/kst-format';
 import { KoreanTimeUtil } from '@/lib/utils/time';
+
+export { formatKSTTimestampLabel };
 
 /**
  * 한국 시간(KST) 기준 현재 minuteOfDay 계산 (10분 단위 정렬)
@@ -28,16 +34,7 @@ export function getKSTMinuteOfDay(): number {
  */
 export function getKSTTimestamp(): string {
   const kst = KoreanTimeUtil.getCurrentKST();
-
-  const year = kst.getUTCFullYear();
-  const month = String(kst.getUTCMonth() + 1).padStart(2, '0');
-  const day = String(kst.getUTCDate()).padStart(2, '0');
-  const hours = String(kst.getUTCHours()).padStart(2, '0');
-  const minutes = String(kst.getUTCMinutes()).padStart(2, '0');
-  const seconds = String(kst.getUTCSeconds()).padStart(2, '0');
-  const ms = String(kst.getUTCMilliseconds()).padStart(3, '0');
-
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${ms}+09:00`;
+  return formatKSTOffsetTimestampFromShiftedDate(kst);
 }
 
 /**

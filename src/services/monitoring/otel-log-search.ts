@@ -27,6 +27,11 @@ export type LogQueryResult = {
     cacheAgeMs: number | null;
     availableSources: string[];
     availableServers: string[];
+    levelCounts: {
+      info: number;
+      warn: number;
+      error: number;
+    };
   };
 };
 
@@ -119,6 +124,20 @@ export async function queryOTelLogs(query: LogQuery): Promise<LogQueryResult> {
     );
   }
 
+  const levelCounts = filtered.reduce(
+    (acc, entry) => {
+      if (
+        entry.level === 'info' ||
+        entry.level === 'warn' ||
+        entry.level === 'error'
+      ) {
+        acc[entry.level] += 1;
+      }
+      return acc;
+    },
+    { info: 0, warn: 0, error: 0 }
+  );
+
   const sorted = [...filtered].sort((a, b) => {
     const diff = a.timestampMs - b.timestampMs;
     return sortOrder === 'asc' ? diff : -diff;
@@ -148,6 +167,7 @@ export async function queryOTelLogs(query: LogQuery): Promise<LogQueryResult> {
       cacheAgeMs: Date.now() - index.builtAt,
       availableSources: index.sources,
       availableServers: index.servers,
+      levelCounts,
     },
   };
 }

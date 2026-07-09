@@ -6,11 +6,11 @@ import { RealtimeChart } from './EnhancedServerModal.components';
  *
  * 네트워크 모니터링 탭:
  * - 네트워크 상태 표시 (실제 데이터)
- * - 네트워크 사용률 차트 (실제 데이터)
+ * - 네트워크 대역폭 사용률 차트 (실제 데이터)
  * - 서버 연결 정보
  *
  * ✅ v2.0 변경사항:
- * - In/Out 분리 → 단일 Network 사용률
+ * - In/Out 분리 → 단일 Network 대역폭 사용률
  * - Latency 추정값 제거
  * - 불필요한 추정값 섹션 정리
  *
@@ -55,14 +55,14 @@ const getNetworkStatusInfo = (status?: NetworkStatus) => {
  *
  * 서버의 네트워크 상태를 실시간으로 모니터링하는 탭
  * - 네트워크 상태 카드
- * - 네트워크 사용률 차트 (실제 데이터)
+ * - 네트워크 대역폭 사용률 차트 (실제 데이터)
  * - 네트워크 연결 정보
  */
 export const NetworkTab: FC<NetworkTabProps> = ({ server, realtimeData }) => {
   const networkStatusInfo = getNetworkStatusInfo(server.networkStatus);
   const networkThreshold = getThreshold('network');
 
-  // 네트워크 사용률 (단일값 배열)
+  // 네트워크 대역폭 사용률 (단일값 배열)
   const networkData = realtimeData.network;
   const latestNetwork = networkData[networkData.length - 1] || 0;
 
@@ -112,13 +112,13 @@ export const NetworkTab: FC<NetworkTabProps> = ({ server, realtimeData }) => {
           </div>
         </div>
 
-        {/* 네트워크 사용률 카드 */}
+        {/* 네트워크 대역폭 사용률 카드 */}
         <div className="relative overflow-hidden rounded-2xl border border-blue-100 bg-white p-6 shadow-sm ring-1 ring-blue-50">
           <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-blue-400 to-indigo-500" />
           <div className="relative z-10">
             <div className="mb-4 flex items-center justify-between">
               <h4 className="text-lg font-bold text-slate-900">
-                네트워크 사용률
+                네트워크 대역폭 사용률
               </h4>
               <span className="text-2xl">📊</span>
             </div>
@@ -149,11 +149,11 @@ export const NetworkTab: FC<NetworkTabProps> = ({ server, realtimeData }) => {
         </div>
       </div>
 
-      {/* 네트워크 사용률 차트 */}
+      {/* 네트워크 대역폭 사용률 차트 */}
       <div className="rounded-2xl bg-linear-to-br from-gray-50 to-gray-100 p-6 shadow-lg">
         <div className="mb-4 flex items-center justify-between">
           <h4 className="bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-lg font-bold text-transparent">
-            네트워크 사용률 추이
+            네트워크 대역폭 사용률 추이
           </h4>
           <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
             실시간 데이터
@@ -162,7 +162,7 @@ export const NetworkTab: FC<NetworkTabProps> = ({ server, realtimeData }) => {
         <RealtimeChart
           data={networkData}
           color="#10b981"
-          label="네트워크 사용률 (%)"
+          label="네트워크 대역폭 사용률 (%)"
         />
       </div>
 

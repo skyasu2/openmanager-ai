@@ -15,6 +15,7 @@
  */
 
 import { logger } from '@/lib/logging';
+import { toKSTShiftedDate } from '@/lib/utils/kst-format';
 
 interface NTPServer {
   name: string;
@@ -226,8 +227,7 @@ export const KoreanTimeUtil = {
 
   // --- Start of integrated kst-time.ts methods ---
   getCurrentKST(): Date {
-    const now = new Date();
-    return new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    return toKSTShiftedDate(new Date());
   },
 
   getKSTMinuteOfDay(): number {

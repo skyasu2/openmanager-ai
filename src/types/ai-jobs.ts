@@ -46,6 +46,11 @@ export interface JobQueryAsOf {
   dataSlot: JobDataSlot;
 }
 
+export interface JobConversationMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 // ============================================
 // API Request/Response 타입
 // ============================================
@@ -55,6 +60,7 @@ export interface CreateJobRequest {
   type?: JobType;
   idempotencyKey?: string;
   query: string;
+  messages?: JobConversationMessage[];
   options?: {
     priority?: JobPriority;
     sessionId?: string;

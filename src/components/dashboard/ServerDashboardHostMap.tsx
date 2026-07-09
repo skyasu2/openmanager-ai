@@ -80,7 +80,7 @@ export function HexagonalHostMap({
               <span className="mt-1 max-w-full truncate text-[11px] font-medium">
                 {server.name}
               </span>
-              <span className="mt-1 text-[10px] tabular-nums opacity-75">
+              <span className="mt-1 font-mono text-[10px] tabular-nums opacity-75">
                 CPU {Math.round(server.cpu ?? 0)} · MEM{' '}
                 {Math.round(server.memory ?? 0)}
               </span>

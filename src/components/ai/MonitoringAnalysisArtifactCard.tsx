@@ -9,100 +9,28 @@ import {
 } from '@/lib/ai/chat-artifacts/artifact-execution';
 import { downloadBlobContent } from '@/lib/ai/chat-artifacts/download-utils';
 import type { MonitoringAnalysisArtifact } from '@/lib/ai/domains/monitoring/artifact-types';
-import type {
-  MonitoringBatchCapacityAlert,
-  MonitoringBatchEvidenceRef,
-  MonitoringBatchFactSignal,
-  MonitoringBatchRiskSignal,
-} from '@/types/intelligent-monitoring.types';
+import {
+  buildAnalysisMarkdown,
+  calculateCapacityBarSegments,
+  capacityAlertClass,
+  formatBaselinePercent,
+  formatBaselineTimestamp,
+  formatCapacityTarget,
+  formatCorrelatedLogSeverity,
+  formatMetricLabel,
+  formatMonitoringSourceLabel,
+  formatQueryFocusServer,
+  isCorrelatedLogEvidence,
+  readBaselineRows,
+  readCapacityAlerts,
+  readCorrelatedLogRows,
+  readDisplaySignals,
+  readEvidenceRefs,
+  readTimeLabel,
+  signalClass,
+} from './MonitoringAnalysisArtifactCard.utils';
 
-type MonitoringDisplaySignal =
-  | MonitoringBatchRiskSignal
-  | MonitoringBatchFactSignal;
-
-function buildRoleGroupMarkdown(artifact: MonitoringAnalysisArtifact): string {
-  const roleGroups = artifact.roleGroupSummary ?? [];
-  if (roleGroups.length === 0) {
-    return '';
-  }
-
-  return roleGroups
-    .map(
-      (group) =>
-        `- ${group.role}: ${group.count}대, CPU ${group.avgCpu}%, MEM ${group.avgMemory}%, DISK ${group.avgDisk}%, 주의 ${group.warningCount}대, 위험 ${group.criticalCount}대`
-    )
-    .join('\n');
-}
-
-function buildCapacityAlertsMarkdown(
-  artifact: MonitoringAnalysisArtifact
-): string {
-  const alerts = readCapacityAlerts(artifact);
-  if (alerts.length === 0) {
-    return '';
-  }
-
-  return alerts
-    .map(
-      (alert) =>
-        `- ${alert.serverName || alert.serverId}: ${alert.metric.toUpperCase()} 현재 ${Math.round(alert.currentValue)}%, 예측 ${Math.round(alert.predictedValue)}% · ${alert.humanReadable}`
-    )
-    .join('\n');
-}
-
-function formatQueryFocusServer(
-  artifact: MonitoringAnalysisArtifact
-): string | null {
-  const focusServer =
-    artifact.queryFocusServer ?? artifact.analysis.queryFocusServer;
-  if (!focusServer) return null;
-
-  return `${focusServer.serverName || focusServer.serverId} (${formatStatusLabel(focusServer.status)}, CPU ${Math.round(focusServer.cpu)}%, MEM ${Math.round(focusServer.memory)}%, DISK ${Math.round(focusServer.disk)}%)`;
-}
-
-export function buildAnalysisMarkdown(
-  artifact: MonitoringAnalysisArtifact
-): string {
-  const riskSignals = readDisplaySignals(artifact);
-  const timeLabel = readTimeLabel(artifact);
-  const roleGroupLines = buildRoleGroupMarkdown(artifact);
-  const capacityAlertLines = buildCapacityAlertsMarkdown(artifact);
-  const queryFocusServer = formatQueryFocusServer(artifact);
-  const warningLines =
-    riskSignals.length > 0
-      ? riskSignals
-          .map(
-            (signal) =>
-              `- ${signal.serverName || signal.serverId}: ${signal.metric} ${signal.value}% (${signal.severity})`
-          )
-          .join('\n')
-      : '- 감지된 위험 신호 없음';
-
-  return [
-    `# ${artifact.title}`,
-    '',
-    `- 생성 시각: ${new Date(artifact.generatedAt).toLocaleString('ko-KR')}`,
-    `- 데이터 기준: ${timeLabel}`,
-    `- 분석 서버: ${artifact.serverCount}대`,
-    `- 위험 신호: ${artifact.riskSignalCount}건`,
-    `- 주의 서버: ${artifact.warningServers}대`,
-    `- 위험 서버: ${artifact.criticalServers}대`,
-    ...(queryFocusServer ? [`- 기준(origin) 서버: ${queryFocusServer}`] : []),
-    '',
-    '## 요약',
-    '',
-    artifact.summary,
-    '',
-    ...(roleGroupLines ? ['## 역할별 현황', '', roleGroupLines, ''] : []),
-    ...(capacityAlertLines
-      ? ['## 용량 소진 예측', '', capacityAlertLines, '']
-      : []),
-    '## 위험 신호',
-    '',
-    warningLines,
-    '',
-  ].join('\n');
-}
+export { buildAnalysisMarkdown, calculateCapacityBarSegments };
 
 function downloadAnalysis(
   artifact: MonitoringAnalysisArtifact,
@@ -125,150 +53,6 @@ function downloadAnalysis(
   );
 }
 
-function signalClass(severity: 'warning' | 'critical'): string {
-  return severity === 'critical'
-    ? 'bg-red-50 text-red-700'
-    : 'bg-amber-50 text-amber-700';
-}
-
-function capacityAlertClass(severity: 'warning' | 'critical'): string {
-  return severity === 'critical'
-    ? 'border-red-100 bg-red-50 text-red-800'
-    : 'border-amber-100 bg-amber-50 text-amber-800';
-}
-
-function readRiskSignals(
-  artifact: MonitoringAnalysisArtifact
-): MonitoringBatchRiskSignal[] {
-  return Array.isArray(artifact.analysis.riskSignals)
-    ? artifact.analysis.riskSignals
-    : [];
-}
-
-function readFactSignals(
-  artifact: MonitoringAnalysisArtifact
-): MonitoringBatchFactSignal[] {
-  return Array.isArray(artifact.analysis.factPack?.signals)
-    ? artifact.analysis.factPack.signals
-    : [];
-}
-
-function readDisplaySignals(
-  artifact: MonitoringAnalysisArtifact
-): MonitoringDisplaySignal[] {
-  const factSignals = readFactSignals(artifact);
-  return factSignals.length > 0 ? factSignals : readRiskSignals(artifact);
-}
-
-function readCapacityAlerts(
-  artifact: MonitoringAnalysisArtifact
-): MonitoringBatchCapacityAlert[] {
-  if (Array.isArray(artifact.capacityAlerts)) {
-    return artifact.capacityAlerts;
-  }
-
-  return Array.isArray(artifact.analysis.capacityAlerts)
-    ? artifact.analysis.capacityAlerts
-    : [];
-}
-
-function readEvidenceRefs(
-  artifact: MonitoringAnalysisArtifact
-): MonitoringBatchEvidenceRef[] {
-  if (Array.isArray(artifact.analysis.factPack?.evidenceRefs)) {
-    return artifact.analysis.factPack.evidenceRefs;
-  }
-
-  return Array.isArray(artifact.analysis.evidenceRefs)
-    ? artifact.analysis.evidenceRefs
-    : [];
-}
-
-function readTimeLabel(artifact: MonitoringAnalysisArtifact): string {
-  return (
-    artifact.analysis.slot?.timeLabel ||
-    artifact.queryAsOfDataSlot?.timeLabel ||
-    '현재'
-  );
-}
-
-function formatMonitoringSourceLabel(sourceMode: string): string {
-  if (sourceMode === 'live-otel') {
-    return 'Live telemetry';
-  }
-  if (sourceMode === 'replay-json') {
-    return 'OpenTelemetry snapshot';
-  }
-  return 'Monitoring snapshot';
-}
-
-function formatStatusLabel(status: string): string {
-  switch (status) {
-    case 'online':
-      return '정상';
-    case 'warning':
-      return '주의';
-    case 'critical':
-      return '위험';
-    case 'offline':
-      return '오프라인';
-    default:
-      return status;
-  }
-}
-
-function formatCapacityEta(minutes: number | null): string {
-  if (minutes === null) {
-    return '예측 없음';
-  }
-  if (minutes <= 0) {
-    return '현재';
-  }
-  if (minutes < 60) {
-    return `${minutes}분`;
-  }
-
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-  return remainingMinutes > 0
-    ? `${hours}시간 ${remainingMinutes}분`
-    : `${hours}시간`;
-}
-
-function formatCapacityTarget(alert: MonitoringBatchCapacityAlert): string {
-  if (alert.timeToCriticalMinutes !== null) {
-    return `위험 도달 ${formatCapacityEta(alert.timeToCriticalMinutes)}`;
-  }
-
-  return `주의 도달 ${formatCapacityEta(alert.timeToWarningMinutes)}`;
-}
-
-function clampCapacityPercent(value: number): number {
-  if (!Number.isFinite(value)) {
-    return 0;
-  }
-
-  return Math.min(100, Math.max(0, value));
-}
-
-export function calculateCapacityBarSegments(
-  currentValue: number,
-  predictedValue: number
-): {
-  currentPercent: number;
-  predictedLeftPercent: number;
-  predictedDeltaPercent: number;
-} {
-  const currentPercent = clampCapacityPercent(Math.round(currentValue));
-  const predictedPercent = clampCapacityPercent(Math.round(predictedValue));
-
-  return {
-    currentPercent,
-    predictedLeftPercent: currentPercent,
-    predictedDeltaPercent: Math.max(0, predictedPercent - currentPercent),
-  };
-}
-
 export function MonitoringAnalysisArtifactCard({
   artifact,
 }: {
@@ -276,8 +60,12 @@ export function MonitoringAnalysisArtifactCard({
 }) {
   const { openFullscreen } = useAIEntryController();
   const riskSignals = readDisplaySignals(artifact).slice(0, 3);
+  const baselineRows = readBaselineRows(artifact).slice(0, 3);
+  const correlatedLogRows = readCorrelatedLogRows(artifact).slice(0, 3);
   const capacityAlerts = readCapacityAlerts(artifact).slice(0, 3);
-  const evidenceRefs = readEvidenceRefs(artifact).slice(0, 3);
+  const evidenceRefs = readEvidenceRefs(artifact)
+    .filter((evidence) => !isCorrelatedLogEvidence(evidence))
+    .slice(0, 3);
   const roleGroups = artifact.roleGroupSummary?.slice(0, 6) ?? [];
   const timeLabel = readTimeLabel(artifact);
   const sourceMode = artifact.analysis.sourceMode ?? 'unknown';
@@ -451,10 +239,54 @@ export function MonitoringAnalysisArtifactCard({
               </div>
             </div>
           )}
+
+          {baselineRows.length > 0 && (
+            <div className="mt-3 border-t border-cyan-100 pt-3">
+              <p className="text-xs font-semibold text-slate-700">24h 기준선</p>
+              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {baselineRows.map(({ signal, baseline }) => (
+                  <div
+                    key={`${signal.id}-${baseline.metric}`}
+                    className="rounded-md border border-cyan-100 bg-cyan-50/60 px-2.5 py-2"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs">
+                      <Link
+                        href={`/dashboard/servers/${encodeURIComponent(signal.serverId)}`}
+                        className="font-semibold text-slate-800 underline decoration-slate-300 underline-offset-2 hover:text-cyan-700"
+                      >
+                        {signal.serverName || signal.serverId}
+                      </Link>
+                      <span className="rounded bg-white px-1.5 py-0.5 font-mono font-medium text-cyan-800">
+                        {formatMetricLabel(baseline.metric)}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[11px] leading-4 text-slate-700">
+                      현재 {formatBaselinePercent(baseline.current)} · 평균{' '}
+                      {formatBaselinePercent(baseline.avg24h)} · p95{' '}
+                      {formatBaselinePercent(baseline.p95)}
+                    </p>
+                    <p className="mt-1 text-[11px] leading-4 text-slate-600">
+                      피크 {formatBaselinePercent(baseline.max)} @{' '}
+                      {formatBaselineTimestamp(
+                        baseline.peakTimestamp,
+                        baseline.peakSlot
+                      )}
+                    </p>
+                    <p className="mt-1 text-[11px] leading-4 text-slate-600">
+                      경고 슬롯 {baseline.warningSlots} · 위험 슬롯{' '}
+                      {baseline.criticalSlots}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {(riskSignals.length > 0 || evidenceRefs.length > 0) && (
+      {(riskSignals.length > 0 ||
+        correlatedLogRows.length > 0 ||
+        evidenceRefs.length > 0) && (
         <div className="mt-3 space-y-3 border-t border-cyan-100 pt-3">
           {riskSignals.length > 0 && (
             <div>
@@ -483,6 +315,38 @@ export function MonitoringAnalysisArtifactCard({
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {correlatedLogRows.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-slate-700">동반 로그</p>
+              <ul className="mt-1.5 space-y-1.5 text-xs leading-5 text-slate-600">
+                {correlatedLogRows.map((row) => (
+                  <li
+                    key={
+                      row.evidenceRefId ||
+                      `${row.serverId}-${row.severity}-${row.summary}`
+                    }
+                    className="flex flex-wrap items-start gap-1.5"
+                  >
+                    <Link
+                      href={`/dashboard/servers/${encodeURIComponent(row.serverId)}`}
+                      className="font-medium text-slate-800 underline decoration-slate-300 underline-offset-2 hover:text-cyan-700"
+                    >
+                      {row.serverName || row.serverId}
+                    </Link>
+                    <span
+                      className={`rounded-md px-2 py-0.5 ${signalClass(row.severity)}`}
+                    >
+                      {formatCorrelatedLogSeverity(row.severity)}
+                    </span>
+                    <span className="min-w-0 flex-1 break-words">
+                      {row.summary}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 

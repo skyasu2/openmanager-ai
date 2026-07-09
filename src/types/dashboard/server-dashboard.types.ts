@@ -54,7 +54,7 @@ export interface EnhancedServerData {
   disk?: number;
   /** 디스크 사용률 (0-100) - API 호환성용 별칭 */
   disk_usage?: number;
-  /** 네트워크 사용률 (0-100) - 표준 필드 */
+  /** 네트워크 대역폭 사용률 (0-100) - 표준 필드 */
   network?: number;
   /** 네트워크 수신량 (bytes/sec) */
   network_in?: number;

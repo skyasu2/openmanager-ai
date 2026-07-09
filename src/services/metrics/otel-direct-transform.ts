@@ -16,7 +16,10 @@ import {
   getTimeSeries,
 } from '@/data/otel-data';
 import { logger } from '@/lib/logging';
-import { getKSTMinuteOfDay } from '@/services/metrics/kst-time';
+import {
+  getKSTMinuteOfDay,
+  getKSTTimestamp,
+} from '@/services/metrics/kst-time';
 import {
   deriveNetworkErrors,
   deriveNetworkSplit,
@@ -453,7 +456,7 @@ export async function loadCurrentOTelServers(): Promise<{
       dataSource,
     };
   }
-  const timestamp = new Date().toISOString();
+  const timestamp = getKSTTimestamp();
   const servers = otelSlotToServers(slot, catalog, timestamp);
 
   return { servers, hour, slotIndex, globalSlotIndex, minuteOfDay, dataSource };

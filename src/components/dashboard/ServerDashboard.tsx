@@ -6,7 +6,6 @@ import {
   LayoutGrid,
   List,
   Loader2,
-  Network,
   Search,
   X,
 } from 'lucide-react';
@@ -16,134 +15,23 @@ import ImprovedServerCard from '@/components/dashboard/ImprovedServerCard';
 import { logger } from '@/lib/logging';
 import type { Server } from '@/types/server';
 import { usePerformanceTracking } from '@/utils/performance';
+import {
+  compareByStatusPriority,
+  DEFAULT_VISIBLE_ROWS,
+  getServerCardColumns,
+  matchesServerSearch,
+  normalizeServerSearchValue,
+  runDashboardViewTransition,
+  type ServerSortKey,
+  type ServerViewMode,
+  type ServerVisualizationMode,
+  SORT_OPTIONS,
+  VISUALIZATION_OPTIONS,
+} from './ServerDashboard.utils';
 import { ServerDashboardDevStats } from './ServerDashboardDevStats';
 import { ServerDashboardEmptyState } from './ServerDashboardEmptyState';
 import { HexagonalHostMap } from './ServerDashboardHostMap';
 import type { DashboardTimeRange } from './types/dashboard.types';
-
-// 🚀 성능 최적화: statusPriority를 컴포넌트 외부로 이동 (매번 새로 생성 방지)
-const STATUS_PRIORITY = {
-  critical: 0,
-  offline: 0,
-  warning: 1,
-  online: 2,
-} as const;
-
-type ServerViewMode = 'list' | 'grid';
-type ServerSortKey = 'status' | 'cpu' | 'memory' | 'name';
-type ServerVisualizationMode = 'cards' | 'host-map';
-
-const DEFAULT_VISIBLE_ROWS = 3;
-const SERVER_CARD_FIXED_WIDTH = {
-  grid: 320,
-  list: 290,
-} as const;
-
-const SORT_OPTIONS: Array<{ value: ServerSortKey; label: string }> = [
-  { value: 'status', label: '상태' },
-  { value: 'cpu', label: 'CPU' },
-  { value: 'memory', label: 'MEM' },
-  { value: 'name', label: '이름' },
-];
-
-const VISUALIZATION_OPTIONS: Array<{
-  value: ServerVisualizationMode;
-  label: string;
-  icon: typeof LayoutGrid;
-}> = [
-  { value: 'cards', label: '서버 카드', icon: LayoutGrid },
-  { value: 'host-map', label: '호스트 맵', icon: Network },
-];
-
-type ViewTransitionDocument = Document & {
-  startViewTransition?: (callback: () => void) => unknown;
-};
-
-// 🚀 성능 최적화: 알림 수 계산 로직 분리 및 메모이제이션
-const getAlertsCountOptimized = (alerts: unknown): number => {
-  if (typeof alerts === 'number') return alerts;
-  if (Array.isArray(alerts)) return alerts.length;
-  return 0;
-};
-
-const compareByStatusPriority = (a: Server, b: Server): number => {
-  const statusA = a?.status || 'unknown';
-  const statusB = b?.status || 'unknown';
-
-  const priorityA =
-    STATUS_PRIORITY[statusA as keyof typeof STATUS_PRIORITY] ?? 3;
-  const priorityB =
-    STATUS_PRIORITY[statusB as keyof typeof STATUS_PRIORITY] ?? 3;
-
-  if (priorityA !== priorityB) {
-    return priorityA - priorityB;
-  }
-
-  const alertsA = getAlertsCountOptimized(a?.alerts);
-  const alertsB = getAlertsCountOptimized(b?.alerts);
-
-  if (alertsA !== alertsB) {
-    return alertsB - alertsA;
-  }
-
-  return a.name.localeCompare(b.name, 'ko-KR', {
-    numeric: true,
-    sensitivity: 'base',
-  });
-};
-
-function normalizeServerSearchValue(value: unknown): string {
-  return String(value ?? '')
-    .trim()
-    .toLocaleLowerCase('ko-KR');
-}
-
-function matchesServerSearch(server: Server, normalizedQuery: string): boolean {
-  if (!normalizedQuery) return true;
-
-  return [server.name, server.id, server.hostname, server.location, server.ip]
-    .map(normalizeServerSearchValue)
-    .some((value) => value.includes(normalizedQuery));
-}
-
-function getServerCardColumns(viewMode: ServerViewMode, width: number): number {
-  if (width < 640) return 1;
-
-  const gap = getServerCardGapPx(viewMode, width);
-  const cardWidth = SERVER_CARD_FIXED_WIDTH[viewMode];
-  const columns = Math.floor((width + gap) / (cardWidth + gap));
-
-  return Math.max(1, Math.min(4, columns));
-}
-
-function getServerCardGapPx(viewMode: ServerViewMode, width: number): number {
-  if (viewMode === 'grid') {
-    return width >= 640 ? 24 : 16;
-  }
-
-  return 12;
-}
-
-function runDashboardViewTransition(callback: () => void): void {
-  if (typeof document === 'undefined') {
-    callback();
-    return;
-  }
-
-  const prefersReducedMotion =
-    typeof window !== 'undefined' &&
-    typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const startViewTransition = (document as ViewTransitionDocument)
-    .startViewTransition;
-
-  if (prefersReducedMotion || typeof startViewTransition !== 'function') {
-    callback();
-    return;
-  }
-
-  startViewTransition.call(document, callback);
-}
 
 /**
  * ServerDashboard Props (Phase 4: Props 기반 데이터 흐름)

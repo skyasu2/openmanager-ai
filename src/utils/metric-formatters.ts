@@ -7,8 +7,8 @@ import { formatBytes } from './utils-functions';
  * @param value - 메트릭 값 (cpu/mem/disk/network: %, responseTime: ms)
  * @returns 포맷된 문자열
  *
- * NOTE: OTel 파이프라인에서 network 값은 0~1 ratio → *100 = 퍼센트(%)로
- * 변환되어 저장됩니다. 따라서 network도 % 단위 메트릭으로 처리합니다.
+ * NOTE: OTel 파이프라인에서 network 값은 1Gbps 기준 대역폭 사용률(%)로
+ * 정규화되어 저장됩니다. 따라서 network도 % 단위 메트릭으로 처리합니다.
  */
 // 사전 컴파일된 word-boundary 패턴
 const WORD_PATTERNS: Record<string, RegExp> = {};
@@ -66,14 +66,14 @@ export function formatMetricValue(metric: string, value: number): string {
  * 메트릭 레이블(이름) 포맷팅
  *
  * @param metric - 메트릭 키 (예: cpu, network)
- * @returns 사용자 친화적 이름 (예: CPU Usage, Network Traffic)
+ * @returns 사용자 친화적 이름 (예: CPU Usage, Network Bandwidth)
  */
 export function formatMetricName(metric: string): string {
   const map: Record<string, string> = {
     cpu: 'CPU',
     memory: 'Memory',
     disk: 'Disk',
-    network: 'Network I/O',
+    network: 'Network Bandwidth Utilization',
     responseTime: 'Response Time',
     up: 'Uptime',
   };

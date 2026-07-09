@@ -251,6 +251,7 @@ async function handleServersUnified(
             builtAt: logResult.metadata.builtAt,
             availableSources: logResult.metadata.availableSources,
             availableServers: logResult.metadata.availableServers,
+            levelCounts: logResult.metadata.levelCounts,
             unifiedApi: true,
             systemVersion: 'servers-unified-v1.2',
           },

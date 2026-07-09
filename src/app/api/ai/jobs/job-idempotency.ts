@@ -61,12 +61,14 @@ function stableSerialize(value: unknown): string {
 export function buildJobRequestFingerprint(
   query: string,
   jobType: CreateJobRequest['type'],
-  options: CreateJobRequest['options']
+  options: CreateJobRequest['options'],
+  messages?: CreateJobRequest['messages']
 ): string {
   return hashValue(
     stableSerialize({
       query,
       type: jobType ?? null,
+      messages: messages ?? null,
       options: options ?? null,
     })
   );

@@ -4,6 +4,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   FileSearch,
+  RefreshCw,
   Server as ServerIcon,
   ShieldAlert,
   XCircle,
@@ -56,6 +57,53 @@ function formatDataSourceLabel(
     ? `${dataSourceInfo.catalogGeneratedAt.slice(0, 16).replace('T', ' ')}Z`
     : 'unknown';
   return `Telemetry catalog v${dataSourceInfo.scopeVersion} · updated ${generatedAt}`;
+}
+
+function SnapshotStatusBand({
+  dataSlotInfo,
+  dataSourceInfo,
+}: Pick<DashboardSummaryProps, 'dataSlotInfo' | 'dataSourceInfo'>) {
+  const slotLabel = dataSlotInfo
+    ? formatSlotLabel(dataSlotInfo)
+    : '현재 접속 시각 기준';
+
+  const handleRefresh = () => {
+    if (typeof window === 'undefined') return;
+    window.location.reload();
+  };
+
+  return (
+    <div
+      data-testid="dashboard-snapshot-status"
+      className="order-1 flex min-w-0 flex-col gap-2 rounded-2xl border border-sky-100/80 bg-sky-50/70 px-3 py-2.5 text-xs text-slate-600 shadow-sm ring-1 ring-white/70 sm:flex-row sm:items-center sm:justify-between lg:col-span-12"
+    >
+      <div className="flex min-w-0 items-start gap-2">
+        <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-white text-sky-600 shadow-sm">
+          <Activity size={15} />
+        </div>
+        <div className="min-w-0">
+          <p className="font-semibold text-slate-800">Replay OTel 스냅샷</p>
+          <p className="mt-0.5 break-words">
+            세션 고정 · 10분 슬롯 · {slotLabel}
+          </p>
+          {dataSourceInfo && (
+            <p className="mt-0.5 break-words text-slate-500">
+              {formatDataSourceLabel(dataSourceInfo)}
+            </p>
+          )}
+        </div>
+      </div>
+      <button
+        type="button"
+        onClick={handleRefresh}
+        aria-label="현재 10분 슬롯으로 대시보드 새로고침"
+        className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-sky-200 bg-white px-3 py-2 font-medium text-sky-700 shadow-sm transition hover:bg-sky-50 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:ring-offset-1 active:scale-[0.98]"
+      >
+        <RefreshCw size={14} />
+        <span>새로고침</span>
+      </button>
+    </div>
+  );
 }
 
 // 상태 카드 컴포넌트 (4개 반복 패턴 추출)
@@ -257,10 +305,15 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
 
     return (
       <div className="mb-4 grid grid-cols-1 gap-3 lg:grid-cols-12">
+        <SnapshotStatusBand
+          dataSlotInfo={dataSlotInfo}
+          dataSourceInfo={dataSourceInfo}
+        />
+
         {/* 1. Total Servers - 그라데이션 강화 */}
         <div
           data-testid="dashboard-total-card"
-          className="order-3 lg:order-1 group relative flex flex-row items-center justify-between rounded-2xl border border-blue-100/70 bg-white/80 backdrop-blur-md p-5 shadow-sm ring-1 ring-blue-50 transition-all duration-300 hover:shadow-blue-100/60 hover:shadow-lg hover:scale-[1.02] lg:col-span-2 overflow-hidden"
+          className="order-4 lg:order-2 group relative flex flex-row items-center justify-between rounded-2xl border border-blue-100/70 bg-white/80 backdrop-blur-md p-5 shadow-sm ring-1 ring-blue-50 transition-all duration-300 hover:shadow-blue-100/60 hover:shadow-lg hover:scale-[1.02] lg:col-span-2 overflow-hidden"
         >
           {/* 그라데이션 배경 */}
           <div
@@ -279,16 +332,6 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
               </span>
               <span className="text-sm font-medium text-slate-400">대</span>
             </div>
-            {dataSlotInfo && (
-              <p className="mt-2 text-[11px] font-medium text-gray-500">
-                OpenTelemetry snapshot · {formatSlotLabel(dataSlotInfo)}
-              </p>
-            )}
-            {dataSourceInfo && (
-              <p className="mt-1 text-[11px] font-medium text-gray-400">
-                {formatDataSourceLabel(dataSourceInfo)}
-              </p>
-            )}
           </div>
           {/* 그라데이션 아이콘 박스 */}
           <div
@@ -301,7 +344,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
         {/* 2. Status Cards */}
         <div
           data-testid="dashboard-status-grid"
-          className="order-2 lg:order-2 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3 lg:col-span-4"
+          className="order-3 lg:order-3 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3 lg:col-span-4"
         >
           <StatusCard
             status="online"
@@ -348,7 +391,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
         {/* 3. 시스템 상태 - 동적 그라데이션 */}
         <div
           data-testid="dashboard-system-status-card"
-          className={`order-1 lg:order-3 group relative rounded-2xl border ${systemHealthGradient.border} bg-white/60 backdrop-blur-md p-3 shadow-sm lg:col-span-6 flex flex-col justify-center transition-all duration-300 hover:shadow-lg hover:scale-[1.01] overflow-hidden`}
+          className={`order-2 lg:order-4 group relative rounded-2xl border ${systemHealthGradient.border} bg-white/60 backdrop-blur-md p-3 shadow-sm lg:col-span-6 flex flex-col justify-center transition-all duration-300 hover:shadow-lg hover:scale-[1.01] overflow-hidden`}
         >
           {/* 상태 기반 그라데이션 배경 */}
           <div

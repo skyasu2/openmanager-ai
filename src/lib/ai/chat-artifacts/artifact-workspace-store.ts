@@ -1,4 +1,5 @@
 import type { MonitoringChatArtifact } from '@/lib/ai/domains/monitoring/artifact-registry';
+import { formatKSTTimestampLabel } from '@/lib/utils/kst-format';
 import {
   type ArtifactReplayPack,
   compareArtifactReplayPacks,
@@ -246,28 +247,7 @@ function mapReplayPackEntries(
 }
 
 function formatReplayGeneratedAt(generatedAt: string): string {
-  const date = new Date(generatedAt);
-  if (!Number.isFinite(date.getTime())) return generatedAt;
-
-  const parts = new Intl.DateTimeFormat('en-GB', {
-    day: '2-digit',
-    hour: '2-digit',
-    hour12: false,
-    hourCycle: 'h23',
-    minute: '2-digit',
-    month: '2-digit',
-    timeZone: 'Asia/Seoul',
-    year: 'numeric',
-  })
-    .formatToParts(date)
-    .reduce<Record<string, string>>((acc, part) => {
-      if (part.type !== 'literal') {
-        acc[part.type] = part.value;
-      }
-      return acc;
-    }, {});
-
-  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute} KST`;
+  return formatKSTTimestampLabel(generatedAt) ?? generatedAt;
 }
 
 function createComparisonItem(

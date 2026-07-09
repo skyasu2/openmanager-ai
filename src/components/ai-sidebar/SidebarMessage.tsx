@@ -1,6 +1,6 @@
 'use client';
 
-import { Bot, Cpu, User } from 'lucide-react';
+import { ArrowRight, Bot, Cpu, User } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { AnalysisBasisBadge } from '@/components/ai/AnalysisBasisBadge';
 import { AssistantAgentBadge } from '@/components/ai/AssistantAgentBadge';
@@ -35,6 +35,9 @@ export function convertToAgentSteps(
 export const MessageComponent = memo<{
   message: EnhancedChatMessage;
   onRegenerateResponse?: (messageId: string) => void;
+  onArtifactGuidanceCta?: (
+    target: 'incident-report' | 'monitoring-analysis'
+  ) => void;
   isLastMessage?: boolean;
   regenerateDisabled?: boolean;
   regenerateDisabledReason?: string;
@@ -42,6 +45,7 @@ export const MessageComponent = memo<{
   ({
     message,
     onRegenerateResponse,
+    onArtifactGuidanceCta,
     isLastMessage,
     regenerateDisabled,
     regenerateDisabledReason,
@@ -114,6 +118,7 @@ export const MessageComponent = memo<{
       analysisBasis && assistantResponseView?.details
         ? assistantResponseDetails.debugDetails
         : null;
+    const guidanceCta = message.metadata?.guidanceCta ?? null;
 
     // thinking 메시지일 경우 간소화된 인라인 상태 표시
     if (message.role === 'thinking' && message.thinkingSteps) {
@@ -222,6 +227,20 @@ export const MessageComponent = memo<{
             {message.role === 'assistant' && (
               <ArtifactRendererHost metadata={message.metadata} />
             )}
+
+            {message.role === 'assistant' &&
+              !message.isStreaming &&
+              guidanceCta &&
+              onArtifactGuidanceCta && (
+                <button
+                  type="button"
+                  onClick={() => onArtifactGuidanceCta(guidanceCta.target)}
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700 transition-colors hover:border-indigo-300 hover:bg-indigo-100"
+                >
+                  <span>{guidanceCta.label}</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+              )}
 
             {/* 타임스탬프 & 메타데이터 */}
             <div

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Noto_Sans_KR } from 'next/font/google';
+import { JetBrains_Mono, Noto_Sans_KR } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { RootClientRuntime } from '@/app/RootClientRuntime';
 import { shouldEnableVercelWebAnalytics } from '@/app/root-client-runtime-flags';
@@ -20,6 +20,15 @@ const notoSansKR = Noto_Sans_KR({
   subsets: ['latin'],
   weight: 'variable',
   variable: '--font-noto-sans-kr',
+  display: 'swap',
+  preload: false,
+});
+
+// 메트릭·수치 readout 전용 등폭 데이터 폰트 (관제 콘솔 정체성)
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: 'variable',
+  variable: '--font-jetbrains-mono',
   display: 'swap',
   preload: false,
 });
@@ -131,7 +140,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ko" suppressHydrationWarning className={notoSansKR.variable}>
+    <html
+      lang="ko"
+      suppressHydrationWarning
+      className={`${notoSansKR.variable} ${jetBrainsMono.variable}`}
+    >
       <body className="font-sans antialiased">
         <ClientProviders>
           {children}

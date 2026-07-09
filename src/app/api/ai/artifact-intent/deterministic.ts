@@ -78,6 +78,21 @@ function isFormattingOnlyRequest(query: string): boolean {
   );
 }
 
+// Cloud Run AI engine의 isServiceCommandGuidanceQuery와 parity를 이루어야 한다
+// (src/app/api/ai/artifact-intent/command-guidance-parity.test.ts 참조). 프론트가
+// 명령어 질의를 아티팩트 라우팅에서 제외하면, engine이 반드시 명령어 응답을
+// 반환해야 "아티팩트도 명령어도 없는" 낙하가 발생하지 않는다.
+export function isCommandGuidanceRequest(query: string): boolean {
+  return (
+    /(?:확인\s*)?명령어|commands?|cli|redis-cli|mysqladmin|psql|kubectl|docker|journalctl|systemctl|grep|awk/i.test(
+      query
+    ) &&
+    /redis|mysql|postgres|postgresql|nginx|nfs|haproxy|s3gw|minio|서버|서비스|로그|log|에러|error|5xx|cpu|메모리|memory|디스크|disk|캐시|cache/i.test(
+      query
+    )
+  );
+}
+
 function readOpsProcedureType(
   query: string
 ): 'runbook' | 'alert-rule' | 'script' {
@@ -131,6 +146,10 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
     CAPACITY_FORECAST_EXCLUSION_PATTERN.test(normalized);
 
   if (isFormattingOnlyRequest(normalized)) {
+    return withRuleVersion({ kind: 'none' });
+  }
+
+  if (isCommandGuidanceRequest(normalized)) {
     return withRuleVersion({ kind: 'none' });
   }
 
@@ -223,6 +242,7 @@ export function shouldUseLLMChatArtifactIntent(query: string): boolean {
   if (!normalized) return false;
   if (ARTIFACT_NEGATION_PATTERN.test(normalized)) return false;
   if (isFormattingOnlyRequest(normalized)) return false;
+  if (isCommandGuidanceRequest(normalized)) return false;
   if (
     OPS_PROCEDURE_FOLLOWUP_EDIT_PATTERN.test(normalized) ||
     isOpsProcedureRequest(normalized) ||

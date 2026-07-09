@@ -58,6 +58,11 @@ type LogApiResponse = {
     logWindow?: { start?: string | null; end?: string | null };
     availableSources?: string[];
     availableServers?: string[];
+    levelCounts?: {
+      info?: number;
+      warn?: number;
+      error?: number;
+    };
     cacheAgeMs?: number | null;
     builtAt?: string | null;
   };
@@ -70,6 +75,11 @@ type LogQueryData = {
   totalPages: number;
   sources: string[];
   serverIds: string[];
+  levelCounts: {
+    info: number;
+    warn: number;
+    error: number;
+  } | null;
   windowStart: string | null;
   windowEnd: string | null;
 };
@@ -119,6 +129,13 @@ async function fetchLogs(
     totalPages: payload.pagination?.totalPages ?? 1,
     sources: payload.metadata?.availableSources ?? [],
     serverIds: payload.metadata?.availableServers ?? [],
+    levelCounts: payload.metadata?.levelCounts
+      ? {
+          info: payload.metadata.levelCounts.info ?? 0,
+          warn: payload.metadata.levelCounts.warn ?? 0,
+          error: payload.metadata.levelCounts.error ?? 0,
+        }
+      : null,
     windowStart: payload.metadata?.logWindow?.start ?? null,
     windowEnd: payload.metadata?.logWindow?.end ?? null,
   };
@@ -158,11 +175,14 @@ export function useGlobalLogs(filter: GlobalLogFilter = {}): GlobalLogsResult {
   const firstPage = pages[0];
   const logs = pages.flatMap((page) => page.logs);
 
+  // levelCounts는 API가 페이지네이션 이전 전체 모집단 기준으로 산출해 항상
+  // 응답에 포함된다(otel-log-search.ts). 첫 페이지 응답 전 로딩 중간 상태에서는
+  // 0으로 표기해 부분합(로드된 페이지 기준)이 잠깐 노출되는 것을 막는다.
   const stats = {
     total: firstPage?.total ?? 0,
-    info: logs.filter((l) => l.level === 'info').length,
-    warn: logs.filter((l) => l.level === 'warn').length,
-    error: logs.filter((l) => l.level === 'error').length,
+    info: firstPage?.levelCounts?.info ?? 0,
+    warn: firstPage?.levelCounts?.warn ?? 0,
+    error: firstPage?.levelCounts?.error ?? 0,
   };
 
   const errorMessage = isError

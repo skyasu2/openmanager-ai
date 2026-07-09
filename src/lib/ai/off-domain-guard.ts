@@ -29,8 +29,11 @@ const NEGATED_OPERATIONAL_CONTEXT_PATTERN =
 const EXTERNAL_ACTION_PATTERN =
   /((캘린더|calendar|일정|회의|미팅).*(잡아|등록|추가|넣어|만들어|생성|예약|schedule))|(예약해|예약\s*(잡아|잡|해줘|해)|\bbook\b|\breserve\b)|(메일|이메일|email|문자|sms|슬랙|slack).*(보내|발송|전송|공유|send)/i;
 
+// 실시간 단독 키워드는 제외한다. "이 데이터 실시간이야?"처럼 시스템 데이터
+// 신선도를 묻는 메타질문까지 외부 라이브정보(날씨/환율)로 오분류하기 때문이다.
+// 외부 라이브정보는 날씨/환율/시세/가격/현재가/코인 키워드로 충분히 식별된다.
 const LIVE_FACT_PATTERN =
-  /날씨|weather|뉴스|news|환율|exchange\s*rate|주가|stock\s*price|시세|비트코인|bitcoin|btc|코인|crypto|현재가|지금\s*(가격|얼마)|가격\s*(알려|찾아|조회)|실시간/i;
+  /날씨|weather|뉴스|news|환율|exchange\s*rate|주가|stock\s*price|시세|비트코인|bitcoin|btc|코인|crypto|현재가|지금\s*(가격|얼마)|가격\s*(알려|찾아|조회)/i;
 
 const LOCAL_RECOMMENDATION_PATTERN =
   /(맛집|restaurant|카페|cafe|병원|약국|장소|근처).*(추천|찾아|알려)|(추천).*(맛집|restaurant|카페|cafe|병원|약국|장소|근처)/i;

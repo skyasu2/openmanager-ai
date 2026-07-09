@@ -1,5 +1,6 @@
+import { KST_OFFSET_MS, toKSTShiftedDate } from '@/lib/utils/kst-format';
+
 const DAY_MS = 24 * 60 * 60 * 1000;
-const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
 const DEFAULT_REALTIME_THRESHOLD_HOURS = 36;
 const DEFAULT_FUTURE_TOLERANCE_MINUTES = 5;
 
@@ -28,7 +29,7 @@ type DateTimeParts = {
 };
 
 function getKstDateTimeParts(value: Date): DateTimeParts {
-  const shifted = new Date(value.getTime() + KST_OFFSET_MS);
+  const shifted = toKSTShiftedDate(value);
   return {
     year: shifted.getUTCFullYear(),
     month: shifted.getUTCMonth() + 1,

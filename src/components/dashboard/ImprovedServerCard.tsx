@@ -186,28 +186,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
           }}
         />
 
-        {/* 🎨 상태별 장식 요소 (Critical/Warning 시 더 강조) */}
-        {(safeServer.status === 'critical' ||
-          safeServer.status === 'warning') && (
-          <>
-            <div
-              className={`absolute right-2 top-2 h-3 w-3 rounded-full animate-pulse ${
-                safeServer.status === 'critical'
-                  ? 'bg-red-400/40'
-                  : 'bg-amber-400/40'
-              }`}
-            />
-            <div
-              className={`absolute left-2 bottom-2 h-2 w-2 rounded-full animate-pulse delay-300 ${
-                safeServer.status === 'critical'
-                  ? 'bg-red-400/30'
-                  : 'bg-amber-400/30'
-              }`}
-            />
-          </>
-        )}
-
-        {/* Live Indicator - Enhanced Pulse */}
+        {/* Live Indicator - 주의 필요 서버에서만 펄스(단일 상태 신호) */}
         {showRealTimeUpdates && (
           <div className="absolute right-3 top-3 z-10">
             <span
@@ -292,16 +271,8 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
         </header>
         {/* Main Content Section */}
         <section className="relative z-10">
-          {/* 🎨 상태 요약 - core monitoring surface */}
-          <div className="mb-3 flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <div
-                className={`h-1.5 w-1.5 rounded-full bg-linear-to-r ${currentGradient.gradient}`}
-              />
-              <span className="text-2xs font-medium uppercase tracking-wider text-gray-400">
-                Live Metrics
-              </span>
-            </div>
+          {/* 상태 배지 - 카드 핵심 상태 신호 (장식 eyebrow 제거) */}
+          <div className="mb-3 flex items-center justify-end">
             {isCompactVariant ? (
               <div className="hidden sm:block">{metricStatusBadge}</div>
             ) : (

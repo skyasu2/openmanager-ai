@@ -2,13 +2,8 @@ import { CheckCircle2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 import { getThreshold } from '@/config/rules';
+import { METRIC_SEVERITY_COLORS } from '@/styles/design-constants';
 import type { Server } from '@/types/server';
-
-const GAUGE_COLORS = {
-  cpu: '#6366f1',
-  memory: '#818cf8',
-  disk: '#a78bfa',
-} as const;
 
 interface SystemOverviewSectionProps {
   servers: Server[];
@@ -116,14 +111,17 @@ export function SystemOverviewSection({ servers }: SystemOverviewSectionProps) {
             시스템 리소스
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-evenly sm:gap-2 px-2 sm:px-0">
-            {gauges.map((g) => (
-              <MiniGauge
-                key={g.key}
-                value={g.value}
-                label={g.label}
-                color={GAUGE_COLORS[g.key]}
-              />
-            ))}
+            {gauges.map((g) => {
+              const severity = getResourceSeverity(g.key, g.value);
+              return (
+                <MiniGauge
+                  key={g.key}
+                  value={g.value}
+                  label={g.label}
+                  color={METRIC_SEVERITY_COLORS[severity]}
+                />
+              );
+            })}
           </div>
         </div>
 
@@ -233,7 +231,9 @@ function MiniGauge({
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-sm font-semibold text-gray-900">{value}%</span>
+          <span className="font-mono text-sm font-semibold tabular-nums text-gray-900">
+            {value}%
+          </span>
         </div>
       </div>
       <span className="mt-1.5 text-xs text-slate-500">{label}</span>

@@ -315,7 +315,7 @@ export function generateServerLogs(
     }
   }
 
-  // Network high + LB role → connection errors
+  // Network bandwidth high + LB role → connection errors
   if (
     network > 60 &&
     matchRole(serverRole, ['lb', 'haproxy', 'loadbalancer'])

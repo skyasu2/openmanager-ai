@@ -93,6 +93,50 @@ export function createStreamErrorResponse(errorMessage: string): Response {
   return createUIMessageStreamResponse({ stream });
 }
 
+export const SECURITY_POLICY_BLOCK_MESSAGE =
+  '⚠️ 정책상 처리할 수 없는 요청입니다. 시스템 지시문 공개, 역할 우회, 보안 정책 회피 요청은 처리하지 않습니다. 서버 모니터링 관련 질문으로 다시 요청해주세요.';
+
+export function createStreamPolicyBlockResponse(): Response {
+  const stream = createUIMessageStream({
+    execute: async ({ writer }) => {
+      const blockId = `policy-block-${generateId()}`;
+      writer.write({ type: 'text-start', id: blockId });
+      writer.write({
+        type: 'text-delta',
+        id: blockId,
+        delta: SECURITY_POLICY_BLOCK_MESSAGE,
+      });
+      writer.write({ type: 'text-end', id: blockId });
+      writer.write({
+        type: 'data-warning',
+        data: {
+          code: 'SECURITY_POLICY_BLOCKED',
+          message: SECURITY_POLICY_BLOCK_MESSAGE,
+          reason: 'prompt_injection_high',
+        },
+      });
+      writer.write({
+        type: 'data-done',
+        data: {
+          success: true,
+          blocked: true,
+          blockReason: 'prompt_injection_high',
+        },
+      });
+    },
+  });
+
+  return createUIMessageStreamResponse({
+    stream,
+    headers: {
+      'X-AI-Policy-Blocked': 'true',
+      'X-AI-Source': 'guardrail',
+      'X-AI-Mode': 'streaming',
+      'X-AI-Cache-Status': 'BYPASS',
+    },
+  });
+}
+
 interface StreamTextResponseOptions {
   message: string;
   headers?: Record<string, string>;

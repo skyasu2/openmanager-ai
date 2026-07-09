@@ -66,7 +66,7 @@ export function buildMetricsChartConfigs(
     {
       value: server.network ?? 0,
       metric: 'network',
-      label: '네트워크 사용률',
+      label: '네트워크 대역폭 사용률',
       icon: '🌐',
       data: withCurrentMetricPoint(realtimeData.network, server.network, {
         clamp: true,

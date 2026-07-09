@@ -45,6 +45,7 @@ import type {
   AIJob,
   CreateJobRequest,
   CreateJobResponse,
+  JobConversationMessage,
   JobListResponse,
   JobQueryAsOf,
   JobStatus,
@@ -102,6 +103,8 @@ const JOB_LIST_TTL_SECONDS = 3600;
 
 /** Progress TTL (10분) */
 const PROGRESS_TTL_SECONDS = 600;
+const MAX_JOB_CONTEXT_MESSAGES = 20;
+const MAX_JOB_CONTEXT_MESSAGE_CHARS = 8_000;
 
 type JobRequestMetadata = NonNullable<
   NonNullable<CreateJobRequest['options']>['metadata']
@@ -169,6 +172,52 @@ function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
   };
 }
 
+function normalizeJobConversationMessages(
+  value: unknown
+): JobConversationMessage[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .filter((message): message is Record<string, unknown> => {
+      return typeof message === 'object' && message !== null;
+    })
+    .map((message): JobConversationMessage | null => {
+      const role = message.role;
+      const content =
+        typeof message.content === 'string' ? message.content.trim() : '';
+      if ((role !== 'user' && role !== 'assistant') || content.length === 0) {
+        return null;
+      }
+      return {
+        role,
+        content: content.slice(0, MAX_JOB_CONTEXT_MESSAGE_CHARS),
+      };
+    })
+    .filter((message): message is JobConversationMessage => message !== null)
+    .slice(-MAX_JOB_CONTEXT_MESSAGES);
+}
+
+function buildJobWorkerMessages(params: {
+  query: string;
+  messages?: CreateJobRequest['messages'];
+}): JobConversationMessage[] {
+  const normalized = normalizeJobConversationMessages(params.messages);
+  const currentUserMessage: JobConversationMessage = {
+    role: 'user',
+    content: params.query,
+  };
+
+  const lastMessage = normalized.at(-1);
+  if (
+    lastMessage?.role === 'user' &&
+    lastMessage.content.trim() === params.query
+  ) {
+    return normalized;
+  }
+
+  return [...normalized, currentUserMessage].slice(-MAX_JOB_CONTEXT_MESSAGES);
+}
+
 // ============================================
 // POST /api/ai/jobs - Job 생성 (Rate Limited)
 // ============================================
@@ -184,6 +233,10 @@ async function handlePOST(request: NextRequest) {
       return NextResponse.json({ error: 'Query is required' }, { status: 400 });
     }
     const normalizedQuery = query.trim();
+    const workerMessages = buildJobWorkerMessages({
+      query: normalizedQuery,
+      messages: body.messages,
+    });
 
     // Redis 가용성 확인
     const redis = getRedisClient();
@@ -206,7 +259,12 @@ async function handlePOST(request: NextRequest) {
         )
       : null;
     const requestFingerprint = idempotencyRedisKey
-      ? buildJobRequestFingerprint(normalizedQuery, jobType, options)
+      ? buildJobRequestFingerprint(
+          normalizedQuery,
+          jobType,
+          options,
+          workerMessages
+        )
       : null;
 
     if (idempotencyRedisKey && requestFingerprint) {
@@ -359,6 +417,7 @@ async function handlePOST(request: NextRequest) {
                 normalizedQuery,
                 jobType,
                 options?.sessionId,
+                workerMessages,
                 workerToolOptions,
                 getRateLimitIdentity(request),
                 queryAsOf
@@ -516,6 +575,7 @@ async function triggerWorker(
   query: string,
   type: string,
   sessionId?: string,
+  messages: JobConversationMessage[] = [{ role: 'user', content: query }],
   toolOptions: JobToolOptions = {},
   rateLimitIdentity?: string,
   queryAsOf?: JobQueryAsOf
@@ -547,7 +607,7 @@ async function triggerWorker(
       },
       body: JSON.stringify({
         jobId,
-        messages: [{ role: 'user', content: query }],
+        messages,
         sessionId,
         type,
         ...toolOptions,

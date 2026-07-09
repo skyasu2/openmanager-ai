@@ -11,22 +11,18 @@ import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
 import { useCallback } from 'react';
 import { generateClarification } from '@/lib/ai/clarification-generator';
-import type {
-  ExtractedEntities,
-  SemanticIntentFrame,
-} from '@/lib/ai/entity-extractor';
+import type { SemanticIntentFrame } from '@/lib/ai/entity-extractor';
 import type { AIRateLimitErrorDetails } from '@/lib/ai/error-details';
 import { getOffDomainGuardrail } from '@/lib/ai/off-domain-guard';
 import { classifyQuery } from '@/lib/ai/query-classifier';
 import type { RouteDecision } from '@/lib/ai/route-decision';
-import {
-  buildSemanticIntentRequestMetadata,
-  type DomainIntentFramePayload,
-  type SemanticPreprocessingMetadata,
-  type SemanticQueryTrace,
+import type {
+  DomainIntentFramePayload,
+  SemanticPreprocessingMetadata,
+  SemanticQueryTrace,
 } from '@/lib/ai/semantic-intent-frame';
 import { logger } from '@/lib/logging';
-import type { JobDataSlot } from '@/types/ai-jobs';
+import type { JobConversationMessage, JobDataSlot } from '@/types/ai-jobs';
 import type { HybridQueryState } from '../types/hybrid-query.types';
 import type { FileAttachment } from '../useFileAttachments';
 import {
@@ -37,7 +33,12 @@ import {
   extractEntitiesCached,
   shouldExtractSemanticIntentFrame,
 } from './entity-extraction-cache';
+import { sendLocalDevSupervisorFallback } from './query-execution-local-fallback';
 import { buildFrontendQueryRoutingDecision } from './query-routing';
+import {
+  buildJobSemanticOptions,
+  toSemanticPreprocessingMetadata,
+} from './query-semantic-options';
 import { buildSourceToolRequestOptions } from './source-tool-request-options';
 
 export {
@@ -62,6 +63,7 @@ interface AsyncJobRequestOptions {
   enableRAG?: boolean;
   enableWebSearch?: boolean;
   queryAsOfDataSlot?: JobDataSlot;
+  messages?: JobConversationMessage[];
   intentFrame?: DomainIntentFramePayload;
   semanticQueryTrace?: SemanticQueryTrace;
   inputType?: SemanticPreprocessingMetadata['inputType'];
@@ -85,6 +87,34 @@ type SetMessagesLike = (
 interface ActiveRateLimitBlock {
   details: AIRateLimitErrorDetails;
   untilMs: number;
+}
+
+function readTextFromUIMessage(message: UIMessage): string {
+  const partsText =
+    message.parts
+      ?.map((part) =>
+        part.type === 'text' && typeof part.text === 'string' ? part.text : ''
+      )
+      .join('\n')
+      .trim() ?? '';
+  if (partsText.length > 0) return partsText;
+
+  const legacyContent = (message as { content?: unknown }).content;
+  return typeof legacyContent === 'string' ? legacyContent.trim() : '';
+}
+
+function toJobConversationMessages(
+  messages: UIMessage[]
+): JobConversationMessage[] {
+  return messages
+    .map((message): JobConversationMessage | null => {
+      if (message.role !== 'user' && message.role !== 'assistant') return null;
+      const content = readTextFromUIMessage(message);
+      if (content.length === 0) return null;
+      return { role: message.role, content };
+    })
+    .filter((message): message is JobConversationMessage => message !== null)
+    .slice(-20);
 }
 
 function buildRateLimitCooldownMessage(
@@ -363,6 +393,11 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       // 2. 모드별 처리
       if (isComplex) {
         // Job Queue 모드: 긴 작업, 진행률 표시
+        const sanitizedMessagesForSend = getSanitizedMessagesForSend();
+        const jobConversationMessages = toJobConversationMessages([
+          ...sanitizedMessagesForSend,
+          requestUserMessage,
+        ]);
         if (userMessage) {
           setMessages((prev) => [...prev, userMessage]);
         }
@@ -385,6 +420,9 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
 
         const jobQueueOptions: AsyncJobRequestOptions = {
           ...(queryAsOfDataSlot && { queryAsOfDataSlot }),
+          ...(jobConversationMessages.length > 1 && {
+            messages: jobConversationMessages,
+          }),
           ...buildSourceToolRequestOptions({
             ragEnabled,
             webSearchEnabled,
@@ -449,109 +487,16 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         if (shouldUseLocalDevLegacyFallback) {
           const sanitizedMessages = getSanitizedMessagesForSend();
           const nextMessages = [...sanitizedMessages, requestUserMessage];
-          const semanticIntentPayload = buildSemanticIntentRequestMetadata({
-            frame: refs.semanticIntentFrame?.current,
-            preprocessing: refs.semanticPreprocessing?.current,
+          sendLocalDevSupervisorFallback({
+            nextMessages,
+            setMessages,
+            setState,
+            ragEnabled,
+            webSearchEnabled,
             originalQuery: trimmedQuery,
+            semanticIntentFrame: refs.semanticIntentFrame?.current,
+            semanticPreprocessing: refs.semanticPreprocessing?.current,
           });
-
-          setMessages(nextMessages);
-
-          void fetch('/api/ai/supervisor', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Accept: 'application/json',
-            },
-            body: JSON.stringify({
-              messages: nextMessages,
-              ...buildSourceToolRequestOptions({
-                webSearchEnabled,
-                ragEnabled,
-              }),
-              ...semanticIntentPayload,
-            }),
-          })
-            .then(async (response) => {
-              if (response.status === 202) {
-                const data = (await response.json().catch(() => ({}))) as {
-                  message?: string;
-                };
-                const responseText =
-                  data.message?.trim() ||
-                  '복잡한 분석 요청입니다. 비동기 처리 경로에서 다시 시도해주세요.';
-
-                setMessages((prev) => [
-                  ...prev,
-                  {
-                    id: generateMessageId('assistant'),
-                    role: 'assistant',
-                    parts: [{ type: 'text', text: responseText }],
-                  },
-                ]);
-
-                setState((prev) => ({
-                  ...prev,
-                  isLoading: false,
-                  warning: null,
-                  processingTime: 0,
-                  warmingUp: false,
-                  estimatedWaitSeconds: 0,
-                }));
-                return;
-              }
-
-              if (!response.ok) {
-                throw new Error(`로컬 AI 응답 실패 (${response.status})`);
-              }
-
-              const data = (await response.json()) as {
-                response?: string;
-                message?: string;
-                error?: string;
-              };
-              const responseText =
-                data.response?.trim() ||
-                data.message?.trim() ||
-                data.error?.trim() ||
-                '';
-
-              if (!responseText) {
-                throw new Error('로컬 AI 응답이 비어 있습니다.');
-              }
-
-              setMessages((prev) => [
-                ...prev,
-                {
-                  id: generateMessageId('assistant'),
-                  role: 'assistant',
-                  parts: [{ type: 'text', text: responseText }],
-                },
-              ]);
-
-              setState((prev) => ({
-                ...prev,
-                isLoading: false,
-                warning: null,
-                processingTime: 0,
-                warmingUp: false,
-                estimatedWaitSeconds: 0,
-              }));
-            })
-            .catch((error) => {
-              logger.error(
-                '[HybridAI] Local dev supervisor fallback failed:',
-                error
-              );
-              setState((prev) => ({
-                ...prev,
-                isLoading: false,
-                error:
-                  error instanceof Error ? error.message : '로컬 AI 응답 실패',
-                warmingUp: false,
-                estimatedWaitSeconds: 0,
-              }));
-            });
           return;
         }
 
@@ -732,46 +677,4 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
   );
 
   return { executeQuery, sendQuery };
-}
-
-function buildJobSemanticOptions(params: {
-  frame: SemanticIntentFrame | undefined | null;
-  preprocessing?: SemanticPreprocessingMetadata | undefined | null;
-  originalQuery: string;
-}): Pick<
-  AsyncJobRequestOptions,
-  'intentFrame' | 'semanticQueryTrace' | 'inputType' | 'logExtract'
-> {
-  const semanticIntentPayload = buildSemanticIntentRequestMetadata({
-    frame: params.frame,
-    preprocessing: params.preprocessing,
-    originalQuery: params.originalQuery,
-  });
-
-  return {
-    ...(semanticIntentPayload.metadata?.intentFrame && {
-      intentFrame: semanticIntentPayload.metadata.intentFrame,
-    }),
-    ...(semanticIntentPayload.semanticQueryTrace && {
-      semanticQueryTrace: semanticIntentPayload.semanticQueryTrace,
-    }),
-    ...(semanticIntentPayload.metadata?.inputType && {
-      inputType: semanticIntentPayload.metadata.inputType,
-    }),
-    ...(semanticIntentPayload.metadata?.logExtract && {
-      logExtract: semanticIntentPayload.metadata.logExtract,
-    }),
-  };
-}
-
-function toSemanticPreprocessingMetadata(
-  entities: Pick<ExtractedEntities, 'inputType' | 'logExtract' | 'truncated'>
-): SemanticPreprocessingMetadata | undefined {
-  if (!entities.inputType) return undefined;
-
-  return {
-    inputType: entities.inputType,
-    ...(entities.logExtract && { logExtract: entities.logExtract }),
-    ...(entities.truncated && { truncated: true }),
-  };
 }

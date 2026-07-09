@@ -1,11 +1,9 @@
-import { z } from 'zod';
 import {
   getRegisteredServerAliases,
   resolveRegisteredServerId,
 } from '@/config/server-registry';
 import type {
   MonitoringAnalysisArtifact,
-  MonitoringRoleGroupSummary,
   ServerMonitoringAnalysisArtifact,
   ServerMonitoringArtifactRequest,
 } from '@/lib/ai/domains/monitoring/artifact-types';
@@ -20,237 +18,22 @@ import type {
   MonitoringBatchServer,
   ServerAnalysisResult,
 } from '@/types/intelligent-monitoring.types';
-import type { OTelResourceCatalog } from '@/types/otel-metrics';
+import { buildMonitoringRoleGroupSummary } from './monitoring-analysis-role-groups';
+import {
+  parseMonitoringBatchAnalysisResponse,
+  parseServerMonitoringAnalysisResponse,
+} from './monitoring-analysis-schemas';
 import {
   type ArtifactEvidence,
   attachArtifactEnvelopeMetadata,
   type ChatArtifactRequest,
 } from './types';
 
-const MonitoringBatchServerSchema = z
-  .object({
-    id: z.string(),
-    name: z.string(),
-    type: z.string(),
-    status: z.enum(['online', 'warning', 'critical', 'offline']),
-    cpu: z.number(),
-    memory: z.number(),
-    disk: z.number(),
-    network: z.number(),
-  })
-  .passthrough();
-
-const MonitoringBatchRiskSignalSchema = z
-  .object({
-    id: z.string(),
-    serverId: z.string(),
-    serverName: z.string(),
-    serverType: z.string(),
-    metric: z.enum(['cpu', 'memory', 'disk', 'network']),
-    value: z.number(),
-    threshold: z.number(),
-    trend: z.enum(['up', 'down', 'stable']),
-    severity: z.enum(['warning', 'critical']),
-    evidenceRefId: z.string(),
-  })
-  .passthrough();
-
-const MonitoringBatchQueryFocusServerSchema = z.object({
-  serverId: z.string(),
-  serverName: z.string(),
-  serverType: z.string(),
-  status: z.enum(['online', 'warning', 'critical', 'offline']),
-  cpu: z.number(),
-  memory: z.number(),
-  disk: z.number(),
-  network: z.number(),
-  matchedBy: z.literal('query'),
-});
-
-const MonitoringBatchCapacityAlertSchema = z.object({
-  id: z.string(),
-  serverId: z.string(),
-  serverName: z.string(),
-  serverType: z.string(),
-  metric: z.enum(['cpu', 'memory', 'disk', 'network']),
-  currentValue: z.number(),
-  predictedValue: z.number(),
-  warningThreshold: z.number(),
-  criticalThreshold: z.number(),
-  willBreachWarning: z.boolean(),
-  timeToWarningMinutes: z.number().nullable(),
-  willBreachCritical: z.boolean(),
-  timeToCriticalMinutes: z.number().nullable(),
-  severity: z.enum(['warning', 'critical']),
-  humanReadable: z.string(),
-  evidenceRefId: z.string(),
-});
-
-const MonitoringBatchEvidenceRefBaseSchema = z.object({
-  id: z.string(),
-  kind: z.enum(['metric', 'log', 'topology', 'rule', 'prediction']),
-  serverId: z.string().optional(),
-  metric: z.string().optional(),
-  timeRange: z
-    .object({
-      from: z.string(),
-      to: z.string(),
-    })
-    .passthrough(),
-  summary: z.string(),
-  value: z.union([z.number(), z.string()]).optional(),
-  threshold: z.number().optional(),
-  severity: z.enum(['info', 'warning', 'critical']),
-});
-
-const MonitoringBatchEvidenceRefSchema =
-  MonitoringBatchEvidenceRefBaseSchema.passthrough();
-
-const MonitoringBatchFactEvidenceRefSchema = z.object({
-  id: z.string(),
-  kind: z.enum(['metric', 'log', 'topology', 'rule', 'prediction']),
-  serverId: z.string().optional(),
-  metric: z.string().optional(),
-  timeRange: z.object({
-    from: z.string(),
-    to: z.string(),
-  }),
-  summary: z.string(),
-  value: z.union([z.number(), z.string()]).optional(),
-  threshold: z.number().optional(),
-  severity: z.enum(['info', 'warning', 'critical']),
-});
-
-const MonitoringBatchFactSeveritySchema = z.enum(['warning', 'critical']);
-
-const MonitoringBatchFactThresholdSchema = z.object({
-  warning: z.number(),
-  critical: z.number(),
-});
-
-const MonitoringBatchFactThresholdsSchema = z.object({
-  cpu: MonitoringBatchFactThresholdSchema,
-  memory: MonitoringBatchFactThresholdSchema,
-  disk: MonitoringBatchFactThresholdSchema,
-  network: MonitoringBatchFactThresholdSchema,
-});
-
-const MonitoringBatchFactSummarySchema = z.object({
-  total: z.number(),
-  online: z.number(),
-  warning: z.number(),
-  critical: z.number(),
-  offline: z.number(),
-});
-
-const MonitoringBatchFactSignalSchema = z.object({
-  id: z.string(),
-  serverId: z.string(),
-  serverName: z.string(),
-  serverType: z.string(),
-  metric: z.enum(['cpu', 'memory', 'disk', 'network']),
-  value: z.number(),
-  threshold: z.number(),
-  thresholdLevel: MonitoringBatchFactSeveritySchema,
-  severity: MonitoringBatchFactSeveritySchema,
-  evidenceRefId: z.string().optional(),
-});
-
-const MonitoringBatchFactPackSchema = z.object({
-  factPackVersion: z.string(),
-  dataSlot: z.string(),
-  sourceMode: z.enum(['replay-json', 'live-otel']),
-  queryAsOf: z.string(),
-  thresholds: MonitoringBatchFactThresholdsSchema,
-  summary: MonitoringBatchFactSummarySchema,
-  signals: z.array(MonitoringBatchFactSignalSchema),
-  evidenceRefs: z.array(MonitoringBatchFactEvidenceRefSchema),
-});
-
-const MonitoringBatchAnalysisResponseSchema = z
-  .object({
-    success: z.literal(true),
-    sourceMode: z.enum(['replay-json', 'live-otel']),
-    queryAsOf: z.string(),
-    slot: z
-      .object({
-        slotIndex: z.number(),
-        hour: z.number(),
-        slotInHour: z.number(),
-        minuteOfDay: z.number(),
-        timeLabel: z.string(),
-        startTime: z.string(),
-        endTime: z.string(),
-      })
-      .passthrough(),
-    summary: z.string(),
-    servers: z.array(MonitoringBatchServerSchema),
-    riskSignals: z.array(MonitoringBatchRiskSignalSchema),
-    queryFocusServer: MonitoringBatchQueryFocusServerSchema.optional(),
-    evidenceRefs: z.array(MonitoringBatchEvidenceRefSchema),
-    dataFreshness: z
-      .object({
-        generatedAt: z.string().nullable(),
-        sourceUpdatedAt: z.string().nullable(),
-        stale: z.boolean(),
-      })
-      .passthrough(),
-    _source: z.string().optional(),
-  })
-  .passthrough()
-  .transform((analysis): MonitoringBatchAnalysisResponse => {
-    const {
-      capacityAlerts: rawCapacityAlerts,
-      factPack: rawFactPack,
-      ...rest
-    } = analysis as typeof analysis & {
-      capacityAlerts?: unknown;
-      factPack?: unknown;
-    };
-    const parsedCapacityAlerts = z
-      .array(MonitoringBatchCapacityAlertSchema)
-      .safeParse(rawCapacityAlerts);
-    const parsedFactPack = MonitoringBatchFactPackSchema.safeParse(rawFactPack);
-
-    return {
-      ...rest,
-      ...(parsedCapacityAlerts.success
-        ? { capacityAlerts: parsedCapacityAlerts.data }
-        : {}),
-      ...(parsedFactPack.success ? { factPack: parsedFactPack.data } : {}),
-    } as MonitoringBatchAnalysisResponse;
-  });
-
-const ServerMonitoringAnalysisResponseSchema = z
-  .object({
-    success: z.literal(true),
-    serverId: z.string(),
-    analysisType: z.enum(['full', 'anomaly', 'trend', 'pattern']),
-    timestamp: z.string(),
-    _source: z.string().optional(),
-  })
-  .passthrough()
-  .transform(
-    (
-      analysis
-    ): CloudRunAnalysisResponse & {
-      _source?: string;
-    } => analysis as CloudRunAnalysisResponse & { _source?: string }
-  );
-
-export function parseMonitoringBatchAnalysisResponse(
-  value: unknown
-): MonitoringBatchAnalysisResponse | null {
-  const parsed = MonitoringBatchAnalysisResponseSchema.safeParse(value);
-  return parsed.success ? parsed.data : null;
-}
-
-export function parseServerMonitoringAnalysisResponse(
-  value: unknown
-): (CloudRunAnalysisResponse & { _source?: string }) | null {
-  const parsed = ServerMonitoringAnalysisResponseSchema.safeParse(value);
-  return parsed.success ? parsed.data : null;
-}
+export { buildMonitoringRoleGroupSummary } from './monitoring-analysis-role-groups';
+export {
+  parseMonitoringBatchAnalysisResponse,
+  parseServerMonitoringAnalysisResponse,
+} from './monitoring-analysis-schemas';
 
 export function summarizeMonitoringAnalysis(
   analysis: MonitoringBatchAnalysisResponse
@@ -289,113 +72,6 @@ export function summarizeMonitoringAnalysis(
     warningServers,
     criticalServers,
   };
-}
-
-const ROLE_DISPLAY_ORDER = [
-  'web',
-  'application',
-  'database',
-  'cache',
-  'storage',
-  'loadbalancer',
-  'monitoring',
-  'batch',
-  'worker',
-  'unknown',
-] as const;
-
-const ROLE_ALIASES: Record<string, string> = {
-  api: 'application',
-  app: 'application',
-  apps: 'application',
-  was: 'application',
-  db: 'database',
-  mysql: 'database',
-  postgres: 'database',
-  postgresql: 'database',
-  redis: 'cache',
-  memcached: 'cache',
-  lb: 'loadbalancer',
-  load_balancer: 'loadbalancer',
-};
-
-function normalizeServerRole(value: string | undefined): string {
-  const normalized = value?.trim().toLowerCase();
-  if (!normalized) return 'unknown';
-  return ROLE_ALIASES[normalized] ?? normalized;
-}
-
-function readCatalogServerRole(
-  catalog: OTelResourceCatalog | null | undefined,
-  serverId: string
-): string | undefined {
-  return catalog?.resources?.[serverId]?.['server.role'];
-}
-
-function roleSortIndex(role: string): number {
-  const index = ROLE_DISPLAY_ORDER.indexOf(
-    role as (typeof ROLE_DISPLAY_ORDER)[number]
-  );
-  return index === -1 ? ROLE_DISPLAY_ORDER.length : index;
-}
-
-function safeMetricValue(value: number): number {
-  return Number.isFinite(value) ? value : 0;
-}
-
-export function buildMonitoringRoleGroupSummary(
-  analysis: MonitoringBatchAnalysisResponse,
-  catalog?: OTelResourceCatalog | null
-): MonitoringRoleGroupSummary[] {
-  const groups = new Map<
-    string,
-    {
-      count: number;
-      warningCount: number;
-      criticalCount: number;
-      cpuTotal: number;
-      memoryTotal: number;
-      diskTotal: number;
-    }
-  >();
-
-  for (const server of analysis.servers) {
-    const role = normalizeServerRole(
-      readCatalogServerRole(catalog, server.id) ?? server.type
-    );
-    const group = groups.get(role) ?? {
-      count: 0,
-      warningCount: 0,
-      criticalCount: 0,
-      cpuTotal: 0,
-      memoryTotal: 0,
-      diskTotal: 0,
-    };
-
-    group.count += 1;
-    group.warningCount += server.status === 'warning' ? 1 : 0;
-    group.criticalCount +=
-      server.status === 'critical' || server.status === 'offline' ? 1 : 0;
-    group.cpuTotal += safeMetricValue(server.cpu);
-    group.memoryTotal += safeMetricValue(server.memory);
-    group.diskTotal += safeMetricValue(server.disk);
-    groups.set(role, group);
-  }
-
-  return Array.from(groups.entries())
-    .sort(([roleA], [roleB]) => {
-      const orderDiff = roleSortIndex(roleA) - roleSortIndex(roleB);
-      return orderDiff !== 0 ? orderDiff : roleA.localeCompare(roleB);
-    })
-    .map(([role, group]) => ({
-      role,
-      count: group.count,
-      warningCount: group.warningCount,
-      criticalCount: group.criticalCount,
-      avgCpu: Math.round(group.cpuTotal / group.count),
-      avgMemory: Math.round(group.memoryTotal / group.count),
-      avgDisk: Math.round(group.diskTotal / group.count),
-    }));
 }
 
 function mapMonitoringFactPackEvidence(
