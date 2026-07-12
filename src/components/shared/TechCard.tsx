@@ -14,6 +14,12 @@ const sanitizeText = (text: string): string => {
   return text.replace(/<script[^>]*>.*?<\/script>/gi, '').substring(0, 1000);
 };
 
+// 버전 라벨 포맷: 순수 숫자 버전(예: "24.0.x", "6.0")에만 "v" 접두어를 붙인다.
+// 이미 "v"로 시작하거나(예: "v5.0") 모델명/식별자(예: "gpt-oss-120b", "In-house",
+// "asia-northeast1", "pre-push.js")는 원문 그대로 표시한다.
+export const formatVersionLabel = (version: string): string =>
+  /^\d/.test(version) ? `v${version}` : version;
+
 // 중요도별 스타일 가져오기
 const getImportanceStyle = (importance: ImportanceLevel): ImportanceStyle => {
   return IMPORTANCE_STYLES[importance];
@@ -49,7 +55,7 @@ export const TechCard = memo(function TechCard({ tech }: TechCardProps) {
             </h4>
             {tech.version && (
               <span className="text-xs text-gray-400">
-                v{sanitizeText(tech.version)}
+                {formatVersionLabel(sanitizeText(tech.version))}
               </span>
             )}
           </div>

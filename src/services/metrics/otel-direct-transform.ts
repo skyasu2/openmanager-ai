@@ -29,6 +29,11 @@ import {
 import type { EnhancedServerMetrics } from '@/services/server-data/server-data-types';
 import type { OTelHourlySlot, OTelResourceCatalog } from '@/types/otel-metrics';
 import type { MetricsHistory } from '@/types/server';
+import {
+  mapServerTypeToRole,
+  normalizeServerEnvironment,
+  normalizeServerRole,
+} from '@/types/server-enums';
 import { formatBytes } from '@/utils/utils-functions';
 
 import {
@@ -276,9 +281,11 @@ export function otelSlotToServers(
       alerts: [],
       ip: getServerIP(serverId) ?? '',
       os: resource?.['os.type'] ?? '',
-      type: serverType,
-      role: mapTypeToRole(serverType),
-      environment: resource?.['deployment.environment.name'] ?? '',
+      type: normalizeServerRole(serverType),
+      role: mapServerTypeToRole(serverType),
+      environment: normalizeServerEnvironment(
+        resource?.['deployment.environment.name']
+      ),
       provider: 'OTel-Direct',
       specs: {
         cpu_cores: resource?.['host.cpu.count'] ?? DEFAULT_CPU_CORES,
@@ -460,20 +467,4 @@ export async function loadCurrentOTelServers(): Promise<{
   const servers = otelSlotToServers(slot, catalog, timestamp);
 
   return { servers, hour, slotIndex, globalSlotIndex, minuteOfDay, dataSource };
-}
-
-// ============================================================================
-// Internal Helpers
-// ============================================================================
-
-function mapTypeToRole(type: string): string {
-  const roleMap: Record<string, string> = {
-    web: 'web',
-    application: 'api',
-    database: 'database',
-    cache: 'cache',
-    storage: 'storage',
-    loadbalancer: 'loadbalancer',
-  };
-  return roleMap[type] || type;
 }

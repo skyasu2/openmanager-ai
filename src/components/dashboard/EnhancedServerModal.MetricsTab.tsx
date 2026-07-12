@@ -21,7 +21,7 @@ import {
 import { type FC, useState } from 'react';
 
 import { NivoTimeSeriesChart } from '@/components/charts/NivoTimeSeriesChart';
-import { useTimeSeriesMetrics } from '@/hooks/useTimeSeriesMetrics';
+import { useTimeSeriesMetrics } from '@/hooks/dashboard/useTimeSeriesMetrics';
 
 import { RealtimeChart } from './EnhancedServerModal.components';
 import {

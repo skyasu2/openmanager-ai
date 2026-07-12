@@ -48,7 +48,6 @@ export function buildAssistantMessageFromAsyncResult(
     typeof result.ttfbMs === 'number' ||
     typeof result.rotationSlot === 'number';
   const metadata =
-    result.ragSources ||
     (result.evidenceCards && result.evidenceCards.length > 0) ||
     result.traceId ||
     typeof result.processingTimeMs === 'number' ||
@@ -65,7 +64,6 @@ export function buildAssistantMessageFromAsyncResult(
     (result.toolResultSummaries && result.toolResultSummaries.length > 0) ||
     hasProviderTelemetry
       ? {
-          ...(result.ragSources && { ragSources: result.ragSources }),
           ...(result.evidenceCards &&
             result.evidenceCards.length > 0 && {
               evidenceCards: result.evidenceCards,

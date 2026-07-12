@@ -171,7 +171,10 @@ export function detectPromptInjection(text: string): InjectionDetectionResult {
         p.includes('jailbreak') ||
         p.includes('dan_mode') ||
         p.includes('bypass') ||
-        p.includes('special_mode')
+        p.includes('special_mode') ||
+        p.includes('roleplay') ||
+        p.includes('role_reassignment') ||
+        p.includes('unrestricted')
     );
     const hasMediumRisk = detectedPatterns.some(
       (p) =>

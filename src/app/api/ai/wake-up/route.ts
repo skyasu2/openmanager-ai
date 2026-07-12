@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { createCloudRunAuthHeaders } from '@/lib/ai-proxy/cloud-run-auth';
 import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
@@ -52,8 +53,13 @@ async function postHandler(request: NextRequest) {
 
     // Cloud Run cold start 대응: 실제로 응답을 기다려야 컨테이너 기동 보장
     // void fetch는 Vercel 함수 종료 후 kill될 수 있어 웜업 실패 원인이었음
-    const res = await fetch(`${cloudRunConfig.url}/warmup`, {
+    const warmupUrl = `${cloudRunConfig.url}/warmup`;
+    const res = await fetch(warmupUrl, {
       method: 'GET',
+      headers: await createCloudRunAuthHeaders({
+        apiSecret: cloudRunConfig.apiSecret,
+        serviceUrl: warmupUrl,
+      }),
       signal: AbortSignal.timeout(15_000), // cold start 포함 15초
     });
     const warmupLatencyMs = Date.now() - warmupStartedAt;

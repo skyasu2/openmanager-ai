@@ -8,7 +8,7 @@ import {
   LogOut,
   User,
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,7 +33,7 @@ import type {
   MenuItem,
   UnifiedProfileHeaderProps,
 } from '@/components/unified-profile/types/profile.types';
-import { useSystemStatus } from '@/hooks/useSystemStatus';
+import { useSystemStatus } from '@/hooks/system/useSystemStatus';
 import { logger } from '@/lib/logging';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 
@@ -62,10 +62,15 @@ export default function UnifiedProfileHeader({
   const [pendingAction, setPendingAction] =
     useState<PendingProfileAction>(null);
   const [isConfirmActionRunning, setIsConfirmActionRunning] = useState(false);
+  const isMountedRef = useRef(true);
   const isAuthResolving = status === 'loading' || isProfileLoading;
 
   useEffect(() => {
+    isMountedRef.current = true;
     setIsHydrated(true);
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
 
   const {
@@ -157,8 +162,10 @@ export default function UnifiedProfileHeader({
         await executeLogout();
       }
     } finally {
-      setIsConfirmActionRunning(false);
-      setPendingAction(null);
+      if (isMountedRef.current) {
+        setIsConfirmActionRunning(false);
+        setPendingAction(null);
+      }
     }
   }, [executeLogout, executeSystemStop, pendingAction]);
 
@@ -191,7 +198,7 @@ export default function UnifiedProfileHeader({
         icon: BarChart3,
         action: () => {
           closeMenu();
-          setTimeout(() => navigateToDashboard(), 100);
+          navigateToDashboard();
         },
         visible: true,
         badge: '모니터링',
@@ -207,7 +214,7 @@ export default function UnifiedProfileHeader({
         icon: LogIn,
         action: () => {
           closeMenu();
-          setTimeout(() => navigateToLogin(), 100);
+          navigateToLogin();
         },
         visible: true,
         badge: '로그인 페이지',
@@ -221,10 +228,7 @@ export default function UnifiedProfileHeader({
         icon: LogIn,
         action: () => {
           closeMenu();
-          setTimeout(
-            () => window.location.assign(`/login?current=${userType}`),
-            100
-          );
+          window.location.assign(`/login?current=${userType}`);
         },
         visible: true,
         badge: '계정 전환',

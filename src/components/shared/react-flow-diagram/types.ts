@@ -25,7 +25,15 @@ export interface ReactFlowDiagramProps {
   maximizeViewport?: boolean;
   /** 서버 실시간 데이터 (ID 매핑용) */
   servers?: Server[];
+  /** 인프라 맵 표시 모드 */
+  displayMode?: ReactFlowDisplayMode;
+  /** 실시간 서버 노드 선택 */
+  onServerSelect?: (server: Server) => void;
+  /** 맵 안에서 현재 선택된 서버 */
+  selectedServerId?: string | null;
 }
+
+export type ReactFlowDisplayMode = 'dependencies' | 'status';
 
 export interface CustomNodeData extends Record<string, unknown> {
   label: string;
@@ -37,9 +45,19 @@ export interface CustomNodeData extends Record<string, unknown> {
   /** @description 레이어 제목 (디버깅/확장용) */
   layerTitle: string;
   /** @description 실시간 서버 상태 (매핑된 경우) */
-  status?: 'running' | 'warning' | 'danger' | 'offline';
+  status?: Server['status'];
   /** @description 전체 서버 데이터 객체 */
   serverData?: Server;
+  /** @description 상태/의존성 노드 표현 모드 */
+  displayMode: ReactFlowDisplayMode;
+  /** @description 매핑된 서버 선택 */
+  onServerSelect?: (server: Server) => void;
+  /** @description 현재 선택된 서버 노드 */
+  isSelected?: boolean;
+  /** @description 선택 서버의 1-hop 이웃 노드 */
+  isRelated?: boolean;
+  /** @description 선택 경로 밖의 흐린 노드 */
+  isDimmed?: boolean;
 }
 
 export interface SwimlaneBgData extends Record<string, unknown> {

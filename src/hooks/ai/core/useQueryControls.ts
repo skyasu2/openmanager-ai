@@ -83,7 +83,7 @@ export function useQueryControls(deps: QueryControlDeps) {
       refs.retryTimeout.current = null;
     }
     if (refs.redirecting) refs.redirecting.current = false;
-    if (refs.errorHandled) refs.errorHandled.current = false;
+    if (refs.errorHandled) refs.errorHandled.current = true;
 
     if (currentModeRef.current === 'job-queue') {
       void asyncQuery.cancel().catch(() => {});
@@ -109,7 +109,7 @@ export function useQueryControls(deps: QueryControlDeps) {
       refs.retryTimeout.current = null;
     }
     if (refs.redirecting) refs.redirecting.current = false;
-    if (refs.errorHandled) refs.errorHandled.current = false;
+    if (refs.errorHandled) refs.errorHandled.current = true;
 
     if (currentModeRef.current === 'job-queue') {
       await asyncQuery.cancel();

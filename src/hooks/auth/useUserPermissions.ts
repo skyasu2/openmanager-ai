@@ -1,6 +1,6 @@
 import { isGuestFullAccessEnabled } from '@/config/guestMode';
-import { useAuth } from '@/hooks/useAuth';
-import { useSession } from '@/hooks/useSupabaseSession';
+import { useAuth } from '@/hooks/auth/useAuth';
+import { useSession } from '@/hooks/auth/useSupabaseSession';
 import type { UserPermissions, UserType } from '@/types/permissions.types';
 
 /**

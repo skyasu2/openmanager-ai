@@ -1,4 +1,4 @@
-import { calculateServerStatsFallback } from '@/hooks/useWorkerStats';
+import { calculateServerStatsFallback } from '@/hooks/dashboard/useWorkerStats';
 import type {
   EnhancedServerData,
   ServerStats,

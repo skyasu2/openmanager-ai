@@ -345,7 +345,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         );
       }
 
-      // AI SDK v6 sendMessage: { text, files } 형식 사용
+      // AI SDK v7 sendMessage: { text, files } 형식 사용
       type FileUIPart = {
         type: 'file';
         mediaType: string;
@@ -504,7 +504,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         // sanitize 후 queueMicrotask로 sendMessage 호출하여 상태 반영 보장
         setMessages(getSanitizedMessagesForSend());
 
-        // AI SDK v6: sendMessage({ text, files? }) 형식
+        // AI SDK v7: sendMessage({ text, files? }) 형식
         const messagePayload = hasAttachments
           ? { text: trimmedQuery, files: fileUIParts }
           : { text: trimmedQuery };

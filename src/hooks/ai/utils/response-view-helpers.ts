@@ -8,7 +8,6 @@ import type {
   EvidenceCard,
   RetrievalMetadata,
 } from '@/types/ai/retrieval-status';
-import type { StreamRagSource } from '../types/stream-rag.types';
 
 export type ResponseSourceData = {
   responseSummary?: unknown;
@@ -18,7 +17,6 @@ export type ResponseSourceData = {
   details?: unknown;
   shouldCollapse?: unknown;
   assistantResponseView?: unknown;
-  ragSources?: unknown;
   evidenceCards?: unknown;
   traceId?: unknown;
   metadata?: unknown;
@@ -44,13 +42,6 @@ function getNestedMetadataValue(
     return (metadata as Record<string, unknown>)[key];
   }
   return undefined;
-}
-
-export function normalizeRagSources(
-  sources: unknown
-): StreamRagSource[] | null {
-  if (!Array.isArray(sources)) return null;
-  return sources as StreamRagSource[];
 }
 
 export function buildStructuredResponseView(

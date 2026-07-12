@@ -3,7 +3,7 @@
  *
  * @endpoint POST /api/ai/supervisor/stream/v2
  *
- * AI SDK v6 Native UIMessageStream proxy to Cloud Run.
+ * AI SDK v7 Native UIMessageStream proxy to Cloud Run.
  *
  * Features:
  * - Pass-through UIMessageStream proxy
@@ -39,16 +39,20 @@ import {
   type HybridMessage,
   normalizeMessagesForCloudRun,
 } from '@/lib/ai/utils/message-normalizer';
+import { createCloudRunAuthHeaders } from '@/lib/ai-proxy/cloud-run-auth';
 import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { getAPIAuthContext, withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import {
+  createRateLimitIdentityHeaders,
   getRateLimitIdentity,
-  RATE_LIMIT_IDENTITY_HEADER,
 } from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import { runWithTraceId } from '@/lib/tracing/async-context';
-import { resolveSupervisorInternalDisclosureMode } from '../../internal-disclosure-mode';
+import {
+  createInternalDisclosureFields,
+  resolveSupervisorInternalDisclosureMode,
+} from '../../internal-disclosure-mode';
 import {
   applySanitizedQueryToMessages,
   extractAndValidateQuery,
@@ -221,17 +225,22 @@ export const POST = withAuth(
           );
         }
 
-        const { sessionId, cacheSessionId } = resolveScopedSessionIds(
-          req,
-          bodySessionId ?? chatSessionId
-        );
+        const { sessionId, backendSessionId, cacheSessionId } =
+          resolveScopedSessionIds(req, bodySessionId ?? chatSessionId);
         const deviceType = normalizeSupervisorDeviceType(
           req.headers.get('X-Device-Type')
         );
-        const rateLimitIdentity = getRateLimitIdentity(req);
+        const rateLimitIdentity = getRateLimitIdentity(req, backendSessionId);
+        const rateLimitIdentityHeaders =
+          createRateLimitIdentityHeaders(rateLimitIdentity);
         const internalDisclosureMode = resolveSupervisorInternalDisclosureMode(
           getAPIAuthContext(req)
         );
+        const internalDisclosureFields = createInternalDisclosureFields({
+          mode: internalDisclosureMode,
+          audience: 'supervisor',
+          subject: backendSessionId,
+        });
         const warmupStartedAt = parseWarmupStartedAt(
           req.headers.get(AI_WARMUP_STARTED_AT_HEADER)
         );
@@ -421,10 +430,11 @@ export const POST = withAuth(
                     headers: {
                       'Content-Type': 'application/json',
                       Accept: 'text/event-stream',
-                      // NOTE: API secret in header is safe in transit (HTTPS) but may appear
-                      // in Cloud Run access logs. Accept this trade-off for standard auth header usage.
-                      'X-API-Key': cloudRunConfig.apiSecret,
-                      [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity,
+                      ...(await createCloudRunAuthHeaders({
+                        apiSecret: cloudRunConfig.apiSecret,
+                        serviceUrl: streamUrl,
+                      })),
+                      ...rateLimitIdentityHeaders,
                       ...(traceContext.enabled
                         ? {
                             [TRACEPARENT_HEADER]: traceContext.traceparent,
@@ -434,12 +444,12 @@ export const POST = withAuth(
                     },
                     body: JSON.stringify({
                       messages: normalizedMessages,
-                      sessionId,
+                      sessionId: backendSessionId,
                       deviceType,
                       enableWebSearch,
                       enableRAG,
                       queryAsOf,
-                      ...(internalDisclosureMode && { internalDisclosureMode }),
+                      ...internalDisclosureFields,
                       ...(localRouteDecision && { localRouteDecision }),
                       ...(metadata && { metadata }),
                       ...(semanticQueryTrace !== undefined &&

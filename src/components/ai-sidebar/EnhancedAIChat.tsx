@@ -4,6 +4,7 @@ import { Bot, RefreshCw } from 'lucide-react';
 import React, { memo, type RefObject, useEffect, useState } from 'react';
 import { AgentHandoffBadge } from '@/components/ai/AgentHandoffBadge';
 import { AgentStatusIndicator } from '@/components/ai/AgentStatusIndicator';
+import type { GuidanceCtaTarget } from '@/hooks/ai/core/chat-artifact-metadata';
 import type { AsyncQueryProgress } from '@/hooks/ai/useAsyncAIQuery';
 import type { FileAttachment } from '@/hooks/ai/useFileAttachments';
 import type {
@@ -14,7 +15,7 @@ import type {
   HandoffEventData,
 } from '@/hooks/ai/useHybridAIQuery';
 import { loadChatHistory } from '@/hooks/ai/utils/chat-history-storage';
-import { useServerQuery } from '@/hooks/useServerQuery';
+import { useServerQuery } from '@/hooks/dashboard/useServerQuery';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
 import {
   type EnhancedChatMessage,
@@ -48,11 +49,13 @@ interface EnhancedAIChatProps {
     isLastMessage?: boolean;
     regenerateDisabled?: boolean;
     regenerateDisabledReason?: string;
+    onArtifactGuidanceCta?: (target: GuidanceCtaTarget) => void;
   }>;
   inputValue: string;
   setInputValue: (value: string) => void;
   handleSendInput: (attachments?: FileAttachment[]) => void;
   onStarterPromptSubmit?: (prompt: string) => void;
+  onArtifactGuidanceCta?: (target: GuidanceCtaTarget) => void;
   isGenerating: boolean;
   streamStatus?: AIStreamStatus;
   regenerateResponse: (messageId: string) => void;
@@ -104,6 +107,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   setInputValue,
   handleSendInput,
   onStarterPromptSubmit,
+  onArtifactGuidanceCta,
   isGenerating,
   streamStatus,
   regenerateResponse,
@@ -140,6 +144,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
     textareaRef,
     fileInputRef,
     attachments,
+    isProcessingAttachments,
     isDragging,
     fileErrors,
     removeFile,
@@ -273,6 +278,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
           regenerateDisabledReason={regenerateDisabledReason}
           setInputValue={setInputValue}
           onStarterPromptSubmit={onStarterPromptSubmit}
+          onArtifactGuidanceCta={onArtifactGuidanceCta}
           welcomeServers={welcomeServers}
         />
       )}
@@ -414,6 +420,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
         streamStatus={streamStatus}
         sessionState={sessionState}
         attachments={attachments}
+        isProcessingAttachments={isProcessingAttachments}
         isDragging={isDragging}
         fileErrors={fileErrors}
         canAddMore={canAddMore}

@@ -21,10 +21,13 @@ import type { DeveloperPanelData } from '@/lib/ai/developer-panel';
 import { logger } from '@/lib/logging';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
+import { startChatArtifactGeneration } from './core/chat-artifact-execution';
 import {
+  submitArtifactGuidanceCta,
   tryHandleChatArtifactRequest,
   tryHandlePostDecisionChatArtifactResult,
 } from './core/chat-artifact-guidance';
+import type { GuidanceCtaTarget } from './core/chat-artifact-metadata';
 import {
   executeLocalChatCoreSendPlan,
   resolveChatCoreSendPlan,
@@ -34,7 +37,6 @@ import { useChatHistory } from './core/useChatHistory';
 import { useChatQueue } from './core/useChatQueue';
 import { useChatSession } from './core/useChatSession';
 import { useChatSessionState } from './core/useChatSessionState';
-import type { StreamRagSource } from './types/stream-rag.types';
 import type {
   UseAIChatCoreOptions as UseAIChatCoreOptionsBase,
   UseAIChatCoreReturn as UseAIChatCoreReturnBase,
@@ -105,10 +107,6 @@ export function useAIChatCore(
     sendQueryRef,
   } = useChatQueue();
 
-  // 스트리밍 done 이벤트에서 수신한 ragSources (웹 검색 결과 등)
-  const [streamRagSources, setStreamRagSources] = useState<StreamRagSource[]>(
-    []
-  );
   const [developerPanelData, setDeveloperPanelData] =
     useState<DeveloperPanelData | null>(null);
   const developerPanelDataRef = useRef<DeveloperPanelData | null>(null);
@@ -128,7 +126,6 @@ export function useAIChatCore(
       pendingQuery = ''
     ) => {
       setError(null);
-      setStreamRagSources([]);
       lastQueryRef.current = query;
       lastAttachmentsRef.current = attachments;
       pendingQueryRef.current = pendingQuery;
@@ -206,7 +203,6 @@ export function useAIChatCore(
     setError,
     setCurrentAgentStatus,
     setCurrentHandoff,
-    setStreamRagSources,
     getDeveloperPanelData,
     setDeveloperPanelData: updateDeveloperPanelData,
     onPostDecisionArtifactResult: handlePostDecisionArtifactResult,
@@ -308,8 +304,6 @@ export function useAIChatCore(
     traceIdByMessageId: streamTraceIds,
     deferredAssistantMetadataByMessageId,
     deferredToolResultsByMessageId,
-    streamRagSources:
-      streamRagSources.length > 0 ? streamRagSources : undefined,
   });
 
   // 🧩 History Hook (Needs messages from hybrid query)
@@ -317,7 +311,7 @@ export function useAIChatCore(
     (
       metadataByMessageId: Record<
         string,
-        { toolsCalled?: string[]; ragSources?: unknown[] }
+        { toolsCalled?: string[]; evidenceCards?: unknown[] }
       >
     ) => {
       for (const [messageId, meta] of Object.entries(metadataByMessageId)) {
@@ -364,13 +358,6 @@ export function useAIChatCore(
     setError(hybridState.error ?? null);
   }, [hybridState.error]);
 
-  // 새 쿼리 시작 시 이전 스트림 RAG 출처를 초기화해 혼합 표시를 방지한다.
-  useEffect(() => {
-    if (hybridIsLoading) {
-      setStreamRagSources([]);
-    }
-  }, [hybridIsLoading]);
-
   useEffect(() => {
     if (enhancedMessages.length === 0) return;
     syncChatSnapshot(enhancedMessages, sessionId);
@@ -382,7 +369,6 @@ export function useAIChatCore(
     const nextSessionId = refreshSessionId();
     setInput('');
     setError(null);
-    setStreamRagSources([]);
     resetDeferredMetadata();
     setCurrentAgentStatus(null);
     setCurrentHandoff(null);
@@ -569,6 +555,53 @@ export function useAIChatCore(
     ]
   );
 
+  const handleArtifactGuidanceCta = useCallback(
+    (target: GuidanceCtaTarget) => {
+      submitArtifactGuidanceCta({
+        target,
+        disableSessionLimit,
+        sessionLimitReached: sessionState.isLimitReached,
+        sessionMessageCount: sessionState.count,
+        hybridIsLoading,
+        artifactInFlight: artifactRefs.artifactInFlightRef.current,
+        artifactIntentInFlight: artifactRefs.artifactIntentInFlightRef.current,
+        setError,
+        resetRequestState: resetOutgoingRequestState,
+        startArtifactGeneration: ({ artifactIntent, query }) => {
+          startChatArtifactGeneration({
+            artifactIntent,
+            query,
+            sessionId,
+            queryAsOfDataSlot,
+            messages,
+            messagesRef,
+            setMessages,
+            setError,
+            setArtifactIsLoading,
+            artifactRequestIdRef: artifactRefs.artifactRequestIdRef,
+            artifactAbortControllerRef: artifactRefs.artifactAbortControllerRef,
+            artifactInFlightRef: artifactRefs.artifactInFlightRef,
+          });
+        },
+        onSessionLimitReached: (messageCount) => {
+          logger.warn(`⚠️ [Session] Limit reached (${messageCount} messages)`);
+        },
+      });
+    },
+    [
+      artifactRefs,
+      disableSessionLimit,
+      hybridIsLoading,
+      messages,
+      queryAsOfDataSlot,
+      resetOutgoingRequestState,
+      sessionId,
+      sessionState,
+      setArtifactIsLoading,
+      setMessages,
+    ]
+  );
+
   const stopGeneration = useCallback(() => {
     if (isArtifactBusy()) {
       abortArtifactRequest();
@@ -608,6 +641,7 @@ export function useAIChatCore(
     stop: stopGeneration,
     cancel,
     handleSendInput,
+    handleArtifactGuidanceCta,
     clarification: hybridState.clarification ?? null,
     selectClarification: wrappedSelectClarification,
     submitCustomClarification,

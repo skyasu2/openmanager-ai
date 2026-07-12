@@ -8,6 +8,20 @@ function hashValue(value: string): string {
   return createHash('sha256').update(value).digest('hex').slice(0, 20);
 }
 
+export function createBackendSessionId(
+  ownerKey: string,
+  sessionId: string
+): string {
+  const digest = createHash('sha256')
+    .update('openmanager:backend-session:v1\0')
+    .update(ownerKey)
+    .update('\0')
+    .update(sessionId)
+    .digest('hex');
+
+  return `session-${digest}`;
+}
+
 function normalizeSessionId(value: string | null | undefined): string | null {
   return normalizeSupervisorSessionId(value);
 }
@@ -60,6 +74,7 @@ export function resolveScopedSessionIds(
   fallbackId = createFallbackSessionId()
 ): {
   sessionId: string;
+  backendSessionId: string;
   cacheSessionId: string;
   ownerKey: string;
 } {
@@ -69,6 +84,7 @@ export function resolveScopedSessionIds(
 
   return {
     sessionId,
+    backendSessionId: createBackendSessionId(ownerKey, sessionId),
     cacheSessionId: `${ownerKey}:${sessionId}`,
     ownerKey,
   };

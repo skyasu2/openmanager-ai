@@ -202,7 +202,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'uimessagestream',
           label: 'UIMessageStream',
-          sublabel: 'AI SDK v6 스트리밍',
+          sublabel: 'AI SDK v7 스트리밍',
           type: 'highlight',
           icon: '📡',
         },

@@ -11,7 +11,7 @@ import { BarChart3, Loader2, Play, X } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { useSystemStatus } from '@/hooks/useSystemStatus';
+import { useSystemStatus } from '@/hooks/system/useSystemStatus';
 import { logger } from '@/lib/logging';
 import { markSystemBootIntent } from '@/lib/system/system-boot-intent';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';

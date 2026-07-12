@@ -93,7 +93,7 @@ async function handler(request: NextRequest): Promise<NextResponse> {
         description:
           'Classify whether the query should open a report or monitoring analysis artifact flow.',
       }),
-      system: SYSTEM_PROMPT,
+      instructions: SYSTEM_PROMPT,
       prompt: query,
       temperature: 0,
       maxOutputTokens: 24,

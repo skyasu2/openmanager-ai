@@ -15,7 +15,7 @@
 import { Monitor, Play, RefreshCw, Server } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import AnalysisResultsCard from '@/components/ai/AnalysisResultsCard';
-import { useServerQuery } from '@/hooks/useServerQuery';
+import { useServerQuery } from '@/hooks/dashboard/useServerQuery';
 import {
   createArtifactExecutionWorkspaceId,
   executeChatArtifact,

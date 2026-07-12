@@ -1,9 +1,9 @@
 # OpenManager AI
 
-> **Personal AI-assisted Server Monitoring Dashboard**
-> 자연어 질의와 대시보드를 결합해 만든 개인 토이·학습용 포트폴리오 프로젝트
+> **Free-tier server monitoring dashboard with a domain-specific AI assistant**
+> Vercel, Google Cloud Run, Supabase, Redis 기반의 서버 모니터링 웹 애플리케이션에 운영 도메인용 AI assistant frontend shell을 결합한 프로젝트
 
-[![Version](https://img.shields.io/badge/version-8.13.145-blue.svg?style=for-the-badge)](https://openmanager-ai.vercel.app)
+[![Version](https://img.shields.io/badge/version-8.14.8-blue.svg?style=for-the-badge)](https://openmanager-ai.vercel.app)
 [![Deployed Demo](https://img.shields.io/badge/Deployed_Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://openmanager-ai.vercel.app)
 [![License](https://img.shields.io/badge/License-GPL_v3-blue.svg?style=for-the-badge)](LICENSE)
 
@@ -19,9 +19,9 @@
 
 ## What is this?
 
-OpenManager AI는 서버 모니터링 dashboard에 자연어 질의 UI를 결합해 본 개인 토이·학습용 포트폴리오 프로젝트입니다.
+OpenManager AI는 synthetic OTel snapshot 기반 서버 모니터링 dashboard에 자연어 질의 UI를 결합한 프로젝트입니다.
 
-이 공개 저장소는 **Vercel에 배포된 데모용 Next.js 프론트엔드와 공개 데이터 스냅샷**만 공유합니다. 학습용 시나리오에서는 CPU/메모리 그래프를 직접 읽는 대신, 자연어로 질문합니다:
+이 공개 저장소는 **Vercel에 배포된 데모용 Next.js 프론트엔드와 공개 데이터 스냅샷**만 공유합니다. 사용자는 CPU/메모리 그래프를 직접 읽는 대신, 자연어로 질문합니다:
 
 ```
 "서버 상태 어때?"           → 전체 헬스 요약
@@ -77,7 +77,7 @@ User (Natural Language Query)
 이 저장소는 frontend shell과 공개 데이터만 제공하므로, AI backend 내부 구현과 모델 구성은 설명 대상에서 제외합니다. 공개 범위에서 중요한 점은 다음 두 가지입니다.
 
 - dashboard, login, public data 경로는 이 저장소만으로 확인 가능
-- 전체 AI 응답 생성과 agent orchestration은 private runtime 의존
+- 전체 AI 응답 생성과 routing-based agent workflow는 private runtime 의존
 
 ---
 
@@ -88,7 +88,7 @@ User (Natural Language Query)
 | **Frontend** | Next.js 16.2, React 19.2, TypeScript 6 |
 | **Styling** | Tailwind CSS, shadcn/ui, Radix UI |
 | **State** | Zustand, TanStack Query |
-| **Frontend AI Integration** | Vercel AI SDK v6 client and streaming UI |
+| **Frontend AI Integration** | Vercel AI SDK v7 client and streaming UI |
 | **Backend Dependencies** | Supabase, Upstash Redis, private AI runtime |
 | **Demo Deployment** | Vercel frontend demo + external private services |
 | **Monitoring Data** | Precomputed OTel metrics shipped under `public/data/otel-data/` |
@@ -143,4 +143,4 @@ GNU General Public License v3.0 — see [LICENSE](LICENSE) for details.
 
 **Deployed demo**: [openmanager-ai.vercel.app](https://openmanager-ai.vercel.app)
 
-Public Snapshot · v8.13.145
+Public Snapshot · v8.14.8

@@ -89,6 +89,21 @@ export const PROMPT_INJECTION_PATTERNS: Array<{
     name: 'role_change_ko',
   },
   {
+    pattern:
+      /(?:너는|넌|너)\s*(?:이제|지금부터)[^.!?\n]{0,25}(?:봇|bot|ai\b|어시스턴트|assistant|캐릭터|character|페르소나|persona)/gi,
+    name: 'role_reassignment_ko',
+  },
+  {
+    pattern:
+      /(?:역할극|롤\s*플레이|role\s*play)[^\n]{0,80}(?:뭐든|시키는|제약\s*없|검열\s*없|제한\s*없|너는\s*(?:이제|지금부터))/gi,
+    name: 'roleplay_ko',
+  },
+  {
+    pattern:
+      /(?:검열|제약|제재)\s*(?:이|가)?\s*없(?:이|는|어)\s*[^.!?\n]{0,20}(?:실행|출력|답변|대답|명령)/gi,
+    name: 'unrestricted_execution_ko',
+  },
+  {
     pattern: /pretend\s*(to\s*be|you\s*are|that\s*you)/gi,
     name: 'pretend_role',
   },

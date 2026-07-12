@@ -11,12 +11,7 @@
 import { logger } from '@/lib/logging';
 import { loadCurrentOTelServers } from '@/services/metrics/otel-direct-transform';
 import type { EnhancedServerMetrics } from '@/services/server-data/server-data-types';
-import type {
-  Server,
-  ServerEnvironment,
-  ServerRole,
-  Service,
-} from '@/types/server';
+import type { Server } from '@/types/server';
 import type { ServerStatus } from '@/types/server-enums';
 
 const STATUS_PRIORITY: Record<string, number> = {
@@ -65,23 +60,23 @@ function toServer(em: EnhancedServerMetrics): Server {
     name: em.name,
     hostname: em.hostname,
     status,
-    cpu: em.cpu,
-    memory: em.memory,
-    disk: em.disk,
+    cpu: em.cpu ?? em.cpu_usage,
+    memory: em.memory ?? em.memory_usage,
+    disk: em.disk ?? em.disk_usage,
     network: em.network,
     responseTime: em.responseTime,
     uptime: em.uptime,
-    location: em.location,
+    location: em.location ?? 'unknown',
     alerts: [],
     ip: em.ip,
     os: em.os,
-    type: em.type as ServerRole,
-    role: em.role as ServerRole,
-    environment: em.environment as ServerEnvironment,
+    type: em.type,
+    role: em.role,
+    environment: em.environment,
     provider: em.provider,
     specs: em.specs,
-    lastUpdate: new Date(em.lastUpdate),
-    services: em.services as Service[],
+    lastUpdate: new Date(em.lastUpdate ?? em.last_updated),
+    services: em.services,
     systemInfo: em.systemInfo,
     networkInfo: em.networkInfo,
     structuredLogs: em.structuredLogs,

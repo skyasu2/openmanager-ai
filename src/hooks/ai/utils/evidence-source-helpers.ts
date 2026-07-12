@@ -12,7 +12,6 @@ import type {
 import type { EvidenceCard } from '@/types/ai/retrieval-status';
 import type {
   MessageMetadata,
-  RagSource,
   ToolPartWithCallId,
 } from './message-transform-internals';
 import {
@@ -66,9 +65,7 @@ export function buildAnalysisSourceGroups(params: {
   semanticQueryTrace?: SemanticQueryTrace;
   hasServerAnalysisEvidence: boolean;
   knowledgeEvidenceCount: number;
-  legacyKnowledgeSourceCount: number;
   webEvidenceCount: number;
-  legacyWebSourceCount: number;
   retrievalEvidenceCount: number;
   retrievalIndicatesKnowledgeUse: boolean;
   retrievalIndicatesWebUse: boolean;
@@ -106,13 +103,11 @@ export function buildAnalysisSourceGroups(params: {
 
   const knowledgeCount =
     params.knowledgeEvidenceCount ||
-    params.legacyKnowledgeSourceCount ||
     (params.retrievalIndicatesKnowledgeUse ? params.retrievalEvidenceCount : 0);
   addGroup('knowledge-base', 'knowledge-base', knowledgeCount);
 
   const webCount =
     params.webEvidenceCount ||
-    params.legacyWebSourceCount ||
     (params.retrievalIndicatesWebUse
       ? Math.max(1, params.retrievalEvidenceCount)
       : 0);
@@ -155,8 +150,6 @@ export function buildAssistantAnalysisBasis(params: {
   toolResultSummaries: ToolResultSummary[];
   prioritizeMetricRankingPresentation: boolean;
   currentMode?: 'streaming' | 'job-queue';
-  isLastMessage: boolean;
-  streamRagSources?: RagSource[];
   ragEnabled?: boolean;
   webSearchEnabled?: boolean;
   semanticQueryTrace?: SemanticQueryTrace;
@@ -167,8 +160,6 @@ export function buildAssistantAnalysisBasis(params: {
     toolResultSummaries,
     prioritizeMetricRankingPresentation,
     currentMode,
-    isLastMessage,
-    streamRagSources,
     ragEnabled,
     webSearchEnabled,
     semanticQueryTrace,
@@ -209,18 +200,8 @@ export function buildAssistantAnalysisBasis(params: {
     (card) => card.sourceType === 'web'
   ).length;
 
-  const ragSources =
-    metadata?.ragSources ?? (isLastMessage ? streamRagSources : undefined);
-  const hasRag = ragSources && ragSources.length > 0;
-  const webSources =
-    ragSources?.filter((source) => source.sourceType === 'web') ?? [];
-  const legacyKnowledgeSourceCount =
-    ragSources?.filter((source) => source.sourceType !== 'web').length ?? 0;
-  const legacyWebSourceCount = webSources.length;
-  const hasWebSearch = webEvidenceCount > 0 || legacyWebSourceCount > 0;
-  const hasKnowledgeSearch = Boolean(
-    knowledgeEvidenceCount > 0 || legacyKnowledgeSourceCount > 0
-  );
+  const hasWebSearch = webEvidenceCount > 0;
+  const hasKnowledgeSearch = knowledgeEvidenceCount > 0;
   const retrieval =
     normalizeRetrievalMetadata(metadata?.retrieval) ??
     findRetrievalMetadataFromToolParts(toolParts);
@@ -247,9 +228,7 @@ export function buildAssistantAnalysisBasis(params: {
     semanticQueryTrace,
     hasServerAnalysisEvidence,
     knowledgeEvidenceCount,
-    legacyKnowledgeSourceCount,
     webEvidenceCount,
-    legacyWebSourceCount,
     retrievalEvidenceCount: retrieval?.evidenceCount ?? 0,
     retrievalIndicatesKnowledgeUse,
     retrievalIndicatesWebUse,
@@ -260,12 +239,8 @@ export function buildAssistantAnalysisBasis(params: {
   let dataSource: string;
   if (webEvidenceCount > 0) {
     dataSource = `웹 검색 (${webEvidenceCount}건)`;
-  } else if (hasWebSearch) {
-    dataSource = `웹 검색 (${webSources.length}건)`;
   } else if (knowledgeEvidenceCount > 0) {
     dataSource = `지식 근거 검색 (${knowledgeEvidenceCount}건)`;
-  } else if (hasRag) {
-    dataSource = `지식 근거 검색 (${ragSources.length}건)`;
   } else if (retrievalIndicatesKnowledgeUse) {
     dataSource = `지식 근거 검색 (${retrieval?.evidenceCount ?? 0}건)`;
   } else if (semanticEvidenceDataSource) {
@@ -287,7 +262,6 @@ export function buildAssistantAnalysisBasis(params: {
     toolsCalled: calledToolNames.length > 0 ? calledToolNames : undefined,
     timeRange: hasServerAnalysisEvidence ? '최근 1시간' : undefined,
     evidenceCards: hasEvidenceCards ? evidenceCards : undefined,
-    ragSources: hasRag ? ragSources : undefined,
     ...(retrieval && { retrieval }),
     featureStatus,
     sourceGroups: sourceGroups.length > 0 ? sourceGroups : undefined,

@@ -1,8 +1,7 @@
 {
   "name": "OpenManager AI v8 - AI Native Server Monitoring",
   "short_name": "OpenManager",
-  "description": "AI-Powered Server Management with Fluid Compute Optimization",
-  "version": "8.13.3",
+  "description": "AI-assisted server monitoring and operational analysis",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
@@ -37,7 +36,7 @@
       "url": "/dashboard",
       "icons": [
         {
-          "src": "/dashboard-icon.png",
+          "src": "/ai-icon.png",
           "sizes": "96x96"
         }
       ]
@@ -58,14 +57,5 @@
   "prefer_related_applications": false,
   "edge_side_panel": {
     "preferred_width": 400
-  },
-  "fluid_compute": {
-    "enabled": true,
-    "features": [
-      "cold_start_elimination",
-      "cost_optimization_85_percent",
-      "ai_inference_optimization",
-      "concurrent_processing"
-    ]
   }
 }

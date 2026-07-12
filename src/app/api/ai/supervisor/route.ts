@@ -130,10 +130,8 @@ export const POST = withAuth(
         } = parseResult.data;
 
         // 2. sessionId를 owner 스코프와 분리해 정규화
-        const { sessionId, cacheSessionId, ownerKey } = resolveScopedSessionIds(
-          req,
-          bodySessionId ?? chatSessionId
-        );
+        const { sessionId, backendSessionId, cacheSessionId, ownerKey } =
+          resolveScopedSessionIds(req, bodySessionId ?? chatSessionId);
 
         // 3. 사용자 쿼리 추출 + 보안 검사
         const queryResult = extractAndValidateQuery(
@@ -297,13 +295,14 @@ export const POST = withAuth(
           const deviceType = normalizeSupervisorDeviceType(
             req.headers.get('X-Device-Type')
           );
-          const rateLimitIdentity = getRateLimitIdentity(req);
+          const rateLimitIdentity = getRateLimitIdentity(req, backendSessionId);
           const internalDisclosureMode =
             resolveSupervisorInternalDisclosureMode(getAPIAuthContext(req));
 
           const handlerParams = {
             messagesToSend,
             sessionId,
+            backendSessionId,
             cacheSessionId,
             userQuery,
             dynamicTimeout,

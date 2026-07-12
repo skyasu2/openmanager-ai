@@ -117,7 +117,7 @@ async function postHandler(request: NextRequest) {
   try {
     const { output } = await generateText({
       model: groq(GROQ_TEXT_MODEL_ID),
-      system: SYSTEM_PROMPT,
+      instructions: SYSTEM_PROMPT,
       prompt: queryForLLM,
       temperature: 0,
       maxOutputTokens: 320,

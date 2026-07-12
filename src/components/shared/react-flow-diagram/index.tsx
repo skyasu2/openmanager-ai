@@ -46,7 +46,7 @@ function DiagramZoomToolbar() {
   const reactFlow = useReactFlow();
 
   return (
-    <fieldset className="nodrag nopan absolute right-3 top-3 z-10 flex items-center overflow-hidden rounded-lg border border-slate-200 bg-white/90 shadow-md backdrop-blur-md">
+    <fieldset className="nodrag nopan absolute top-3 right-3 z-10 flex items-center overflow-hidden rounded-lg border border-slate-200 bg-white/90 shadow-md backdrop-blur-md">
       <legend className="sr-only">토폴로지 줌 컨트롤</legend>
       <button
         type="button"
@@ -89,6 +89,9 @@ function ReactFlowDiagram({
   showZoomToolbar = false,
   maximizeViewport = false,
   servers = [],
+  displayMode = 'dependencies',
+  onServerSelect,
+  selectedServerId,
 }: ReactFlowDiagramProps) {
   // onInit setTimeout 클린업용 ref
   const initTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -102,8 +105,13 @@ function ReactFlowDiagram({
   }, []);
 
   const { nodes, edges } = useMemo(
-    () => convertToReactFlow(diagram, servers),
-    [diagram, servers]
+    () =>
+      convertToReactFlow(diagram, servers, {
+        displayMode,
+        onServerSelect,
+        selectedServerId,
+      }),
+    [diagram, displayMode, onServerSelect, selectedServerId, servers]
   );
 
   const defaultEdgeOptions = useMemo(
@@ -116,7 +124,7 @@ function ReactFlowDiagram({
   );
 
   const canvasHeightClass = maximizeViewport
-    ? 'h-[60dvh] sm:h-[64dvh] lg:h-[68dvh] max-h-[72dvh]'
+    ? 'h-[48dvh] sm:h-[64dvh] lg:h-[68dvh] max-h-[72dvh]'
     : compact
       ? 'h-[48dvh] sm:h-[50dvh] lg:h-[52dvh] max-h-[380px] sm:max-h-card-lg lg:max-h-[440px]'
       : 'h-[52dvh] sm:h-[55dvh] lg:h-[58dvh] max-h-[420px] sm:max-h-[460px] lg:max-h-[520px]';
@@ -164,8 +172,8 @@ function ReactFlowDiagram({
               maxZoom={2.5}
               defaultEdgeOptions={defaultEdgeOptions}
               proOptions={{ hideAttribution: true }}
-              nodesFocusable
-              edgesFocusable
+              nodesFocusable={!onServerSelect}
+              edgesFocusable={displayMode === 'dependencies'}
               colorMode="light"
               aria-label={`${diagram.title} 아키텍처 다이어그램`}
             >
@@ -180,9 +188,13 @@ function ReactFlowDiagram({
               )}
               {showMiniMap && (
                 <MiniMap
-                  className="!border-slate-200 !bg-white"
+                  className="!hidden !border-slate-200 !bg-white sm:!block"
                   nodeColor={(node) => {
                     const data = node.data as CustomNodeData;
+                    if (data?.status === 'critical') return '#f43f5e';
+                    if (data?.status === 'warning') return '#f59e0b';
+                    if (data?.status === 'online') return '#10b981';
+                    if (data?.status === 'offline') return '#64748b';
                     if (data?.nodeType === 'highlight')
                       return 'rgba(234, 179, 8, 0.7)';
                     if (data?.nodeType === 'primary')
@@ -231,4 +243,8 @@ function ReactFlowDiagram({
 export default memo(ReactFlowDiagram);
 
 // Re-export types for external use
-export type { CustomNodeData, ReactFlowDiagramProps } from './types';
+export type {
+  CustomNodeData,
+  ReactFlowDiagramProps,
+  ReactFlowDisplayMode,
+} from './types';

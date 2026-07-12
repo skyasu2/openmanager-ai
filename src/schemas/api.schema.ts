@@ -23,7 +23,6 @@ export * from './api.ai.schema';
 export * from './api.alert.schema';
 
 // ===== Common API Schemas =====
-export * from './api.common.schema';
 
 // ===== Dashboard Schemas =====
 export * from './api.dashboard.schema';

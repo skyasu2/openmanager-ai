@@ -3,7 +3,6 @@
 import type { UIMessage } from '@ai-sdk/react';
 import { useMemo, useRef } from 'react';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
-import type { StreamRagSource } from './types/stream-rag.types';
 import { transformUIMessageToEnhanced } from './utils/message-helpers';
 import type { PendingStreamToolResult } from './utils/stream-data-handler';
 
@@ -14,7 +13,6 @@ interface UseEnhancedChatMessagesOptions {
   traceIdByMessageId: Record<string, string>;
   deferredAssistantMetadataByMessageId: Record<string, Record<string, unknown>>;
   deferredToolResultsByMessageId: Record<string, PendingStreamToolResult[]>;
-  streamRagSources?: StreamRagSource[];
 }
 
 interface MessageTransformCacheEntry {
@@ -25,7 +23,6 @@ interface MessageTransformCacheEntry {
   traceId?: string;
   deferredMetadata?: Record<string, unknown>;
   deferredToolResults?: PendingStreamToolResult[];
-  streamRagSources?: StreamRagSource[];
   enhanced: EnhancedChatMessage;
 }
 
@@ -36,7 +33,6 @@ export function useEnhancedChatMessages({
   traceIdByMessageId,
   deferredAssistantMetadataByMessageId,
   deferredToolResultsByMessageId,
-  streamRagSources,
 }: UseEnhancedChatMessagesOptions): EnhancedChatMessage[] {
   const transformCacheRef = useRef<Map<string, MessageTransformCacheEntry>>(
     new Map()
@@ -59,7 +55,6 @@ export function useEnhancedChatMessages({
       const traceId = traceIdByMessageId[message.id];
       const deferredMetadata = deferredAssistantMetadataByMessageId[message.id];
       const deferredToolResults = deferredToolResultsByMessageId[message.id];
-      const ragSourcesForMessage = isLastMessage ? streamRagSources : undefined;
 
       activeIds.add(message.id);
       const cached = transformCacheRef.current.get(message.id);
@@ -71,8 +66,7 @@ export function useEnhancedChatMessages({
         cached.currentMode === currentMode &&
         cached.traceId === traceId &&
         cached.deferredMetadata === deferredMetadata &&
-        cached.deferredToolResults === deferredToolResults &&
-        cached.streamRagSources === ragSourcesForMessage;
+        cached.deferredToolResults === deferredToolResults;
 
       if (canReuse) {
         nextEnhancedMessages.push(cached.enhanced);
@@ -87,7 +81,6 @@ export function useEnhancedChatMessages({
           traceIdByMessageId,
           deferredAssistantMetadataByMessageId,
           deferredToolResultsByMessageId,
-          streamRagSources,
         },
         isLastMessage
       );
@@ -100,7 +93,6 @@ export function useEnhancedChatMessages({
         traceId,
         deferredMetadata,
         deferredToolResults,
-        streamRagSources: ragSourcesForMessage,
         enhanced,
       });
       nextEnhancedMessages.push(enhanced);
@@ -121,6 +113,5 @@ export function useEnhancedChatMessages({
     traceIdByMessageId,
     deferredAssistantMetadataByMessageId,
     deferredToolResultsByMessageId,
-    streamRagSources,
   ]);
 }

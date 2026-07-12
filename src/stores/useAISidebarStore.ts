@@ -113,14 +113,6 @@ export interface AnalysisBasis {
   timeRange?: string;
   /** 실제 호출된 도구 이름 목록 */
   toolsCalled?: string[];
-  /** Legacy retrieval source list for old chat history and web-source cards */
-  ragSources?: Array<{
-    title: string;
-    similarity: number;
-    sourceType: string;
-    category?: string;
-    url?: string;
-  }>;
   /** Canonical retrieval evidence for new AI Engine responses */
   evidenceCards?: EvidenceCard[];
   /** Retrieval execution contract from Cloud Run AI Engine */

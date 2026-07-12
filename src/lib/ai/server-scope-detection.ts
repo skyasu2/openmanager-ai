@@ -9,6 +9,9 @@ const SERVER_ID_LIKE_PATTERN =
 
 const LEGACY_SERVER_ID_PATTERN = /\bserver-?\d+\b/i;
 
+const CONTEXTUAL_SERVER_REFERENCE_PATTERN =
+  /방금|직전|이전|앞서|위\s*(?:결과|답변|내용)|방금\s*분석한|분석한\s*서버\s*중|방금\s*본|앞에서\s*본|그\s*중|그중|이\s*중|이중|해당\s*목록\s*중|(?<![가-힣A-Za-z0-9])(?:그|해당|이|위)\s*(?:서버|대상|호스트|노드)\s*(?:들|중|만|의)?/i;
+
 /**
  * Returns true when the query names a concrete server rather than a broad group.
  * Uses the static registry first, then falls back to the known OpenManager
@@ -22,4 +25,8 @@ export function hasExplicitServerReference(query: string): boolean {
     SERVER_ID_LIKE_PATTERN.test(query) ||
     LEGACY_SERVER_ID_PATTERN.test(query)
   );
+}
+
+export function hasContextualServerReference(query: string): boolean {
+  return CONTEXTUAL_SERVER_REFERENCE_PATTERN.test(query);
 }

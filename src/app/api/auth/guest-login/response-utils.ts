@@ -80,6 +80,34 @@ interface GuestSuccessResponseOptions {
   sessionMaxAgeSeconds: number;
 }
 
+export function createAuthLogoutResponse({
+  secureCookie,
+}: {
+  secureCookie: boolean;
+}): NextResponse {
+  const response = NextResponse.json({ success: true });
+  const cookies = [
+    { name: AUTH_SESSION_ID_KEY, httpOnly: false },
+    { name: GUEST_AUTH_PROOF_COOKIE_KEY, httpOnly: true },
+    { name: LEGACY_GUEST_SESSION_COOKIE_KEY, httpOnly: false },
+    { name: AUTH_TYPE_KEY, httpOnly: false },
+  ];
+
+  for (const cookie of cookies) {
+    response.cookies.set({
+      name: cookie.name,
+      value: '',
+      path: '/',
+      maxAge: 0,
+      httpOnly: cookie.httpOnly,
+      sameSite: 'strict',
+      secure: secureCookie,
+    });
+  }
+
+  return response;
+}
+
 export function createGuestSuccessResponse({
   countryCode,
   guestSessionProof,

@@ -17,36 +17,12 @@ export const safeInt = () =>
 // ID 관련
 export const IdSchema = z.string().min(1);
 export const UuidSchema = z.string().uuid();
-const _SlugSchema = z.string().regex(/^[a-z0-9-]+$/);
 
 // 타임스탬프
 export const TimestampSchema = z.string().datetime();
-const _DateSchema = z.string().date();
-const _TimeSchema = z.string().time();
 
 // 숫자 범위
 export const PercentageSchema = z.number().min(0).max(100);
-const _PositiveNumberSchema = z.number().positive();
-const _NonNegativeNumberSchema = z.number().nonnegative();
-// 🔧 Zod v4 ESM 호환: .int() 대신 safeInt() 사용
-const _PortSchema = safeInt().min(1).max(65535);
-
-// 문자열 패턴
-const _EmailSchema = z.string().email();
-const _UrlSchema = z.string().url();
-// Note: z.string().ip() removed in Zod v4, use z.string() with custom validation if needed
-const _IpAddressSchema = z.string();
-const _JsonSchema = z.string().transform((str, ctx) => {
-  try {
-    return JSON.parse(str);
-  } catch {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Invalid JSON string',
-    });
-    return z.NEVER;
-  }
-});
 
 // ===== 공통 구조 스키마 =====
 
@@ -78,12 +54,6 @@ export const BaseResponseSchema = z.object({
   requestId: z.string().optional(),
 });
 
-const _SuccessResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
-  BaseResponseSchema.extend({
-    success: z.literal(true),
-    data: dataSchema,
-  });
-
 export const ErrorResponseSchema = BaseResponseSchema.extend({
   success: z.literal(false),
   error: z.string(),
@@ -112,17 +82,6 @@ export const ConfigurationSchema = z.object({
   settings: z.record(z.string(), z.unknown()).default({}),
 });
 
-// 상태
-export const _StatusSchema = z.enum([
-  'active',
-  'inactive',
-  'pending',
-  'processing',
-  'completed',
-  'failed',
-  'cancelled',
-]);
-
 export const HealthStatusSchema = z.enum([
   'healthy',
   'degraded',
@@ -140,72 +99,3 @@ export const EnvironmentSchema = z.enum([
   'production',
   'test',
 ]);
-
-// ===== 유틸리티 스키마 =====
-
-// 선택적 필드를 null로 변환
-const _NullableSchema = <T extends z.ZodTypeAny>(schema: T) =>
-  z.union([schema, z.null()]);
-
-// 빈 문자열을 undefined로 변환
-const _EmptyStringToUndefined = z
-  .string()
-  .transform((val) => (val === '' ? undefined : val));
-
-// 문자열을 숫자로 변환
-const _StringToNumber = z.string().transform((val, ctx) => {
-  const parsed = parseFloat(val);
-  if (Number.isNaN(parsed)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Invalid number string',
-    });
-    return z.NEVER;
-  }
-  return parsed;
-});
-
-// 문자열을 불린으로 변환
-const _StringToBoolean = z
-  .string()
-  .transform((val) => {
-    const lower = val.toLowerCase();
-    if (
-      lower === 'true' ||
-      lower === '1' ||
-      lower === 'yes' ||
-      lower === 'on'
-    ) {
-      return true;
-    }
-    if (
-      lower === 'false' ||
-      lower === '0' ||
-      lower === 'no' ||
-      lower === 'off'
-    ) {
-      return false;
-    }
-    return null;
-  })
-  .pipe(z.boolean());
-
-// 안전한 JSON 파싱
-const _SafeJsonSchema = <T extends z.ZodTypeAny>(schema: T) =>
-  z
-    .union([z.string(), z.record(z.string(), z.unknown())])
-    .transform((val, ctx) => {
-      if (typeof val === 'string') {
-        try {
-          return JSON.parse(val);
-        } catch {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Invalid JSON string',
-          });
-          return z.NEVER;
-        }
-      }
-      return val;
-    })
-    .pipe(schema);

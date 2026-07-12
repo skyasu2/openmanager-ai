@@ -29,7 +29,6 @@ import { buildAssistantAnalysisBasis } from './evidence-source-helpers';
 import type {
   DeferredToolResult,
   MessageMetadata,
-  RagSource,
 } from './message-transform-internals';
 import {
   buildParityAwareAssistantResponseView,
@@ -93,8 +92,6 @@ interface TransformOptions {
     Record<string, unknown>
   >;
   deferredToolResultsByMessageId?: Record<string, DeferredToolResult[]>;
-  /** 스트리밍 done 이벤트에서 수신한 ragSources (웹 검색 결과 등) */
-  streamRagSources?: RagSource[];
   /** 사용자가 RAG 토글을 켰는지 여부 */
   ragEnabled?: boolean;
   /** 사용자가 웹 검색 토글을 켰는지 여부 */
@@ -113,7 +110,6 @@ export function transformUIMessageToEnhanced(
     isLoading,
     currentMode,
     traceIdByMessageId,
-    streamRagSources,
     ragEnabled,
     webSearchEnabled,
   } = options;
@@ -266,8 +262,6 @@ export function transformUIMessageToEnhanced(
       toolResultSummaries,
       prioritizeMetricRankingPresentation,
       currentMode,
-      isLastMessage,
-      streamRagSources,
       ragEnabled,
       webSearchEnabled,
       semanticQueryTrace,

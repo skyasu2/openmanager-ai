@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { isGuestSystemStartEnabled } from '@/config/guestMode';
 import { isVercel } from '@/env-client';
-import { useInitialAuth } from '@/hooks/useInitialAuth';
+import { useInitialAuth } from '@/hooks/auth/useInitialAuth';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import debug from '@/utils/debug';
 import {

@@ -10,6 +10,7 @@ import type { AIErrorDetails } from '@/lib/ai/error-details';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type { SessionState } from '@/types/session';
+import type { GuidanceCtaTarget } from './core/chat-artifact-metadata';
 import type { FileAttachment } from './useFileAttachments';
 
 export interface UseAIChatCoreOptions {
@@ -66,6 +67,7 @@ export interface UseAIChatCoreReturn {
     attachments?: FileAttachment[],
     overrideText?: string
   ) => void;
+  handleArtifactGuidanceCta: (target: GuidanceCtaTarget) => void;
   // 명확화 기능
   clarification: ClarificationRequest | null;
   selectClarification: (option: ClarificationOption) => void;

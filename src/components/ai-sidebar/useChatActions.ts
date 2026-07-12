@@ -32,6 +32,7 @@ export function useChatActions({
 
   const {
     attachments,
+    isProcessing: isProcessingAttachments,
     isDragging,
     errors: fileErrors,
     addFiles,
@@ -48,13 +49,19 @@ export function useChatActions({
   } | null>(null);
 
   const handleSendWithAttachments = useCallback(() => {
-    if (isLimitReached) {
+    if (isLimitReached || isProcessingAttachments) {
       return;
     }
 
     handleSendInput(attachments.length > 0 ? attachments : undefined);
     clearFiles();
-  }, [attachments, clearFiles, handleSendInput, isLimitReached]);
+  }, [
+    attachments,
+    clearFiles,
+    handleSendInput,
+    isLimitReached,
+    isProcessingAttachments,
+  ]);
 
   const openFileDialog = useCallback(() => {
     fileInputRef.current?.click();
@@ -156,6 +163,7 @@ export function useChatActions({
     textareaRef,
     fileInputRef,
     attachments,
+    isProcessingAttachments,
     isDragging,
     fileErrors,
     removeFile,

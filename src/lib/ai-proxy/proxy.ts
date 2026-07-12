@@ -22,6 +22,7 @@ import {
   type ProxyEndpoint,
 } from '@/config/ai-proxy.config';
 import { logger } from '@/lib/logging';
+import { createCloudRunAuthHeaders } from './cloud-run-auth';
 import { getTrimmedEnv } from './env';
 
 function getLocalDockerConfig() {
@@ -246,8 +247,11 @@ export async function proxyToCloudRun(
       method: options.method || 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Key': config.apiSecret,
         ...options.headers,
+        ...(await createCloudRunAuthHeaders({
+          apiSecret: config.apiSecret,
+          serviceUrl: url,
+        })),
       },
       body: options.body ? JSON.stringify(options.body) : undefined,
       signal: controller.signal,
@@ -320,8 +324,11 @@ export async function proxyStreamToCloudRun(
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/event-stream',
-        'X-API-Key': config.apiSecret,
         ...options.headers,
+        ...(await createCloudRunAuthHeaders({
+          apiSecret: config.apiSecret,
+          serviceUrl: url,
+        })),
       },
       body: options.body ? JSON.stringify(options.body) : undefined,
       signal: controller.signal,
@@ -389,11 +396,15 @@ export async function checkCloudRunHealth(
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
   try {
-    const response = await fetch(`${config.url}/health`, {
+    const healthUrl = `${config.url}/health`;
+    const response = await fetch(healthUrl, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
-        'X-API-Key': config.apiSecret,
+        ...(await createCloudRunAuthHeaders({
+          apiSecret: config.apiSecret,
+          serviceUrl: healthUrl,
+        })),
       },
       signal: controller.signal,
     });

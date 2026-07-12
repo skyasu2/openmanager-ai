@@ -141,10 +141,12 @@ export default function SystemBootClient() {
 
     debug.log('🚀 OpenManager 시스템 로딩 시작');
 
-    // 🧹 이전 세션 대화 기록 초기화 (새 세션 시작)
-    clearChatHistory();
-    useAISidebarStore.getState().clearMessages();
-    debug.log('🧹 이전 대화 기록 초기화 완료');
+    if (bootIntentState === 'requested') {
+      // 🧹 명시적으로 새 시스템 세션을 시작할 때만 대화 기록 초기화
+      clearChatHistory();
+      useAISidebarStore.getState().clearMessages();
+      debug.log('🧹 이전 대화 기록 초기화 완료');
+    }
 
     // 🚀 AI 엔진 웜업 요청 (중복 요청 자동 방지)
     void triggerAIWarmup('system-boot');

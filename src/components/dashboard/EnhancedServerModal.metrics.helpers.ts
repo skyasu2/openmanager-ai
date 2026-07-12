@@ -1,4 +1,4 @@
-import type { AnomalyDataPoint } from '@/hooks/useTimeSeriesMetrics';
+import type { AnomalyDataPoint } from '@/hooks/dashboard/useTimeSeriesMetrics';
 import { withCurrentMetricPoint } from './dashboard-metric-points';
 import type {
   ChartData,

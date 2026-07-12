@@ -1,7 +1,7 @@
 import { FileText, MapPin } from 'lucide-react';
 import React, { type FC, memo, useCallback, useEffect, useMemo } from 'react';
-import { useSafeServer } from '@/hooks/useSafeServer';
-import { useServerMetrics } from '@/hooks/useServerMetrics';
+import { useSafeServer } from '@/hooks/dashboard/useSafeServer';
+import { useServerMetrics } from '@/hooks/dashboard/useServerMetrics';
 import {
   DASHBOARD_STATUS_GRADIENTS,
   getServerStatusTheme,

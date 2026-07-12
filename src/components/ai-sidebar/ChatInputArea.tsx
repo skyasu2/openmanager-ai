@@ -38,6 +38,7 @@ interface ChatInputAreaProps {
   streamStatus?: AIStreamStatus;
   sessionState?: SessionState;
   attachments: FileAttachment[];
+  isProcessingAttachments?: boolean;
   isDragging: boolean;
   fileErrors: Array<{ message: string }>;
   canAddMore: boolean;
@@ -65,6 +66,7 @@ export const ChatInputArea = memo(function ChatInputArea({
   streamStatus,
   sessionState,
   attachments,
+  isProcessingAttachments = false,
   isDragging,
   fileErrors,
   canAddMore,
@@ -91,7 +93,11 @@ export const ChatInputArea = memo(function ChatInputArea({
   const showInputLengthWarning = inputLength >= CHAT_INPUT_WARNING_LENGTH;
   const isInputAtHardCap = inputLength >= CHAT_INPUT_MAX_LENGTH;
   const inputLengthLabel = `입력 ${formatChatInputCount(inputLength)}/${formatChatInputCount(CHAT_INPUT_MAX_LENGTH)}자`;
-  const sendButtonLabel = isGenerating ? '대기열에 추가' : '메시지 전송';
+  const sendButtonLabel = isProcessingAttachments
+    ? '파일 처리 중'
+    : isGenerating
+      ? '대기열에 추가'
+      : '메시지 전송';
 
   const handleFileAttach = useCallback(() => {
     onOpenFileDialog();
@@ -113,7 +119,7 @@ export const ChatInputArea = memo(function ChatInputArea({
       >
         {/* 드래그앤드롭 오버레이 */}
         {isDragging && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center rounded-lg border-2 border-dashed border-blue-400 bg-blue-50/90">
+          <div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center rounded-lg border-2 border-dashed border-blue-400 bg-blue-50/90">
             <div className="flex flex-col items-center gap-2 text-blue-600">
               <Upload className="h-8 w-8" />
               <p className="text-sm font-medium">파일을 여기에 놓으세요</p>
@@ -260,9 +266,11 @@ export const ChatInputArea = memo(function ChatInputArea({
                     ? streamStatus === 'submitted'
                       ? '요청 전송 중입니다... 잠시만 기다려주세요'
                       : '대답 중에도 편하게 입력하세요 (대기열에 추가됨)'
-                    : attachments.length > 0
-                      ? '이미지/파일 분석 (시각·문서 분석) — 질문을 입력하세요'
-                      : '서버 운영 질문을 입력하세요'
+                    : isProcessingAttachments
+                      ? '파일을 처리하고 있습니다...'
+                      : attachments.length > 0
+                        ? '이미지/파일 분석 (시각·문서 분석) — 질문을 입력하세요'
+                        : '서버 운영 질문을 입력하세요'
               }
               className="flex-1 resize-none border-none bg-transparent px-2 py-3 text-chat text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:ring-0"
               minHeight={48}
@@ -292,6 +300,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                 type="submit"
                 disabled={
                   (!inputValue.trim() && attachments.length === 0) ||
+                  isProcessingAttachments ||
                   sessionState?.isLimitReached
                 }
                 className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-500 text-white shadow-sm transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40 md:h-9 md:w-9"

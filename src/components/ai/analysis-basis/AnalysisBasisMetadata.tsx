@@ -27,37 +27,27 @@ export function AnalysisBasisMetadata({
   basis,
   meaningfulTools,
 }: AnalysisBasisMetadataProps) {
-  const evidenceSources =
-    basis.evidenceCards && basis.evidenceCards.length > 0
-      ? basis.evidenceCards.map((card) => ({
-          key: card.id,
-          title: card.title,
-          score: card.score,
-          sourceType: card.sourceType,
-          category: card.category,
-          url: card.url,
-        }))
-      : (basis.ragSources ?? []).map((source, idx) => ({
-          key: `legacy-rag-${idx}-${source.title}`,
-          title: source.title,
-          score: source.similarity,
-          sourceType: source.sourceType,
-          category: source.category,
-          url: source.url,
-        }));
+  const evidenceSources = (basis.evidenceCards ?? []).map((card) => ({
+    key: card.id,
+    title: card.title,
+    score: card.score,
+    sourceType: card.sourceType,
+    category: card.category,
+    url: card.url,
+  }));
   const hasRagEvidence = evidenceSources.some(
     (source) => source.sourceType !== 'web'
   );
   const hasWebEvidence = evidenceSources.some(
     (source) => source.sourceType === 'web'
   );
-  const hasLegacyRagEvidence =
+  const hasRetrievalMetadataOnly =
     Boolean(basis.ragUsed) && !hasRagEvidence && !hasWebEvidence;
   const featureStatus =
     basis.featureStatus ??
     buildAnalysisFeatureStatus({
       retrieval: basis.retrieval,
-      hasKnowledgeEvidence: hasRagEvidence || hasLegacyRagEvidence,
+      hasKnowledgeEvidence: hasRagEvidence || hasRetrievalMetadataOnly,
       hasWebEvidence,
     });
   const featureBadges = buildVisibleFeatureStatusBadges(featureStatus);

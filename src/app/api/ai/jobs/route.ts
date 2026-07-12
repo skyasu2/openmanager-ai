@@ -25,6 +25,7 @@ import {
   analyzeJobQueryComplexity,
   inferJobType,
 } from '@/lib/ai/utils/query-complexity';
+import { createCloudRunAuthHeaders } from '@/lib/ai-proxy/cloud-run-auth';
 import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { getAPIAuthContext, withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
@@ -37,8 +38,8 @@ import {
   redisSet,
 } from '@/lib/redis';
 import {
+  createRateLimitIdentityHeaders,
   getRateLimitIdentity,
-  RATE_LIMIT_IDENTITY_HEADER,
 } from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import type {
@@ -55,9 +56,11 @@ import type {
 import { getErrorMessage } from '@/types/type-utils';
 import { withCSRFProtection } from '@/utils/security/csrf';
 import {
+  createInternalDisclosureFields,
   resolveSupervisorInternalDisclosureMode,
   type SupervisorInternalDisclosureMode,
 } from '../supervisor/internal-disclosure-mode';
+import { createBackendSessionId } from '../supervisor/session-owner';
 import {
   buildJobIdempotencyRedisKey,
   buildJobRequestFingerprint,
@@ -227,6 +230,9 @@ async function handlePOST(request: NextRequest) {
     const body = (await request.json()) as CreateJobRequest;
     const { query, options } = body;
     const ownerKey = resolveJobOwnerKey(request);
+    const backendSessionId = options?.sessionId
+      ? createBackendSessionId(ownerKey, options.sessionId)
+      : undefined;
 
     // 입력 검증
     if (!query || query.trim().length === 0) {
@@ -416,10 +422,10 @@ async function handlePOST(request: NextRequest) {
                 jobId,
                 normalizedQuery,
                 jobType,
-                options?.sessionId,
+                backendSessionId,
                 workerMessages,
                 workerToolOptions,
-                getRateLimitIdentity(request),
+                getRateLimitIdentity(request, backendSessionId),
                 queryAsOf
               )
             ).status
@@ -595,22 +601,33 @@ async function triggerWorker(
   const startTime = Date.now();
 
   try {
-    const res = await fetch(`${cloudRunConfig.url}${triggerPath}`, {
+    const triggerUrl = `${cloudRunConfig.url}${triggerPath}`;
+    const { internalDisclosureMode, ...unsignedToolOptions } = toolOptions;
+    const internalDisclosureFields = createInternalDisclosureFields({
+      mode: internalDisclosureMode,
+      audience: 'job',
+      subject: `${jobId}:${sessionId || 'default'}`,
+    });
+    const rateLimitIdentityHeaders =
+      createRateLimitIdentityHeaders(rateLimitIdentity);
+    const res = await fetch(triggerUrl, {
       method: 'POST',
       signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Key': cloudRunConfig.apiSecret,
-        ...(rateLimitIdentity
-          ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
-          : {}),
+        ...(await createCloudRunAuthHeaders({
+          apiSecret: cloudRunConfig.apiSecret,
+          serviceUrl: triggerUrl,
+        })),
+        ...rateLimitIdentityHeaders,
       },
       body: JSON.stringify({
         jobId,
         messages,
         sessionId,
         type,
-        ...toolOptions,
+        ...unsignedToolOptions,
+        ...internalDisclosureFields,
         ...(queryAsOf && { queryAsOf }),
       }),
     });

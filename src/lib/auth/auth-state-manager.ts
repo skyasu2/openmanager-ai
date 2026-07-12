@@ -136,7 +136,19 @@ export class AuthStateManager {
         }
       }
 
-      // 3. 통합 저장소 정리 (localStorage + sessionStorage + 쿠키)
+      // 3. 서버만 지울 수 있는 HttpOnly guest proof를 포함한 쿠키 만료
+      if (typeof window !== 'undefined') {
+        try {
+          await fetch('/api/auth/logout', {
+            method: 'POST',
+            credentials: 'same-origin',
+          });
+        } catch (error) {
+          logger.warn('⚠️ 서버 인증 쿠키 정리 실패:', error);
+        }
+      }
+
+      // 4. 통합 저장소 정리 (localStorage + sessionStorage + 쿠키)
       this.clearStorage(authType);
 
       logger.info('🔐 인증 데이터 정리 완료');

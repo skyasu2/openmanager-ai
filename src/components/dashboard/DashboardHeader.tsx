@@ -4,7 +4,7 @@
 import dynamic from 'next/dynamic';
 import React, { memo, useState } from 'react';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
-import { useUserPermissions } from '@/hooks/useUserPermissions';
+import { useUserPermissions } from '@/hooks/auth/useUserPermissions';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import debug from '@/utils/debug';

@@ -14,6 +14,8 @@ import type { ProcessConfig } from './ProcessManager';
 // 🔧 전역 상태 타입 정의
 interface GlobalState {
   systemCache?: Map<string, unknown>;
+  simulationActive?: boolean;
+  simulationStartTime?: number;
   devModeActive?: boolean;
   devModeStartTime?: number;
 }
@@ -34,6 +36,14 @@ const isDevModeActive = (obj: GlobalState): boolean => {
     obj.devModeActive === true &&
     typeof obj.devModeStartTime === 'number' &&
     obj.devModeStartTime > 0
+  );
+};
+
+const isSimulationActive = (obj: GlobalState): boolean => {
+  return (
+    obj.simulationActive === true &&
+    typeof obj.simulationStartTime === 'number' &&
+    obj.simulationStartTime > 0
   );
 };
 
@@ -59,6 +69,13 @@ const deleteGlobalProperty = <K extends keyof GlobalState>(key: K): void => {
     delete (global as GlobalState)[key];
   }
 };
+
+export function resolveProcessApiUrl(path: string): string {
+  const configuredOrigin = process.env.OPENMANAGER_INTERNAL_ORIGIN?.trim();
+  const origin =
+    configuredOrigin || `http://127.0.0.1:${process.env.PORT || '3000'}`;
+  return new URL(path, origin.endsWith('/') ? origin : `${origin}/`).toString();
+}
 
 /**
  * 기존 시스템과 통합된 프로세스 설정
@@ -128,11 +145,14 @@ export const PROCESS_CONFIGS: ProcessConfig[] = [
 
       try {
         // 서버 생성 시스템 초기화 (리셋)
-        const response = await fetch('/api/servers/next', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ reset: true }),
-        });
+        const response = await fetch(
+          resolveProcessApiUrl('/api/servers/next'),
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reset: true }),
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`서버 생성 API 초기화 실패: ${response.status}`);
@@ -152,7 +172,7 @@ export const PROCESS_CONFIGS: ProcessConfig[] = [
 
       try {
         // 진행 중인 서버 생성 중지
-        await fetch('/api/servers/next', {
+        await fetch(resolveProcessApiUrl('/api/servers/next'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'stop' }),
@@ -165,9 +185,12 @@ export const PROCESS_CONFIGS: ProcessConfig[] = [
     },
     healthCheck: async () => {
       try {
-        const response = await fetch('/api/servers/next?action=health', {
-          method: 'GET',
-        });
+        const response = await fetch(
+          resolveProcessApiUrl('/api/servers/next?action=health'),
+          {
+            method: 'GET',
+          }
+        );
         return response.ok;
       } catch {
         return false;
@@ -189,15 +212,21 @@ export const PROCESS_CONFIGS: ProcessConfig[] = [
 
       try {
         // Cloud Run AI 헬스체크
-        const response = await fetch('/api/health?service=ai', {
-          method: 'GET',
-        });
+        const response = await fetch(
+          resolveProcessApiUrl('/api/health?service=ai'),
+          {
+            method: 'GET',
+          }
+        );
 
         if (!response.ok) {
           // 웜업 엔드포인트로 초기화 트리거
-          const initResponse = await fetch('/api/ai/wake-up', {
-            method: 'POST',
-          });
+          const initResponse = await fetch(
+            resolveProcessApiUrl('/api/ai/wake-up'),
+            {
+              method: 'POST',
+            }
+          );
 
           if (!initResponse.ok) {
             throw new Error(`AI 엔진 초기화 실패: ${initResponse.status}`);
@@ -215,7 +244,9 @@ export const PROCESS_CONFIGS: ProcessConfig[] = [
 
       try {
         // 상태 확인만 수행 (서버리스 환경에서는 별도 종료 불필요)
-        await fetch('/api/health?service=ai', { method: 'GET' });
+        await fetch(resolveProcessApiUrl('/api/health?service=ai'), {
+          method: 'GET',
+        });
         systemLogger.system('✅ AI 분석 엔진 중지 완료');
       } catch (error) {
         systemLogger.warn('AI 분석 엔진 중지 중 오류 (무시됨):', error);
@@ -223,9 +254,12 @@ export const PROCESS_CONFIGS: ProcessConfig[] = [
     },
     healthCheck: async () => {
       try {
-        const response = await fetch('/api/health?service=ai', {
-          method: 'GET',
-        });
+        const response = await fetch(
+          resolveProcessApiUrl('/api/health?service=ai'),
+          {
+            method: 'GET',
+          }
+        );
         return response.ok;
       } catch {
         return false;
@@ -244,69 +278,18 @@ export const PROCESS_CONFIGS: ProcessConfig[] = [
     name: '시뮬레이션 엔진',
     startCommand: async () => {
       systemLogger.system('⚙️ 시뮬레이션 엔진 시작');
-
-      try {
-        // 기존 useSystemControl과 연동하여 시스템 시작
-        const response = await fetch('/api/system', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'start', mode: 'fast' }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(
-            `시뮬레이션 엔진 시작 실패: ${errorData.message || response.statusText}`
-          );
-        }
-
-        const result = await response.json();
-        systemLogger.system(`✅ 시뮬레이션 엔진 시작: ${result.message}`);
-      } catch (error) {
-        systemLogger.error('시뮬레이션 엔진 시작 실패:', error);
-        throw error;
-      }
+      setGlobalProperty('simulationActive', true);
+      setGlobalProperty('simulationStartTime', Date.now());
+      systemLogger.system('✅ 시뮬레이션 엔진 시작 완료');
     },
     stopCommand: async () => {
       systemLogger.system('⚙️ 시뮬레이션 엔진 중지');
-
-      try {
-        const response = await fetch('/api/system', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'stop' }),
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          systemLogger.system(`✅ 시뮬레이션 엔진 중지: ${result.message}`);
-        } else if (response.status === 400) {
-          // 400 에러는 이미 중지된 상태로 간주
-          systemLogger.system('ℹ️ 시뮬레이션 엔진 이미 중지됨');
-        } else {
-          const errorData = await response.json();
-          systemLogger.warn(
-            `⚠️ 시뮬레이션 엔진 중지 경고: ${errorData.message}`
-          );
-        }
-      } catch (error) {
-        systemLogger.warn('시뮬레이션 엔진 중지 중 오류 (무시됨):', error);
-      }
+      setGlobalProperty('simulationActive', false);
+      deleteGlobalProperty('simulationStartTime');
+      systemLogger.system('✅ 시뮬레이션 엔진 중지 완료');
     },
     healthCheck: async () => {
-      try {
-        const response = await fetch('/api/system', {
-          method: 'GET',
-        });
-
-        if (response.ok) {
-          const status = await response.json();
-          return status.isRunning === true;
-        }
-        return false;
-      } catch {
-        return false;
-      }
+      return isSimulationActive(getGlobalState());
     },
     criticalLevel: 'medium',
     autoRestart: true,
@@ -324,7 +307,7 @@ export const PROCESS_CONFIGS: ProcessConfig[] = [
       // Next.js API 서버는 이미 실행 중이므로 헬스체크만 수행
 
       try {
-        const response = await fetch('/api/health', {
+        const response = await fetch(resolveProcessApiUrl('/api/health'), {
           method: 'GET',
         });
 
@@ -345,7 +328,7 @@ export const PROCESS_CONFIGS: ProcessConfig[] = [
     },
     healthCheck: async () => {
       try {
-        const response = await fetch('/api/health', {
+        const response = await fetch(resolveProcessApiUrl('/api/health'), {
           method: 'GET',
         });
         return response.ok;
@@ -414,10 +397,11 @@ export const DEVELOPMENT_PROCESS_CONFIGS: ProcessConfig[] = [
  */
 export function getProcessConfigs(): ProcessConfig[] {
   const isDevelopment = process.env.NODE_ENV === 'development';
+  const isLocalRuntime = process.env.VERCEL !== '1' && !process.env.VERCEL_ENV;
 
-  // 개발 환경에서는 기본적으로 개발 모드 설정 사용
-  if (isDevelopment) {
-    systemLogger.system('📋 개발 모드 프로세스 설정 사용');
+  // 로컬 런타임은 next start도 상대 self-call/인증 재진입을 피한다.
+  if (isDevelopment || isLocalRuntime) {
+    systemLogger.system('📋 로컬 간소화 프로세스 설정 사용');
     return DEVELOPMENT_PROCESS_CONFIGS;
   }
 

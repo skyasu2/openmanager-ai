@@ -21,7 +21,7 @@ import {
   Terminal,
 } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { useCodeInterpreter } from '@/hooks/useCodeInterpreter';
+import { useCodeInterpreter } from '@/hooks/ai/useCodeInterpreter';
 import { logger } from '@/lib/logging';
 import type { ExecutionResult } from '@/services/code-interpreter';
 

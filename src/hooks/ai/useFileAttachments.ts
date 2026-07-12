@@ -14,7 +14,7 @@
  * @created 2026-01-27
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { logger } from '@/lib/logging';
 
 // ============================================================================
@@ -56,12 +56,14 @@ export interface UseFileAttachmentsOptions {
 export interface UseFileAttachmentsReturn {
   /** 첨부된 파일 목록 */
   attachments: FileAttachment[];
+  /** 선택한 파일을 읽고 있는지 여부 */
+  isProcessing: boolean;
   /** 드래그 중인지 여부 */
   isDragging: boolean;
   /** 에러 목록 */
   errors: FileValidationError[];
   /** 파일 추가 */
-  addFiles: (files: FileList | File[]) => void;
+  addFiles: (files: FileList | File[]) => Promise<void>;
   /** 파일 제거 */
   removeFile: (id: string) => void;
   /** 모든 파일 제거 */
@@ -88,6 +90,7 @@ export interface UseFileAttachmentsReturn {
 const DEFAULT_MAX_FILES = 3;
 const DEFAULT_MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 const DEFAULT_MAX_DOC_SIZE = 5 * 1024 * 1024; // 5MB
+const DRAG_INACTIVITY_RESET_MS = 2_000;
 
 const ALLOWED_IMAGE_TYPES = [
   'image/png',
@@ -169,11 +172,17 @@ export function useFileAttachments(
   } = options;
 
   const [attachments, setAttachments] = useState<FileAttachment[]>([]);
+  const [pendingFileCount, setPendingFileCount] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [errors, setErrors] = useState<FileValidationError[]>([]);
 
-  // 드래그 카운터 (nested drag 처리용)
-  const [, setDragCounter] = useState(0);
+  const attachmentsRef = useRef<FileAttachment[]>([]);
+  const attachmentGenerationRef = useRef(0);
+  const reservedSlotsRef = useRef(0);
+
+  // Drag nesting is event bookkeeping, not render state.
+  const dragCounterRef = useRef(0);
+  const dragResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /**
    * 파일 유효성 검사
@@ -222,8 +231,10 @@ export function useFileAttachments(
       const fileArray = Array.from(files);
       const newErrors: FileValidationError[] = [];
       const validFiles: File[] = [];
+      const operationGeneration = attachmentGenerationRef.current;
 
-      let currentCount = attachments.length;
+      let currentCount =
+        attachmentsRef.current.length + reservedSlotsRef.current;
 
       for (const file of fileArray) {
         const error = validateFile(file, currentCount);
@@ -242,42 +253,66 @@ export function useFileAttachments(
 
       // 유효한 파일 처리
       if (validFiles.length > 0) {
+        reservedSlotsRef.current += validFiles.length;
+        setPendingFileCount((prev) => prev + validFiles.length);
         const newAttachments: FileAttachment[] = [];
         const processingErrors: FileValidationError[] = [];
 
-        for (const file of validFiles) {
-          try {
-            const data = await fileToBase64(file);
-            const fileType = classifyFileType(file.type, file.name);
+        try {
+          for (const file of validFiles) {
+            try {
+              const data = await fileToBase64(file);
+              const fileType = classifyFileType(file.type, file.name);
 
-            newAttachments.push({
-              id: generateId(),
-              name: file.name,
-              mimeType: file.type || 'application/octet-stream',
-              size: file.size,
-              data,
-              type: fileType,
-              previewUrl: fileType === 'image' ? data : undefined,
-            });
-          } catch (error) {
-            logger.error('File processing error:', error);
-            processingErrors.push({
-              file,
-              reason: 'type',
-              message: `파일 처리 실패: ${file.name}`,
-            });
+              newAttachments.push({
+                id: generateId(),
+                name: file.name,
+                mimeType: file.type || 'application/octet-stream',
+                size: file.size,
+                data,
+                type: fileType,
+                previewUrl: fileType === 'image' ? data : undefined,
+              });
+            } catch (error) {
+              logger.error('File processing error:', error);
+              processingErrors.push({
+                file,
+                reason: 'type',
+                message: `파일 처리 실패: ${file.name}`,
+              });
+            }
+          }
+
+          if (attachmentGenerationRef.current !== operationGeneration) {
+            return;
+          }
+
+          if (processingErrors.length > 0) {
+            setErrors((prev) => [...prev, ...processingErrors]);
+          }
+
+          setAttachments((prev) => {
+            if (attachmentGenerationRef.current !== operationGeneration) {
+              return prev;
+            }
+            const next = [...prev, ...newAttachments];
+            attachmentsRef.current = next;
+            return next;
+          });
+        } finally {
+          if (attachmentGenerationRef.current === operationGeneration) {
+            reservedSlotsRef.current = Math.max(
+              0,
+              reservedSlotsRef.current - validFiles.length
+            );
+            setPendingFileCount((prev) =>
+              Math.max(0, prev - validFiles.length)
+            );
           }
         }
-
-        // 🎯 Fix: 파일 처리 중 발생한 에러도 사용자에게 노출
-        if (processingErrors.length > 0) {
-          setErrors((prev) => [...prev, ...processingErrors]);
-        }
-
-        setAttachments((prev) => [...prev, ...newAttachments]);
       }
     },
-    [attachments.length, validateFile]
+    [validateFile]
   );
 
   /**
@@ -290,7 +325,9 @@ export function useFileAttachments(
       if (attachment?.previewUrl?.startsWith('blob:')) {
         URL.revokeObjectURL(attachment.previewUrl);
       }
-      return prev.filter((a) => a.id !== id);
+      const next = prev.filter((a) => a.id !== id);
+      attachmentsRef.current = next;
+      return next;
     });
   }, []);
 
@@ -298,13 +335,17 @@ export function useFileAttachments(
    * 모든 파일 제거
    */
   const clearFiles = useCallback(() => {
-    attachments.forEach((a) => {
+    attachmentGenerationRef.current += 1;
+    reservedSlotsRef.current = 0;
+    setPendingFileCount(0);
+    attachmentsRef.current.forEach((a) => {
       if (a.previewUrl?.startsWith('blob:')) {
         URL.revokeObjectURL(a.previewUrl);
       }
     });
+    attachmentsRef.current = [];
     setAttachments([]);
-  }, [attachments]);
+  }, []);
 
   /**
    * 에러 제거
@@ -317,54 +358,101 @@ export function useFileAttachments(
   // Drag & Drop Handlers
   // ============================================================================
 
-  const onDragEnter = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragCounter((prev) => prev + 1);
-    setIsDragging(true);
+  const clearDragResetTimer = useCallback(() => {
+    if (dragResetTimerRef.current !== null) {
+      clearTimeout(dragResetTimerRef.current);
+      dragResetTimerRef.current = null;
+    }
   }, []);
 
-  const onDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragCounter((prev) => {
-      const newCount = prev - 1;
-      if (newCount === 0) {
-        setIsDragging(false);
+  const resetDragging = useCallback(() => {
+    clearDragResetTimer();
+    dragCounterRef.current = 0;
+    setIsDragging(false);
+  }, [clearDragResetTimer]);
+
+  const scheduleDragReset = useCallback(() => {
+    clearDragResetTimer();
+    dragResetTimerRef.current = setTimeout(
+      resetDragging,
+      DRAG_INACTIVITY_RESET_MS
+    );
+  }, [clearDragResetTimer, resetDragging]);
+
+  useEffect(() => {
+    const handleGlobalDragEnd = () => resetDragging();
+
+    window.addEventListener('dragend', handleGlobalDragEnd);
+    window.addEventListener('drop', handleGlobalDragEnd);
+    window.addEventListener('blur', handleGlobalDragEnd);
+
+    return () => {
+      attachmentGenerationRef.current += 1;
+      reservedSlotsRef.current = 0;
+      window.removeEventListener('dragend', handleGlobalDragEnd);
+      window.removeEventListener('drop', handleGlobalDragEnd);
+      window.removeEventListener('blur', handleGlobalDragEnd);
+      clearDragResetTimer();
+    };
+  }, [clearDragResetTimer, resetDragging]);
+
+  const onDragEnter = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounterRef.current += 1;
+      setIsDragging(true);
+      scheduleDragReset();
+    },
+    [scheduleDragReset]
+  );
+
+  const onDragLeave = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounterRef.current = Math.max(0, dragCounterRef.current - 1);
+      if (dragCounterRef.current === 0) {
+        resetDragging();
       }
-      return newCount;
-    });
-  }, []);
+    },
+    [resetDragging]
+  );
 
-  const onDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  }, []);
+  const onDragOver = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      scheduleDragReset();
+    },
+    [scheduleDragReset]
+  );
 
   const onDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      setIsDragging(false);
-      setDragCounter(0);
+      resetDragging();
 
       const files = e.dataTransfer?.files;
       if (files && files.length > 0) {
         addFiles(files);
       }
     },
-    [addFiles]
+    [addFiles, resetDragging]
   );
 
   // ============================================================================
   // Return
   // ============================================================================
 
-  const canAddMore = attachments.length < maxFiles;
-  const remainingSlots = maxFiles - attachments.length;
+  const occupiedSlots = attachments.length + pendingFileCount;
+  const canAddMore = occupiedSlots < maxFiles;
+  const remainingSlots = Math.max(0, maxFiles - occupiedSlots);
 
   return {
     attachments,
+    isProcessing: pendingFileCount > 0,
     isDragging,
     errors,
     addFiles,

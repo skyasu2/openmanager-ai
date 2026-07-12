@@ -62,22 +62,21 @@ export const MessageComponent = memo<{
       return resolveAssistantResponseView(message.content, message.metadata);
     }, [message.content, message.metadata, message.isStreaming, message.role]);
     const analysisBasis = message.metadata?.analysisBasis ?? null;
-    const analysisSources = analysisBasis?.ragSources ?? [];
     const analysisEvidenceCards = analysisBasis?.evidenceCards ?? [];
-    const hasRagEvidence =
-      analysisSources.some((source) => source.sourceType !== 'web') ||
-      analysisEvidenceCards.some((card) => card.sourceType !== 'web');
-    const hasWebEvidence =
-      analysisSources.some((source) => source.sourceType === 'web') ||
-      analysisEvidenceCards.some((card) => card.sourceType === 'web');
-    const hasLegacyRagEvidence =
+    const hasRagEvidence = analysisEvidenceCards.some(
+      (card) => card.sourceType !== 'web'
+    );
+    const hasWebEvidence = analysisEvidenceCards.some(
+      (card) => card.sourceType === 'web'
+    );
+    const hasRetrievalMetadataOnly =
       Boolean(analysisBasis?.ragUsed) && !hasRagEvidence && !hasWebEvidence;
     const featureStatus =
       analysisBasis?.featureStatus ??
       (analysisBasis
         ? buildAnalysisFeatureStatus({
             retrieval: analysisBasis.retrieval,
-            hasKnowledgeEvidence: hasRagEvidence || hasLegacyRagEvidence,
+            hasKnowledgeEvidence: hasRagEvidence || hasRetrievalMetadataOnly,
             hasWebEvidence,
           })
         : undefined);
@@ -291,25 +290,18 @@ export const MessageComponent = memo<{
                   </div>
                   {/* 웹 출처 카드 + 분석 근거 뱃지 */}
                   <WebSourceCards
-                    sources={
-                      analysisEvidenceCards.length > 0
-                        ? analysisEvidenceCards
-                            .filter(
-                              (card): card is typeof card & { url: string } =>
-                                card.sourceType === 'web' && !!card.url
-                            )
-                            .map((card) => ({
-                              title: card.title,
-                              similarity: card.score,
-                              sourceType: card.sourceType,
-                              category: card.category,
-                              url: card.url,
-                            }))
-                        : (analysisBasis.ragSources ?? []).filter(
-                            (s): s is typeof s & { url: string } =>
-                              s.sourceType === 'web' && !!s.url
-                          )
-                    }
+                    sources={analysisEvidenceCards
+                      .filter(
+                        (card): card is typeof card & { url: string } =>
+                          card.sourceType === 'web' && !!card.url
+                      )
+                      .map((card) => ({
+                        title: card.title,
+                        similarity: card.score,
+                        sourceType: card.sourceType,
+                        category: card.category,
+                        url: card.url,
+                      }))}
                   />
                   <AnalysisBasisBadge
                     basis={analysisBasis}

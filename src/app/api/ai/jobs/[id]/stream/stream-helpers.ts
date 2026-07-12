@@ -37,12 +37,6 @@ export interface JobResult {
   targetAgent?: string;
   toolsCalled?: string[];
   toolResults?: unknown[];
-  ragSources?: Array<{
-    title: string;
-    similarity: number;
-    sourceType: string;
-    category?: string;
-  }>;
   evidenceCards?: EvidenceCard[];
   metadata?: ClientJobMetadata;
   startedAt: string;

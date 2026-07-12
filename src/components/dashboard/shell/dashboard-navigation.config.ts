@@ -40,7 +40,7 @@ export const dashboardNavItems: DashboardNavItem[] = [
     icon: FileSearch,
   },
   {
-    label: '토폴로지',
+    label: '인프라 맵',
     href: '/dashboard/topology',
     match: (pathname) => pathname.startsWith('/dashboard/topology'),
     icon: Network,

@@ -170,7 +170,7 @@ export interface UseHybridAIQueryOptions {
   /** Dashboard snapshot data slot to keep AI metric tools aligned with the visible UI. */
   queryAsOfDataSlot?: JobDataSlot;
   /**
-   * 스트리밍 데이터 콜백 (AI SDK v6 베스트 프랙티스)
+   * 스트리밍 데이터 콜백 (AI SDK v7 베스트 프랙티스)
    * 실시간으로 데이터 파트를 받아 처리
    * @example
    * ```tsx

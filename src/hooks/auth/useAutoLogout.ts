@@ -8,6 +8,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { clearAuthData } from '@/lib/auth/auth-state-manager';
 import {
   AUTH_SESSION_ID_KEY,
   AUTH_TYPE_KEY,
@@ -69,6 +70,10 @@ export function useAutoLogout({
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastActivityRef = useRef<number>(Date.now());
   const logoutDeadlineRef = useRef<number | null>(null);
+  const onLogoutRef = useRef(onLogout);
+  const onWarningRef = useRef(onWarning);
+  onLogoutRef.current = onLogout;
+  onWarningRef.current = onWarning;
 
   const clearCountdownInterval = useCallback(() => {
     if (countdownIntervalRef.current) {
@@ -103,7 +108,8 @@ export function useAutoLogout({
   // 자동 로그아웃 처리 (resetTimers보다 먼저 정의)
   const handleAutoLogout = useCallback(async () => {
     try {
-      onLogout?.();
+      onLogoutRef.current?.();
+      await clearAuthData();
 
       // 게스트 모드 - 로컬 스토리지 정리 (SSR 안전)
       if (typeof window !== 'undefined') {
@@ -120,7 +126,7 @@ export function useAutoLogout({
       // 실패해도 로그인 페이지로 이동
       router.push(redirectPath);
     }
-  }, [onLogout, router, redirectPath]);
+  }, [router, redirectPath]);
 
   // 타이머 초기화
   const resetTimers = useCallback(() => {
@@ -144,7 +150,7 @@ export function useAutoLogout({
           setIsWarning(true);
           setRemainingTime(Math.ceil(effectiveWarningLeadMs / 1000));
           startCountdown();
-          onWarning?.();
+          onWarningRef.current?.();
         }, warningDelayMs);
       }
 
@@ -158,7 +164,6 @@ export function useAutoLogout({
     effectiveWarningLeadMs,
     warningDelayMs,
     isLoggedIn,
-    onWarning,
     handleAutoLogout,
     resolvedInactivityTimeoutMs,
     startCountdown,

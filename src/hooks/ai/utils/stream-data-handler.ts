@@ -18,7 +18,6 @@ import type {
   HandoffEventData,
   StreamDataPart,
 } from '../types/hybrid-query.types';
-import type { StreamRagSource } from '../types/stream-rag.types';
 import {
   buildStructuredResponseView,
   extractEvidenceCardsFromDoneData,
@@ -27,7 +26,6 @@ import {
   extractProcessingTimeFromDoneData,
   extractResolvedModeFromDoneData,
   extractRetrievalMetadataFromDoneData,
-  normalizeRagSources,
   type ResponseSourceData,
 } from './response-view-helpers';
 
@@ -67,7 +65,6 @@ type StreamDataCallbacks = {
   setCurrentAgentStatus: (status: AgentStatusEventData | null) => void;
   setCurrentHandoff: (handoff: HandoffEventData | null) => void;
   setMessageTraceId: (messageId: string, traceId: string) => void;
-  setStreamRagSources: (sources: StreamRagSource[]) => void;
   getPendingToolResults: () => PendingStreamToolResult[];
   setPendingToolResults: (results: PendingStreamToolResult[]) => void;
   getPendingMessageMetadata: () => Record<string, unknown>;
@@ -412,15 +409,6 @@ export function handleStreamDataPart(
           })
         )
       );
-    }
-
-    if (doneData?.ragSources) {
-      const parsedRagSources = normalizeRagSources(doneData.ragSources);
-      if (parsedRagSources) {
-        callbacks.setStreamRagSources(parsedRagSources);
-      }
-    } else {
-      callbacks.setStreamRagSources([]);
     }
 
     const structuredView = buildStructuredResponseView(doneData);

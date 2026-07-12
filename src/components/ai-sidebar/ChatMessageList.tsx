@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import type { WelcomeServerMetric } from '@/components/ai/WelcomePromptCards';
 import { WelcomePromptCards } from '@/components/ai/WelcomePromptCards';
+import type { GuidanceCtaTarget } from '@/hooks/ai/core/chat-artifact-metadata';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 
 const SCROLL_TO_BOTTOM_THRESHOLD_PX = 100;
@@ -30,6 +31,7 @@ interface ChatMessageListProps {
     isLastMessage?: boolean;
     regenerateDisabled?: boolean;
     regenerateDisabledReason?: string;
+    onArtifactGuidanceCta?: (target: GuidanceCtaTarget) => void;
   }>;
   isGenerating: boolean;
   regenerateResponse: (messageId: string) => void;
@@ -37,6 +39,7 @@ interface ChatMessageListProps {
   regenerateDisabledReason?: string;
   setInputValue: (value: string) => void;
   onStarterPromptSubmit?: (prompt: string) => void;
+  onArtifactGuidanceCta?: (target: GuidanceCtaTarget) => void;
   welcomeServers?: readonly WelcomeServerMetric[];
 }
 
@@ -53,6 +56,7 @@ export const ChatMessageList = memo(function ChatMessageList({
   regenerateDisabledReason,
   setInputValue,
   onStarterPromptSubmit,
+  onArtifactGuidanceCta,
   welcomeServers,
 }: ChatMessageListProps) {
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
@@ -150,6 +154,7 @@ export const ChatMessageList = memo(function ChatMessageList({
                 isLastMessage={isLastMessage}
                 regenerateDisabled={regenerateDisabled}
                 regenerateDisabledReason={regenerateDisabledReason}
+                onArtifactGuidanceCta={onArtifactGuidanceCta}
               />
             );
           })}

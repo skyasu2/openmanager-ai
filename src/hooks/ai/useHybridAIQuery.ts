@@ -335,7 +335,7 @@ export function useHybridAIQuery(
   } = useChat({
     id: effectiveSessionId,
     transport,
-    experimental_throttle: 50,
+    throttle: 50,
     onFinish: streamCallbacks.onFinish,
     onData: streamCallbacks.onData,
     onError: streamCallbacks.onError,

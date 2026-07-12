@@ -1,6 +1,41 @@
+import { createHmac } from 'node:crypto';
 import type { APIAuthContext } from '@/lib/auth/api-auth';
 
 export type SupervisorInternalDisclosureMode = 'developer';
+export type InternalDisclosureAudience = 'supervisor' | 'job';
+export interface InternalDisclosureFields {
+  internalDisclosureMode?: SupervisorInternalDisclosureMode;
+  internalDisclosureProof?: string;
+}
+
+const INTERNAL_DISCLOSURE_PROOF_DOMAIN = 'openmanager:internal-disclosure:v1';
+
+export function createInternalDisclosureFields(params: {
+  mode?: SupervisorInternalDisclosureMode;
+  audience: InternalDisclosureAudience;
+  subject: string;
+}): InternalDisclosureFields {
+  const secret = process.env.CLOUD_RUN_API_SECRET?.trim();
+  if (!params.mode || !secret || !params.subject) {
+    return {};
+  }
+
+  const internalDisclosureProof = createHmac('sha256', secret)
+    .update(
+      [
+        INTERNAL_DISCLOSURE_PROOF_DOMAIN,
+        params.audience,
+        params.subject,
+        params.mode,
+      ].join('\0')
+    )
+    .digest('hex');
+
+  return {
+    internalDisclosureMode: params.mode,
+    internalDisclosureProof,
+  };
+}
 
 export function resolveSupervisorInternalDisclosureMode(
   authContext: APIAuthContext | null

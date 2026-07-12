@@ -8,7 +8,7 @@ import {
   adaptWorkerStatsToLegacy,
   calculateServerStats,
 } from '@/utils/dashboard/server-utils';
-import { useWorkerStats } from '../useWorkerStats';
+import { useWorkerStats } from './useWorkerStats';
 
 export function useServerStats(actualServers: EnhancedServerData[]) {
   // 🚀 Web Worker 통계 계산 Hook

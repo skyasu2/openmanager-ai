@@ -17,6 +17,11 @@ import type {
   EnhancedServerMetrics,
   RawServerData,
 } from '@/services/server-data/server-data-types';
+import {
+  mapServerTypeToRole,
+  normalizeServerEnvironment,
+  normalizeServerRole,
+} from '@/types/server-enums';
 import { formatBytes } from '@/utils/utils-functions';
 
 // ── Network ratio by server type ──────────────────────────────────
@@ -175,9 +180,9 @@ function _convertToEnhancedMetrics(
     alerts: [],
     ip: serverData.ip,
     os: serverData.os,
-    type: serverData.type,
-    role: mapTypeToRole(serverData.type),
-    environment: serverData.environment,
+    type: normalizeServerRole(serverData.type),
+    role: mapServerTypeToRole(serverData.type),
+    environment: normalizeServerEnvironment(serverData.environment),
     provider: `DataCenter-${currentHour.toString().padStart(2, '0')}`,
     specs: {
       cpu_cores: serverData.specs?.cpu_cores ?? 8,
@@ -210,19 +215,4 @@ function _convertToEnhancedMetrics(
       status,
     },
   };
-}
-
-/**
- * 서버 타입 -> 역할 매핑
- */
-function mapTypeToRole(type: string): string {
-  const roleMap: Record<string, string> = {
-    web: 'web',
-    application: 'api',
-    database: 'database',
-    cache: 'cache',
-    storage: 'storage',
-    loadbalancer: 'loadbalancer',
-  };
-  return roleMap[type] || type;
 }

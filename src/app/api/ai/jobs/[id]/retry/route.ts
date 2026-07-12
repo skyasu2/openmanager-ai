@@ -11,18 +11,27 @@
 export const maxDuration = 30;
 
 import { after, type NextRequest, NextResponse } from 'next/server';
+import { createCloudRunAuthHeaders } from '@/lib/ai-proxy/cloud-run-auth';
 import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { redisGet, redisSet } from '@/lib/redis';
 import {
+  createRateLimitIdentityHeaders,
   getRateLimitIdentity,
-  RATE_LIMIT_IDENTITY_HEADER,
 } from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import type { AIJob, TriggerStatus } from '@/types/ai-jobs';
 import { withCSRFProtection } from '@/utils/security/csrf';
-import { isJobOwnedByRequester } from '../../job-ownership';
+import {
+  createInternalDisclosureFields,
+  type SupervisorInternalDisclosureMode,
+} from '../../../supervisor/internal-disclosure-mode';
+import { createBackendSessionId } from '../../../supervisor/session-owner';
+import {
+  getStoredJobOwnerKey,
+  isJobOwnedByRequester,
+} from '../../job-ownership';
 
 const MAX_RETRIES = 2;
 const JOB_TTL_SECONDS = 86400;
@@ -51,6 +60,7 @@ function getWorkerTriggerTimeoutMs(mode: JobWorkerTriggerMode): number {
 interface RetryToolOptions {
   enableRAG?: boolean;
   enableWebSearch?: boolean;
+  internalDisclosureMode?: SupervisorInternalDisclosureMode;
 }
 
 function extractRetryToolOptions(job: AIJob): RetryToolOptions {
@@ -62,6 +72,9 @@ function extractRetryToolOptions(job: AIJob): RetryToolOptions {
     }),
     ...(typeof metadata.enableWebSearch === 'boolean' && {
       enableWebSearch: metadata.enableWebSearch,
+    }),
+    ...(metadata.internalDisclosureMode === 'developer' && {
+      internalDisclosureMode: metadata.internalDisclosureMode,
     }),
   };
 }
@@ -84,6 +97,14 @@ export const POST = withAuth(
         if (!isJobOwnedByRequester(job as unknown, request)) {
           return NextResponse.json({ error: 'Job not found' }, { status: 404 });
         }
+
+        const ownerKey = getStoredJobOwnerKey(job);
+        if (!ownerKey) {
+          return NextResponse.json({ error: 'Job not found' }, { status: 404 });
+        }
+        const backendSessionId = job.sessionId
+          ? createBackendSessionId(ownerKey, job.sessionId)
+          : undefined;
 
         if (job.status !== 'failed') {
           return NextResponse.json(
@@ -137,9 +158,9 @@ export const POST = withAuth(
                   jobId,
                   job.query,
                   job.type,
-                  job.sessionId ?? undefined,
+                  backendSessionId,
                   extractRetryToolOptions(job),
-                  getRateLimitIdentity(request)
+                  getRateLimitIdentity(request, backendSessionId)
                 )
               : initialTriggerStatus;
 
@@ -200,22 +221,33 @@ async function triggerWorkerRetry(
   const timeoutId = setTimeout(() => controller.abort(), triggerTimeoutMs);
 
   try {
-    const res = await fetch(`${cloudRunConfig.url}${triggerPath}`, {
+    const triggerUrl = `${cloudRunConfig.url}${triggerPath}`;
+    const { internalDisclosureMode, ...unsignedToolOptions } = toolOptions;
+    const internalDisclosureFields = createInternalDisclosureFields({
+      mode: internalDisclosureMode,
+      audience: 'job',
+      subject: `${jobId}:${sessionId || 'default'}`,
+    });
+    const rateLimitIdentityHeaders =
+      createRateLimitIdentityHeaders(rateLimitIdentity);
+    const res = await fetch(triggerUrl, {
       method: 'POST',
       signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Key': cloudRunConfig.apiSecret,
-        ...(rateLimitIdentity
-          ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
-          : {}),
+        ...(await createCloudRunAuthHeaders({
+          apiSecret: cloudRunConfig.apiSecret,
+          serviceUrl: triggerUrl,
+        })),
+        ...rateLimitIdentityHeaders,
       },
       body: JSON.stringify({
         jobId,
         messages: [{ role: 'user', content: query }],
         sessionId,
         type,
-        ...toolOptions,
+        ...unsignedToolOptions,
+        ...internalDisclosureFields,
       }),
     });
 

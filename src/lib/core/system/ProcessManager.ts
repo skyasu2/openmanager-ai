@@ -2,7 +2,7 @@
  * 통합 프로세스 관리 시스템 (리팩토링 버전)
  *
  * 순환 의존성 제거를 위해 이벤트 버스 패턴 적용
- * SystemWatchdog와의 직접 의존성을 제거하고 이벤트 기반 통신 사용
+ * 선택적 이벤트 버스와 프로세스 관리의 직접 의존성을 분리
  *
  * SRP 분리:
  * - 타입 정의 -> process-types.ts
@@ -58,7 +58,7 @@ export {
 
 /**
  * 리팩토링된 ProcessManager
- * 이벤트 버스를 통해 SystemWatchdog와 통신
+ * 선택적 이벤트 버스로 시스템 상태 변경을 발행
  */
 export class ProcessManager
   extends EventEmitter
@@ -208,7 +208,7 @@ export class ProcessManager
         this.createHealthCheckContext()
       );
 
-      // 3단계: 이벤트 버스를 통해 Watchdog 시작 요청
+      // 3단계: 이벤트 버스로 초기 시스템 상태 발행
       if (this.eventBus) {
         this.eventBus.emit({
           type: SystemEventType.SYSTEM_HEALTHY,

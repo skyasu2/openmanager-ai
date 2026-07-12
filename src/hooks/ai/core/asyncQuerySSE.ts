@@ -226,7 +226,6 @@ export function connectAsyncQuerySSE(
           ? resultData.toolsCalled
           : undefined,
         toolResults: resultData.toolResults,
-        ragSources: resultData.ragSources,
         ...(evidenceCards.length > 0 && { evidenceCards }),
         processingTimeMs: resultData.processingTimeMs,
         latencyTier:

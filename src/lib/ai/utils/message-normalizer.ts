@@ -1,7 +1,7 @@
 /**
  * Message Normalizer
  *
- * @description AI SDK v6 UIMessage와 레거시 메시지 형식을 통합 처리
+ * @description AI SDK v7 UIMessage와 레거시 메시지 형식을 통합 처리
  * @updated 2026-01-27 - 멀티모달 지원 (이미지, 파일)
  *
  * @usage
@@ -57,7 +57,7 @@ export interface NormalizedMessage {
 }
 
 /**
- * AI SDK v6 TextPart 타입
+ * AI SDK v7 TextPart 타입
  */
 interface TextPart {
   type: 'text';
@@ -65,7 +65,7 @@ interface TextPart {
 }
 
 /**
- * AI SDK v6 ImagePart 타입
+ * AI SDK v7 ImagePart 타입
  */
 interface ImagePart {
   type: 'image';
@@ -74,7 +74,7 @@ interface ImagePart {
 }
 
 /**
- * AI SDK v6 FilePart 타입
+ * AI SDK v7 FilePart 타입
  * 🎯 Fix: url/mediaType (클라이언트) + data/mimeType (서버) 모두 지원
  * @see https://ai-sdk.dev/docs/ai-sdk-ui/chatbot#files
  */
@@ -95,7 +95,7 @@ interface FilePart {
 
 /**
  * 하이브리드 메시지 타입 (parts + content 모두 지원, 멀티모달 포함)
- * 🎯 Fix: url/mediaType/filename 필드 추가 (AI SDK v6 FileUIPart 호환)
+ * 🎯 Fix: url/mediaType/filename 필드 추가 (AI SDK v7 FileUIPart 호환)
  */
 export interface HybridMessage {
   id?: string;
@@ -300,10 +300,10 @@ export function extractImagesFromFileParts(
  * 메시지 배열을 Cloud Run 호환 형식으로 정규화 (멀티모달 지원)
  *
  * @description
- * AI SDK v6 UIMessage 형식을 Cloud Run이 기대하는 형식으로 변환
+ * AI SDK v7 UIMessage 형식을 Cloud Run이 기대하는 형식으로 변환
  * 이미지와 파일 첨부를 보존하여 Vision Agent에서 사용 가능
  *
- * Input (AI SDK v6):
+ * Input (AI SDK v7):
  *   { role: 'user', parts: [
  *     { type: 'text', text: '...' },
  *     { type: 'image', image: 'base64...' }

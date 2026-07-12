@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import { signOut, useSession } from '@/hooks/useSupabaseSession';
+import { signOut, useSession } from '@/hooks/auth/useSupabaseSession';
 import { authStateManager, clearAuthData } from '@/lib/auth/auth-state-manager';
 import {
   AUTH_SESSION_ID_KEY,

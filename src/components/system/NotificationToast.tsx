@@ -27,8 +27,8 @@ interface DisplayNotification {
 export const NotificationToast: FC = () => {
   const [notifications, setNotifications] = useState<DisplayNotification[]>([]);
   const { isSystemStarted: _isSystemStarted } = useUnifiedAdminStore();
-  const autoRemoveTimers = useRef<Set<ReturnType<typeof setTimeout>>>(
-    new Set()
+  const autoRemoveTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(
+    new Map()
   );
 
   const maxNotifications = 3; // 5개→3개로 축소
@@ -48,6 +48,11 @@ export const NotificationToast: FC = () => {
   }, []);
 
   const removeNotification = useCallback((id: string) => {
+    const timerId = autoRemoveTimers.current.get(id);
+    if (timerId) {
+      clearTimeout(timerId);
+      autoRemoveTimers.current.delete(id);
+    }
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   }, []);
 
@@ -87,10 +92,10 @@ export const NotificationToast: FC = () => {
       // 자동 제거 (Critical: 10초, Warning: 5초)
       const autoRemoveTime = level === 'critical' ? 10000 : 5000;
       const timerId = setTimeout(() => {
-        autoRemoveTimers.current.delete(timerId);
+        autoRemoveTimers.current.delete(notification.id);
         removeNotification(notification.id);
       }, autoRemoveTime);
-      autoRemoveTimers.current.add(timerId);
+      autoRemoveTimers.current.set(notification.id, timerId);
     };
 
     window.addEventListener('system-event', handleSystemEvent as EventListener);
@@ -100,7 +105,7 @@ export const NotificationToast: FC = () => {
         handleSystemEvent as EventListener
       );
       // 미완료 자동제거 타이머 정리
-      for (const timerId of autoRemoveTimers.current) {
+      for (const timerId of autoRemoveTimers.current.values()) {
         clearTimeout(timerId);
       }
       autoRemoveTimers.current.clear();

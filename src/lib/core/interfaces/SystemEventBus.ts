@@ -1,7 +1,7 @@
 /**
  * 🚌 시스템 이벤트 버스 인터페이스
  *
- * ProcessManager와 SystemWatchdog 간의 순환 의존성을 해결하기 위한
+ * ProcessManager의 상태 변경을 외부 소비자와 분리하기 위한
  * 이벤트 기반 통신 인터페이스
  */
 
@@ -12,11 +12,6 @@ export enum SystemEventType {
   PROCESS_STOPPED = 'process:stopped',
   PROCESS_ERROR = 'process:error',
   PROCESS_HEALTH_CHECK = 'process:health_check',
-
-  // System Watchdog Events
-  WATCHDOG_ALERT = 'watchdog:alert',
-  WATCHDOG_RECOVERY = 'watchdog:recovery',
-  WATCHDOG_THRESHOLD_EXCEEDED = 'watchdog:threshold_exceeded',
 
   // System Status Events
   SYSTEM_HEALTHY = 'system:healthy',
@@ -54,32 +49,6 @@ export interface ProcessEventPayload {
     memory: number;
   };
   error?: Error;
-}
-
-// Watchdog 관련 페이로드
-export interface WatchdogEventPayload {
-  alertType?:
-    | 'memory-leak'
-    | 'high-error-rate'
-    | 'performance-degradation'
-    | 'stability'
-    | 'frequent-restarts'
-    | 'metrics-update';
-  severity: 'info' | 'warning' | 'error' | 'critical';
-  message: string;
-  metrics?: {
-    cpuUsage?: number;
-    memoryUsage?: number;
-    errorRate?: number;
-    performanceScore?: number;
-    stabilityScore?: number;
-    restartCount?: number;
-  };
-  threshold?: {
-    name: string;
-    value: number;
-    limit: number;
-  };
 }
 
 // 시스템 상태 페이로드

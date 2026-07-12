@@ -15,9 +15,9 @@ import { DashboardNavigation } from '@/components/dashboard/shell/DashboardNavig
 import type { DashboardStats } from '@/components/dashboard/types/dashboard.types';
 import type { DashboardView } from '@/components/dashboard/types/dashboard-view.types';
 import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
-import { useAutoLogout } from '@/hooks/useAutoLogout';
-import { useServerDashboard } from '@/hooks/useServerDashboard';
-import { useSystemAutoShutdown } from '@/hooks/useSystemAutoShutdown';
+import { useAutoLogout } from '@/hooks/auth/useAutoLogout';
+import { useServerDashboard } from '@/hooks/dashboard/useServerDashboard';
+import { useSystemAutoShutdown } from '@/hooks/system/useSystemAutoShutdown';
 import type {
   DashboardDataSourceInfo,
   DashboardTimeInfo,

@@ -4,8 +4,8 @@ import {
   ArrowUpDown,
   ChevronDown,
   LayoutGrid,
-  List,
   Loader2,
+  Network,
   Search,
   X,
 } from 'lucide-react';
@@ -21,16 +21,11 @@ import {
   getServerCardColumns,
   matchesServerSearch,
   normalizeServerSearchValue,
-  runDashboardViewTransition,
   type ServerSortKey,
-  type ServerViewMode,
-  type ServerVisualizationMode,
   SORT_OPTIONS,
-  VISUALIZATION_OPTIONS,
 } from './ServerDashboard.utils';
 import { ServerDashboardDevStats } from './ServerDashboardDevStats';
 import { ServerDashboardEmptyState } from './ServerDashboardEmptyState';
-import { HexagonalHostMap } from './ServerDashboardHostMap';
 import type { DashboardTimeRange } from './types/dashboard.types';
 
 /**
@@ -90,9 +85,6 @@ export default function ServerDashboard({
   // 🚀 성능 추적 활성화
   const performanceStats = usePerformanceTracking('ServerDashboard');
 
-  const [viewMode, setViewMode] = useState<ServerViewMode>('list');
-  const [visualizationMode, setVisualizationMode] =
-    useState<ServerVisualizationMode>('cards');
   const [serverSortKey, setServerSortKey] = useState<ServerSortKey>('status');
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleRows, setVisibleRows] = useState(initialVisibleRows);
@@ -118,15 +110,9 @@ export default function ServerDashboard({
     [router]
   );
 
-  const handleVisualizationModeChange = useCallback(
-    (nextMode: ServerVisualizationMode) => {
-      if (nextMode === visualizationMode) {
-        return;
-      }
-
-      runDashboardViewTransition(() => setVisualizationMode(nextMode));
-    },
-    [visualizationMode]
+  const handleOpenInfrastructureMap = useCallback(
+    () => router.push('/dashboard/topology?mode=status'),
+    [router]
   );
 
   // paginatedServers → servers (props)
@@ -225,8 +211,8 @@ export default function ServerDashboard({
   }, [filteredServers, serverSortKey]);
 
   const cardsPerRow = useMemo(
-    () => getServerCardColumns(viewMode, serverGridWidth),
-    [serverGridWidth, viewMode]
+    () => getServerCardColumns(serverGridWidth),
+    [serverGridWidth]
   );
 
   const rowStep = Math.max(1, initialVisibleRows);
@@ -407,37 +393,6 @@ export default function ServerDashboard({
         <div className="space-y-4">
           <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white/80 px-3 py-3 shadow-sm backdrop-blur-sm sm:px-4">
             <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
-              <div
-                role="tablist"
-                aria-label="서버 표시 방식"
-                className="inline-flex w-full rounded-md border border-gray-200 bg-gray-50 p-1 sm:w-auto"
-              >
-                {VISUALIZATION_OPTIONS.map((option) => {
-                  const Icon = option.icon;
-                  const selected = visualizationMode === option.value;
-
-                  return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      role="tab"
-                      aria-selected={selected}
-                      onClick={() =>
-                        handleVisualizationModeChange(option.value)
-                      }
-                      className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
-                        selected
-                          ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
-                          : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
-                      }`}
-                    >
-                      <Icon className="h-3.5 w-3.5" />
-                      <span>{option.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
               <div className="relative min-w-0 flex-1">
                 <Search
                   aria-hidden="true"
@@ -465,40 +420,28 @@ export default function ServerDashboard({
               </div>
             </div>
 
-            <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
-              {visualizationMode === 'cards' && (
-                <fieldset className="inline-flex w-full rounded-md border border-gray-200 bg-gray-50 p-1 sm:w-auto">
-                  <legend className="sr-only">서버 보기 방식</legend>
-                  <button
-                    type="button"
-                    aria-label="목록 보기"
-                    aria-pressed={viewMode === 'list'}
-                    onClick={() => setViewMode('list')}
-                    className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
-                      viewMode === 'list'
-                        ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
-                        : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
-                    }`}
-                  >
-                    <List className="h-3.5 w-3.5" />
-                    <span>목록</span>
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="그리드 보기"
-                    aria-pressed={viewMode === 'grid'}
-                    onClick={() => setViewMode('grid')}
-                    className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
-                      viewMode === 'grid'
-                        ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
-                        : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
-                    }`}
-                  >
-                    <LayoutGrid className="h-3.5 w-3.5" />
-                    <span>그리드</span>
-                  </button>
-                </fieldset>
-              )}
+            <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <fieldset className="inline-flex w-full rounded-md border border-gray-200 bg-gray-50 p-1 sm:w-auto">
+                <legend className="sr-only">서버 표시 방식</legend>
+                <button
+                  type="button"
+                  aria-label="서버 카드 보기"
+                  aria-pressed="true"
+                  className="inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded bg-white px-3 text-xs font-medium text-blue-700 shadow-sm ring-1 ring-blue-100 sm:flex-none"
+                >
+                  <LayoutGrid className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span>서버 카드</span>
+                </button>
+                <button
+                  type="button"
+                  aria-label="인프라 맵 보기"
+                  onClick={handleOpenInfrastructureMap}
+                  className="inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium text-gray-600 transition-colors hover:bg-white/80 hover:text-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 sm:flex-none"
+                >
+                  <Network className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span>인프라 맵</span>
+                </button>
+              </fieldset>
 
               <div className="flex w-full items-center gap-2 sm:w-auto">
                 <span className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-gray-600">
@@ -583,45 +526,29 @@ export default function ServerDashboard({
             <div
               data-testid="server-dashboard-peek-container"
               className="relative"
-              style={{ viewTransitionName: 'dashboard-server-visualization' }}
             >
-              {visualizationMode === 'host-map' ? (
-                <HexagonalHostMap
-                  servers={displayedServers}
-                  onSelect={handleServerSelect}
-                />
-              ) : (
-                <div
-                  ref={setServerGridElement}
-                  data-testid={
-                    viewMode === 'grid'
-                      ? 'server-dashboard-grid'
-                      : 'server-dashboard-list'
-                  }
-                  className={
-                    viewMode === 'grid'
-                      ? 'mx-auto grid max-w-[1352px] grid-cols-1 justify-center gap-4 transition-all duration-300 sm:grid-cols-[repeat(auto-fill,minmax(320px,320px))] sm:gap-6'
-                      : 'mx-auto grid max-w-[1196px] grid-cols-1 justify-center gap-3 transition-all duration-300 sm:grid-cols-[repeat(auto-fill,minmax(290px,290px))]'
-                  }
-                >
-                  {displayedServers.map((server, index) => {
-                    const serverId = server.id || `server-${index}`;
+              <div
+                ref={setServerGridElement}
+                data-testid="server-dashboard-cards"
+                className="mx-auto grid max-w-[1352px] grid-cols-1 justify-center gap-4 transition-all duration-300 sm:grid-cols-[repeat(auto-fill,minmax(320px,320px))] sm:gap-6"
+              >
+                {displayedServers.map((server, index) => {
+                  const serverId = server.id || `server-${index}`;
 
-                    return (
-                      <ImprovedServerCard
-                        key={serverId}
-                        server={server}
-                        variant="compact"
-                        showRealTimeUpdates={true}
-                        index={index}
-                        onClick={handleServerSelect}
-                        onOpenLogs={handleOpenLogs}
-                        metricsTimeRange={metricsTimeRange}
-                      />
-                    );
-                  })}
-                </div>
-              )}
+                  return (
+                    <ImprovedServerCard
+                      key={serverId}
+                      server={server}
+                      variant="compact"
+                      showRealTimeUpdates={true}
+                      index={index}
+                      onClick={handleServerSelect}
+                      onOpenLogs={handleOpenLogs}
+                      metricsTimeRange={metricsTimeRange}
+                    />
+                  );
+                })}
+              </div>
             </div>
           ) : (
             <ServerDashboardEmptyState isSearching={isSearching} />

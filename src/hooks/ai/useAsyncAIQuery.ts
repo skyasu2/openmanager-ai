@@ -87,12 +87,6 @@ export interface AsyncQueryResult {
   targetAgent?: string;
   toolsCalled?: string[];
   toolResults?: unknown[];
-  ragSources?: Array<{
-    title: string;
-    similarity: number;
-    sourceType: string;
-    category?: string;
-  }>;
   evidenceCards?: EvidenceCard[];
   retrieval?: RetrievalMetadata;
   processingTimeMs?: number;

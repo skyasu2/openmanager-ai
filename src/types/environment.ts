@@ -126,20 +126,3 @@ export type ConfigurationStatus =
   | 'partial'
   | 'missing'
   | 'invalid';
-
-// 🛡️ 타입 가드 함수들
-function _isValidEnvironmentName(env: string): env is EnvironmentName {
-  return ['development', 'production', 'test'].includes(env);
-}
-
-function _isValidDeploymentPlatform(
-  platform: string
-): platform is DeploymentPlatform {
-  return ['local', 'vercel', 'other'].includes(platform);
-}
-
-function _isValidConfigurationStatus(
-  status: string
-): status is ConfigurationStatus {
-  return ['configured', 'partial', 'missing', 'invalid'].includes(status);
-}

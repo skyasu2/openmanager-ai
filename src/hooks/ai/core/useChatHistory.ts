@@ -36,7 +36,7 @@ interface UseChatHistoryProps<
   setMessages: (messages: TMessage[]) => void;
   isLoading: boolean;
   onSessionRestore?: (sessionId: string) => void;
-  /** 복원된 메시지의 메타데이터(toolsCalled/ragSources)를 deferred state에 주입하는 콜백 */
+  /** 복원된 메시지의 메타데이터를 deferred state에 주입하는 콜백 */
   onMetadataRestore?: (
     metadataByMessageId: Record<string, StoredMessageMetadata>
   ) => void;
@@ -75,7 +75,6 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         !analysisBasis?.featureStatus &&
         !analysisBasis?.toolsCalled &&
         !analysisBasis?.evidenceCards &&
-        !analysisBasis?.ragSources &&
         !routeDecision &&
         !assistantPlan &&
         !assistantResult &&
@@ -111,9 +110,6 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         }),
         ...(analysisBasis?.evidenceCards && {
           evidenceCards: analysisBasis.evidenceCards,
-        }),
-        ...(analysisBasis?.ragSources && {
-          ragSources: analysisBasis.ragSources,
         }),
         ...(routeDecision && {
           routeDecision,
@@ -188,7 +184,7 @@ export function useChatHistory<TMessage extends RestoredMessage>({
 
     setMessages(restoredMessages as TMessage[]);
 
-    // analysisBasis 메타데이터(toolsCalled/ragSources) 복원 — deferred state에 주입
+    // analysisBasis 메타데이터 복원 — deferred state에 주입
     if (onMetadataRestore) {
       const metadataByMessageId: Record<string, StoredMessageMetadata> = {};
       for (const m of filteredHistory) {

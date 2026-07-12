@@ -9,7 +9,6 @@ import type {
 } from '@/hooks/ai/useHybridAIQuery';
 import type { DeveloperPanelData } from '@/lib/ai/developer-panel';
 import { logger } from '@/lib/logging';
-import type { StreamRagSource } from './types/stream-rag.types';
 import type { AsyncQueryResult } from './useAsyncAIQuery';
 import type { DeferredMetadataHandlers } from './useDeferredMessageMetadata';
 import { handleStreamDataPart } from './utils/stream-data-handler';
@@ -23,7 +22,6 @@ interface UseAIChatHybridCallbacksOptions {
   setError: Dispatch<SetStateAction<string | null>>;
   setCurrentAgentStatus: Dispatch<SetStateAction<AgentStatusEventData | null>>;
   setCurrentHandoff: Dispatch<SetStateAction<HandoffEventData | null>>;
-  setStreamRagSources: Dispatch<SetStateAction<StreamRagSource[]>>;
   getDeveloperPanelData?: () => DeveloperPanelData | null;
   setDeveloperPanelData?: Dispatch<SetStateAction<DeveloperPanelData | null>>;
   onPostDecisionArtifactResult?: (result: AsyncQueryResult) => boolean;
@@ -38,7 +36,6 @@ export function useAIChatHybridCallbacks({
   setError,
   setCurrentAgentStatus,
   setCurrentHandoff,
-  setStreamRagSources,
   getDeveloperPanelData,
   setDeveloperPanelData,
   onPostDecisionArtifactResult,
@@ -86,7 +83,6 @@ export function useAIChatHybridCallbacks({
           setCurrentAgentStatus,
           setCurrentHandoff,
           setMessageTraceId: dh.setMessageTraceId,
-          setStreamRagSources,
           getPendingToolResults: dh.getPendingToolResults,
           setPendingToolResults: dh.setPendingToolResults,
           getPendingMessageMetadata: dh.getPendingMessageMetadata,
@@ -108,7 +104,6 @@ export function useAIChatHybridCallbacks({
       setError,
       setCurrentAgentStatus,
       setCurrentHandoff,
-      setStreamRagSources,
       getDeveloperPanelData,
       setDeveloperPanelData,
       onPostDecisionArtifactResult,

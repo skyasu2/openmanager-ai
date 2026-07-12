@@ -8,12 +8,12 @@ import {
   Server,
 } from 'lucide-react';
 import { useMemo } from 'react';
-import { getServerStatusTheme } from '../styles/design-constants';
-import type { Server as ServerType } from '../types/server';
+import { getServerStatusTheme } from '../../styles/design-constants';
+import type { Server as ServerType } from '../../types/server';
 import {
   formatServerOsLabel,
   getServerOsShortName,
-} from '../utils/serverUtils';
+} from '../../utils/serverUtils';
 
 function toSafeMetricValue(value: number | undefined): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : 0;

@@ -1,4 +1,5 @@
 import type { UIMessage } from '@ai-sdk/react';
+import type { ChatOnFinishCallback } from 'ai';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import {
   calculateRetryDelay,
@@ -83,7 +84,21 @@ export function createHybridStreamCallbacks(
     runJobQueueQuery,
   } = deps;
 
-  const onFinish = ({ message }: { message: UIMessage }) => {
+  const onFinish: ChatOnFinishCallback<UIMessage> = ({
+    message,
+    isAbort,
+    isDisconnect,
+    isError,
+  }) => {
+    if (isAbort || isDisconnect || isError) {
+      logger.debug(
+        `[HybridAI] onFinish skipped (${isAbort ? 'abort' : isDisconnect ? 'disconnect' : 'error'})`
+      );
+      setState((prev) => ({ ...prev, isLoading: false }));
+      onStreamFinish?.();
+      return;
+    }
+
     if (refs.redirecting.current) {
       logger.debug('[HybridAI] onFinish skipped (redirect in progress)');
       onStreamFinish?.();

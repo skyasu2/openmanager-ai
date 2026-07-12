@@ -23,11 +23,26 @@ import {
   SWIMLANE_PADDING,
 } from '../constants';
 import { getLayoutedElements } from '../layout';
-import type { CustomNodeData, SwimlaneBgData } from '../types';
+import type {
+  CustomNodeData,
+  ReactFlowDisplayMode,
+  SwimlaneBgData,
+} from '../types';
+
+interface ConvertToReactFlowOptions {
+  displayMode?: ReactFlowDisplayMode;
+  onServerSelect?: (server: Server) => void;
+  selectedServerId?: string | null;
+}
 
 export function convertToReactFlow(
   diagram: ArchitectureDiagram,
-  servers: Server[] = []
+  servers: Server[] = [],
+  {
+    displayMode = 'dependencies',
+    onServerSelect,
+    selectedServerId,
+  }: ConvertToReactFlowOptions = {}
 ): {
   nodes: Node[];
   edges: Edge[];
@@ -37,6 +52,17 @@ export function convertToReactFlow(
 
   // 서버 ID 맵 생성
   const serverMap = new Map(servers.map((s) => [s.id, s]));
+  const selectedNeighborIds = new Set<string>();
+  if (selectedServerId) {
+    for (const connection of diagram.connections ?? []) {
+      if (connection.from === selectedServerId) {
+        selectedNeighborIds.add(connection.to);
+      }
+      if (connection.to === selectedServerId) {
+        selectedNeighborIds.add(connection.from);
+      }
+    }
+  }
 
   // 레이어별 노드 ID 매핑 (Swimlane 생성용)
   const layerNodeIds: Map<number, string[]> = new Map();
@@ -66,6 +92,15 @@ export function convertToReactFlow(
           layerTitle: layer.title,
           status: serverData?.status,
           serverData: serverData,
+          displayMode,
+          onServerSelect,
+          isSelected: node.id === selectedServerId,
+          isRelated: selectedNeighborIds.has(node.id),
+          isDimmed: Boolean(
+            selectedServerId &&
+              node.id !== selectedServerId &&
+              !selectedNeighborIds.has(node.id)
+          ),
         } as CustomNodeData,
       });
     });
@@ -101,20 +136,63 @@ export function convertToReactFlow(
       const isFanIn = (targetConnectionCount[conn.to] ?? 0) >= 3;
       const isConverging = isFanOut || isFanIn;
 
-      const animateEdge = true;
+      const sourceStatus = serverMap.get(conn.from)?.status;
+      const targetStatus = serverMap.get(conn.to)?.status;
+      const statuses = [sourceStatus, targetStatus];
+      const edgeSeverity = statuses.some((status) =>
+        ['critical', 'offline'].includes(status ?? '')
+      )
+        ? 'critical'
+        : statuses.some((status) =>
+              ['warning', 'maintenance', 'unknown'].includes(status ?? '')
+            )
+          ? 'warning'
+          : 'normal';
+      const touchesSelected = Boolean(
+        selectedServerId &&
+          (conn.from === selectedServerId || conn.to === selectedServerId)
+      );
+      const isDimmedBySelection = Boolean(selectedServerId && !touchesSelected);
+      const isProblemEdge = edgeSeverity !== 'normal';
+      const animateEdge =
+        displayMode === 'status' ? isProblemEdge || touchesSelected : true;
       const animationSpeed = conn.type === 'dashed' ? 1.5 : 3;
 
       const getStrokeColor = () => {
+        if (isDimmedBySelection) return 'rgba(148, 163, 184, 0.12)';
+        if (displayMode === 'status' && edgeSeverity === 'critical')
+          return '#f43f5e';
+        if (displayMode === 'status' && edgeSeverity === 'warning')
+          return '#f59e0b';
+        if (displayMode === 'status' && touchesSelected) return '#4f46e5';
+        if (displayMode === 'status') return 'rgba(148, 163, 184, 0.28)';
         if (conn.type === 'dashed') return 'rgba(167, 139, 250, 0.5)';
         if (isConverging) return 'rgba(255, 255, 255, 0.35)';
         return 'rgba(255, 255, 255, 0.6)';
       };
 
       const getMarkerColor = () => {
+        if (isDimmedBySelection) return 'rgba(148, 163, 184, 0.15)';
+        if (displayMode === 'status' && edgeSeverity === 'critical')
+          return '#f43f5e';
+        if (displayMode === 'status' && edgeSeverity === 'warning')
+          return '#f59e0b';
+        if (displayMode === 'status' && touchesSelected) return '#4f46e5';
+        if (displayMode === 'status') return 'rgba(148, 163, 184, 0.35)';
         if (conn.type === 'dashed') return 'rgba(167, 139, 250, 0.7)';
         if (isConverging) return 'rgba(255, 255, 255, 0.45)';
         return 'rgba(255, 255, 255, 0.8)';
       };
+
+      const strokeWidth = isDimmedBySelection
+        ? 0.8
+        : displayMode === 'status' && (isProblemEdge || touchesSelected)
+          ? 3
+          : displayMode === 'status'
+            ? 1
+            : isConverging
+              ? 1.2
+              : 2;
 
       // fan-out 소스의 첫 번째 연결만 라벨 표시
       const showLabel = !isFanOut || !sourceFirstLabelShown.has(conn.from);
@@ -130,17 +208,17 @@ export function convertToReactFlow(
         animated: animateEdge,
         style: {
           stroke: getStrokeColor(),
-          strokeWidth: isConverging ? 1.2 : 2,
+          strokeWidth,
           strokeDasharray: conn.type === 'dashed' ? '5 5' : undefined,
           animationDuration: `${animationSpeed}s`,
         },
         markerEnd: {
           type: MarkerType.ArrowClosed,
-          width: isConverging ? 10 : 15,
-          height: isConverging ? 10 : 15,
+          width: strokeWidth >= 3 ? 18 : isConverging ? 10 : 15,
+          height: strokeWidth >= 3 ? 18 : isConverging ? 10 : 15,
           color: getMarkerColor(),
         },
-        label: showLabel ? conn.label : undefined,
+        label: showLabel && !isDimmedBySelection ? conn.label : undefined,
         labelStyle: {
           fill: 'rgba(255, 255, 255, 0.9)',
           fontSize: 10,

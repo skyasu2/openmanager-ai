@@ -18,8 +18,6 @@ export const METRIC_SEVERITY_COLORS = {
   critical: '#ef4444', // red-500
 } as const;
 
-export type MetricSeverityLevel = keyof typeof METRIC_SEVERITY_COLORS;
-
 // ===== 서버 상태별 색상 시스템 =====
 export const SERVER_STATUS_COLORS = {
   online: {
@@ -283,24 +281,6 @@ export const SERVER_STATUS_DARK_COLORS = {
   },
 } as const;
 
-// ===== 다크 모드 카드 스타일 (공통) =====
-const _DARK_CARD_STYLES = {
-  glass: 'bg-white/5 backdrop-blur-md border border-white/10 shadow-lg',
-  glassHover: 'hover:bg-white/10 transition-all duration-300',
-  textPrimary: 'text-white/95',
-  textSecondary: 'text-white/70',
-  textTertiary: 'text-white/40',
-  divider: 'border-white/10',
-} as const;
-
-// ===== 공통 애니메이션 =====
-const _COMMON_ANIMATIONS = {
-  cardHover:
-    'hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 ease-out',
-  fadeIn: 'transition-opacity duration-300 ease-in-out',
-  slideUp: 'transition-transform duration-300 ease-out',
-} as const;
-
 // ===== 타이포그래피 =====
 export const TYPOGRAPHY = {
   heading: {
@@ -320,24 +300,6 @@ export const TYPOGRAPHY = {
   },
 } as const;
 
-// ===== 레이아웃 =====
-const _LAYOUT = {
-  padding: {
-    card: {
-      mobile: 'p-4',
-      tablet: 'p-5',
-      desktop: 'p-6',
-    },
-  },
-  spacing: {
-    section: {
-      normal: 'space-y-3',
-      relaxed: 'space-y-4',
-      tight: 'space-y-2',
-    },
-  },
-} as const;
-
 // ===== 유틸리티 함수 =====
 // 🔧 수정: ServerStatus 타입은 server-enums에서 import (타입 통합)
 
@@ -347,7 +309,6 @@ const _LAYOUT = {
 // ⚠️ Tailwind v4 호환: gradient 클래스와 animation 분리 필요
 export const AI_GRADIENT_CLASSES =
   'bg-linear-to-br from-blue-500 via-purple-500 to-pink-500';
-const _AI_GRADIENT_STYLE = 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)';
 
 // 🎨 AI 그라데이션 인라인 스타일 (애니메이션 동작 보장)
 // Tailwind v4에서 gradient 클래스와 background-position 애니메이션이 충돌하므로 인라인 스타일 사용
@@ -405,30 +366,3 @@ export const AI_ICON_GRADIENT_COLORS = {
 export const getServerStatusTheme = (status: ServerStatus) => {
   return SERVER_STATUS_COLORS[status] || SERVER_STATUS_COLORS.unknown;
 };
-
-const _getDarkServerStatusTheme = (status: ServerStatus) => {
-  return SERVER_STATUS_DARK_COLORS[status] || SERVER_STATUS_DARK_COLORS.unknown;
-};
-
-const _getTypographyClass = (
-  scale: keyof typeof TYPOGRAPHY,
-  size: keyof (typeof TYPOGRAPHY)['heading']
-) => {
-  return TYPOGRAPHY[scale][size] || TYPOGRAPHY.body.medium;
-};
-
-// ===== 버튼 스타일 시스템 (2025 업데이트) =====
-// 업계 표준 참고: GitHub 16px/600, Google 14px/500 → 균형잡힌 16px/600 적용
-const _BUTTON_STYLES = {
-  // GitHub 버튼 - 녹색 배경 (업계 표준: 16px, font-weight 600, gap-2.5)
-  github:
-    'group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-xl bg-[#16a34a] px-5 py-4 text-[16px] font-semibold tracking-wide text-white shadow-[0_4px_14px_0_rgba(22,163,74,0.39)] transition-all duration-300 hover:bg-[#15803d] hover:shadow-[0_6px_20px_rgba(22,163,74,0.23)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:cursor-progress disabled:opacity-70 cursor-pointer',
-  // 게스트/일반 버튼 - 다크 배경 + 테두리 (16px, 500)
-  secondary:
-    'group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-xl border border-gray-600/50 bg-[#0F1115] px-5 py-4 text-[16px] font-medium tracking-wide text-gray-200 transition-all duration-300 hover:bg-gray-800/50 hover:border-gray-500 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:cursor-progress disabled:opacity-70 cursor-pointer',
-  // 레거시 호환 (deprecated)
-  primary:
-    'group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-xl bg-[#2DD36F] px-5 py-4 text-[16px] font-semibold tracking-wide text-white shadow-lg transition-all duration-200 hover:bg-[#28C765] active:scale-[0.98] disabled:cursor-progress disabled:opacity-70 cursor-pointer',
-  accent:
-    'group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-xl border border-gray-300 bg-white px-5 py-4 text-[16px] font-medium tracking-wide text-[#0F1115] transition-all duration-200 hover:bg-gray-50 hover:border-gray-400 active:scale-[0.98] disabled:cursor-progress disabled:opacity-70 cursor-pointer',
-} as const;

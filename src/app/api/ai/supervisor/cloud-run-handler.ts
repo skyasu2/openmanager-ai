@@ -23,16 +23,21 @@ import type { SupervisorDeviceType } from '@/lib/ai/supervisor/request-contracts
 import type { NormalizedMessage } from '@/lib/ai/utils/message-normalizer';
 import { proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { logger } from '@/lib/logging';
-import { RATE_LIMIT_IDENTITY_HEADER } from '@/lib/security/rate-limit-identity';
+import { createRateLimitIdentityHeaders } from '@/lib/security/rate-limit-identity';
 import { getTraceId } from '@/lib/tracing/async-context';
-import type { SupervisorInternalDisclosureMode } from './internal-disclosure-mode';
+import {
+  createInternalDisclosureFields,
+  type SupervisorInternalDisclosureMode,
+} from './internal-disclosure-mode';
 import { applyLegacySupervisorRouteHeaders } from './route-contract';
 import { cloudRunResponseSchema } from './schemas';
 
 interface CloudRunHandlerParams {
   messagesToSend: NormalizedMessage[];
-  /** Public session ID returned to client and forwarded to Cloud Run */
+  /** Public session ID returned to the client */
   sessionId: string;
+  /** Owner-scoped opaque session ID forwarded to Cloud Run */
+  backendSessionId: string;
   /** Owner-scoped cache key session to avoid cross-principal cache collisions */
   cacheSessionId: string;
   userQuery: string;
@@ -59,6 +64,7 @@ export async function handleCloudRunStream(
   const {
     messagesToSend,
     sessionId,
+    backendSessionId,
     cacheSessionId,
     userQuery,
     dynamicTimeout,
@@ -78,6 +84,13 @@ export async function handleCloudRunStream(
   const observability = getObservabilityConfig();
   const traceId = getTraceId() || generateTraceId();
   const traceparentValue = generateTraceparent(traceId);
+  const internalDisclosureFields = createInternalDisclosureFields({
+    mode: internalDisclosureMode,
+    audience: 'supervisor',
+    subject: backendSessionId,
+  });
+  const rateLimitIdentityHeaders =
+    createRateLimitIdentityHeaders(rateLimitIdentity);
 
   const baseHeaders: Record<string, string> = {
     ...(securityWarning ? { 'X-Security-Warning': securityWarning } : {}),
@@ -102,12 +115,12 @@ export async function handleCloudRunStream(
         path: '/api/ai/supervisor',
         body: {
           messages: messagesToSend,
-          sessionId,
+          sessionId: backendSessionId,
           traceId,
           deviceType,
           enableWebSearch,
           enableRAG,
-          ...(internalDisclosureMode && { internalDisclosureMode }),
+          ...internalDisclosureFields,
           ...(metadata && { metadata }),
           ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null
             ? { semanticQueryTrace }
@@ -119,12 +132,10 @@ export async function handleCloudRunStream(
           ? {
               [TRACEPARENT_HEADER]: traceparentValue,
               [observability.traceIdHeader]: traceId,
-              ...(rateLimitIdentity
-                ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
-                : {}),
+              ...rateLimitIdentityHeaders,
             }
           : rateLimitIdentity
-            ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
+            ? rateLimitIdentityHeaders
             : undefined,
       });
 
@@ -226,6 +237,7 @@ export async function handleCloudRunJson(
   const {
     messagesToSend,
     sessionId,
+    backendSessionId,
     cacheSessionId,
     userQuery,
     dynamicTimeout,
@@ -245,6 +257,13 @@ export async function handleCloudRunJson(
   const observability = getObservabilityConfig();
   const traceId = getTraceId() || generateTraceId();
   const traceparentValue = generateTraceparent(traceId);
+  const internalDisclosureFields = createInternalDisclosureFields({
+    mode: internalDisclosureMode,
+    audience: 'supervisor',
+    subject: backendSessionId,
+  });
+  const rateLimitIdentityHeaders =
+    createRateLimitIdentityHeaders(rateLimitIdentity);
 
   const baseHeaders: Record<string, string> = {
     ...(securityWarning ? { 'X-Security-Warning': securityWarning } : {}),
@@ -269,12 +288,12 @@ export async function handleCloudRunJson(
         path: '/api/ai/supervisor',
         body: {
           messages: messagesToSend,
-          sessionId,
+          sessionId: backendSessionId,
           traceId,
           deviceType,
           enableWebSearch,
           enableRAG,
-          ...(internalDisclosureMode && { internalDisclosureMode }),
+          ...internalDisclosureFields,
           ...(metadata && { metadata }),
           ...(semanticQueryTrace !== undefined && semanticQueryTrace !== null
             ? { semanticQueryTrace }
@@ -286,12 +305,10 @@ export async function handleCloudRunJson(
           ? {
               [TRACEPARENT_HEADER]: traceparentValue,
               [observability.traceIdHeader]: traceId,
-              ...(rateLimitIdentity
-                ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
-                : {}),
+              ...rateLimitIdentityHeaders,
             }
           : rateLimitIdentity
-            ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
+            ? rateLimitIdentityHeaders
             : undefined,
       });
 

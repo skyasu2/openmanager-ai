@@ -248,39 +248,6 @@ class DevLogger {
 // 싱글톤 인스턴스 export
 export const devLogger = DevLogger.getInstance();
 
-// 편의 함수들
-const _logTest = (name: string, description?: string) =>
-  devLogger.testStart(name, description);
-const _logTestResult = (name: string, success: boolean, duration?: number) =>
-  devLogger.testEnd(name, success, duration);
-const _logPerformance = (
-  operation: string,
-  duration: number,
-  metadata?: unknown
-) => devLogger.performance(operation, duration, metadata);
-const _logAI = (query: string, engine: string, confidence?: number) =>
-  devLogger.aiQuery(query, engine, confidence);
-
-// 에러 관련 편의 함수
-const _logError = (
-  message: string,
-  error: unknown,
-  category: string = 'general'
-) => devLogger.errorTrace(category, message, error);
-
-const _logErrorWithStack = (
-  message: string,
-  error: unknown,
-  category: string = 'general'
-) => devLogger.errorWithStack(category, message, error);
-
-const _logWarningWithDetails = (
-  message: string,
-  details?: unknown,
-  error?: unknown,
-  category: string = 'general'
-) => devLogger.warnWithDetails(category, message, details, error);
-
 // 🔄 기존 코드 호환성을 위한 레거시 export
 export const systemLogger = {
   info: (message: string, data?: unknown) =>
@@ -295,27 +262,3 @@ export const systemLogger = {
     devLogger.info('system', message, data),
   ai: (message: string, data?: unknown) => devLogger.info('ai', message, data),
 };
-
-const _logger = {
-  info: (message: string, data?: unknown) =>
-    devLogger.info('general', message, data),
-  warn: (message: string, data?: unknown) =>
-    devLogger.warn('general', message, data),
-  error: (message: string, data?: unknown) =>
-    devLogger.error('general', message, data),
-  debug: (message: string, data?: unknown) =>
-    devLogger.debug('general', message, data),
-};
-
-const _apiLogger = {
-  info: (message: string, data?: unknown) =>
-    devLogger.info('api', message, data),
-  warn: (message: string, data?: unknown) =>
-    devLogger.warn('api', message, data),
-  error: (message: string, data?: unknown) =>
-    devLogger.error('api', message, data),
-  debug: (message: string, data?: unknown) =>
-    devLogger.debug('api', message, data),
-};
-
-// 기본 export

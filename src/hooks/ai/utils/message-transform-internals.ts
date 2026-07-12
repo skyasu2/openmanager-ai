@@ -28,17 +28,8 @@ import type {
 } from '@/types/ai/retrieval-status';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 
-export type RagSource = {
-  title: string;
-  similarity: number;
-  sourceType: string;
-  category?: string;
-  url?: string;
-};
-
 export type MessageMetadata = {
   traceId?: string;
-  ragSources?: RagSource[];
   evidenceCards?: EvidenceCard[];
   retrieval?: RetrievalMetadata;
   featureStatus?: AnalysisFeatureStatus;

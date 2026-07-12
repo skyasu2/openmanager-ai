@@ -3,6 +3,7 @@
  * @description React Flow 다이어그램 관련 상수 정의
  */
 
+import type { ServerStatus } from '@/types/server';
 import type { CustomNodeData } from './types';
 
 /**
@@ -90,10 +91,10 @@ export const NODE_STYLES: Record<
  * 실시간 상태 스타일 정의
  */
 export const STATUS_STYLES: Record<
-  string,
+  ServerStatus,
   { border: string; glow: string; text: string; dot: string }
 > = {
-  running: {
+  online: {
     border: 'border-emerald-500/60',
     glow: 'shadow-[0_0_0_3px_rgba(16,185,129,0.10)]',
     text: 'text-emerald-700',
@@ -101,13 +102,13 @@ export const STATUS_STYLES: Record<
   },
   warning: {
     border: 'border-amber-500/60',
-    glow: 'shadow-[0_0_0_3px_rgba(245,158,11,0.12)] animate-pulse',
+    glow: 'shadow-[0_0_0_3px_rgba(245,158,11,0.12)]',
     text: 'text-amber-700',
     dot: 'bg-amber-500',
   },
-  danger: {
+  critical: {
     border: 'border-rose-500/70',
-    glow: 'shadow-[0_0_0_3px_rgba(244,63,94,0.12)] animate-pulse',
+    glow: 'shadow-[0_0_0_3px_rgba(244,63,94,0.12)]',
     text: 'text-rose-700',
     dot: 'bg-rose-500',
   },
@@ -116,6 +117,18 @@ export const STATUS_STYLES: Record<
     glow: 'grayscale opacity-70',
     text: 'text-slate-600',
     dot: 'bg-slate-500',
+  },
+  maintenance: {
+    border: 'border-sky-500/60',
+    glow: 'shadow-[0_0_0_3px_rgba(14,165,233,0.10)]',
+    text: 'text-sky-700',
+    dot: 'bg-sky-500',
+  },
+  unknown: {
+    border: 'border-slate-400/50',
+    glow: 'shadow-[0_0_0_3px_rgba(148,163,184,0.10)]',
+    text: 'text-slate-600',
+    dot: 'bg-slate-400',
   },
 };
 

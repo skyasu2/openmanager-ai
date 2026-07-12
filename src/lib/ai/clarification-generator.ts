@@ -11,7 +11,10 @@ import {
 } from './entity-extractor';
 import type { QueryClassification } from './query-classifier';
 import { needsClarification } from './query-classifier';
-import { hasExplicitServerReference } from './server-scope-detection';
+import {
+  hasContextualServerReference,
+  hasExplicitServerReference,
+} from './server-scope-detection';
 import { isFormattingOnlyRequest } from './utils/query-complexity';
 
 export interface ClarificationOption {
@@ -114,7 +117,8 @@ function hasSpecificConditions(query: string): boolean {
     SPECIFIC_CONDITION_PATTERNS.fleetScanIntent.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.anomalyScanIntentForward.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.anomalyScanIntentReverse.test(query) ||
-    SPECIFIC_CONDITION_PATTERNS.followUpContextReference.test(query)
+    SPECIFIC_CONDITION_PATTERNS.followUpContextReference.test(query) ||
+    hasContextualServerReference(query)
   );
 }
 

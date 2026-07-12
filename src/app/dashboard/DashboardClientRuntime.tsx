@@ -14,7 +14,7 @@ import type { DashboardView } from '@/components/dashboard/types/dashboard-view.
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import UnauthorizedAccessUI from '@/components/shared/UnauthorizedAccessUI';
 import { isGuestFullAccessEnabled } from '@/config/guestMode';
-import { useUserPermissions } from '@/hooks/useUserPermissions';
+import { useUserPermissions } from '@/hooks/auth/useUserPermissions';
 import { LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
 import type {
   DashboardDataSourceInfo,

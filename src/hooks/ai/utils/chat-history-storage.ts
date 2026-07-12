@@ -53,13 +53,6 @@ export interface StoredMessageMetadata {
   assistantResult?: AssistantResult;
   semanticQueryTrace?: SemanticQueryTrace;
   toolsCalled?: string[];
-  ragSources?: Array<{
-    title: string;
-    similarity: number;
-    sourceType: string;
-    category?: string;
-    url?: string;
-  }>;
   evidenceCards?: EvidenceCard[];
   assistantResponseView?: {
     summary: string;
@@ -168,7 +161,6 @@ export function saveChatHistory(
           analysisBasis?.featureStatus ||
           analysisBasis?.toolsCalled ||
           analysisBasis?.evidenceCards ||
-          analysisBasis?.ragSources ||
           routeDecision ||
           assistantPlan ||
           assistantResult ||
@@ -196,9 +188,6 @@ export function saveChatHistory(
                 }),
                 ...(analysisBasis?.evidenceCards && {
                   evidenceCards: analysisBasis.evidenceCards,
-                }),
-                ...(analysisBasis?.ragSources && {
-                  ragSources: analysisBasis.ragSources,
                 }),
                 ...(routeDecision && {
                   routeDecision,

@@ -13,6 +13,7 @@ import {
   type RegisteredServerId,
 } from '@/config/server-registry';
 import type { InputType } from './query-guard';
+import { hasContextualServerReference } from './server-scope-detection';
 
 export interface ExtractedEntities {
   /** 명시된 서버 ID (예: api-was-dc1-01) */
@@ -159,7 +160,7 @@ const GROUP_TARGET_HINTS = [
   },
   {
     target: 'database',
-    pattern: /(?:db|database|mysql|디비|데이터베이스)\s*(?:서버|그룹)?/i,
+    pattern: /(?:\bdb\b|database|mysql|디비|데이터베이스)\s*(?:서버|그룹)?/i,
   },
   {
     target: 'loadbalancer',
@@ -345,6 +346,32 @@ function inferGroupTargetFromQuery(query: string): string | undefined {
   return GROUP_TARGET_HINTS.find((hint) => hint.pattern.test(query))?.target;
 }
 
+function removeProviderInventedContextualTarget(
+  entities: ExtractedEntities,
+  query: string
+): ExtractedEntities {
+  if (
+    !hasContextualServerReference(query) ||
+    queryMentionsKnownServerId(query) ||
+    inferGroupTargetFromQuery(query)
+  ) {
+    return entities;
+  }
+
+  const { server: _server, intentFrame, ...rest } = entities;
+  return {
+    ...rest,
+    ...(intentFrame && {
+      intentFrame: {
+        ...intentFrame,
+        scope: 'unknown',
+        targets: [],
+        ambiguity: 'high',
+      },
+    }),
+  };
+}
+
 const CAPACITY_FORECAST_QUERY_PATTERN =
   /(?:언제.{0,24}\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파)|\d{1,3}\s*%?.{0,24}(?:넘|초과|도달|돌파).{0,24}(?:언제|시점|예측)|(?:when|how\s+soon).{0,40}(?:exceed|reach|hit|breach).{0,16}\d{1,3}\s*%?|(?:위험\s*(?:수준|레벨|임계|단계)|critical\s*(?:level|threshold)).{0,24}(?:도달|초과|넘|시점|예측|reach|hit)|용량\s*(?:예측|계획|부족|고갈)|capacity\s*(?:forecast|plan|planning|projection)|임계(?:치|값)?.{0,24}(?:도달|초과|넘|시점)|고갈|포화|saturat(?:e|ion)|run\s*out|full\s*capacity)/i;
 const FORECAST_INTENT_QUERY_PATTERN =
@@ -367,6 +394,21 @@ const ANOMALY_DETECTION_QUERY_PATTERN =
 const ROOT_CAUSE_QUERY_PATTERN = /왜|원인|근본|rca|root.?cause|cause/i;
 const CASCADE_IMPACT_QUERY_PATTERN =
   /(?:다른|타|의존|상류|하류|upstream|downstream|other).{0,32}(?:영향|impact)|(?:영향|impact).{0,32}(?:다른|타|의존|상류|하류|서버|server|서비스|service|범위)|연쇄|전파|파급|cascade|cascading/i;
+const CORRELATED_LOG_EVIDENCE_QUERY_PATTERN =
+  /로그(?!인)|(?<![a-z])logs?(?![a-z])|에러\s*로그|syslog|journalctl|dmesg|시스템\s*로그/i;
+const CORRELATED_METRIC_EVIDENCE_QUERY_PATTERN =
+  /메트릭|지표|cpu|씨피유|메모리|memory|\bmem\b|디스크|disk|스토리지|storage|네트워크|network|트래픽|traffic|대역폭|bandwidth|부하|로드|\bload(?:1|5)?\b/i;
+const CORRELATED_ANALYSIS_QUERY_PATTERN =
+  /분석|원인|왜|이유|때문|근본\s*원인|상관관계|연관|rca|root\s*cause|correlat|\bwhy\b|\breason\b|\bcause\b/i;
+
+function requiresCorrelatedMonitoringAnalysis(query: string): boolean {
+  return (
+    CORRELATED_LOG_EVIDENCE_QUERY_PATTERN.test(query) &&
+    CORRELATED_METRIC_EVIDENCE_QUERY_PATTERN.test(query) &&
+    CORRELATED_ANALYSIS_QUERY_PATTERN.test(query) &&
+    !FORECAST_INTENT_QUERY_PATTERN.test(query)
+  );
+}
 
 function inferCapacityMetricForQuery(
   query: string,
@@ -501,11 +543,16 @@ function buildAnomalyIntentCorrection(
   };
 }
 
-function buildCascadeImpactCorrection(
+function buildRootCauseIntentCorrection(
   entities: ExtractedEntities,
   query: string
 ): ExtractedEntities | null {
-  if (!CASCADE_IMPACT_QUERY_PATTERN.test(query)) return null;
+  if (
+    !CASCADE_IMPACT_QUERY_PATTERN.test(query) &&
+    !requiresCorrelatedMonitoringAnalysis(query)
+  ) {
+    return null;
+  }
 
   const groupTarget = inferGroupTargetFromQuery(query);
   const inferredServer = entities.server ?? inferKnownServerIdFromQuery(query);
@@ -550,7 +597,10 @@ export function normalizeExtractedEntitiesForQuery(
   data: unknown,
   query: string
 ): ExtractedEntities {
-  const entities = normalizeExtractedEntities(data);
+  const entities = removeProviderInventedContextualTarget(
+    normalizeExtractedEntities(data),
+    query
+  );
   if (
     isCurrentThresholdStatusQuery(query) &&
     entities.intentFrame?.intent === 'capacity_forecast'
@@ -559,9 +609,9 @@ export function normalizeExtractedEntitiesForQuery(
     return rest;
   }
 
-  const cascadeImpactCorrection = buildCascadeImpactCorrection(entities, query);
-  if (cascadeImpactCorrection) {
-    return cascadeImpactCorrection;
+  const rootCauseCorrection = buildRootCauseIntentCorrection(entities, query);
+  if (rootCauseCorrection) {
+    return rootCauseCorrection;
   }
 
   const anomalyCorrection = buildAnomalyIntentCorrection(entities, query);

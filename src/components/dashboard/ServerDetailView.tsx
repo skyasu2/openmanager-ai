@@ -3,7 +3,7 @@
 import { Activity, ArrowLeft, BarChart3, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { useServerMetrics } from '@/hooks/useServerMetrics';
+import { useServerMetrics } from '@/hooks/dashboard/useServerMetrics';
 import type { Server } from '@/types/server';
 import { withCurrentMetricPoint } from './dashboard-metric-points';
 import { LogsTab } from './EnhancedServerModal.LogsTab';

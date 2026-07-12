@@ -16,7 +16,7 @@ import { AlertHistoryPanel } from './alert-history/AlertHistoryModal';
 import { LogExplorerPanel } from './log-explorer/LogExplorerModal';
 import ServerDashboard from './ServerDashboard';
 import ServerDetailView from './ServerDetailView';
-import { TopologyView } from './TopologyModal';
+import { normalizeTopologyFilterId, TopologyView } from './TopologyModal';
 import type { DashboardStats } from './types/dashboard.types';
 import type { DashboardView } from './types/dashboard-view.types';
 
@@ -138,6 +138,11 @@ export default function DashboardRoutedContent({
     view === 'alerts'
       ? (searchParams.get('server') ?? searchParams.get('serverId'))
       : null;
+  const initialTopologyMode =
+    searchParams.get('mode') === 'dependencies' ? 'dependencies' : 'status';
+  const initialTopologyFilter = normalizeTopologyFilterId(
+    searchParams.get('filter')
+  );
 
   const {
     data: monitoringReport,
@@ -237,10 +242,14 @@ export default function DashboardRoutedContent({
   if (view === 'topology') {
     return (
       <PageFrame
-        title="토폴로지"
-        description="18대 관측 서버의 계층 구조와 의존성 흐름"
+        title="인프라 맵"
+        description="18대 관측 서버의 상태와 의존성을 단일 캔버스에서 확인"
       >
-        <TopologyView servers={fleetServers} />
+        <TopologyView
+          servers={fleetServers}
+          initialMode={initialTopologyMode}
+          initialFilter={initialTopologyFilter}
+        />
       </PageFrame>
     );
   }

@@ -52,30 +52,47 @@ export type ServerRole =
   | 'application'
   | 'fallback';
 
-// Enum 배열 (옵션 리스트용)
-// ⚠️ Deprecated: Use SERVER_STATUS_VALUES instead for better type safety
-const _SERVER_STATUSES: ServerStatus[] = [...SERVER_STATUS_VALUES];
+export function normalizeServerEnvironment(
+  value: string | undefined
+): ServerEnvironment {
+  switch (value?.trim().toLowerCase()) {
+    case 'production':
+    case 'prod':
+      return 'production';
+    case 'staging':
+    case 'stage':
+      return 'staging';
+    case 'testing':
+    case 'test':
+      return 'testing';
+    default:
+      return 'development';
+  }
+}
 
-const _SERVER_ENVIRONMENTS: ServerEnvironment[] = [
-  'production',
-  'staging',
-  'development',
-  'testing',
-];
-const _SERVER_ROLES: ServerRole[] = [
-  'web',
-  'api',
-  'database',
-  'cache',
-  'monitoring',
-  'security',
-  'backup',
-  'load-balancer',
-  'loadbalancer',
-  'queue',
-  'storage',
-  'log',
-  'app',
-  'application',
-  'fallback',
-];
+export function normalizeServerRole(value: string | undefined): ServerRole {
+  switch (value?.trim().toLowerCase()) {
+    case 'web':
+    case 'api':
+    case 'database':
+    case 'cache':
+    case 'monitoring':
+    case 'security':
+    case 'backup':
+    case 'load-balancer':
+    case 'loadbalancer':
+    case 'queue':
+    case 'storage':
+    case 'log':
+    case 'app':
+    case 'application':
+      return value.trim().toLowerCase() as ServerRole;
+    default:
+      return 'fallback';
+  }
+}
+
+export function mapServerTypeToRole(value: string | undefined): ServerRole {
+  const serverType = normalizeServerRole(value);
+  return serverType === 'application' ? 'api' : serverType;
+}

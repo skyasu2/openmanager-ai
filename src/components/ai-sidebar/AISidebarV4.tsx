@@ -16,8 +16,8 @@ import { isGuestFullAccessEnabled } from '@/config/guestMode';
 import { useAIChatCore } from '@/hooks/ai/useAIChatCore';
 import { useAIChatSurface } from '@/hooks/ai/useAIChatSurface';
 import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
+import { useUserPermissions } from '@/hooks/auth/useUserPermissions';
 import { useResizable } from '@/hooks/ui/useResizable';
-import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { cn } from '@/lib/utils';
 import {
   AI_SIDEBAR_WIDTH_LIMITS,
@@ -145,6 +145,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     cancel,
     // 통합 입력 핸들러
     handleSendInput,
+    handleArtifactGuidanceCta,
     // 명확화 기능
     clarification,
     selectClarification,
@@ -292,6 +293,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
                 setInput(prompt);
                 handleSendInput(undefined, prompt);
               }}
+              onArtifactGuidanceCta={handleArtifactGuidanceCta}
               sessionState={sessionState}
               onNewSession={handleNewSession}
               isGenerating={isLoading}

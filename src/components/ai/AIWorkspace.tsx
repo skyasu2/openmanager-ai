@@ -151,6 +151,7 @@ export default function AIWorkspace({
     cancel,
     // 통합 입력 핸들러
     handleSendInput,
+    handleArtifactGuidanceCta,
     // 명확화 기능
     clarification,
     selectClarification,
@@ -333,6 +334,7 @@ export default function AIWorkspace({
             setInput(prompt);
             handleSendInput(undefined, prompt);
           }}
+          onArtifactGuidanceCta={handleArtifactGuidanceCta}
           sessionState={sessionState}
           onNewSession={handleNewSession}
           isGenerating={isLoading}

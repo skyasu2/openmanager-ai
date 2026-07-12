@@ -12,8 +12,8 @@ import { useResponsivePageSize } from '@/hooks/dashboard/useResponsivePageSize';
 import { useServerDataCache } from '@/hooks/dashboard/useServerDataCache';
 import { useServerFilter } from '@/hooks/dashboard/useServerFilter';
 import { useServerPagination } from '@/hooks/dashboard/useServerPagination';
+import { useServerQuery } from '@/hooks/dashboard/useServerQuery';
 import { useServerStats } from '@/hooks/dashboard/useServerStats';
-import { useServerQuery } from '@/hooks/useServerQuery';
 import type {
   EnhancedServerData,
   ServerWithMetrics,
