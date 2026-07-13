@@ -166,9 +166,9 @@ export function convertToReactFlow(
           return '#f59e0b';
         if (displayMode === 'status' && touchesSelected) return '#4f46e5';
         if (displayMode === 'status') return 'rgba(148, 163, 184, 0.28)';
-        if (conn.type === 'dashed') return 'rgba(167, 139, 250, 0.5)';
-        if (isConverging) return 'rgba(255, 255, 255, 0.35)';
-        return 'rgba(255, 255, 255, 0.6)';
+        if (conn.type === 'dashed') return 'rgba(124, 58, 237, 0.66)';
+        if (isConverging) return 'rgba(100, 116, 139, 0.64)';
+        return 'rgba(71, 85, 105, 0.72)';
       };
 
       const getMarkerColor = () => {
@@ -179,9 +179,9 @@ export function convertToReactFlow(
           return '#f59e0b';
         if (displayMode === 'status' && touchesSelected) return '#4f46e5';
         if (displayMode === 'status') return 'rgba(148, 163, 184, 0.35)';
-        if (conn.type === 'dashed') return 'rgba(167, 139, 250, 0.7)';
-        if (isConverging) return 'rgba(255, 255, 255, 0.45)';
-        return 'rgba(255, 255, 255, 0.8)';
+        if (conn.type === 'dashed') return 'rgba(124, 58, 237, 0.86)';
+        if (isConverging) return 'rgba(100, 116, 139, 0.82)';
+        return 'rgba(71, 85, 105, 0.9)';
       };
 
       const strokeWidth = isDimmedBySelection

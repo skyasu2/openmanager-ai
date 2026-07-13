@@ -149,18 +149,55 @@ export interface InjectionDetectionResult {
   sanitizedQuery: string;
 }
 
+const ENCODED_TOKEN_PATTERN =
+  /(?<![A-Za-z0-9+/=])[A-Za-z0-9+/]{16,}={0,2}(?![A-Za-z0-9+/=])/g;
+const MAX_DECODED_SCAN_CHARS = 4_000;
+
+function scanInjectionPatterns(text: string): string[] {
+  const detectedPatterns: string[] = [];
+  for (const { pattern, name } of PROMPT_INJECTION_PATTERNS) {
+    const scanner = new RegExp(pattern.source, pattern.flags);
+    if (scanner.test(text)) detectedPatterns.push(name);
+  }
+  return detectedPatterns;
+}
+
+function extractDecodedBase64Segments(text: string): string {
+  const tokens = text.match(ENCODED_TOKEN_PATTERN) ?? [];
+  const decoded: string[] = [];
+
+  for (const token of tokens) {
+    if (token.length > 512 || token.length % 4 !== 0) continue;
+
+    try {
+      const output = Buffer.from(token, 'base64').toString('utf8');
+      if (output.length > 0 && output.length <= MAX_DECODED_SCAN_CHARS) {
+        decoded.push(output);
+      }
+    } catch {}
+  }
+
+  return decoded.join('\n');
+}
+
 /**
  * Prompt Injection 탐지 (OWASP LLM Top 10 기반)
  */
 export function detectPromptInjection(text: string): InjectionDetectionResult {
-  const detectedPatterns: string[] = [];
+  const detectedPatterns = scanInjectionPatterns(text);
   let sanitizedQuery = text;
 
   for (const { pattern, name } of PROMPT_INJECTION_PATTERNS) {
-    if (pattern.test(text)) {
-      detectedPatterns.push(name);
+    if (detectedPatterns.includes(name)) {
       sanitizedQuery = sanitizedQuery.replace(pattern, '[blocked]');
-      pattern.lastIndex = 0; // reset stateful regex
+    }
+    pattern.lastIndex = 0;
+  }
+
+  const decoded = extractDecodedBase64Segments(text);
+  if (decoded) {
+    for (const name of scanInjectionPatterns(decoded)) {
+      detectedPatterns.push(`encoded:${name}`);
     }
   }
 
@@ -168,6 +205,7 @@ export function detectPromptInjection(text: string): InjectionDetectionResult {
   if (detectedPatterns.length > 0) {
     const hasHighRisk = detectedPatterns.some(
       (p) =>
+        p.startsWith('encoded:') ||
         p.includes('jailbreak') ||
         p.includes('dan_mode') ||
         p.includes('bypass') ||

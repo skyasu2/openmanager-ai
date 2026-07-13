@@ -84,6 +84,7 @@ import {
   trackFirstQueryLatency,
 } from './stream-response-builder';
 import {
+  fetchWithResponseHeaderTimeout,
   getSupervisorStreamAbortTimeoutMs,
   getSupervisorStreamRetryTimeoutMs,
   isWarmupAwareFirstQuery,
@@ -425,40 +426,45 @@ export const POST = withAuth(
                   logger.info(
                     `[SupervisorStreamV2] Cloud Run attempt ${attempt}/${attemptTimeouts.length} (timeout=${timeoutMs}ms)`
                   );
-                  const response = await fetch(streamUrl, {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                      Accept: 'text/event-stream',
-                      ...(await createCloudRunAuthHeaders({
-                        apiSecret: cloudRunConfig.apiSecret,
-                        serviceUrl: streamUrl,
-                      })),
-                      ...rateLimitIdentityHeaders,
-                      ...(traceContext.enabled
-                        ? {
-                            [TRACEPARENT_HEADER]: traceContext.traceparent,
-                            [traceContext.traceIdHeader]: traceContext.traceId,
-                          }
-                        : {}),
+                  const response = await fetchWithResponseHeaderTimeout(
+                    streamUrl,
+                    {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'text/event-stream',
+                        ...(await createCloudRunAuthHeaders({
+                          apiSecret: cloudRunConfig.apiSecret,
+                          serviceUrl: streamUrl,
+                        })),
+                        ...rateLimitIdentityHeaders,
+                        ...(traceContext.enabled
+                          ? {
+                              [TRACEPARENT_HEADER]: traceContext.traceparent,
+                              [traceContext.traceIdHeader]:
+                                traceContext.traceId,
+                            }
+                          : {}),
+                      },
+                      body: JSON.stringify({
+                        messages: normalizedMessages,
+                        sessionId: backendSessionId,
+                        deviceType,
+                        enableWebSearch,
+                        enableRAG,
+                        queryAsOf,
+                        ...internalDisclosureFields,
+                        ...(localRouteDecision && { localRouteDecision }),
+                        ...(metadata && { metadata }),
+                        ...(semanticQueryTrace !== undefined &&
+                        semanticQueryTrace !== null
+                          ? { semanticQueryTrace }
+                          : {}),
+                      }),
+                      signal: req.signal,
                     },
-                    body: JSON.stringify({
-                      messages: normalizedMessages,
-                      sessionId: backendSessionId,
-                      deviceType,
-                      enableWebSearch,
-                      enableRAG,
-                      queryAsOf,
-                      ...internalDisclosureFields,
-                      ...(localRouteDecision && { localRouteDecision }),
-                      ...(metadata && { metadata }),
-                      ...(semanticQueryTrace !== undefined &&
-                      semanticQueryTrace !== null
-                        ? { semanticQueryTrace }
-                        : {}),
-                    }),
-                    signal: AbortSignal.timeout(timeoutMs),
-                  });
+                    timeoutMs
+                  );
 
                   if (response.ok) {
                     return { type: 'upstream', response };
@@ -508,7 +514,7 @@ export const POST = withAuth(
                     throw error;
                   }
 
-                  // AbortError: 수동 abort | TimeoutError: AbortSignal.timeout() 만료
+                  // AbortError: caller disconnect | TimeoutError: response header timeout
                   const isAbortError =
                     error instanceof Error &&
                     (error.name === 'AbortError' ||

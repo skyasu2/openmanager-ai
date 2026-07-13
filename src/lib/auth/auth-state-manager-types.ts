@@ -6,6 +6,8 @@ export interface AuthUser {
   provider?: 'github' | 'google' | 'guest';
 }
 
+export type AuthProvider = NonNullable<AuthUser['provider']>;
+
 export interface AuthState {
   user: AuthUser | null;
   type: 'github' | 'google' | 'guest' | 'unknown';

@@ -16,7 +16,11 @@ import {
   getGuestAuthState,
   migrateLegacyAuthCookieKeys,
 } from './auth-state-manager-browser';
-import type { AuthState, AuthUser } from './auth-state-manager-types';
+import type {
+  AuthProvider,
+  AuthState,
+  AuthUser,
+} from './auth-state-manager-types';
 import {
   AUTH_CREATED_AT_KEY,
   AUTH_SESSION_ID_KEY,
@@ -117,15 +121,15 @@ export class AuthStateManager {
   /**
    * 원자적 로그아웃 처리 (모든 인증 데이터 정리)
    */
-  async clearAllAuthData(authType?: 'github' | 'guest'): Promise<void> {
+  async clearAllAuthData(authType?: AuthProvider): Promise<void> {
     logger.info('🔐 clearAllAuthData 시작', { authType: authType || 'all' });
 
     try {
       // 1. React 상태 캐시 즉시 무효화
       this.invalidateCache();
 
-      // 2. Supabase 세션 정리 (GitHub OAuth)
-      if (!authType || authType === 'github') {
+      // 2. Supabase 세션 정리 (OAuth)
+      if (!authType || authType === 'github' || authType === 'google') {
         try {
           const { error } = await getClient().auth.signOut();
           if (error) {
@@ -316,10 +320,7 @@ export class AuthStateManager {
   /**
    * 통합 저장소 정리 (localStorage + sessionStorage + 쿠키)
    */
-  private clearStorage(
-    authType?: 'github' | 'guest',
-    skipCookies?: boolean
-  ): void {
+  private clearStorage(authType?: AuthProvider, skipCookies?: boolean): void {
     clearBrowserAuthStorage(authType, skipCookies);
   }
 }
@@ -331,7 +332,7 @@ export const authStateManager = AuthStateManager.getInstance();
 export const getAuthState = () => authStateManager.getAuthState();
 export const isGitHubAuthenticated = () =>
   authStateManager.isGitHubAuthenticated();
-export const clearAuthData = (authType?: 'github' | 'guest') =>
+export const clearAuthData = (authType?: AuthProvider) =>
   authStateManager.clearAllAuthData(authType);
 export const invalidateAuthCache = () => authStateManager.invalidateCache();
 // NOTE: AuthState, AuthUser 타입은 './auth-state-manager-types'에서 직접 import하세요.

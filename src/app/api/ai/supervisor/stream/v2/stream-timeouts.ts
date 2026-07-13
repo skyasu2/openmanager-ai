@@ -10,6 +10,34 @@ const STREAM_SOFT_TARGET_TIMEOUT_MS = 35_000;
 const STREAM_COLD_START_FIRST_ATTEMPT_TIMEOUT_MS = 45_000;
 const STREAM_COLD_START_RETRY_TIMEOUT_MS = 18_000;
 
+type FetchImplementation = (
+  input: RequestInfo | URL,
+  init?: RequestInit
+) => Promise<Response>;
+
+export async function fetchWithResponseHeaderTimeout(
+  input: RequestInfo | URL,
+  init: RequestInit,
+  timeoutMs: number,
+  fetchImpl: FetchImplementation = fetch
+): Promise<Response> {
+  const timeoutController = new AbortController();
+  const timeoutId = setTimeout(() => {
+    timeoutController.abort(
+      new DOMException('Upstream response header timeout', 'TimeoutError')
+    );
+  }, timeoutMs);
+  const signal = init.signal
+    ? AbortSignal.any([init.signal, timeoutController.signal])
+    : timeoutController.signal;
+
+  try {
+    return await fetchImpl(input, { ...init, signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 export function getSupervisorStreamRequestTimeoutMs(): number {
   const routeBudgetMs = getRouteMaxExecutionMs(
     SUPERVISOR_STREAM_ROUTE_MAX_DURATION_SECONDS

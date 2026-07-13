@@ -86,7 +86,9 @@ export function useProfileAuth(): ProfileAuthHook {
 
       // AuthStateManager를 통한 통합 로그아웃
       logger.info('🔄 AuthStateManager clearAuthData 호출 중...');
-      await clearAuthData(userType === 'github' ? 'github' : 'guest');
+      await clearAuthData(
+        userType === 'github' || userType === 'google' ? userType : 'guest'
+      );
 
       logger.info('✅ 통합 로그아웃 완료 - 리다이렉트 진행');
 
@@ -100,8 +102,8 @@ export function useProfileAuth(): ProfileAuthHook {
       logger.warn('⚠️ 레거시 로그아웃으로 fallback');
 
       try {
-        // Supabase 로그아웃 (GitHub)
-        if (userType === 'github') {
+        // Supabase 로그아웃 (OAuth)
+        if (userType === 'github' || userType === 'google') {
           await signOut({ callbackUrl: '/login' });
         } else {
           // 게스트 로그아웃은 AuthStateManager가 실패했으므로 수동 정리

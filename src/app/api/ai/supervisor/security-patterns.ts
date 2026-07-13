@@ -157,7 +157,7 @@ export const PROMPT_INJECTION_PATTERNS: Array<{
 
   // 인코딩 우회 시도
   {
-    pattern: /base64|atob\s*\(|btoa\s*\(/gi,
+    pattern: /atob\s*\(|btoa\s*\(/gi,
     name: 'encoding_bypass',
   },
   {

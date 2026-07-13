@@ -1,5 +1,5 @@
 import { logger } from '@/lib/logging';
-import type { AuthState } from './auth-state-manager-types';
+import type { AuthProvider, AuthState } from './auth-state-manager-types';
 import {
   AUTH_CREATED_AT_KEY,
   AUTH_SESSION_ID_KEY,
@@ -153,7 +153,7 @@ export function getGuestAuthState(
  * 통합 저장소 정리 (localStorage + sessionStorage + 쿠키)
  */
 export function clearBrowserAuthStorage(
-  authType?: 'github' | 'guest',
+  authType?: AuthProvider,
   skipCookies?: boolean
 ): void {
   if (typeof window === 'undefined') return;
@@ -161,11 +161,12 @@ export function clearBrowserAuthStorage(
   const keysToRemove = Object.keys(localStorage).filter((key) => {
     if (key.startsWith(AUTH_PREFIX)) return true;
 
-    if (!authType || authType === 'github') {
+    if (!authType || authType === 'github' || authType === 'google') {
       if (
         key.startsWith('sb-') ||
         key.includes('supabase') ||
         key.includes('github') ||
+        key.includes('google') ||
         key.startsWith('supabase.auth.') ||
         key.includes('access_token') ||
         key.includes('refresh_token')
@@ -190,13 +191,14 @@ export function clearBrowserAuthStorage(
 
   if (
     typeof sessionStorage !== 'undefined' &&
-    (!authType || authType === 'github')
+    (!authType || authType === 'github' || authType === 'google')
   ) {
     Object.keys(sessionStorage)
       .filter(
         (key) =>
           key.includes('supabase') ||
           key.includes('github') ||
+          key.includes('google') ||
           key.includes('auth')
       )
       .forEach((key) => {
