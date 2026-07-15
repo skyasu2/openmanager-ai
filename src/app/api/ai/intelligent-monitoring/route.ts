@@ -17,6 +17,7 @@ import {
 } from '@/lib/ai/cache/ai-response-cache';
 import { executeWithCircuitBreakerAndFallback } from '@/lib/ai/circuit-breaker';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
+import { mapTrendPredictionPayload } from '@/lib/ai/monitoring/trend-schema-mapper';
 import {
   buildAITimingHeaders,
   logAIRequest,
@@ -81,6 +82,17 @@ function buildMonitoringCacheQuery(
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
+}
+
+function isFallbackMonitoringResponse(value: CacheableAIResponse): boolean {
+  if (value._fallback === true || value.source === 'fallback') {
+    return true;
+  }
+
+  return (
+    isRecord(value.data) &&
+    (value.data._fallback === true || value.data.source === 'fallback')
+  );
 }
 
 function readMonitoringErrorPassThrough(
@@ -181,6 +193,28 @@ function unwrapMonitoringRecord(
   return value;
 }
 
+function isCompatibleMonitoringCacheResponse(
+  value: CacheableAIResponse,
+  context: AnalyzeServerRequestContext
+): boolean {
+  if (isFallbackMonitoringResponse(value)) {
+    return false;
+  }
+
+  const payload = unwrapMonitoringRecord(value);
+  if (!payload) {
+    return false;
+  }
+
+  if (isBatchAnalysisRequest(context.action, context.serverId)) {
+    return Array.isArray(payload.servers);
+  }
+
+  return (
+    payload.serverId === context.serverId && !Array.isArray(payload.servers)
+  );
+}
+
 function normalizeAnalyzeServerPayload(
   value: unknown,
   context: AnalyzeServerRequestContext
@@ -219,6 +253,11 @@ function normalizeAnalyzeServerPayload(
 
   return {
     ...unwrapped,
+    ...(unwrapped.trendPrediction !== undefined
+      ? {
+          trendPrediction: mapTrendPredictionPayload(unwrapped.trendPrediction),
+        }
+      : {}),
     serverId,
     analysisType,
     timestamp,
@@ -427,7 +466,16 @@ async function postHandler(request: NextRequest) {
           _fallback: result.source === 'fallback',
         } as CacheableAIResponse;
       },
-      'intelligent-monitoring'
+      'intelligent-monitoring',
+      {
+        shouldUseCached: (response) =>
+          isCompatibleMonitoringCacheResponse(response, {
+            action,
+            serverId,
+            analysisType,
+          }),
+        shouldCache: (response) => !isFallbackMonitoringResponse(response),
+      }
     );
 
     // 3. 응답 반환

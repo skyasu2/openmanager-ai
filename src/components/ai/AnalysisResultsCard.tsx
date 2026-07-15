@@ -166,12 +166,51 @@ function MultiServerResults({ data }: { data: MultiServerAnalysisResponse }) {
 }
 
 // 단일 서버 결과 표시
-function SingleServerResults({ data }: { data: CloudRunAnalysisResponse }) {
+function SingleServerResults({
+  data,
+  onRetry,
+}: {
+  data: CloudRunAnalysisResponse;
+  onRetry?: () => void;
+}) {
+  const hasAnalysis = Boolean(
+    data.anomalyDetection || data.trendPrediction || data.patternAnalysis
+  );
+
   return (
     <div className="space-y-4">
-      {data.anomalyDetection && <AnomalySection data={data.anomalyDetection} />}
-      {data.trendPrediction && <TrendSection data={data.trendPrediction} />}
-      {data.patternAnalysis && <InsightSection data={data.patternAnalysis} />}
+      {hasAnalysis ? (
+        <>
+          {data.anomalyDetection && (
+            <AnomalySection data={data.anomalyDetection} />
+          )}
+          {data.trendPrediction && <TrendSection data={data.trendPrediction} />}
+          {data.patternAnalysis && (
+            <InsightSection data={data.patternAnalysis} />
+          )}
+        </>
+      ) : (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="font-medium">분석 데이터 일시 불가</p>
+              <p className="mt-1 text-sm text-amber-800">
+                AI 엔진 응답에 이상감지·추세 데이터가 없습니다. 잠시 후 다시
+                시도해주세요.
+              </p>
+            </div>
+            {onRetry && (
+              <button
+                type="button"
+                onClick={onRetry}
+                className="shrink-0 rounded-lg bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-900 hover:bg-amber-200"
+              >
+                다시 시도
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       <div
         className="text-center text-xs text-gray-400"
@@ -261,5 +300,5 @@ export default function AnalysisResultsCard({
     return <MultiServerResults data={result} />;
   }
 
-  return <SingleServerResults data={result} />;
+  return <SingleServerResults data={result} onRetry={onRetry} />;
 }

@@ -6780,7 +6780,7 @@
           "timeUnixNano": 1771004173036363000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "mysqld[7374]: [Warning] InnoDB: page_cleaner: 1000ms intended loop took 873ms",
+          "body": "mysqld[7374]: [Warning] InnoDB: page_cleaner: 1000ms intended loop took 1127ms",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -10336,7 +10336,7 @@
           "timeUnixNano": 1771005292652052200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[2517]: [WARN] Slow transaction: downstream dependency response 441ms (threshold: 500ms)",
+          "body": "java[2517]: [WARN] Slow transaction: downstream dependency response 559ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },

@@ -1,15 +1,55 @@
 import { ArrowRight, Cpu } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { getThreshold } from '@/config/rules';
+import { getTimeSeries } from '@/data/otel-data';
 import type { MetricTrendResult } from '@/types/intelligent-monitoring.types';
+import type { OTelTimeSeries } from '@/types/otel-metrics';
 import { metricIcons, metricLabels } from './constants';
+import {
+  getSlotIndexFromTimestamp,
+  MetricSparkline,
+  sliceTimeSeriesForAsOf,
+} from './MetricSparkline';
 import { TrendIcon } from './TrendIcon';
 import { formatPercentLabel, normalizePercentValue } from './utils';
 
 interface TrendCardProps {
   metric: string;
   data: MetricTrendResult;
+  serverId: string;
+  timestamp?: string;
 }
 
-export function TrendCard({ metric, data }: TrendCardProps) {
+export function TrendCard({
+  metric,
+  data,
+  serverId,
+  timestamp,
+}: TrendCardProps) {
+  const [timeSeries, setTimeSeries] = useState<OTelTimeSeries | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    getTimeSeries().then((tsData) => {
+      if (active) setTimeSeries(tsData);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const dataSlot = useMemo(() => {
+    if (!timestamp) return undefined;
+    const timeMs = new Date(timestamp).getTime();
+    if (Number.isNaN(timeMs)) return undefined;
+    const slotIndex = getSlotIndexFromTimestamp(timeMs);
+    return {
+      slotIndex,
+      minuteOfDay: slotIndex * 10,
+      timeLabel: '',
+    };
+  }, [timestamp]);
+
   const icon = metricIcons[metric] || <Cpu className="h-5 w-5" />;
   const label = metricLabels[metric] || metric.toUpperCase();
   const isRising = data.trend === 'increasing';
@@ -43,6 +83,13 @@ export function TrendCard({ metric, data }: TrendCardProps) {
     signed: true,
     fallback: '변화율 없음',
   });
+  const sparklineThreshold =
+    metric === 'cpu' ||
+    metric === 'memory' ||
+    metric === 'disk' ||
+    metric === 'network'
+      ? getThreshold(metric).critical
+      : null;
 
   return (
     <div className={`rounded-lg border p-3 ${bgColor}`}>
@@ -54,19 +101,40 @@ export function TrendCard({ metric, data }: TrendCardProps) {
         <TrendIcon trend={data.trend} />
       </div>
 
-      {/* 현재값 → 예측값 시각화 */}
-      <div className="flex items-center gap-2">
-        <span className="text-sm tabular-nums text-gray-500">
-          {currentValueLabel}
-        </span>
-        {normalizedPredictedValue !== null && (
-          <ArrowRight className="h-3 w-3 text-gray-400" />
+      {/* 현재값 → 예측값 시각화 및 스파크라인 */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="text-sm tabular-nums text-gray-500">
+            {currentValueLabel}
+          </span>
+          {normalizedPredictedValue !== null && (
+            <ArrowRight className="h-3 w-3 text-gray-400" />
+          )}
+          <span
+            className={`${normalizedPredictedValue === null ? 'text-sm' : 'text-lg'} font-bold tabular-nums ${textColor}`}
+          >
+            {predictedValueLabel}
+          </span>
+        </div>
+
+        {timeSeries && (
+          <MetricSparkline
+            values={sliceTimeSeriesForAsOf(
+              timeSeries,
+              serverId,
+              metric,
+              dataSlot,
+              12
+            )}
+            predicted={data.predictedValue}
+            trend={data.trend}
+            threshold={sparklineThreshold}
+            width={72}
+            height={20}
+            className="shrink-0 opacity-80"
+            ariaLabel={`${serverId} ${metric} 추이`}
+          />
         )}
-        <span
-          className={`${normalizedPredictedValue === null ? 'text-sm' : 'text-lg'} font-bold tabular-nums ${textColor}`}
-        >
-          {predictedValueLabel}
-        </span>
       </div>
 
       {/* 변화율 미니 바 */}

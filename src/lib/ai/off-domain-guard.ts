@@ -5,6 +5,10 @@ export type OffDomainGuardCategory =
   | 'external_action'
   | 'local_recommendation'
   | 'personal_general'
+  | 'personal_experience'
+  | 'employment_policy'
+  | 'politics'
+  | 'ethics'
   | 'general_coding';
 
 export type OffDomainGuardAction = 'block' | 'warn';
@@ -19,6 +23,8 @@ export interface OffDomainGuardrailResult {
 
 const OFF_DOMAIN_WARNING =
   '서버 운영·모니터링 범위를 벗어난 질문이라 답변 정확도가 낮을 수 있습니다.';
+const GENERAL_IT_WARNING =
+  '일반 IT 지식 답변이며 OpenManager 모니터링 데이터와 운영 도구는 사용하지 않았습니다.';
 
 const OPERATIONAL_CONTEXT_PATTERN =
   /서버|서벼|썹|인프라|시스템|시스탬|모니터링|장애|알림|로그|오류|에러|토폴로지|아키텍처|구성도|배치도|운영|점검|명령어|cpu|씨피유|메모리|메머리|멤|디스크|용량|트래픽|네트워크|지연|응답|latency|response|server|servr|sever|infra|monitoring|incident|alert|log|memory|memroy|disk|traffic|network|load|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat|database|\bdb\b|promql|otel|runbook|krl|rag/i;
@@ -50,19 +56,44 @@ const OFF_DOMAIN_FINANCE_CONTEXT_PATTERN =
 const PERSONAL_GENERAL_PATTERN =
   /운세|horoscope|점심|저녁|아침|메뉴|뭐\s*먹|번역|translate|일정\s*정리/i;
 
+const PERSONAL_EXPERIENCE_PATTERN =
+  /(?:팀|직장|회사).{0,20}갈등|갈등.{0,20}(?:해결|경험)|(?:실제|직접).{0,12}(?:팀|직장|회사|프로젝트).{0,16}경험|star\s*(?:방식|형식).{0,24}(?:갈등|경험)/i;
+
+const EMPLOYMENT_POLICY_PATTERN =
+  /채용\s*(?:평가|정책|결정|공정성)|지원자\s*(?:평가|선발|채용)|인사\s*(?:평가|채용)|hiring\s*(?:assessment|decision|policy|fairness)/i;
+
+// 정치: 선거/정당 등 운영 도메인에서도 쓰이는 모호어(선거=leader election,
+// 정책=보안 정책, 정당=정당한)는 제외하고, 명백한 선거·당파·정치 견해 키워드로만 매칭한다.
+const POLITICS_PATTERN =
+  /대통령|대선|총선|지방선거|국회의원|여당|야당|정치인|지지\s*(?:정당|후보)|(?:어느|무슨|어떤)\s*정당|정치\s*(?:성향|견해|의견|입장)|president(?:ial)?\s*(?:election|candidate)|political\s*(?:party|opinion|stance|view)|who\s*(?:should\s*i\s*)?vote/i;
+
+// 윤리: 'AI 윤리', '운영 윤리'처럼 도메인에서 쓰이는 '윤리' 단독어는 제외하고,
+// 사회적·윤리적 논쟁 주제와 윤리적 판단 요청으로만 매칭한다.
+const ETHICS_PATTERN =
+  /낙태|사형\s*제도|안락사|존엄사|동성\s*(?:결혼|애)|성소수자|윤리적으로\s*(?:옳|그르|맞|틀|정당)|도덕적\s*(?:옳|그르|딜레마|판단)|abortion|euthanasia|death\s*penalty|same[-\s]?sex\s*marriage/i;
+
+const NON_OPERATIONAL_SERVER_COMPONENT_PATTERN =
+  /react.{0,24}server\s+components?|server\s+components?.{0,32}client\s+components?/i;
+
 const GENERAL_CODING_TOPIC_PATTERN =
-  /파이썬|python|자바스크립트|javascript|typescript|java|c\+\+|c#|golang|rust|leetcode|백준|프로그래머스|two\s*sum|fibonacci|피보나치|algorithm|알고리즘|코딩|코드/i;
+  /파이썬|python|자바스크립트|javascript|typescript|java|c\+\+|c#|golang|rust|react|server\s+components?|client\s+components?|leetcode|백준|프로그래머스|two\s*sum|fibonacci|피보나치|algorithm|알고리즘|코딩|코드/i;
 
 const GENERAL_CODING_REQUEST_PATTERN =
-  /짜줘|작성|만들|구현|풀어|풀어줘|생성|write|generate|implement|solve/i;
+  /짜줘|작성|만들|구현|풀어|풀어줘|생성|설명|차이|개념|원리|write|generate|implement|solve|explain|difference/i;
 
 function hasOperationalContext(query: string): boolean {
+  if (NON_OPERATIONAL_SERVER_COMPONENT_PATTERN.test(query)) {
+    return false;
+  }
   return (
     hasExplicitServerReference(query) || OPERATIONAL_CONTEXT_PATTERN.test(query)
   );
 }
 
-function isGeneralCodingRequest(query: string): boolean {
+function isGeneralItKnowledgeRequest(query: string): boolean {
+  if (hasOperationalContext(query)) {
+    return false;
+  }
   return (
     GENERAL_CODING_TOPIC_PATTERN.test(query) &&
     GENERAL_CODING_REQUEST_PATTERN.test(query)
@@ -115,6 +146,23 @@ function buildResponse(category: OffDomainGuardCategory): string {
         '저는 서버 운영·모니터링 중심 AI라 이 질문은 지원 범위 밖입니다.',
         '운영 범위 안에서는 서버 상태, 장애 징후, 로그, 리소스 사용률, 조치 명령어를 근거와 함께 분석할 수 있습니다.',
       ].join('\n');
+    case 'personal_experience':
+      return '저는 실제 조직에서 일하거나 팀 갈등을 경험한 사람이 아니므로 실제 팀 경험을 답변할 수 없습니다.';
+    case 'employment_policy':
+      return [
+        '해당 질문은 채용 평가와 공정성 정책에 관한 내용으로 OpenManager AI의 서버 운영·모니터링 지원 범위를 벗어납니다.',
+        '저는 지원자 평가나 채용 정책에 대한 판단을 제공하지 않습니다.',
+      ].join('\n');
+    case 'politics':
+      return [
+        '저는 서버 운영·모니터링 중심 AI로, 선거·정당·정치 견해에 대한 판단이나 조언은 제공하지 않습니다.',
+        '운영 범위 안에서는 서버 상태, 장애 징후, 로그, 리소스 사용률을 근거와 함께 분석할 수 있습니다.',
+      ].join('\n');
+    case 'ethics':
+      return [
+        '해당 질문은 사회적·윤리적 논쟁 주제로, 저는 특정 입장이나 도덕적 판단을 제공하지 않습니다.',
+        '운영 범위 안에서는 서버 상태, 장애 징후, 로그, 리소스 사용률을 근거와 함께 분석할 수 있습니다.',
+      ].join('\n');
     case 'general_coding':
       return [
         'OpenManager는 서버 운영·모니터링 중심 AI입니다.',
@@ -140,6 +188,26 @@ export function getOffDomainGuardrail(
       shouldShortCircuit: true,
       warning: OFF_DOMAIN_WARNING,
       response: buildResponse('personal_general'),
+    };
+  }
+
+  if (PERSONAL_EXPERIENCE_PATTERN.test(trimmedQuery)) {
+    return {
+      category: 'personal_experience',
+      action: 'block',
+      shouldShortCircuit: true,
+      warning: OFF_DOMAIN_WARNING,
+      response: buildResponse('personal_experience'),
+    };
+  }
+
+  if (EMPLOYMENT_POLICY_PATTERN.test(trimmedQuery)) {
+    return {
+      category: 'employment_policy',
+      action: 'block',
+      shouldShortCircuit: true,
+      warning: OFF_DOMAIN_WARNING,
+      response: buildResponse('employment_policy'),
     };
   }
 
@@ -173,6 +241,31 @@ export function getOffDomainGuardrail(
     return null;
   }
 
+  // politics/ethics는 운영 맥락 게이트 '뒤에' 둔다. 선거일 트래픽 대응처럼
+  // 정치/윤리 단어가 섞인 정상 운영 질문(예: "대선 당일 트래픽 스케일링",
+  // "총선 개표 서버 CPU")을 오차단하지 않기 위함이다. 운영 맥락이 없는 순수
+  // 정치/윤리 질문("너의 정치 성향은?")은 여기까지 내려와 그대로 차단된다.
+  // ⚠️ 이 두 검사를 게이트 앞으로 되돌리면 운영 질문 오차단이 재발한다.
+  if (POLITICS_PATTERN.test(trimmedQuery)) {
+    return {
+      category: 'politics',
+      action: 'block',
+      shouldShortCircuit: true,
+      warning: OFF_DOMAIN_WARNING,
+      response: buildResponse('politics'),
+    };
+  }
+
+  if (ETHICS_PATTERN.test(trimmedQuery)) {
+    return {
+      category: 'ethics',
+      action: 'block',
+      shouldShortCircuit: true,
+      warning: OFF_DOMAIN_WARNING,
+      response: buildResponse('ethics'),
+    };
+  }
+
   if (EXTERNAL_ACTION_PATTERN.test(trimmedQuery)) {
     return {
       category: 'external_action',
@@ -181,11 +274,11 @@ export function getOffDomainGuardrail(
     };
   }
 
-  if (isGeneralCodingRequest(trimmedQuery)) {
+  if (isGeneralItKnowledgeRequest(trimmedQuery)) {
     return {
       category: 'general_coding',
       action: 'warn',
-      warning: OFF_DOMAIN_WARNING,
+      warning: GENERAL_IT_WARNING,
     };
   }
 

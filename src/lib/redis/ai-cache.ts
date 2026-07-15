@@ -66,7 +66,10 @@ const CACHE_CONFIG = {
   },
 } as const;
 
-const EXACT_ONLY_ENDPOINTS = new Set(['supervisor-intro']);
+const EXACT_ONLY_ENDPOINTS = new Set([
+  'supervisor-intro',
+  'intelligent-monitoring',
+]);
 
 /**
  * intro 전용 정규화(조사 분리 + 의도어 흡수)를 적용할 endpoint.

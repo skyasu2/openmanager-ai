@@ -26,7 +26,13 @@ export function TrendSection({ data }: TrendSectionProps) {
       </div>
       <div className="grid grid-cols-3 gap-3">
         {metrics.map(([metric, result]) => (
-          <TrendCard key={metric} metric={metric} data={result} />
+          <TrendCard
+            key={metric}
+            metric={metric}
+            data={result}
+            serverId={data.serverId}
+            timestamp={data.timestamp}
+          />
         ))}
       </div>
       <div className="mt-2 text-xs text-gray-500">

@@ -95,6 +95,11 @@ export const AI_CACHE_TTL = {
 
 export type AIEndpoint = keyof typeof AI_CACHE_TTL;
 
+export interface AICachePolicy<T extends CacheableAIResponse> {
+  shouldUseCached?: (response: CacheableAIResponse) => boolean;
+  shouldCache?: (response: T) => boolean;
+}
+
 // ============================================================================
 // 캐시 키 생성
 // ============================================================================
@@ -325,23 +330,34 @@ export async function withAICache<T extends CacheableAIResponse>(
   sessionId: string,
   query: string,
   fetcher: () => Promise<T>,
-  endpoint: AIEndpoint = 'supervisor'
+  endpoint: AIEndpoint = 'supervisor',
+  policy: AICachePolicy<T> = {}
 ): Promise<{ data: T; cached: boolean }> {
   // 1. 캐시 조회
   const cacheResult = await getAICache(sessionId, query, endpoint);
 
-  if (cacheResult.hit && cacheResult.data) {
+  if (
+    cacheResult.hit &&
+    cacheResult.data &&
+    (policy.shouldUseCached?.(cacheResult.data) ?? true)
+  ) {
     return {
       data: { ...cacheResult.data, _cached: true } as unknown as T,
       cached: true,
     };
   }
 
+  if (cacheResult.hit && cacheResult.data) {
+    logger.info(
+      `[AI Cache] BYPASS - Endpoint: ${endpoint}, Source: ${cacheResult.source}`
+    );
+  }
+
   // 2. Fetcher 실행
   const response = await fetcher();
 
   // 3. 캐시 저장 (성공 응답만)
-  if (response.success) {
+  if (response.success && (policy.shouldCache?.(response) ?? true)) {
     await setAICache(sessionId, query, response, endpoint);
   }
 

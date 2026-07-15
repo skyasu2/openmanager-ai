@@ -1201,7 +1201,7 @@
           "timeUnixNano": 1771030817368095200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[9689]: [WARN] Slow transaction: /api/servers took 407ms (threshold: 500ms)",
+          "body": "java[9689]: [WARN] Slow transaction: /api/servers took 593ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
@@ -6430,7 +6430,7 @@
           "timeUnixNano": 1771032642844671000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[7156]: [WARN] Slow transaction: /api/servers took 281ms (threshold: 500ms)",
+          "body": "java[7156]: [WARN] Slow transaction: /api/servers took 719ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
@@ -6640,7 +6640,7 @@
           "timeUnixNano": 1771032883189475300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "mysqld[5647]: [Warning] InnoDB: page_cleaner: 1000ms intended loop took 729ms",
+          "body": "mysqld[5647]: [Warning] InnoDB: page_cleaner: 1000ms intended loop took 1271ms",
           "attributes": {
             "log.source": "mysqld"
           },

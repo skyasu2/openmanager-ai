@@ -3,7 +3,7 @@
 > **Free-tier server monitoring dashboard with a domain-specific AI assistant**
 > Vercel, Google Cloud Run, Supabase, Redis 기반의 서버 모니터링 웹 애플리케이션에 운영 도메인용 AI assistant frontend shell을 결합한 프로젝트
 
-[![Version](https://img.shields.io/badge/version-8.14.10-blue.svg?style=for-the-badge)](https://openmanager-ai.vercel.app)
+[![Version](https://img.shields.io/badge/version-8.14.29-blue.svg?style=for-the-badge)](https://openmanager-ai.vercel.app)
 [![Deployed Demo](https://img.shields.io/badge/Deployed_Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://openmanager-ai.vercel.app)
 [![License](https://img.shields.io/badge/License-GPL_v3-blue.svg?style=for-the-badge)](LICENSE)
 
@@ -143,4 +143,4 @@ GNU General Public License v3.0 — see [LICENSE](LICENSE) for details.
 
 **Deployed demo**: [openmanager-ai.vercel.app](https://openmanager-ai.vercel.app)
 
-Public Snapshot · v8.14.10
+Public Snapshot · v8.14.29

@@ -3084,7 +3084,7 @@
           "timeUnixNano": 1771046096893336800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[2627]: [WARN] Slow transaction: downstream dependency response 488ms (threshold: 500ms)",
+          "body": "java[2627]: [WARN] Slow transaction: downstream dependency response 512ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
@@ -6410,7 +6410,7 @@
           "timeUnixNano": 1771047290187116500,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[7219]: [WARN] Slow transaction: downstream dependency response 467ms (threshold: 500ms)",
+          "body": "java[7219]: [WARN] Slow transaction: downstream dependency response 533ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },

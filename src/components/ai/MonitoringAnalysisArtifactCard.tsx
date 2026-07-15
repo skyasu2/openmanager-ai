@@ -2,6 +2,8 @@
 
 import { Activity, Download, ExternalLink, FileText } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { getTimeSeries } from '@/data/otel-data';
 import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
 import {
   createArtifactExecutionWorkspaceId,
@@ -9,6 +11,11 @@ import {
 } from '@/lib/ai/chat-artifacts/artifact-execution';
 import { downloadBlobContent } from '@/lib/ai/chat-artifacts/download-utils';
 import type { MonitoringAnalysisArtifact } from '@/lib/ai/domains/monitoring/artifact-types';
+import type { OTelTimeSeries } from '@/types/otel-metrics';
+import {
+  MetricSparkline,
+  sliceTimeSeriesForAsOf,
+} from './analysis/MetricSparkline';
 import {
   buildAnalysisMarkdown,
   calculateCapacityBarSegments,
@@ -58,6 +65,18 @@ export function MonitoringAnalysisArtifactCard({
 }: {
   artifact: MonitoringAnalysisArtifact;
 }) {
+  const [timeSeries, setTimeSeries] = useState<OTelTimeSeries | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    getTimeSeries().then((data) => {
+      if (active) setTimeSeries(data);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const { openFullscreen } = useAIEntryController();
   const riskSignals = readDisplaySignals(artifact).slice(0, 3);
   const baselineRows = readBaselineRows(artifact).slice(0, 3);
@@ -209,25 +228,49 @@ export function MonitoringAnalysisArtifactCard({
                         </span>
                       </div>
                       {/* 진행 바 */}
-                      <div className="relative mt-2 h-2 overflow-hidden rounded-full bg-white/50">
-                        <div
-                          className={`absolute inset-y-0 left-0 rounded-full ${barColor} transition-all`}
-                          style={{ width: `${capacityBar.currentPercent}%` }}
-                        />
-                        {capacityBar.predictedDeltaPercent > 0 && (
+                      <div className="mt-2 flex items-center gap-3">
+                        <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-white/50">
                           <div
-                            className={`absolute inset-y-0 rounded-full ${predictedBarColor}`}
-                            style={{
-                              left: `${capacityBar.predictedLeftPercent}%`,
-                              width: `${capacityBar.predictedDeltaPercent}%`,
-                            }}
+                            className={`absolute inset-y-0 left-0 rounded-full ${barColor} transition-all`}
+                            style={{ width: `${capacityBar.currentPercent}%` }}
+                          />
+                          {capacityBar.predictedDeltaPercent > 0 && (
+                            <div
+                              className={`absolute inset-y-0 rounded-full ${predictedBarColor}`}
+                              style={{
+                                left: `${capacityBar.predictedLeftPercent}%`,
+                                width: `${capacityBar.predictedDeltaPercent}%`,
+                              }}
+                            />
+                          )}
+                          {/* 임계선 80% */}
+                          <div
+                            className="absolute inset-y-0 w-px bg-slate-400/60"
+                            style={{ left: '80%' }}
+                          />
+                        </div>
+                        {timeSeries && (
+                          <MetricSparkline
+                            values={sliceTimeSeriesForAsOf(
+                              timeSeries,
+                              alert.serverId,
+                              alert.metric,
+                              artifact.queryAsOfDataSlot,
+                              12
+                            )}
+                            predicted={alert.predictedValue}
+                            trend={
+                              alert.severity === 'critical'
+                                ? 'increasing'
+                                : 'stable'
+                            }
+                            threshold={80}
+                            width={80}
+                            height={18}
+                            className="shrink-0 opacity-80"
+                            ariaLabel={`${alert.serverId} ${alert.metric} 추이`}
                           />
                         )}
-                        {/* 임계선 80% */}
-                        <div
-                          className="absolute inset-y-0 w-px bg-slate-400/60"
-                          style={{ left: '80%' }}
-                        />
                       </div>
                       <div className="mt-1 flex justify-between text-[10px] text-inherit opacity-70">
                         <span>현재 {current}%</span>

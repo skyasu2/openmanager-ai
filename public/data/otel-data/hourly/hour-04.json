@@ -8803,7 +8803,7 @@
           "timeUnixNano": 1771012057038610400,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[1131]: [WARN] Slow transaction: downstream dependency response 500ms (threshold: 500ms)",
+          "body": "java[1131]: [WARN] Slow transaction: downstream dependency response 501ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
@@ -10346,7 +10346,7 @@
           "timeUnixNano": 1771012441517649200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[7022]: [WARN] Slow transaction: downstream dependency response 424ms (threshold: 500ms)",
+          "body": "java[7022]: [WARN] Slow transaction: downstream dependency response 576ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
@@ -10356,7 +10356,7 @@
           "timeUnixNano": 1771012481654367000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "mysqld[5962]: [Warning] InnoDB: page_cleaner: 1000ms intended loop took 745ms",
+          "body": "mysqld[5962]: [Warning] InnoDB: page_cleaner: 1000ms intended loop took 1255ms",
           "attributes": {
             "log.source": "mysqld"
           },

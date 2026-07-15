@@ -2874,7 +2874,7 @@
           "timeUnixNano": 1771024276923625200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[4898]: [WARN] Slow transaction: /api/servers took 300ms (threshold: 500ms)",
+          "body": "java[4898]: [WARN] Slow transaction: /api/servers took 700ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
