@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "Opsivane AI",
-    "version": "8.16.24",
+    "version": "8.16.25",
     "environment": "production",
     "debugMode": false,
     "apiTimeout": 30000,
