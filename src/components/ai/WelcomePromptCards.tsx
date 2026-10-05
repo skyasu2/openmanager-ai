@@ -65,8 +65,8 @@ interface WelcomeSystemSnapshot {
 const OPS_PROCEDURE_STARTER_PROMPT: StarterPrompt = {
   icon: Terminal,
   title: '운영 스크립트',
-  prompt: '🔧 CPU 알림 bash 스크립트 짜줘',
-  description: 'CPU 알림 bash/runbook/alert-rule 생성',
+  prompt: '🔧 CPU 80% 이상 서버 로컬 점검 bash 스크립트 짜줘',
+  description: '외부 알림 없는 CPU 점검 스크립트 생성',
   iconBg: 'bg-slate-100',
   iconColor: 'text-slate-600',
   tone: 'analysis',

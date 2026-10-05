@@ -15,7 +15,7 @@
  * or generateServerLogs/generateLokiLogs (synthetic).
  */
 
-import { Bell } from 'lucide-react';
+import { Bell, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { FC } from 'react';
 import { useMemo, useState } from 'react';
@@ -207,6 +207,10 @@ export const LogsTab: FC<LogsTabProps> = ({
     router.push(`/dashboard/alerts?server=${encodeURIComponent(serverId)}`);
   };
 
+  const handleOpenLogExplorer = () => {
+    router.push(`/dashboard/logs?server=${encodeURIComponent(serverId)}`);
+  };
+
   return (
     <div className="space-y-6">
       <div className="animate-fade-in">
@@ -238,6 +242,16 @@ export const LogsTab: FC<LogsTabProps> = ({
 
           {/* Legend */}
           <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={handleOpenLogExplorer}
+              aria-label={`${serverId} 로그 탐색기 열기`}
+              title="로그 탐색기"
+              className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+            >
+              <FileText size={13} />
+              로그 탐색기
+            </button>
             <button
               type="button"
               onClick={handleOpenAlertHistory}

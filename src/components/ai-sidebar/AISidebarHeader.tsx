@@ -14,7 +14,6 @@ import {
   FileText,
   Maximize2,
   MessageSquare,
-  Monitor,
   Plus,
   X,
 } from 'lucide-react';
@@ -27,7 +26,6 @@ import { CloudRunStatusIndicator } from './CloudRunStatusIndicator';
 const AI_SIDEBAR_SUBTITLES: Record<AIAssistantFunction, string> = {
   chat: '서버 상태·로그·메트릭을 자연어로 질의',
   'auto-report': '장애·정기 보고서 자동 생성',
-  'intelligent-monitoring': '이상감지·추세 분석 실행',
 };
 
 const AI_SIDEBAR_FUNCTION_TABS: Array<{
@@ -37,7 +35,6 @@ const AI_SIDEBAR_FUNCTION_TABS: Array<{
 }> = [
   { id: 'chat', label: 'AI Chat', icon: MessageSquare },
   { id: 'auto-report', label: '자동 보고서', icon: FileText },
-  { id: 'intelligent-monitoring', label: '이상감지', icon: Monitor },
 ];
 
 interface AISidebarHeaderProps {

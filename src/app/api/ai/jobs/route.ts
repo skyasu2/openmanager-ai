@@ -42,6 +42,7 @@ import {
   getRateLimitIdentity,
 } from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import { rejectIfSystemNotRunning } from '@/lib/system/system-running-guard';
 import type {
   AIJob,
   CreateJobRequest,
@@ -227,6 +228,9 @@ function buildJobWorkerMessages(params: {
 
 async function handlePOST(request: NextRequest) {
   try {
+    const notRunning = await rejectIfSystemNotRunning();
+    if (notRunning) return notRunning;
+
     const body = (await request.json()) as CreateJobRequest;
     const { query, options } = body;
     const ownerKey = resolveJobOwnerKey(request);

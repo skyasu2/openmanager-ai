@@ -103,7 +103,7 @@ export default async function NotFound() {
 
         {/* 시스템 정보 */}
         <div className="border-t border-gray-700 pt-4 text-xs text-gray-600">
-          <p>OpenManager AI v{APP_VERSION}</p>
+          <p>Opsivane AI v{APP_VERSION}</p>
           <p>Error ID: NOT_FOUND_404</p>
         </div>
       </div>

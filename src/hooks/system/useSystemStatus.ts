@@ -24,6 +24,7 @@ function isStatusEqual(
     a.uptime === b.uptime &&
     a.version === b.version &&
     a.environment === b.environment &&
+    a.remainingMs === b.remainingMs &&
     servicesEqual
     // Note: lastUpdate 변경은 의도적으로 무시 (리렌더링 방지)
   );
@@ -37,6 +38,8 @@ export interface SystemStatus {
   version: string;
   environment: string;
   uptime: number; // 초 단위
+  /** Redis 공용 창 남은 시간. 닫힘=0, 조회 실패=null */
+  remainingMs?: number | null;
   services?: {
     database: boolean;
     cache: boolean;

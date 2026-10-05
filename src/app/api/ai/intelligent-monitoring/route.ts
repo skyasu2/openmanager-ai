@@ -31,6 +31,7 @@ import {
 } from '@/lib/ai-proxy/proxy';
 import { withAuth } from '@/lib/auth/api-auth';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import { withSystemRunning } from '@/lib/system/system-running-guard';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 
@@ -620,6 +621,6 @@ async function getHandler(_request: NextRequest): Promise<NextResponse> {
 
 // Export with authentication
 export const POST = withAuth(
-  withRateLimit(rateLimiters.aiAnalysis, postHandler)
+  withRateLimit(rateLimiters.aiAnalysis, withSystemRunning(postHandler))
 );
 export const GET = withAuth(getHandler);

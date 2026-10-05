@@ -7,6 +7,7 @@ import {
   Globe,
   Image as ImageIcon,
   Paperclip,
+  Play,
   Send,
   Square,
   Upload,
@@ -16,8 +17,11 @@ import Image from 'next/image';
 import React, { memo, type RefObject, useCallback } from 'react';
 import { AutoResizeTextarea } from '@/components/ui/AutoResizeTextarea';
 import { ImagePreviewModal } from '@/components/ui/ImagePreviewModal';
-import type { FileAttachment } from '@/hooks/ai/useFileAttachments';
-import { formatFileSize } from '@/hooks/ai/useFileAttachments';
+import {
+  CHAT_ATTACHMENT_ACCEPT,
+  type FileAttachment,
+  formatFileSize,
+} from '@/hooks/ai/useFileAttachments';
 import type { AIStreamStatus } from '@/hooks/ai/useHybridAIQuery';
 import { SESSION_LIMITS, type SessionState } from '@/types/session';
 
@@ -55,6 +59,9 @@ interface ChatInputAreaProps {
   onStopGeneration?: () => void;
   webSearchEnabled?: boolean;
   onToggleWebSearch?: () => void;
+  systemWindowClosed?: boolean;
+  isStartingSystem?: boolean;
+  onStartSystem?: () => void;
 }
 
 export const ChatInputArea = memo(function ChatInputArea({
@@ -83,6 +90,9 @@ export const ChatInputArea = memo(function ChatInputArea({
   onStopGeneration,
   webSearchEnabled,
   onToggleWebSearch,
+  systemWindowClosed = false,
+  isStartingSystem = false,
+  onStartSystem,
 }: ChatInputAreaProps) {
   const sessionCount = sessionState?.count ?? 0;
   const showSessionWarning =
@@ -106,9 +116,10 @@ export const ChatInputArea = memo(function ChatInputArea({
   const handleSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+      if (systemWindowClosed) return;
       onSendWithAttachments();
     },
-    [onSendWithAttachments]
+    [onSendWithAttachments, systemWindowClosed]
   );
 
   return (
@@ -131,6 +142,29 @@ export const ChatInputArea = memo(function ChatInputArea({
         )}
 
         <div className="mx-auto max-w-3xl px-4 py-4">
+          {systemWindowClosed && (
+            <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
+              <p className="text-xs font-medium text-amber-900">
+                공용 시스템 창이 닫혔습니다
+              </p>
+              <p className="mt-0.5 text-xs text-amber-700">
+                AI 질의는 시스템 시작 후 다시 사용할 수 있습니다.
+              </p>
+              {onStartSystem && (
+                <button
+                  type="button"
+                  onClick={onStartSystem}
+                  disabled={isStartingSystem}
+                  aria-label="채팅에서 시스템 시작"
+                  data-spotlight-anchor="chat-system-start"
+                  className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Play className="h-3.5 w-3.5" aria-hidden="true" />
+                  {isStartingSystem ? '시작 중...' : '시스템 시작'}
+                </button>
+              )}
+            </div>
+          )}
           {/* 파일 에러 토스트 */}
           {fileErrors.length > 0 && (
             <div className="mb-3 rounded-lg border border-red-200 bg-red-50 p-3">
@@ -227,9 +261,13 @@ export const ChatInputArea = memo(function ChatInputArea({
               <button
                 type="button"
                 onClick={handleFileAttach}
-                disabled={!canAddMore || sessionState?.isLimitReached}
+                disabled={
+                  !canAddMore ||
+                  sessionState?.isLimitReached ||
+                  systemWindowClosed
+                }
                 className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg text-gray-500 transition-all hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-40 md:h-9 md:w-9"
-                title="파일 첨부"
+                title="파일 첨부 — PNG, JPEG, GIF, WebP, PDF, MD. 붙여넣기·드래그 가능, 최대 3개"
                 aria-label="파일 첨부"
               >
                 <Paperclip className="h-5 w-5" aria-hidden="true" />
@@ -239,15 +277,21 @@ export const ChatInputArea = memo(function ChatInputArea({
                 <button
                   type="button"
                   onClick={onToggleWebSearch}
-                  disabled={sessionState?.isLimitReached}
-                  aria-label="Web 검색"
+                  disabled={sessionState?.isLimitReached || systemWindowClosed}
+                  aria-label={
+                    webSearchEnabled ? 'Web 검색: 항상' : 'Web 검색: 자동'
+                  }
                   aria-pressed={Boolean(webSearchEnabled)}
                   className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg transition-all disabled:cursor-not-allowed disabled:opacity-40 md:h-9 md:w-9 ${
                     webSearchEnabled
                       ? 'bg-blue-50 text-blue-600'
                       : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
                   }`}
-                  title="Web 검색"
+                  title={
+                    webSearchEnabled
+                      ? 'Web 검색: 항상 사용'
+                      : 'Web 검색: 자동 — 질문에 따라 필요하면 사용합니다'
+                  }
                 >
                   <Globe className="h-5 w-5" aria-hidden="true" />
                 </button>
@@ -258,19 +302,23 @@ export const ChatInputArea = memo(function ChatInputArea({
               ref={textareaRef}
               value={inputValue}
               onValueChange={setInputValue}
-              onKeyboardShortcut={onSendWithAttachments}
+              onKeyboardShortcut={
+                systemWindowClosed ? undefined : onSendWithAttachments
+              }
               placeholder={
-                sessionState?.isLimitReached
-                  ? '새 대화를 시작해주세요'
-                  : isGenerating
-                    ? streamStatus === 'submitted'
-                      ? '요청 전송 중입니다... 잠시만 기다려주세요'
-                      : '대답 중에도 편하게 입력하세요 (대기열에 추가됨)'
-                    : isProcessingAttachments
-                      ? '파일을 처리하고 있습니다...'
-                      : attachments.length > 0
-                        ? '이미지/파일 분석 (시각·문서 분석) — 질문을 입력하세요'
-                        : '서버 운영 질문을 입력하세요'
+                systemWindowClosed
+                  ? '시스템 시작 후 질문할 수 있습니다'
+                  : sessionState?.isLimitReached
+                    ? '새 대화를 시작해주세요'
+                    : isGenerating
+                      ? streamStatus === 'submitted'
+                        ? '요청 전송 중입니다... 잠시만 기다려주세요'
+                        : '대답 중에도 편하게 입력하세요 (대기열에 추가됨)'
+                      : isProcessingAttachments
+                        ? '파일을 처리하고 있습니다...'
+                        : attachments.length > 0
+                          ? '이미지/파일 분석 (시각·문서 분석) — 질문을 입력하세요'
+                          : '서버 운영 질문을 입력하세요'
               }
               className="flex-1 resize-none border-none bg-transparent px-2 py-3 text-chat text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:ring-0"
               minHeight={48}
@@ -280,7 +328,7 @@ export const ChatInputArea = memo(function ChatInputArea({
               id="ai-chat-input"
               name="ai-chat-input"
               aria-label="AI 질문 입력"
-              disabled={sessionState?.isLimitReached}
+              disabled={sessionState?.isLimitReached || systemWindowClosed}
             />
 
             {/* 전송/중단 버튼 */}
@@ -299,6 +347,7 @@ export const ChatInputArea = memo(function ChatInputArea({
               <button
                 type="submit"
                 disabled={
+                  systemWindowClosed ||
                   (!inputValue.trim() && attachments.length === 0) ||
                   isProcessingAttachments ||
                   sessionState?.isLimitReached
@@ -324,7 +373,7 @@ export const ChatInputArea = memo(function ChatInputArea({
             id="ai-chat-attachments"
             name="ai-chat-attachments"
             type="file"
-            accept="image/*,.pdf,.md,text/markdown,text/plain"
+            accept={CHAT_ATTACHMENT_ACCEPT}
             multiple
             onChange={onFileSelect}
             className="hidden"
@@ -379,7 +428,11 @@ export const ChatInputArea = memo(function ChatInputArea({
                 </span>
               )}
             </div>
-            <span className="shrink-0">Shift+Enter로 줄바꿈</span>
+            <span className="shrink-0">
+              AI 답변은 부정확할 수 있습니다 · 중요한 운영 판단 전 메트릭과
+              로그를 확인하세요
+            </span>
+            <span className="shrink-0">Shift+Enter · 이미지 붙여넣기</span>
           </div>
         </div>
       </div>

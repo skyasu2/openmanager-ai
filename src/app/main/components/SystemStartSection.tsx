@@ -15,7 +15,7 @@ const START_EXAMPLES = [
   { q: '지난 1시간 이상 징후 구간 요약해줘', icon: '📊' },
   { q: '향후 장애 가능성 있는 서버 예측해줘', icon: '🔮' },
   { q: '전체 서버 상태를 한눈에 요약해줘', icon: '📋' },
-  { q: 'CPU 알림 bash 스크립트 짜줘', icon: '🔧' },
+  { q: 'CPU 80% 이상 서버 로컬 점검 bash 스크립트 짜줘', icon: '🔧' },
 ] as const;
 
 interface SystemStartSectionProps {

@@ -22,6 +22,7 @@ export {
   checkRedisHealth,
   getRedisClient,
   getSystemRunningFlag,
+  getSystemRunningWindow,
   isRedisDisabled,
   isRedisEnabled,
   parseSystemRunningFlag,
@@ -30,6 +31,7 @@ export {
   redisGet,
   redisMGet,
   redisSet,
+  type SystemRunningWindow,
   setSystemRunningFlag,
 } from './client';
 // Rate Limiter

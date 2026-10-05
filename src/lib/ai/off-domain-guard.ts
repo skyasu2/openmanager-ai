@@ -24,7 +24,7 @@ export interface OffDomainGuardrailResult {
 const OFF_DOMAIN_WARNING =
   '서버 운영·모니터링 범위를 벗어난 질문이라 답변 정확도가 낮을 수 있습니다.';
 const GENERAL_IT_WARNING =
-  '일반 IT 지식 답변이며 OpenManager 모니터링 데이터와 운영 도구는 사용하지 않았습니다.';
+  '일반 IT 지식 답변이며 Opsivane 모니터링 데이터와 운영 도구는 사용하지 않았습니다.';
 
 const OPERATIONAL_CONTEXT_PATTERN =
   /서버|서벼|썹|인프라|시스템|시스탬|모니터링|장애|알림|로그|오류|에러|토폴로지|아키텍처|구성도|배치도|운영|점검|명령어|cpu|씨피유|메모리|메머리|멤|디스크|용량|트래픽|네트워크|지연|응답|latency|response|server|servr|sever|infra|monitoring|incident|alert|log|memory|memroy|disk|traffic|network|load|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat|database|\bdb\b|promql|otel|runbook|krl|rag/i;
@@ -124,7 +124,7 @@ function buildResponse(category: OffDomainGuardCategory): string {
         '실시간 외부 조회 도구가 연결되어 있지 않아 현재 가격, 날씨, 뉴스, 환율 같은 값을 확인할 수 없습니다.',
         '정확한 현재값은 공식 앱, 거래소, 기상청, 금융 정보 서비스에서 확인해 주세요.',
         '',
-        'OpenManager 범위 안에서는 서버 CPU, 메모리, 디스크, 알림, 로그, 토폴로지, 장애 징후를 바로 분석할 수 있습니다.',
+        'Opsivane 범위 안에서는 서버 CPU, 메모리, 디스크, 알림, 로그, 토폴로지, 장애 징후를 바로 분석할 수 있습니다.',
       ].join('\n');
     case 'external_action':
       return [
@@ -150,7 +150,7 @@ function buildResponse(category: OffDomainGuardCategory): string {
       return '저는 실제 조직에서 일하거나 팀 갈등을 경험한 사람이 아니므로 실제 팀 경험을 답변할 수 없습니다.';
     case 'employment_policy':
       return [
-        '해당 질문은 채용 평가와 공정성 정책에 관한 내용으로 OpenManager AI의 서버 운영·모니터링 지원 범위를 벗어납니다.',
+        '해당 질문은 채용 평가와 공정성 정책에 관한 내용으로 Opsivane AI의 서버 운영·모니터링 지원 범위를 벗어납니다.',
         '저는 지원자 평가나 채용 정책에 대한 판단을 제공하지 않습니다.',
       ].join('\n');
     case 'politics':
@@ -165,7 +165,7 @@ function buildResponse(category: OffDomainGuardCategory): string {
       ].join('\n');
     case 'general_coding':
       return [
-        'OpenManager는 서버 운영·모니터링 중심 AI입니다.',
+        'Opsivane은 서버 운영·모니터링 중심 AI입니다.',
         '일반 알고리즘 풀이, 학습용 코드 완성, 범용 코딩 문제 해결은 지원 범위 밖입니다.',
         '',
         '다만 로그 파싱, 모니터링 자동화, 운영 점검 스크립트, PromQL, 장애 대응 runbook처럼 서버 운영과 직접 연결된 코드는 도울 수 있습니다.',

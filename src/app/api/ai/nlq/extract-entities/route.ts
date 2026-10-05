@@ -41,11 +41,18 @@ import {
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import { withSystemRunning } from '@/lib/system/system-running-guard';
 
 // MIGRATED: Removed export const runtime = "nodejs" (default)
 export const maxDuration = 10;
 
 const GROQ_TIMEOUT_MS = 3000;
+/**
+ * 두 번째 모델 호출까지 허용할 총 예산.
+ * 호출자(`entity-extractor.ts`)가 7초에 abort하므로 그보다 짧게 잡아,
+ * 예산을 넘길 상황이면 escalation을 포기하고 1차 결과라도 돌려준다.
+ */
+const ENTITY_EXTRACTION_BUDGET_MS = 6500;
 
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -113,15 +120,29 @@ function shouldEscalateToFallback(entities: ExtractedEntities): boolean {
   );
 }
 
+/**
+ * escalation 판정은 "둘 중 하나라도 낮으면"이므로, 승자 선택도 같은 기준을 쓴다.
+ * max를 쓰면 escalation을 유발한 약한 신호가 비교 단계에서 무시된다.
+ */
 function getEntityQualityScore(entities: ExtractedEntities): number {
   const intentFrame = entities.intentFrame;
-  let score = Math.max(entities.confidence, intentFrame?.confidence ?? 0);
+  let score =
+    intentFrame === undefined
+      ? entities.confidence
+      : Math.min(entities.confidence, intentFrame.confidence);
 
   if (intentFrame?.ambiguity === 'high') score -= 20;
   if (intentFrame?.intent === 'unknown') score -= 20;
   if (intentFrame?.executionMode === 'unknown') score -= 10;
 
   return score;
+}
+
+/** 남은 예산이 폴백 1회(타임아웃 상한)를 감당하는지. */
+function canAffordFallback(startedAt: number): boolean {
+  return (
+    Date.now() - startedAt <= ENTITY_EXTRACTION_BUDGET_MS - GROQ_TIMEOUT_MS
+  );
 }
 
 async function postHandler(request: NextRequest) {
@@ -173,6 +194,7 @@ async function postHandler(request: NextRequest) {
     ...(guard.truncated && { truncated: true }),
   };
 
+  const startedAt = Date.now();
   let primaryEntities: ExtractedEntities;
 
   try {
@@ -182,6 +204,16 @@ async function postHandler(request: NextRequest) {
       model: GROQ_TEXT_MODEL_ID,
       error: error instanceof Error ? error.message : String(error),
     });
+
+    if (!canAffordFallback(startedAt)) {
+      logger.warn(
+        '[AI NLQ] no budget left for fallback after primary failure',
+        {
+          elapsedMs: Date.now() - startedAt,
+        }
+      );
+      return NextResponse.json({ confidence: 0, ...responseMetadata });
+    }
 
     try {
       const fallbackEntities = await generateEntities(
@@ -211,19 +243,38 @@ async function postHandler(request: NextRequest) {
     });
   }
 
+  // Free Tier 소비가 질의당 2배가 되는 경로다. 발생률과 채택률을 관측할 수 있어야
+  // escalation 임계값을 근거를 갖고 조정할 수 있다.
+  if (!canAffordFallback(startedAt)) {
+    logger.info('[AI NLQ] escalation skipped: budget exhausted', {
+      elapsedMs: Date.now() - startedAt,
+      primaryScore: getEntityQualityScore(primaryEntities),
+    });
+    return NextResponse.json({
+      ...primaryEntities,
+      ...responseMetadata,
+    });
+  }
+
   try {
     const fallbackEntities = await generateEntities(
       GROQ_TEXT_FALLBACK_MODEL_ID,
       queryForLLM
     );
-    const selectedEntities =
-      getEntityQualityScore(fallbackEntities) >
-      getEntityQualityScore(primaryEntities)
-        ? fallbackEntities
-        : primaryEntities;
+    const primaryScore = getEntityQualityScore(primaryEntities);
+    const fallbackScore = getEntityQualityScore(fallbackEntities);
+    const escalationAccepted = fallbackScore > primaryScore;
+
+    logger.info('[AI NLQ] escalated to fallback model', {
+      model: GROQ_TEXT_FALLBACK_MODEL_ID,
+      elapsedMs: Date.now() - startedAt,
+      primaryScore,
+      fallbackScore,
+      escalationAccepted,
+    });
 
     return NextResponse.json({
-      ...selectedEntities,
+      ...(escalationAccepted ? fallbackEntities : primaryEntities),
       ...responseMetadata,
     });
   } catch (error) {
@@ -242,5 +293,5 @@ async function postHandler(request: NextRequest) {
 }
 
 export const POST = withAuth(
-  withRateLimit(rateLimiters.aiAnalysis, postHandler)
+  withRateLimit(rateLimiters.aiAnalysis, withSystemRunning(postHandler))
 );

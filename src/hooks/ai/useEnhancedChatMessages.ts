@@ -81,6 +81,9 @@ export function useEnhancedChatMessages({
           traceIdByMessageId,
           deferredAssistantMetadataByMessageId,
           deferredToolResultsByMessageId,
+          timestamp: cached?.enhanced.timestamp
+            ? new Date(cached.enhanced.timestamp)
+            : undefined,
         },
         isLastMessage
       );

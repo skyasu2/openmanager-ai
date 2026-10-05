@@ -5,9 +5,9 @@ import {
   type FileAttachment,
   useFileAttachments,
 } from '@/hooks/ai/useFileAttachments';
+import { collectClipboardImageFiles } from './clipboard-image-paste';
 
 interface UseChatActionsOptions {
-  setInputValue: (value: string) => void;
   handleSendInput: (attachments?: FileAttachment[]) => void;
   isGenerating: boolean;
   isLimitReached?: boolean;
@@ -17,7 +17,6 @@ interface UseChatActionsOptions {
 }
 
 export function useChatActions({
-  setInputValue,
   handleSendInput,
   isGenerating,
   isLimitReached,
@@ -90,38 +89,15 @@ export function useChatActions({
 
   const handlePaste = useCallback(
     (e: React.ClipboardEvent) => {
-      const items = e.clipboardData?.items;
-      if (!items) return;
-
-      const imageFiles: File[] = [];
-
-      for (const item of Array.from(items)) {
-        if (item.type.startsWith('image/')) {
-          const file = item.getAsFile();
-          if (file) {
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            const extension = item.type.split('/')[1] || 'png';
-            Object.defineProperty(file, 'name', {
-              writable: true,
-              value: `clipboard-${timestamp}.${extension}`,
-            });
-            imageFiles.push(file);
-          }
-        } else if (item.type === 'text/plain') {
-          item.getAsString((text) => {
-            if (text?.trim() && imageFiles.length > 0) {
-              setInputValue(text);
-            }
-          });
-        }
+      const imageFiles = collectClipboardImageFiles(e.clipboardData?.items);
+      if (imageFiles.length === 0) {
+        return;
       }
 
-      if (imageFiles.length > 0) {
-        e.preventDefault();
-        addFiles(imageFiles);
-      }
+      e.preventDefault();
+      void addFiles(imageFiles);
     },
-    [addFiles, setInputValue]
+    [addFiles]
   );
 
   // Auto-scroll on new messages

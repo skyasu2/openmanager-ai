@@ -17,6 +17,7 @@ import { useAIChatCore } from '@/hooks/ai/useAIChatCore';
 import { useAIChatSurface } from '@/hooks/ai/useAIChatSurface';
 import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
 import { useUserPermissions } from '@/hooks/auth/useUserPermissions';
+import { useSystemWindowChatGate } from '@/hooks/system/useSystemWindowChatGate';
 import { useResizable } from '@/hooks/ui/useResizable';
 import { cn } from '@/lib/utils';
 import {
@@ -66,6 +67,8 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     pendingPrefillMessage,
     consumePendingPrefillMessage,
   } = useAIChatSurface();
+  const { systemWindowClosed, isStartingSystem, onStartSystem } =
+    useSystemWindowChatGate();
 
   // 📐 사이드바 너비 상태 (사이드바 전용)
   const sidebarWidth = useAISidebarStore((state) => state.sidebarWidth);
@@ -325,6 +328,9 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
               queuedQueries={queuedQueries}
               removeQueuedQuery={removeQueuedQuery}
               showInternalHeader={false}
+              systemWindowClosed={systemWindowClosed}
+              isStartingSystem={isStartingSystem}
+              onStartSystem={onStartSystem}
             />
           </Activity>
           {/* Reporter/Analyst - Activity API로 상태 유지 */}

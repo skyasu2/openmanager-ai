@@ -293,7 +293,6 @@ export function useTimeSeriesMetrics({
           history: 'true',
           range: rangeToServerRange[range],
           format: 'enhanced',
-          include_metrics: 'true',
         });
 
         const response = await fetch(

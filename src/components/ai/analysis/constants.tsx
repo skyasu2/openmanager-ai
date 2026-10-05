@@ -3,6 +3,7 @@
  */
 
 import { Cpu, HardDrive, MemoryStick } from 'lucide-react';
+import { SERVER_STATUS_LABELS } from '@/types/server-enums';
 
 // 메트릭 아이콘 매핑
 export const metricIcons: Record<string, React.ReactNode> = {
@@ -34,7 +35,7 @@ export const statusColors: Record<string, string> = {
 
 // 상태 라벨
 export const statusLabel: Record<string, string> = {
-  online: '정상',
-  warning: '주의',
-  critical: '위험',
+  online: SERVER_STATUS_LABELS.online,
+  warning: SERVER_STATUS_LABELS.warning,
+  critical: SERVER_STATUS_LABELS.critical,
 };

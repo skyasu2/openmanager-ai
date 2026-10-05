@@ -36,7 +36,7 @@ export function SystemSummarySection({ summary }: SystemSummarySectionProps) {
           <div className="text-lg font-bold text-yellow-600">
             {summary.warningServers}
           </div>
-          <div className="text-xs text-gray-600">주의</div>
+          <div className="text-xs text-gray-600">경고</div>
         </div>
         <div className="rounded-lg bg-white/60 p-2 text-center">
           <div className="text-lg font-bold text-red-600">

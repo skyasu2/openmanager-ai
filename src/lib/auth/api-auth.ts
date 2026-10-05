@@ -258,6 +258,21 @@ export function withAuth<T extends unknown[] = []>(
   };
 }
 
+/**
+ * 운영자 전용(ops-only) API 응답에 공통 스코프 헤더를 부여한다.
+ * 상품 표면(product surface)이 아닌 admin/ops 라우트임을 명시해 실수로
+ * 일반 사용자 UI에 노출되는 걸 방지한다.
+ */
+const OPS_SCOPE_HEADER = 'X-OpenManager-Api-Scope';
+const OPS_SCOPE_VALUE = 'ops-only';
+
+export function withOpsScope(
+  response: NextResponse | Response
+): NextResponse | Response {
+  response.headers.set(OPS_SCOPE_HEADER, OPS_SCOPE_VALUE);
+  return response;
+}
+
 export function withAdminAuth<T extends unknown[] = []>(
   handler: (
     request: NextRequest,
@@ -265,66 +280,78 @@ export function withAdminAuth<T extends unknown[] = []>(
   ) => Promise<NextResponse | Response>
 ) {
   return async (request: NextRequest, ...args: T) => {
-    // 1. Check base API authentication
-    const authError = await checkAPIAuth(request);
-    if (authError) return authError;
+    const response = await resolveAdminAuthResponse(request, handler, ...args);
+    return withOpsScope(response);
+  };
+}
 
-    // 2. Additional Admin authorization check
-    const context = getAPIAuthContext(request);
-    if (!context) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+async function resolveAdminAuthResponse<T extends unknown[]>(
+  request: NextRequest,
+  handler: (
+    request: NextRequest,
+    ...args: T
+  ) => Promise<NextResponse | Response>,
+  ...args: T
+): Promise<NextResponse | Response> {
+  // 1. Check base API authentication
+  const authError = await checkAPIAuth(request);
+  if (authError) return authError;
 
-    // Allow development, test environments, and server-to-server API keys
-    if (
-      context.authType === 'development' ||
-      context.authType === 'test' ||
-      context.authType === 'test-secret' ||
-      context.authType === 'api-key'
-    ) {
-      return handler(request, ...args);
-    }
+  // 2. Additional Admin authorization check
+  const context = getAPIAuthContext(request);
+  if (!context) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
-    // For Supabase users, verify the admin role in metadata
-    if (context.authType === 'supabase' && context.userId) {
-      try {
-        const supabase = await createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+  // Allow development, test environments, and server-to-server API keys
+  if (
+    context.authType === 'development' ||
+    context.authType === 'test' ||
+    context.authType === 'test-secret' ||
+    context.authType === 'api-key'
+  ) {
+    return handler(request, ...args);
+  }
 
-        // Check if user has 'admin' role in user_metadata or app_metadata
-        const isAdmin =
-          user?.user_metadata?.role === 'admin' ||
-          user?.app_metadata?.role === 'admin';
+  // For Supabase users, verify the admin role in metadata
+  if (context.authType === 'supabase' && context.userId) {
+    try {
+      const supabase = await createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-        if (isAdmin) {
-          return handler(request, ...args);
-        } else {
-          logger.warn(
-            `[API Auth] User ${context.userId} attempted to access admin route without admin role.`
-          );
-          return NextResponse.json(
-            { error: 'Forbidden - Admin access required' },
-            { status: 403 }
-          );
-        }
-      } catch (error) {
-        logger.error('[API Auth] Error verifying admin role:', error);
+      // Check if user has 'admin' role in user_metadata or app_metadata
+      const isAdmin =
+        user?.user_metadata?.role === 'admin' ||
+        user?.app_metadata?.role === 'admin';
+
+      if (isAdmin) {
+        return handler(request, ...args);
+      } else {
+        logger.warn(
+          `[API Auth] User ${context.userId} attempted to access admin route without admin role.`
+        );
         return NextResponse.json(
-          { error: 'Internal Server Error' },
-          { status: 500 }
+          { error: 'Forbidden - Admin access required' },
+          { status: 403 }
         );
       }
+    } catch (error) {
+      logger.error('[API Auth] Error verifying admin role:', error);
+      return NextResponse.json(
+        { error: 'Internal Server Error' },
+        { status: 500 }
+      );
     }
+  }
 
-    // Default deny for guests or unknown auth types
-    logger.warn(
-      `[API Auth] Blocked admin access for authType: ${context.authType}`
-    );
-    return NextResponse.json(
-      { error: 'Forbidden - Admin access required' },
-      { status: 403 }
-    );
-  };
+  // Default deny for guests or unknown auth types
+  logger.warn(
+    `[API Auth] Blocked admin access for authType: ${context.authType}`
+  );
+  return NextResponse.json(
+    { error: 'Forbidden - Admin access required' },
+    { status: 403 }
+  );
 }

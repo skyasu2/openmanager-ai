@@ -179,7 +179,7 @@ const nextConfig = {
     removeConsole:
       process.env.NODE_ENV === 'production' &&
       process.env.PRESERVE_CONSOLE !== 'true',
-    // React DevTools 제거 (프로덕션 + 테스트 모드)
+    // data-testid 등 개발용 속성 제거. 프로덕션 QA는 role/aria/spotlight-anchor를 쓴다.
     reactRemoveProperties:
       process.env.NODE_ENV === 'production' ||
       process.env.__NEXT_TEST_MODE === 'true',

@@ -13,7 +13,7 @@ import { getSiteUrl } from '@/lib/site-url';
 
 // 🌐 SEO Configuration
 const SITE_URL = getSiteUrl();
-const SITE_NAME = 'OpenManager AI';
+const SITE_NAME = 'Opsivane AI';
 
 // next/font: 빌드 시 self-host -> 런타임 외부 요청 없음.
 const notoSansKR = Noto_Sans_KR({
@@ -36,8 +36,8 @@ const jetBrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   // 📌 기본 메타데이터
   title: {
-    default: 'OpenManager AI - Operational Decision Support Assistant',
-    template: '%s | OpenManager AI',
+    default: 'Opsivane AI - Operational Decision Support Assistant',
+    template: '%s | Opsivane AI',
   },
   description:
     'Next.js 16 + React 19 + Vercel AI SDK 기반 운영 의사결정 AI 어시스턴트. deterministic fact layer와 tool-calling LLM으로 서버 상태를 분석합니다.',
@@ -49,14 +49,14 @@ export const metadata: Metadata = {
     'Vercel AI SDK',
     'Tool-calling AI',
     'Server Monitoring',
-    'OpenManager',
+    'Opsivane',
     '서버 관리',
     'DevOps',
     'Infrastructure Monitoring',
   ],
-  authors: [{ name: 'OpenManager Team' }],
-  creator: 'OpenManager AI',
-  publisher: 'OpenManager',
+  authors: [{ name: 'Opsivane Team' }],
+  creator: 'Opsivane AI',
+  publisher: 'Opsivane',
 
   // 🔗 Canonical & Base URL
   metadataBase: new URL(SITE_URL),
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
     locale: 'ko_KR',
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: 'OpenManager AI - Operational Decision Support Assistant',
+    title: 'Opsivane AI - Operational Decision Support Assistant',
     description:
       'Next.js 16 + React 19 기반 운영 의사결정 AI 어시스턴트. deterministic fact layer + tool-calling LLM 기반 서버 분석.',
     images: [
@@ -89,7 +89,7 @@ export const metadata: Metadata = {
         url: '/api/og',
         width: 1200,
         height: 630,
-        alt: 'OpenManager AI - AI Server Monitoring Platform',
+        alt: 'Opsivane AI - AI Server Monitoring Platform',
       },
     ],
   },
@@ -97,10 +97,10 @@ export const metadata: Metadata = {
   // 🐦 Twitter Card
   twitter: {
     card: 'summary_large_image',
-    title: 'OpenManager AI - Operational Decision Support Assistant',
+    title: 'Opsivane AI - Operational Decision Support Assistant',
     description: 'Next.js 16 + React 19 기반 운영 의사결정 AI 어시스턴트',
     images: ['/api/og'],
-    creator: '@openmanager',
+    creator: '@opsivane',
   },
 
   // 🤖 Robots

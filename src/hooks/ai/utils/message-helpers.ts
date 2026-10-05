@@ -13,6 +13,7 @@ import { normalizeRouteDecision } from '@/lib/ai/route-decision';
 import { normalizeSemanticQueryTrace } from '@/lib/ai/semantic-intent-frame';
 import {
   extractTextFromUIMessage,
+  extractTextSegmentsFromUIMessage,
   normalizeAIResponse,
 } from '@/lib/ai/utils/message-normalizer';
 import {
@@ -84,6 +85,7 @@ export function convertThinkingStepsToUI(thinkingSteps?: AIThinkingStep[]) {
 // ============================================================================
 
 interface TransformOptions {
+  timestamp?: Date;
   isLoading: boolean;
   currentMode?: 'streaming' | 'job-queue';
   traceIdByMessageId?: Record<string, string>;
@@ -113,7 +115,19 @@ export function transformUIMessageToEnhanced(
     ragEnabled,
     webSearchEnabled,
   } = options;
-  const rawText = extractTextFromUIMessage(message);
+  // Analyst self-refine이 draft_boundary로 초안을 여러 text part로 나눠 보내면
+  // 각 세그먼트를 유지한다. 일반 응답(세그먼트 1개 이하)은 기존과 동일하게
+  // 동작한다 (QA-20260818-1084/1085 progressive disclosure).
+  const textSegments =
+    message.role === 'assistant'
+      ? extractTextSegmentsFromUIMessage(message)
+      : [];
+  const draftSegments =
+    textSegments.length > 1 ? textSegments.slice(0, -1) : undefined;
+  const rawText =
+    textSegments.length > 0
+      ? (textSegments.at(-1) ?? '')
+      : extractTextFromUIMessage(message);
   // 단일 정규화 지점: Cloud Run Agent가 { answer, confidence } JSON을 반환할 때
   // answer 필드만 추출. Streaming/Job Queue 양쪽 경로 모두 여기서 처리.
   const normalizedTextContent =
@@ -127,6 +141,14 @@ export function transformUIMessageToEnhanced(
     getMessageMetadata(message),
     deferredMessageMetadata
   );
+  const restoredTimestamp = metadata?.createdAt
+    ? new Date(metadata.createdAt)
+    : undefined;
+  const timestamp =
+    options.timestamp ??
+    (restoredTimestamp && Number.isFinite(restoredTimestamp.getTime())
+      ? restoredTimestamp
+      : new Date());
   const messageToolParts = message.parts?.filter(isToolPartWithCallId) ?? [];
   const deferredToolParts =
     message.role === 'assistant'
@@ -273,8 +295,9 @@ export function transformUIMessageToEnhanced(
     id: message.id,
     role: message.role as 'user' | 'assistant' | 'system' | 'thinking',
     content: textContent,
-    timestamp: new Date(),
+    timestamp,
     isStreaming: isLoading && isLastMessage,
+    ...(draftSegments && { draftSegments }),
     thinkingSteps:
       resolvedThinkingSteps.length > 0 ? resolvedThinkingSteps : undefined,
     metadata:

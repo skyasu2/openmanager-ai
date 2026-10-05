@@ -153,6 +153,25 @@ export function extractTextFromUIMessage(message: UIMessage): string {
 }
 
 /**
+ * AI SDK v5 UIMessage에서 text part를 세그먼트별로(합치지 않고) 추출한다.
+ *
+ * @description Analyst self-refine이 여러 초안을 emit할 때, 엔진이 각 초안
+ * 사이에 `draft_boundary`를 내보내면 그 경계마다 별도 text part(고유 id)가
+ * 생긴다. `extractTextFromUIMessage`처럼 `.join('')`하면 이 경계 정보가
+ * 사라지므로, "이전 분석 과정" UI 분리 표시를 위해 세그먼트를 배열로 유지한다.
+ * 경계가 없는 일반 응답은 1개 원소 배열을 반환해 기존 동작과 동일하다.
+ */
+export function extractTextSegmentsFromUIMessage(message: UIMessage): string[] {
+  if (!message.parts || message.parts.length === 0) {
+    return [];
+  }
+
+  return message.parts
+    .filter((part): part is TextPart => part != null && part.type === 'text')
+    .map((part) => part.text);
+}
+
+/**
  * 하이브리드 메시지에서 텍스트 콘텐츠 추출
  *
  * @description API 라우트용 (AI SDK v5 parts + 레거시 content 모두 지원)

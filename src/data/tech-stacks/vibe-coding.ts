@@ -94,7 +94,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       importance: 'high',
       description: 'Vite 기반 테스트 프레임워크',
       implementation: '→ 단위·통합·계약 테스트. 로컬용과 CI용 설정을 분리',
-      version: '4.1.8',
+      version: '4.1.11',
       status: 'active',
       icon: '🧪',
       tags: ['테스트', 'Vite', 'Jest호환'],

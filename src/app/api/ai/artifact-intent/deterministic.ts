@@ -243,6 +243,7 @@ export function shouldUseLLMChatArtifactIntent(query: string): boolean {
   if (ARTIFACT_NEGATION_PATTERN.test(normalized)) return false;
   if (isFormattingOnlyRequest(normalized)) return false;
   if (isCommandGuidanceRequest(normalized)) return false;
+  if (isHowToRequest(normalized)) return false;
   if (
     OPS_PROCEDURE_FOLLOWUP_EDIT_PATTERN.test(normalized) ||
     isOpsProcedureRequest(normalized) ||

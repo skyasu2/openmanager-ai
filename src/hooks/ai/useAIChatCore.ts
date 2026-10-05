@@ -2,12 +2,11 @@
 
 // Shared AI chat core for AISidebarV4 and AIWorkspace.
 
-import type { UIMessage } from '@ai-sdk/react';
 import {
-  type SetStateAction,
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -17,12 +16,12 @@ import {
   type HandoffEventData,
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
-import type { DeveloperPanelData } from '@/lib/ai/developer-panel';
 import { logger } from '@/lib/logging';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import { startChatArtifactGeneration } from './core/chat-artifact-execution';
 import {
+  type ArtifactGenerationRuntimeContext,
   submitArtifactGuidanceCta,
   tryHandleChatArtifactRequest,
   tryHandlePostDecisionChatArtifactResult,
@@ -33,6 +32,7 @@ import {
   resolveChatCoreSendPlan,
 } from './core/chat-core-send-plan';
 import { useArtifactManager } from './core/useArtifactManager';
+import { useChatCoreRefBridge } from './core/useChatCoreRefBridge';
 import { useChatHistory } from './core/useChatHistory';
 import { useChatQueue } from './core/useChatQueue';
 import { useChatSession } from './core/useChatSession';
@@ -106,9 +106,16 @@ export function useAIChatCore(
     sendQueryRef,
   } = useChatQueue();
 
-  const [developerPanelData, setDeveloperPanelData] =
-    useState<DeveloperPanelData | null>(null);
-  const developerPanelDataRef = useRef<DeveloperPanelData | null>(null);
+  const {
+    getMessages,
+    getDeferredHandlers,
+    getDeveloperPanelData,
+    developerPanelData,
+    updateDeveloperPanelData,
+    messagesRef,
+    setHybridMessagesRef,
+    syncRenderState,
+  } = useChatCoreRefBridge();
   const {
     cooldownUntilMs: regenerateCooldownUntilMs,
     cooldownSeconds: regenerateCooldownSeconds,
@@ -143,56 +150,47 @@ export function useAIChatCore(
   // Hybrid AI Query Hook
   // ============================================================================
 
-  // Deferred metadata handlers ref: populated after useDeferredMessageMetadata call below.
-  // onData fires asynchronously (never during the first render), so the ref is always
-  // populated before it's first invoked.
-  const deferredHandlersRef = useRef<
-    import('./useDeferredMessageMetadata').DeferredMetadataHandlers | null
-  >(null);
-
-  const messagesRef = useRef<UIMessage[]>([]);
-  const setHybridMessagesRef = useRef<(messages: UIMessage[]) => void>(
-    () => {}
-  );
+  // onData fires asynchronously (never during the first render), so the ref bridge
+  // is always populated before its getters are first invoked.
   const getPendingQuery = useCallback(() => pendingQueryRef.current, []);
   const clearPendingQuery = useCallback(() => {
     pendingQueryRef.current = '';
   }, []);
-  const getDeferredHandlers = useCallback(
-    () => deferredHandlersRef.current,
-    []
+
+  // Shared params for the 3 artifact-generation call sites below (post-decision result,
+  // guidance CTA, direct chat artifact request). setMessages forwards through the ref
+  // bridge so this stays valid even before useHybridAIQuery hands back the real setter.
+  const artifactRuntimeContext = useMemo<ArtifactGenerationRuntimeContext>(
+    () => ({
+      sessionId,
+      queryAsOfDataSlot,
+      messagesRef,
+      setMessages: (next) => setHybridMessagesRef.current(next),
+      setError,
+      setArtifactIsLoading,
+      artifactRequestIdRef: artifactRefs.artifactRequestIdRef,
+      artifactAbortControllerRef: artifactRefs.artifactAbortControllerRef,
+      artifactInFlightRef: artifactRefs.artifactInFlightRef,
+    }),
+    [
+      sessionId,
+      queryAsOfDataSlot,
+      messagesRef,
+      setHybridMessagesRef,
+      setArtifactIsLoading,
+      artifactRefs,
+    ]
   );
-  const getMessages = useCallback(() => messagesRef.current, []);
-  const getDeveloperPanelData = useCallback(
-    () => developerPanelDataRef.current,
-    []
-  );
-  const updateDeveloperPanelData = useCallback(
-    (next: SetStateAction<DeveloperPanelData | null>) => {
-      const resolved =
-        typeof next === 'function' ? next(developerPanelDataRef.current) : next;
-      developerPanelDataRef.current = resolved;
-      setDeveloperPanelData(resolved);
-    },
-    []
-  );
+
   const handlePostDecisionArtifactResult = useCallback(
     (result: import('./useAsyncAIQuery').AsyncQueryResult) =>
       tryHandlePostDecisionChatArtifactResult({
+        ...artifactRuntimeContext,
         result,
         query: pendingQueryRef.current,
         artifactIntentInFlightRef: artifactRefs.artifactIntentInFlightRef,
-        sessionId,
-        queryAsOfDataSlot,
-        messagesRef,
-        setMessages: setHybridMessagesRef.current,
-        setError,
-        setArtifactIsLoading,
-        artifactRequestIdRef: artifactRefs.artifactRequestIdRef,
-        artifactAbortControllerRef: artifactRefs.artifactAbortControllerRef,
-        artifactInFlightRef: artifactRefs.artifactInFlightRef,
       }),
-    [artifactRefs, sessionId, queryAsOfDataSlot, setArtifactIsLoading]
+    [artifactRuntimeContext, artifactRefs.artifactIntentInFlightRef]
   );
 
   const hybridCallbacks = useAIChatHybridCallbacks({
@@ -251,10 +249,8 @@ export function useAIChatCore(
 
   // Keep imperative refs aligned before async stream callbacks observe them.
   useLayoutEffect(() => {
-    messagesRef.current = messages;
-    deferredHandlersRef.current = deferredHandlers;
-    developerPanelDataRef.current = developerPanelData;
-  }, [messages, deferredHandlers, developerPanelData]);
+    syncRenderState({ messages, deferredHandlers });
+  }, [messages, deferredHandlers, syncRenderState]);
 
   const hasQueuedQueries = queuedQueries.length > 0;
 
@@ -476,20 +472,12 @@ export function useAIChatCore(
         localPlanResult;
 
       const artifactHandled = await tryHandleChatArtifactRequest({
+        ...artifactRuntimeContext,
         query: effectiveText,
         attachments: resolvedAttachments,
         messages,
         resetRequestState: resetOutgoingRequestState,
         artifactIntentInFlightRef: artifactRefs.artifactIntentInFlightRef,
-        sessionId,
-        queryAsOfDataSlot,
-        messagesRef,
-        setMessages,
-        setError,
-        setArtifactIsLoading,
-        artifactRequestIdRef: artifactRefs.artifactRequestIdRef,
-        artifactAbortControllerRef: artifactRefs.artifactAbortControllerRef,
-        artifactInFlightRef: artifactRefs.artifactInFlightRef,
       });
       if (artifactHandled) {
         return;
@@ -511,12 +499,10 @@ export function useAIChatCore(
       addToQueue,
       messages,
       setMessages,
-      sessionId,
-      queryAsOfDataSlot,
       resetOutgoingRequestState,
-      artifactRefs,
+      artifactRuntimeContext,
+      artifactRefs.artifactIntentInFlightRef,
       isArtifactBusy,
-      setArtifactIsLoading,
     ]
   );
 
@@ -534,18 +520,10 @@ export function useAIChatCore(
         resetRequestState: resetOutgoingRequestState,
         startArtifactGeneration: ({ artifactIntent, query }) => {
           startChatArtifactGeneration({
+            ...artifactRuntimeContext,
             artifactIntent,
             query,
-            sessionId,
-            queryAsOfDataSlot,
             messages,
-            messagesRef,
-            setMessages,
-            setError,
-            setArtifactIsLoading,
-            artifactRequestIdRef: artifactRefs.artifactRequestIdRef,
-            artifactAbortControllerRef: artifactRefs.artifactAbortControllerRef,
-            artifactInFlightRef: artifactRefs.artifactInFlightRef,
           });
         },
         onSessionLimitReached: (messageCount) => {
@@ -554,16 +532,14 @@ export function useAIChatCore(
       });
     },
     [
-      artifactRefs,
+      artifactRefs.artifactInFlightRef,
+      artifactRefs.artifactIntentInFlightRef,
+      artifactRuntimeContext,
       disableSessionLimit,
       hybridIsLoading,
       messages,
-      queryAsOfDataSlot,
       resetOutgoingRequestState,
-      sessionId,
       sessionState,
-      setArtifactIsLoading,
-      setMessages,
     ]
   );
 

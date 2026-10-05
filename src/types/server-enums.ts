@@ -27,6 +27,24 @@ export const SERVER_STATUS_VALUES = [
   'unknown',
 ] as const;
 
+/** 대시보드 카드/상세/AI 카드가 공유하는 서버 상태 라벨 */
+export const SERVER_STATUS_LABELS: Record<ServerStatus, string> = {
+  online: '정상',
+  warning: '경고',
+  critical: '위험',
+  offline: '오프라인',
+  maintenance: '점검',
+  unknown: '미확인',
+};
+
+/** 메트릭 판정(normal)과 서버 상태(online)를 같은 라벨로 맞춘다. */
+export function formatServerStatusLabel(status: string): string {
+  if (status === 'normal') {
+    return SERVER_STATUS_LABELS.online;
+  }
+  return SERVER_STATUS_LABELS[status as ServerStatus] ?? status;
+}
+
 // 서버 환경 Enum
 export type ServerEnvironment =
   | 'production'

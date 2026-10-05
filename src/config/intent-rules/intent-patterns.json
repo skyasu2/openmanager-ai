@@ -1,7 +1,7 @@
 {
   "$schema": "./intent-patterns.schema.json",
   "version": "1.0.0",
-  "lastUpdated": "2026-06-14",
+  "lastUpdated": "2026-09-13",
   "ruleVersion": "bff",
   "patterns": {
     "artifact_negation": {
@@ -26,10 +26,10 @@
       "counterExamples": ["기능 설명"]
     },
     "artifact_how_to_request": {
-      "source": "(설명|안내|어떻게|방법|사용법|어디\\s*(?:서|에서)?|가능|되나|뭐야|무엇|무슨|지원|위치|어떤)",
+      "source": "(소개|설명|안내|어떻게|방법|사용법|어디\\s*(?:서|에서)?|가능|되나|뭐야|무엇|무슨|지원|위치|어떤)",
       "flags": "i",
       "description": "Artifact 실행이 아니라 기능 설명, 위치, 사용 방법을 묻는 표현",
-      "examples": ["장애 보고서 작성 방법 알려줘", "추세 기능 어디서 봐?"],
+      "examples": ["장애 보고서 작성 방법 알려줘", "추세 기능 어디서 봐?", "기능을 소개해줘"],
       "counterExamples": ["장애 보고서 기능 실행해줘"]
     },
     "incident_report": {
@@ -84,16 +84,16 @@
     "ops_procedure_operational_context": {
       "source": "(서버|인프라|운영|모니터링|장애|로그|에러|경고|cpu|메모리|memory|디스크|disk|네트워크|network|promql|prometheus|alertmanager|slack|슬랙|webhook|runbook|런북)",
       "flags": "i",
-      "description": "Ops procedure artifact가 OpenManager 운영 도메인 안에 있는지 판단하는 context 표현",
+      "description": "Ops procedure artifact가 Opsivane 운영 도메인 안에 있는지 판단하는 context 표현",
       "examples": ["CPU 알림", "prometheus"],
       "counterExamples": ["피보나치"]
     },
     "ops_procedure_shape": {
-      "source": "(스크립트|script|bash|shell|쉘|slack|슬랙|webhook|alertmanager|prometheus|promql|알림\\s*(규칙|설정|스크립트)?|runbook|런북|대응\\s*(순서|절차)|원인과\\s*대응|확인\\s*명령어)",
+      "source": "(스크립트|script|bash|shell|쉘|slack|슬랙|webhook|alertmanager|prometheus|promql|알림\\s*(규칙|설정|스크립트)?|runbook|런북|대응\\s*(순서|절차)|원인과\\s*대응)",
       "flags": "i",
       "description": "Ops procedure 산출물 형태",
       "examples": ["bash 스크립트", "runbook"],
-      "counterExamples": ["분석해줘"]
+      "counterExamples": ["분석해줘", "안전한 확인 명령어 알려줘"]
     },
     "ops_procedure_action": {
       "source": "(짜줘|작성|생성|만들|만들어|알려줘|정리|출력|generate|create|write|build|draft)",

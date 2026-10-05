@@ -38,7 +38,7 @@ interface AgentHandoffBadgeProps {
 // Agent name to icon mapping
 const AGENT_ICONS: Record<string, typeof Bot> = {
   Orchestrator: Bot,
-  'OpenManager Orchestrator': Bot,
+  'Opsivane Orchestrator': Bot,
   [METRICS_QUERY_AGENT_NAME]: Search,
   'Analyst Agent': Cpu,
   'Reporter Agent': FileText,
@@ -55,7 +55,7 @@ const AGENT_COLORS: Record<
     text: 'text-purple-700',
     border: 'border-purple-200',
   },
-  'OpenManager Orchestrator': {
+  'Opsivane Orchestrator': {
     bg: 'bg-purple-50',
     text: 'text-purple-700',
     border: 'border-purple-200',

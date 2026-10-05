@@ -3,6 +3,7 @@ export const LEGACY_NLQ_AGENT_NAME = 'NLQ Agent';
 
 const LEGACY_AGENT_NAME_ALIASES: Record<string, string> = {
   [LEGACY_NLQ_AGENT_NAME]: METRICS_QUERY_AGENT_NAME,
+  'OpenManager Orchestrator': 'Opsivane Orchestrator',
 };
 
 export function normalizeAgentDisplayName(

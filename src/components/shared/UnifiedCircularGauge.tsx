@@ -1,7 +1,9 @@
 'use client';
 
 import { useId } from 'react';
+import { getStatus } from '@/config/rules';
 import { formatPercentage } from '@/lib/utils';
+import { formatServerStatusLabel } from '@/types/server-enums';
 
 export interface UnifiedCircularGaugeProps {
   value: number;
@@ -20,47 +22,38 @@ const getMetricConfig = (
   value: number,
   type: 'cpu' | 'memory' | 'disk' | 'network'
 ) => {
-  const thresholds = {
-    cpu: { warning: 70, critical: 85 },
-    memory: { warning: 80, critical: 90 },
-    disk: { warning: 80, critical: 95 },
-    network: { warning: 70, critical: 85 }, // 60→70, 80→85 (다른 파일과 일관성)
-  };
+  const status = getStatus(type, value);
+  const statusLabel = formatServerStatusLabel(status);
 
-  const threshold = thresholds[type];
-  const isCritical = value >= threshold.critical;
-  const isWarning = value >= threshold.warning;
-
-  // 상태에 따른 색상 (severity 기반 — 카드 MetricItem과 통일)
-  if (isCritical) {
+  if (status === 'critical') {
     return {
       color: '#ef4444',
       gradient: 'from-red-500 to-red-600',
       textColor: 'text-red-700',
       bgColor: 'bg-red-100',
       borderColor: 'border-red-300',
-      status: '위험',
+      status: statusLabel,
     };
-  } else if (isWarning) {
+  }
+  if (status === 'warning') {
     return {
       color: '#f59e0b',
       gradient: 'from-amber-500 to-amber-600',
       textColor: 'text-amber-700',
       bgColor: 'bg-amber-100',
       borderColor: 'border-amber-300',
-      status: '주의',
-    };
-  } else {
-    // 정상 상태: severity 기반 색상 (카드 MetricItem과 통일)
-    return {
-      color: '#10b981',
-      gradient: 'from-emerald-500 to-emerald-600',
-      textColor: 'text-emerald-700',
-      bgColor: 'bg-emerald-100',
-      borderColor: 'border-emerald-300',
-      status: '정상',
+      status: statusLabel,
     };
   }
+
+  return {
+    color: '#10b981',
+    gradient: 'from-emerald-500 to-emerald-600',
+    textColor: 'text-emerald-700',
+    bgColor: 'bg-emerald-100',
+    borderColor: 'border-emerald-300',
+    status: statusLabel,
+  };
 };
 
 export default function UnifiedCircularGauge({

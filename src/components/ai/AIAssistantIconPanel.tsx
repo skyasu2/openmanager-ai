@@ -4,7 +4,7 @@
  * 사이드바 오른쪽에 세로로 배치되는 AI 기능 아이콘들
  * - AI Chat: 자연어로 시스템 질의 및 대화 (Metrics Query Agent + Advisor Agent)
  * - 자동 장애 보고서: AI 기반 장애 분석 보고서 생성 (Reporter Agent)
- * - 이상감지/추세: 경량 이상 신호와 추세 분석
+ * - 이상감지/추세는 전용 탭이 아니라 채팅 아티팩트(임계값·단기 선형 추세)로만 노출
  *
  * v3.1 변경사항 (2026-01-15):
  * - 문서 정리: Advisor Agent는 Metrics Query Agent와 별도 역할 (Orchestrator 자동 라우팅)
@@ -15,14 +15,11 @@
 
 'use client';
 
-import { FileText, Maximize2, MessageSquare, Monitor } from 'lucide-react';
+import { FileText, Maximize2, MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { type ComponentType, memo, useCallback } from 'react';
 
-export type AIAssistantFunction =
-  | 'chat'
-  | 'auto-report'
-  | 'intelligent-monitoring';
+export type AIAssistantFunction = 'chat' | 'auto-report';
 
 interface AIAssistantIcon {
   id: AIAssistantFunction;
@@ -44,12 +41,6 @@ const AI_ASSISTANT_ICONS: AIAssistantIcon[] = [
     icon: FileText,
     label: '자동장애 보고서',
     description: '장애·운영 보고서 생성 및 MD/TXT 다운로드',
-  },
-  {
-    id: 'intelligent-monitoring',
-    icon: Monitor,
-    label: '이상감지/추세',
-    description: '서버별 이상 신호 탐지 및 추세 분석 실행',
   },
 ];
 

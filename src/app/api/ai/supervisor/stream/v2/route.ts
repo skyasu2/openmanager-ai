@@ -40,6 +40,7 @@ import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import { rejectIfSystemNotRunning } from '@/lib/system/system-running-guard';
 import { runWithTraceId } from '@/lib/tracing/async-context';
 import {
   applySanitizedQueryToMessages,
@@ -130,6 +131,9 @@ export const POST = withAuth(
   withRateLimit(rateLimiters.aiAnalysis, async (req: NextRequest) => {
     const traceContext = resolveTraceContext(req);
     return runWithTraceId(traceContext.traceId, async () => {
+      const notRunning = await rejectIfSystemNotRunning();
+      if (notRunning) return notRunning;
+
       try {
         const body = await req.json();
         const parseResult = requestSchema.safeParse(body);

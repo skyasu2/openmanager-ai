@@ -32,7 +32,7 @@ type ResetRequestState = (
   pendingQuery?: string
 ) => void;
 
-type ArtifactGenerationRuntimeContext = {
+export type ArtifactGenerationRuntimeContext = {
   sessionId: string;
   queryAsOfDataSlot?: JobDataSlot;
   messagesRef: MutableRefObject<UIMessage[]>;

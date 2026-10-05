@@ -12,6 +12,7 @@
 import type { NextRequest } from 'next/server';
 import { withAuth } from '@/lib/auth/api-auth';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import { withSystemRunning } from '@/lib/system/system-running-guard';
 import {
   createIncidentReportHandlerErrorResponse,
   createValidationErrorResponse,
@@ -45,5 +46,5 @@ async function postHandler(request: NextRequest) {
 }
 
 export const POST = withAuth(
-  withRateLimit(rateLimiters.aiAnalysis, postHandler)
+  withRateLimit(rateLimiters.aiAnalysis, withSystemRunning(postHandler))
 );

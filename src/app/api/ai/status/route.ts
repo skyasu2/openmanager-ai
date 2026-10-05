@@ -1,6 +1,7 @@
 /**
  * AI Status API Endpoint
  * Circuit Breaker 상태, 이벤트 히스토리, 통계 조회
+ * 운영자 점검/복구용 API (일반 사용자 UI 직접 노출 대상 아님)
  *
  * v2.0.0 (2025-12-17): 초기 구현
  * - GET: AI 서비스 상태 조회

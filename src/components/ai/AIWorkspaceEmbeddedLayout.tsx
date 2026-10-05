@@ -19,6 +19,8 @@ type AIWorkspaceEmbeddedLayoutProps = {
   finalModelId?: string;
   finalProvider?: string;
   artifactWorkspaceId: string;
+  /** 아티팩트 카드에서 넘어온 replay pack. 이 화면이 "전체화면에서 보기"의 목적지다. */
+  focusReplayPackId?: string;
   messages: ComponentProps<typeof ArtifactWorkspacePanel>['messages'];
   queryAsOfDataSlot?: JobDataSlot;
   serverContextMessages: EnhancedChatMessage[];
@@ -34,6 +36,7 @@ export function AIWorkspaceEmbeddedLayout({
   finalModelId,
   finalProvider,
   artifactWorkspaceId,
+  focusReplayPackId,
   messages,
   queryAsOfDataSlot,
   serverContextMessages,
@@ -135,6 +138,7 @@ export function AIWorkspaceEmbeddedLayout({
           finalProvider={finalProvider}
         >
           <ArtifactWorkspacePanel
+            focusReplayPackId={focusReplayPackId}
             messages={messages}
             workspaceId={artifactWorkspaceId}
           />

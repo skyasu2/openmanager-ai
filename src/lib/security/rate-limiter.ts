@@ -142,18 +142,23 @@ export const rateLimiters = {
   /**
    * 💰 AI Analysis Rate Limiter (보안 강화 + Cloud Run 무료 티어 최적화)
    *
-   * @updated 2026-02-19 - Cold Start 재시도 허용 + QA 기반 일일 한도 조정
-   * 분당: 10회 / 일일: 100회
+   * @updated 2026-09-12 - Mistral pay-as-you-go 전환($10/월 workspace 공유
+   * 예산) 후 100→50으로 하향. 정상 사용에는 체감 차이가 없고(면접관 평가
+   * 세션당 보통 5~15건), 계정 1개가 예산을 독점 소진해 다른 방문자를
+   * 막는 최악의 시나리오 영향을 절반으로 줄인다. 전체(글로벌) 합산 방어선은
+   * cloud-run/ai-engine의 paid-provider-budget-guard.ts가 별도로 담당.
+   * (구) 2026-02-19 - Cold Start 재시도 허용 + QA 기반 일일 한도 조정
+   * 분당: 10회 / 일일: 50회
    *
    * 계산 근거:
    * - Cloud Run 무료: 월 180,000 vCPU-seconds
    * - 일일 용량: 6,000초 / AI Engine 4초 = 1,500회
-   * - 안전 마진: 100회/일 × 4초 = 400초/일 (용량의 6.7%)
+   * - 안전 마진: 50회/일 × 4초 = 200초/일 (용량의 3.3%)
    */
   aiAnalysis: new RateLimiter({
     maxRequests: 10,
     windowMs: 60 * 1000,
-    dailyLimit: 100,
+    dailyLimit: 50,
   }),
   /**
    * Job creation should fail fast at the edge with the same minute window
@@ -162,7 +167,15 @@ export const rateLimiters = {
   aiJobCreation: new RateLimiter({
     maxRequests: 5,
     windowMs: 60 * 1000,
-    dailyLimit: 100,
+    dailyLimit: 50,
+  }),
+  /**
+   * 시스템 시작/정지/재시작. 창 리셋 남용을 막기 위해 AI 생성보다 짧게 둔다.
+   * GET /api/system 폴링은 이 한도에 넣지 않는다.
+   */
+  systemControl: new RateLimiter({
+    maxRequests: 5,
+    windowMs: 60 * 1000,
   }),
 };
 

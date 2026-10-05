@@ -10,7 +10,7 @@ type DashboardServerDetailPageProps = {
 
 export const metadata: Metadata = {
   title: 'Server Detail',
-  description: 'OpenManager 서버 상세 메트릭과 로그',
+  description: 'Opsivane 서버 상세 메트릭과 로그',
 };
 
 export function generateStaticParams() {

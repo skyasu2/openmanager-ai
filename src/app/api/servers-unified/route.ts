@@ -1,14 +1,12 @@
 /**
  * 🎯 통합 서버 관리 API
  *
- * 통합된 기능:
- * - /api/servers (기본 서버 목록)
- * - /api/servers/all (전체 서버 데이터)
- * - /api/servers/next (다음 서버 데이터)
- * - /api/servers/[id] (특정 서버 상세)
- * - action=processes (서버 프로세스 목록)
+ * 현재 계약:
+ * - GET /api/servers-unified?action=list|logs|detail|processes
+ * - GET /api/servers/[id] (서버 상세)
+ * - GET/POST /api/servers/next (부팅 시퀀스 lifecycle)
  *
- * v5.87: /mock, /realtime, /cached 제거 (Dead Code 정리)
+ * v5.87: /mock, /realtime, /cached 제거
  */
 
 import type { NextRequest } from 'next/server';
@@ -25,7 +23,7 @@ import debug from '@/utils/debug';
 // 📝 통합 요청 스키마
 const serversUnifiedRequestSchema = z.object({
   action: z.enum([
-    'list', // 기본 서버 목록 (기존 /api/servers/all)
+    'list', // 기본 서버 목록
     'logs', // 24시간 OTel 로그 검색
     'detail', // 특정 서버 상세
     'processes', // 서버 프로세스 목록

@@ -33,11 +33,12 @@ import type {
   MenuItem,
   UnifiedProfileHeaderProps,
 } from '@/components/unified-profile/types/profile.types';
+import { useSyncSystemWindow } from '@/hooks/system/useSyncSystemWindow';
 import { useSystemStatus } from '@/hooks/system/useSystemStatus';
 import { logger } from '@/lib/logging';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 
-type PendingProfileAction = 'system-stop' | 'logout' | null;
+type PendingProfileAction = 'logout' | null;
 
 /**
  * 통합 프로필 헤더 컴포넌트 (리팩토링 버전)
@@ -45,7 +46,7 @@ type PendingProfileAction = 'system-stop' | 'logout' | null;
  */
 export default function UnifiedProfileHeader({
   className = '',
-}: Omit<UnifiedProfileHeaderProps, 'onSystemStop' | 'parentSystemActive'>) {
+}: Omit<UnifiedProfileHeaderProps, 'parentSystemActive'>) {
   // 훅 사용
   const {
     userInfo,
@@ -73,21 +74,21 @@ export default function UnifiedProfileHeader({
     };
   }, []);
 
-  const {
-    status: systemStatus,
-    startSystem: startRemoteSystem,
-    stopSystem: stopRemoteSystem,
-  } = useSystemStatus({
-    enabled:
-      !isAuthResolving && (status === 'authenticated' || userType === 'guest'),
-  });
-  // Zustand selector 패턴 사용 - 불필요한 리렌더 방지
+  const { status: systemStatus, startSystem: startRemoteSystem } =
+    useSystemStatus({
+      enabled:
+        !isAuthResolving &&
+        (status === 'authenticated' || userType === 'guest'),
+    });
+  useSyncSystemWindow(systemStatus);
   const isLocalSystemStarted = useUnifiedAdminStore(
     (state) => state.isSystemStarted
   );
-  const stopLocalSystem = useUnifiedAdminStore((state) => state.stopSystem);
-  const startLocalSystem = useUnifiedAdminStore((state) => state.startSystem);
-  const isSystemStarted = systemStatus?.isRunning ?? isLocalSystemStarted;
+  const systemWindowExpired = useUnifiedAdminStore(
+    (state) => state.systemWindowExpired
+  );
+  const isSystemStarted =
+    !systemWindowExpired && (systemStatus?.isRunning ?? isLocalSystemStarted);
 
   // 시스템 시작 핸들러
   const handleSystemStart = useCallback(async () => {
@@ -98,36 +99,12 @@ export default function UnifiedProfileHeader({
         logger.warn('시스템 시작 요청이 실행되지 않아 로컬 상태를 유지합니다.');
         return;
       }
-      startLocalSystem();
       logger.info('시스템 시작 성공');
     } catch (error) {
       logger.error('시스템 시작 오류:', error);
       toast.error('시스템 시작 중 오류가 발생했습니다.');
     }
-  }, [startLocalSystem, startRemoteSystem]);
-
-  const executeSystemStop = useCallback(async () => {
-    try {
-      logger.info('시스템 종료 요청 (프로필에서)');
-
-      const result = await stopRemoteSystem();
-      if (!result) {
-        logger.warn('시스템 종료 요청이 실행되지 않아 로컬 상태를 유지합니다.');
-        return;
-      }
-      stopLocalSystem();
-      logger.info('시스템 종료 성공');
-      localStorage.removeItem('system_auto_shutdown');
-    } catch (error) {
-      logger.error('시스템 종료 오류:', error);
-      toast.error('시스템 종료 중 오류가 발생했습니다.');
-    }
-  }, [stopLocalSystem, stopRemoteSystem]);
-
-  // 시스템 종료 핸들러
-  const handleSystemStop = useCallback(() => {
-    setPendingAction('system-stop');
-  }, []);
+  }, [startRemoteSystem]);
 
   // 관리자 인증 핸들러
   const handleLogoutClick = useCallback(() => {
@@ -156,37 +133,24 @@ export default function UnifiedProfileHeader({
 
     setIsConfirmActionRunning(true);
     try {
-      if (pendingAction === 'system-stop') {
-        await executeSystemStop();
-      } else {
-        await executeLogout();
-      }
+      await executeLogout();
     } finally {
       if (isMountedRef.current) {
         setIsConfirmActionRunning(false);
         setPendingAction(null);
       }
     }
-  }, [executeLogout, executeSystemStop, pendingAction]);
+  }, [executeLogout, pendingAction]);
 
   const confirmDialogContent = useMemo(() => {
-    if (pendingAction === 'system-stop') {
-      return {
-        title: '시스템 종료',
-        description:
-          '시스템을 종료하시겠습니까? 종료 후 메인 페이지에서 다시 시작할 수 있습니다.',
-        confirmLabel: '종료 확인',
-      };
-    }
-
     return {
       title: '세션 종료',
       description: '현재 계정에서 로그아웃하고 로그인 화면으로 이동합니다.',
       confirmLabel: '로그아웃 확인',
     };
-  }, [pendingAction]);
+  }, []);
 
-  // 메뉴 아이템 구성 (시스템 시작/종료는 드롭다운 전용 섹션으로 이동)
+  // 메뉴 아이템 구성
   const menuItems = useMemo<MenuItem[]>(() => {
     const items: MenuItem[] = [];
 
@@ -433,7 +397,6 @@ export default function UnifiedProfileHeader({
         isSystemStarted={isSystemStarted}
         isSystemStarting={systemStatus?.isStarting}
         onSystemStart={handleSystemStart}
-        onSystemStop={handleSystemStop}
         systemVersion={systemStatus?.version}
         systemEnvironment={systemStatus?.environment}
       />

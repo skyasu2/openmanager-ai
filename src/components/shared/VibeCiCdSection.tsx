@@ -103,7 +103,7 @@ const PIPELINE_CARDS: PipelineCard[] = [
   {
     id: 'deploy',
     icon: Rocket,
-    stage: '자동 배포',
+    stage: '태그 배포',
     detail: ['pull · build', 'deploy --prebuilt'],
     bg: 'bg-amber-500/5',
     border: 'border-amber-500/25',
@@ -150,7 +150,6 @@ const SCENARIOS = [
       { id: 'pre-hooks', label: 'pre-hooks', icon: MonitorCheck },
       { id: 'push', label: 'push', icon: Send },
       { id: 'validate', label: '검사', icon: ShieldCheck },
-      { id: 'deploy', label: '배포', icon: Rocket },
       { id: 'done', label: '완료', icon: Globe },
     ] satisfies ScenarioStep[],
   },
@@ -165,8 +164,7 @@ const SCENARIOS = [
       { id: 'local-ci', label: 'ci:local', icon: Box },
       { id: 'push', label: 'push', icon: Send },
       { id: 'validate', label: '검사', icon: ShieldCheck },
-      { id: 'deploy', label: '배포', icon: Rocket },
-      { id: 'qa', label: 'QA', icon: Globe },
+      { id: 'done', label: '완료', icon: Globe },
     ] satisfies ScenarioStep[],
   },
   {
@@ -209,8 +207,14 @@ export function VibeCiCdSection({
           내가 구성한 GitLab CI/CD
         </p>
         <p className="mt-3 text-center text-[11px] text-white/65">
-          로컬 훅 → GitLab CI 4단계(validate · deploy · deploy_ai · smoke) →
-          Vercel 프로덕션. 모든 CI job이 내 PC 자체 러너에서 실행되어{' '}
+          로컬 훅 → GitLab{' '}
+          <span className="font-semibold text-white/80">
+            main push는 validate만
+          </span>
+          . production 배포·AI Engine·smoke는{' '}
+          <span className="font-semibold text-amber-200/90">semver 태그</span>{' '}
+          파이프라인에서만 실행됩니다. 모든 CI job이 내 PC 자체 러너에서
+          실행되어{' '}
           <span className="font-bold text-violet-300/80">
             GitLab CI minutes 월 0분
           </span>{' '}
@@ -295,13 +299,16 @@ export function VibeCiCdSection({
                   >
                     <div
                       className={cn(
-                        'flex h-11 w-11 items-center justify-center rounded-xl ring-1 shadow-lg transition-transform motion-safe:hover:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none',
+                        'relative flex h-11 w-11 items-center justify-center rounded-xl ring-1 shadow-lg transition-transform motion-safe:hover:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none',
                         card.iconBg,
                         card.iconText,
                         card.ring
                       )}
                       aria-hidden="true"
                     >
+                      <span className="absolute -top-2 -left-2 flex h-5 w-5 items-center justify-center rounded-full border border-white/20 bg-black/60 text-[10px] font-black text-white sm:hidden">
+                        {index + 1}
+                      </span>
                       <Icon className="h-5 w-5" aria-hidden="true" />
                     </div>
 
@@ -311,6 +318,7 @@ export function VibeCiCdSection({
                         card.accent
                       )}
                     >
+                      <span className="sr-only">{`${index + 1}단계 `}</span>
                       {card.stage}
                     </p>
 
@@ -365,11 +373,23 @@ export function VibeCiCdSection({
                   </div>
 
                   {index < PIPELINE_CARDS.length - 1 && (
-                    <div className="mt-16 hidden shrink-0 items-center px-0.5 sm:flex">
-                      <ArrowRight
-                        className="h-3 w-3 text-white/45"
-                        aria-hidden="true"
-                      />
+                    <div className="mt-16 hidden shrink-0 flex-col items-center justify-center px-0.5 sm:flex">
+                      {card.id === 'validate' ? (
+                        <>
+                          <ArrowRight
+                            className="h-3 w-3 text-amber-300/55"
+                            aria-hidden="true"
+                          />
+                          <span className="mt-1 max-w-[3.5rem] text-center text-[7px] font-bold leading-tight text-amber-200/70">
+                            semver 태그만
+                          </span>
+                        </>
+                      ) : (
+                        <ArrowRight
+                          className="h-3 w-3 text-white/45"
+                          aria-hidden="true"
+                        />
+                      )}
                     </div>
                   )}
                 </div>
@@ -386,8 +406,8 @@ export function VibeCiCdSection({
               <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
             </div>
             <p className="text-[11px] font-medium text-white/70">
-              validate와 deploy를 분리하고, production 배포는 한 번에 하나씩만
-              실행하도록 구성했습니다.
+              validate와 deploy를 분리하고, production 배포는 semver 태그에서만
+              한 번에 하나씩 실행하도록 구성했습니다.
             </p>
           </div>
           <code className="self-start rounded-full border border-rose-500/20 bg-rose-500/10 px-2.5 py-1 text-[10px] font-bold text-rose-300/70 sm:self-auto">
@@ -402,10 +422,11 @@ export function VibeCiCdSection({
           <p className="mt-1 text-[11px] leading-relaxed text-white/70">
             validate · deploy 모두 내 PC의{' '}
             <code className="text-cyan-300/90">wsl2-docker</code> self-hosted
-            runner에서 실행해 GitLab CI minutes를 월 0분 소진합니다. deploy는{' '}
+            runner에서 실행해 GitLab CI minutes를 월 0분 소진합니다. main push는
+            validate만 돌고, deploy · deploy_ai · smoke는 semver 태그
+            파이프라인에서만 실행됩니다. deploy는{' '}
             <code className="text-amber-300/80">vercel build</code> 결과를
-            prebuilt 아티팩트로 올려 배포 시간을 최소화합니다. semver 태그 push
-            시에는 deploy_ai · smoke 단계가 추가 실행됩니다.
+            prebuilt 아티팩트로 올려 배포 시간을 최소화합니다.
           </p>
           <p className="mt-2 text-[10px] leading-relaxed text-white/55">
             제약: self-hosted runner가 꺼져 있으면 validate는 shared runner로

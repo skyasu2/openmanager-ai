@@ -90,14 +90,14 @@ export function MonitoringAnalysisArtifactCard({
   const sourceMode = artifact.analysis.sourceMode ?? 'unknown';
   const isStale = artifact.analysis.dataFreshness?.stale === true;
   const queryFocusServer = formatQueryFocusServer(artifact);
-  const openInMonitoringTab = () => {
+  const openInFullscreenChat = () => {
     const saveResult = saveArtifactExecutionReplayPack({
       artifact,
       workspaceId: createArtifactExecutionWorkspaceId(artifact, 'chat-card'),
     });
 
     openFullscreen({
-      selectedFunction: 'intelligent-monitoring',
+      selectedFunction: 'chat',
       queryAsOfDataSlot: artifact.queryAsOfDataSlot,
       ...(saveResult.saved && {
         artifactWorkspaceId: saveResult.replayPack.workspaceId,
@@ -120,6 +120,9 @@ export function MonitoringAnalysisArtifactCard({
           </h3>
           <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">
             {artifact.summary}
+          </p>
+          <p className="mt-1 text-xs leading-5 text-slate-500">
+            임계값·통계 밴드·단기 선형 추세 기준입니다. 학습형 ML이 아닙니다.
           </p>
           <div className="mt-2 flex flex-wrap gap-1.5 text-xs text-slate-500">
             <span>데이터 {formatMonitoringSourceLabel(sourceMode)}</span>
@@ -147,7 +150,7 @@ export function MonitoringAnalysisArtifactCard({
             <div className="rounded-md border border-slate-100 bg-slate-50 px-2 py-1.5">
               <p className="text-[11px] text-slate-500">상태</p>
               <p className="text-xs font-medium text-slate-700">
-                주의 {artifact.warningServers}대 · 위험{' '}
+                경고 {artifact.warningServers}대 · 위험{' '}
                 {artifact.criticalServers}대
               </p>
             </div>
@@ -178,7 +181,7 @@ export function MonitoringAnalysisArtifactCard({
                     </p>
                     {(group.warningCount > 0 || group.criticalCount > 0) && (
                       <p className="mt-1 text-[11px] leading-4 text-amber-700">
-                        주의 {group.warningCount}대 · 위험 {group.criticalCount}
+                        경고 {group.warningCount}대 · 위험 {group.criticalCount}
                         대
                       </p>
                     )}
@@ -425,11 +428,11 @@ export function MonitoringAnalysisArtifactCard({
         </button>
         <button
           type="button"
-          onClick={openInMonitoringTab}
+          onClick={openInFullscreenChat}
           className="inline-flex h-8 items-center gap-1.5 rounded-md bg-cyan-700 px-2.5 text-xs font-medium text-white transition-colors hover:bg-cyan-800"
         >
           <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-          이상감지/추세에서 보기
+          전체화면에서 보기
         </button>
       </div>
     </section>

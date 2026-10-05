@@ -8,6 +8,7 @@ import type {
   MonitoringBatchFactSignal,
   MonitoringBatchRiskSignal,
 } from '@/types/intelligent-monitoring.types';
+import { formatServerStatusLabel } from '@/types/server-enums';
 
 export type MonitoringDisplaySignal =
   | MonitoringBatchRiskSignal
@@ -39,7 +40,7 @@ function buildRoleGroupMarkdown(artifact: MonitoringAnalysisArtifact): string {
   return roleGroups
     .map(
       (group) =>
-        `- ${group.role}: ${group.count}대, CPU ${group.avgCpu}%, MEM ${group.avgMemory}%, DISK ${group.avgDisk}%, 주의 ${group.warningCount}대, 위험 ${group.criticalCount}대`
+        `- ${group.role}: ${group.count}대, CPU ${group.avgCpu}%, MEM ${group.avgMemory}%, DISK ${group.avgDisk}%, 경고 ${group.warningCount}대, 위험 ${group.criticalCount}대`
     )
     .join('\n');
 }
@@ -135,7 +136,7 @@ export function buildAnalysisMarkdown(
     `- 데이터 기준: ${timeLabel}`,
     `- 분석 서버: ${artifact.serverCount}대`,
     `- 위험 신호: ${artifact.riskSignalCount}건`,
-    `- 주의 서버: ${artifact.warningServers}대`,
+    `- 경고 서버: ${artifact.warningServers}대`,
     `- 위험 서버: ${artifact.criticalServers}대`,
     ...(queryFocusServer ? [`- 기준(origin) 서버: ${queryFocusServer}`] : []),
     '',
@@ -165,7 +166,7 @@ export function signalClass(severity: 'warning' | 'critical'): string {
 export function formatCorrelatedLogSeverity(
   severity: MonitoringCorrelatedLogSeverity
 ): string {
-  return severity === 'critical' ? '위험' : '주의';
+  return severity === 'critical' ? '위험' : '경고';
 }
 
 export function capacityAlertClass(severity: 'warning' | 'critical'): string {
@@ -327,18 +328,7 @@ export function formatMonitoringSourceLabel(sourceMode: string): string {
 }
 
 function formatStatusLabel(status: string): string {
-  switch (status) {
-    case 'online':
-      return '정상';
-    case 'warning':
-      return '주의';
-    case 'critical':
-      return '위험';
-    case 'offline':
-      return '오프라인';
-    default:
-      return status;
-  }
+  return formatServerStatusLabel(status);
 }
 
 export function formatMetricLabel(
@@ -396,7 +386,7 @@ export function formatCapacityTarget(
     return `위험 도달 ${formatCapacityEta(alert.timeToCriticalMinutes)}`;
   }
 
-  return `주의 도달 ${formatCapacityEta(alert.timeToWarningMinutes)}`;
+  return `경고 도달 ${formatCapacityEta(alert.timeToWarningMinutes)}`;
 }
 
 function clampCapacityPercent(value: number): number {

@@ -31,14 +31,14 @@ import type {
   EvidenceCard,
   RetrievalMetadata,
 } from '@/types/ai/retrieval-status';
+import { EPHEMERAL_CHAT_STORAGE_KEYS } from '@/types/session';
 
 // ============================================================================
 // Constants
 // ============================================================================
 
-export const CHAT_HISTORY_KEY = 'openmanager-chat-history';
+export const CHAT_HISTORY_KEY = EPHEMERAL_CHAT_STORAGE_KEYS.HISTORY;
 export const MAX_STORED_MESSAGES = 50;
-const HISTORY_EXPIRY_HOURS = 24;
 
 // ============================================================================
 // Types
@@ -94,28 +94,33 @@ export interface StoredChatHistory {
 // Functions
 // ============================================================================
 
+function chatHistoryStorage(): Storage | null {
+  if (typeof window === 'undefined') return null;
+  return window.sessionStorage;
+}
+
+function forgetLegacyLocalHistory(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.removeItem(CHAT_HISTORY_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 /**
- * 로컬 스토리지에서 채팅 히스토리 로드
+ * 같은 탭 새로고침용 대화 스냅샷을 sessionStorage에서 로드한다.
+ * 이전 빌드의 localStorage 24시간 이력은 읽고 바로 버린다.
  */
 export function loadChatHistory(): StoredChatHistory | null {
   if (typeof window === 'undefined') return null;
 
   try {
-    const stored = localStorage.getItem(CHAT_HISTORY_KEY);
+    forgetLegacyLocalHistory();
+    const stored = chatHistoryStorage()?.getItem(CHAT_HISTORY_KEY);
     if (!stored) return null;
 
-    const parsed = JSON.parse(stored) as StoredChatHistory;
-
-    // 24시간 이상 된 데이터는 무효화
-    const lastUpdated = new Date(parsed.lastUpdated);
-    const hoursSinceUpdate =
-      (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
-    if (hoursSinceUpdate > HISTORY_EXPIRY_HOURS) {
-      localStorage.removeItem(CHAT_HISTORY_KEY);
-      return null;
-    }
-
-    return parsed;
+    return JSON.parse(stored) as StoredChatHistory;
   } catch (error) {
     logger.warn('[ChatHistory] Failed to load:', error);
     return null;
@@ -123,7 +128,7 @@ export function loadChatHistory(): StoredChatHistory | null {
 }
 
 /**
- * 로컬 스토리지에 채팅 히스토리 저장
+ * 같은 탭 sessionStorage에 채팅 히스토리를 저장한다.
  */
 export function saveChatHistory(
   sessionId: string,
@@ -249,20 +254,21 @@ export function saveChatHistory(
       lastUpdated: new Date().toISOString(),
     };
 
-    localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(history));
+    chatHistoryStorage()?.setItem(CHAT_HISTORY_KEY, JSON.stringify(history));
   } catch (error) {
     logger.warn('[ChatHistory] Failed to save:', error);
   }
 }
 
 /**
- * 로컬 스토리지에서 채팅 히스토리 삭제
+ * 탭 종료·로그아웃 시 대화 스냅샷을 지운다.
  */
 export function clearChatHistory(): void {
   if (typeof window === 'undefined') return;
 
   try {
-    localStorage.removeItem(CHAT_HISTORY_KEY);
+    chatHistoryStorage()?.removeItem(CHAT_HISTORY_KEY);
+    forgetLegacyLocalHistory();
   } catch (error) {
     logger.warn('[ChatHistory] Failed to clear:', error);
   }

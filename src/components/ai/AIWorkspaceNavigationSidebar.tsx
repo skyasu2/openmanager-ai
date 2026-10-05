@@ -18,8 +18,6 @@ type AIWorkspaceNavigationSidebarProps = {
 const FUNCTION_NAV_SELECTED_CLASS: Record<AIAssistantFunction, string> = {
   chat: 'bg-blue-50 text-blue-700 border border-blue-200',
   'auto-report': 'bg-pink-50 text-pink-700 border border-pink-200',
-  'intelligent-monitoring':
-    'bg-emerald-50 text-emerald-700 border border-emerald-200',
 };
 
 export function AIWorkspaceNavigationSidebar({

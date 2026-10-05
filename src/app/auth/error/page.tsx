@@ -183,7 +183,7 @@ function AuthErrorContent() {
           <div className="space-y-1 text-xs text-gray-500">
             <p>🔐 GitHub/Google/이메일 기반 인증</p>
             <p>🛠️ 문제가 계속되면 관리자에게 문의하세요</p>
-            <p>OpenManager AI v{APP_VERSION}</p>
+            <p>Opsivane AI v{APP_VERSION}</p>
           </div>
         </div>
       </div>

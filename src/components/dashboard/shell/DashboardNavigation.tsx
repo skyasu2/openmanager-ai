@@ -219,9 +219,7 @@ export function DashboardNavigation({
           >
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-900">
-                  OpenManager
-                </p>
+                <p className="text-sm font-medium text-slate-900">Opsivane</p>
                 <p className="text-xs text-slate-500">대시보드</p>
               </div>
               <button

@@ -66,7 +66,7 @@ const BOOT_STAGES = [
     name: '시스템 시작 완료',
     delay: 4700,
     icon: CheckCircle,
-    description: 'OpenManager가 준비되었습니다!',
+    description: 'Opsivane이 준비되었습니다!',
   },
 ] as const;
 
@@ -238,7 +238,7 @@ export default function SystemBootClient() {
           {/* 제품 브랜드 */}
           <h1 className="mb-4 text-5xl font-bold">
             <span className="bg-linear-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              OpenManager
+              Opsivane
             </span>
           </h1>
 

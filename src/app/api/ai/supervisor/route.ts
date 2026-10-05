@@ -50,6 +50,7 @@ import { getAPIAuthContext, withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRateLimitIdentity } from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import { rejectIfSystemNotRunning } from '@/lib/system/system-running-guard';
 import { runWithTraceId } from '@/lib/tracing/async-context';
 import { isStatusQuery, shouldSkipCache } from './cache-utils';
 import { handleCloudRunJson, handleCloudRunStream } from './cloud-run-handler';
@@ -91,6 +92,9 @@ export const POST = withAuth(
 
     // 🎯 AsyncLocalStorage: traceId를 요청 컨텍스트에 저장 → logger 자동 주입
     return runWithTraceId(traceId, async () => {
+      const notRunning = await rejectIfSystemNotRunning();
+      if (notRunning) return notRunning;
+
       if (observabilityConfig.verboseLogging) {
         logger.info(
           `[Supervisor] Request started (upstream: ${upstreamTraceId ? 'yes' : 'no'})`

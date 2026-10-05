@@ -9,6 +9,8 @@ import { withArtifactIntentRuleVersion } from '@/lib/ai/chat-artifacts/artifact-
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import { withSystemRunning } from '@/lib/system/system-running-guard';
+import { securityCheck } from '../supervisor/security';
 import {
   classifyChatArtifactIntent,
   shouldUseLLMChatArtifactIntent,
@@ -63,12 +65,17 @@ async function handler(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ kind: 'none', reason: 'empty_query' });
   }
 
-  const deterministicIntent = classifyChatArtifactIntent(query);
+  const { sanitizedInput, shouldBlock } = securityCheck(query);
+  if (shouldBlock) {
+    return NextResponse.json({ kind: 'none', reason: 'security_blocked' });
+  }
+
+  const deterministicIntent = classifyChatArtifactIntent(sanitizedInput);
   if (deterministicIntent.kind !== 'none') {
     return NextResponse.json(deterministicIntent);
   }
 
-  if (!shouldUseLLMChatArtifactIntent(query)) {
+  if (!shouldUseLLMChatArtifactIntent(sanitizedInput)) {
     return NextResponse.json({ kind: 'none', reason: 'local_gate_none' });
   }
   if (!isProductionClassifierAllowed()) {
@@ -94,7 +101,7 @@ async function handler(request: NextRequest): Promise<NextResponse> {
           'Classify whether the query should open a report or monitoring analysis artifact flow.',
       }),
       instructions: SYSTEM_PROMPT,
-      prompt: query,
+      prompt: sanitizedInput,
       temperature: 0,
       maxOutputTokens: 24,
       providerOptions: {
@@ -129,4 +136,6 @@ async function handler(request: NextRequest): Promise<NextResponse> {
   }
 }
 
-export const POST = withAuth(withRateLimit(rateLimiters.aiAnalysis, handler));
+export const POST = withAuth(
+  withRateLimit(rateLimiters.aiAnalysis, withSystemRunning(handler))
+);

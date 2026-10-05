@@ -1,4 +1,4 @@
-import { FileText, MessageSquare, Monitor } from 'lucide-react';
+import { FileText, MessageSquare } from 'lucide-react';
 import type { AIAssistantFunction } from './AIAssistantIconPanel';
 
 export const AI_ASSISTANT_LIGHT_THEME_TOKENS = {
@@ -38,11 +38,5 @@ export const AI_WORKSPACE_FUNCTION_TABS: Array<{
     label: '장애 보고서',
     description: 'MD/TXT 다운로드',
     icon: FileText,
-  },
-  {
-    id: 'intelligent-monitoring',
-    label: '이상감지/추세',
-    description: '실시간 분석 실행',
-    icon: Monitor,
   },
 ];

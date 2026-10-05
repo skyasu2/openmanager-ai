@@ -166,6 +166,27 @@ export const MessageComponent = memo<{
                 <InlineAgentStatus steps={agentSteps} isComplete={false} />
               )}
 
+            {/* 이전 분석 과정 (Analyst self-refine 초안, QA-20260818-1084/1085) */}
+            {message.role === 'assistant' &&
+              !message.isStreaming &&
+              message.draftSegments &&
+              message.draftSegments.length > 0 && (
+                <details className="mb-2 rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+                  <summary className="cursor-pointer text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                    이전 분석 과정 보기 ({message.draftSegments.length}개)
+                  </summary>
+                  <div className="mt-2 space-y-3">
+                    {message.draftSegments.map((segment, index) => (
+                      <RenderMarkdownContent
+                        key={index}
+                        content={segment}
+                        className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words break-keep"
+                      />
+                    ))}
+                  </div>
+                </details>
+              )}
+
             {/* 메시지 내용 (콘텐츠가 있을 때만 표시) */}
             {message.content && (
               <div

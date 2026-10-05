@@ -4,7 +4,7 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
   id: 'vibe-coding',
   title: 'AI 개발 워크플로우와 배포 게이트',
   description:
-    'WSL 기반 AI 개발 루프에서 로컬 훅, 선택적 Docker CI, GitLab validate/deploy, Vercel production, 공개 스냅샷 동기화까지 이어지는 실제 운영 흐름입니다.',
+    'WSL 기반 AI 개발 루프에서 로컬 훅, 선택적 ci:local, GitLab main 검증, semver 태그 배포, 공개 스냅샷 동기화까지 이어지는 실제 운영 흐름입니다.',
   layers: [
     {
       title: '로컬 개발 루프',
@@ -60,14 +60,14 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'gitlab',
           label: 'GitLab',
-          sublabel: '정본 저장소, main push',
+          sublabel: '정본 · main 검증 · tag 배포',
           type: 'highlight',
           icon: '🦊',
         },
         {
           id: 'gitlab-validate',
           label: 'Validate Job',
-          sublabel: 'type-check + lint + test:quick',
+          sublabel: 'main push · type · lint · test',
           type: 'primary',
           icon: '✅',
         },
@@ -80,7 +80,7 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'gitlab-deploy',
           label: 'Deploy Job',
-          sublabel: 'vercel build + vercel deploy --prod',
+          sublabel: 'semver tag · vercel --prod',
           type: 'highlight',
           icon: '🚀',
         },
@@ -113,8 +113,13 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
       type: 'dashed',
     },
     { from: 'local-ci', to: 'gitlab', label: 'full pass' },
-    { from: 'gitlab', to: 'gitlab-validate', label: 'pipeline' },
-    { from: 'gitlab-validate', to: 'gitlab-deploy', label: 'pass' },
+    { from: 'gitlab', to: 'gitlab-validate', label: 'main' },
+    {
+      from: 'gitlab',
+      to: 'gitlab-deploy',
+      label: 'semver tag',
+      type: 'dashed',
+    },
     { from: 'gitlab-deploy', to: 'vercel', label: 'deploy' },
     { from: 'gitlab', to: 'github', label: 'sync:github', type: 'dashed' },
   ],

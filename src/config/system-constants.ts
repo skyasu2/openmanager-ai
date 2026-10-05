@@ -4,8 +4,14 @@
  * 시스템 전반에서 사용되는 공통 상수를 중앙에서 관리
  */
 
-// 🕐 시스템 자동 종료 시간 (30분)
-export const SYSTEM_AUTO_SHUTDOWN_TIME = 30 * 60 * 1000; // 30분
+/** 공용 데모 창 길이(분). 동접이 낮고 AI는 일일 한도가 있어 30분보다 UX를 우선한다. */
+export const SYSTEM_AUTO_SHUTDOWN_MINUTES = 60;
+
+/** 공용 데모 창(ms). 첫 시작이 창을 열고, 사용자 종료 버튼 없이 TTL로만 닫힌다. */
+export const SYSTEM_AUTO_SHUTDOWN_TIME =
+  SYSTEM_AUTO_SHUTDOWN_MINUTES * 60 * 1000;
+
+export const SYSTEM_WINDOW_SHUTDOWN_REASON = `${SYSTEM_AUTO_SHUTDOWN_MINUTES}분 자동 종료`;
 
 // 🔄 시스템 상태 갱신 주기
 const SYSTEM_STATUS_UPDATE_INTERVAL = 30 * 1000; // 30초

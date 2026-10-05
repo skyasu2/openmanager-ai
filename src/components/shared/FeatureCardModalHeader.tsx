@@ -102,7 +102,9 @@ export function FeatureCardModalHeader({
           <button
             type="button"
             onClick={onToggleDiagram}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-linear-to-r from-indigo-600 to-purple-600 px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:from-indigo-500 hover:to-purple-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/50"
+            className={`${
+              showDiagram ? 'inline-flex' : 'hidden md:inline-flex'
+            } items-center gap-1.5 rounded-lg bg-linear-to-r from-indigo-600 to-purple-600 px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:from-indigo-500 hover:to-purple-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/50`}
             aria-label={showDiagram ? '상세 내용 보기' : '아키텍처 보기'}
           >
             <DiagramToggleIcon className="h-4 w-4" aria-hidden="true" />

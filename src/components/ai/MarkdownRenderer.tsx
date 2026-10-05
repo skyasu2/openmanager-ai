@@ -40,6 +40,29 @@ function getStandaloneHandoff(text: string) {
   };
 }
 
+// rehype-highlight가 하이라이트 span으로 children을 감싸면 문자열이 아닌
+// React 엘리먼트 트리가 되므로, undefined/empty 감지를 위해 재귀적으로
+// 순수 텍스트만 뽑아낸다.
+function extractPlainText(node: React.ReactNode): string {
+  if (node === null || node === undefined) return '';
+  if (typeof node === 'string' || typeof node === 'number') {
+    return String(node);
+  }
+  if (Array.isArray(node)) {
+    return node.map(extractPlainText).join('');
+  }
+  if (
+    typeof node === 'object' &&
+    'props' in node &&
+    (node as { props?: { children?: React.ReactNode } }).props
+  ) {
+    return extractPlainText(
+      (node as { props: { children?: React.ReactNode } }).props.children
+    );
+  }
+  return '';
+}
+
 /**
  * 코드 블록 컴포넌트 (복사 기능 포함)
  */
@@ -59,6 +82,15 @@ const CodeBlock = memo(function CodeBlock({
   );
   const match = /language-(\w+)/.exec(className || '');
   const language = match ? match[1] : '';
+  const rawText = extractPlainText(children).trim();
+  // 서버 sanitizer가 차단된 명령 라인을 "undefined" 리터럴로 남기고 이후 안내
+  // 문구를 같은 코드펜스 안에 이어 붙이는 경우가 있어(스트리밍 펜스 상태 desync),
+  // 전체 일치가 아니라 첫 줄만으로 판별한다.
+  const firstLine = rawText.split(/\r?\n/, 1)[0]?.trim() ?? '';
+  const isEmptyOrUndefinedLiteral = rawText === '' || firstLine === 'undefined';
+  const displayChildren = isEmptyOrUndefinedLiteral
+    ? '(코드 생성 실패 — 다시 생성해주세요)'
+    : children;
 
   useEffect(() => {
     return () => {
@@ -133,7 +165,7 @@ const CodeBlock = memo(function CodeBlock({
           data-testid="markdown-code-block"
           className={`${className || ''} whitespace-pre-wrap break-words text-gray-100 font-mono leading-relaxed [overflow-wrap:anywhere]`}
         >
-          {children}
+          {displayChildren}
         </code>
       </pre>
     </div>
@@ -156,7 +188,7 @@ export const MarkdownRenderer = memo(function MarkdownRenderer({
   return (
     <div className={`markdown-content min-w-0 ${className}`}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkBreaks]}
+        remarkPlugins={[[remarkGfm, { singleTilde: false }], remarkBreaks]}
         rehypePlugins={[rehypeHighlight]} // Syntax Highlighting 추가
         components={{
           // pre 태그 제거 (CodeBlock이 자체적으로 pre를 포함하므로 중첩 방지)

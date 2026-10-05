@@ -8,7 +8,7 @@
  * - 세션 제한 (전체화면에서는 비활성화)
  */
 
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Activity,
   useCallback,
@@ -21,6 +21,7 @@ import { EnhancedAIChat } from '@/components/ai-sidebar/EnhancedAIChat';
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
 import { useAIChatCore } from '@/hooks/ai/useAIChatCore';
 import { useAIChatSurface } from '@/hooks/ai/useAIChatSurface';
+import { useSystemWindowChatGate } from '@/hooks/system/useSystemWindowChatGate';
 import {
   type PendingAIEntryState,
   useAISidebarStore,
@@ -65,6 +66,8 @@ export default function AIWorkspace({
   serverContextServers,
 }: AIWorkspaceProps = {}) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileHandoffActive, setIsMobileHandoffActive] = useState(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
@@ -92,12 +95,20 @@ export default function AIWorkspace({
     pendingPrefillMessage,
     consumePendingPrefillMessage,
   } = useAIChatSurface();
+  const { systemWindowClosed, isStartingSystem, onStartSystem } =
+    useSystemWindowChatGate();
   const [workspaceQueryAsOfDataSlot, setWorkspaceQueryAsOfDataSlot] = useState(
     pendingEntryState?.queryAsOfDataSlot ?? queryAsOfDataSlot
   );
   const [workspaceArtifactId, setWorkspaceArtifactId] = useState(
     pendingEntryState?.artifactWorkspaceId
   );
+
+  // 아티팩트 focus의 1차 소스는 URL이다. pendingEntryState는 one-shot이라
+  // 라우트를 떠나도 마운트된 채 남은 이전 AIWorkspace 인스턴스가 먼저 소비할 수 있고,
+  // 그러면 새로 보이는 인스턴스는 focus를 영영 못 받는다(2026-08-16 production 실측).
+  const artifactParam = searchParams.get('artifact') ?? undefined;
+  const focusArtifactId = artifactParam ?? workspaceArtifactId;
 
   useEffect(() => {
     if (pendingEntryState?.queryAsOfDataSlot) {
@@ -106,12 +117,26 @@ export default function AIWorkspace({
     setWorkspaceQueryAsOfDataSlot(queryAsOfDataSlot);
   }, [pendingEntryState?.queryAsOfDataSlot, queryAsOfDataSlot]);
 
+  // URL로 넘어온 focus는 우측 패널이 닫혀 있으면 빈 화면처럼 보인다.
+  // pendingEntryState 경로의 setIsRightPanelOpen(true)와 같은 역할을 URL 경로에서 한다.
+  useEffect(() => {
+    if (!artifactParam) {
+      return;
+    }
+    setIsRightPanelOpen(true);
+  }, [artifactParam]);
+
   const handleFunctionSelect = useCallback(
     (func: AIAssistantFunction) => {
       setWorkspaceArtifactId(undefined);
+      // focus를 해제할 때 URL도 함께 정리한다. 남겨두면 다른 기능으로 갔다가
+      // 돌아올 때 focusArtifactId가 다시 살아난다.
+      if (artifactParam) {
+        router.replace(pathname);
+      }
       setSelectedFunction(func);
     },
-    [setSelectedFunction]
+    [artifactParam, pathname, router, setSelectedFunction]
   );
 
   const handleToggleRightPanel = useCallback(() => {
@@ -273,6 +298,12 @@ export default function AIWorkspace({
     setWorkspaceQueryAsOfDataSlot(entry.queryAsOfDataSlot ?? queryAsOfDataSlot);
     setWorkspaceArtifactId(entry.artifactWorkspaceId);
 
+    // 아티팩트 카드에서 넘어온 replay pack은 채팅 우측 패널에서만 열람 가능하다.
+    // 패널이 닫혀 있으면 "전체화면에서 보기"가 빈 화면처럼 보인다.
+    if (entry.artifactWorkspaceId) {
+      setIsRightPanelOpen(true);
+    }
+
     if (entry.draft) {
       setInput(entry.draft);
     }
@@ -363,12 +394,15 @@ export default function AIWorkspace({
           queuedQueries={queuedQueries}
           removeQueuedQuery={removeQueuedQuery}
           showInternalHeader={false}
+          systemWindowClosed={systemWindowClosed}
+          isStartingSystem={isStartingSystem}
+          onStartSystem={onStartSystem}
         />
       </Activity>
       <Activity mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}>
         <div className="h-full p-0">
           <AIContentArea
-            artifactWorkspaceId={workspaceArtifactId}
+            artifactWorkspaceId={focusArtifactId}
             selectedFunction={selectedFunction}
             queryAsOfDataSlot={workspaceQueryAsOfDataSlot}
           />
@@ -409,6 +443,7 @@ export default function AIWorkspace({
         finalModelId={latestAssistantRuntime?.modelId}
         finalProvider={latestAssistantRuntime?.provider}
         artifactWorkspaceId={artifactWorkspaceId}
+        focusReplayPackId={focusArtifactId}
         messages={enhancedMessages}
         queryAsOfDataSlot={workspaceQueryAsOfDataSlot}
         serverContextMessages={enhancedMessages}
@@ -457,6 +492,7 @@ export default function AIWorkspace({
             finalProvider={latestAssistantRuntime?.provider}
           >
             <ArtifactWorkspacePanel
+              focusReplayPackId={focusArtifactId}
               messages={enhancedMessages}
               workspaceId={artifactWorkspaceId}
             />

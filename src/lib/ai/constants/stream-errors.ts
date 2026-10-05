@@ -9,6 +9,11 @@
  * @updated 2026-01-20 - Codex review feedback: improved regex, simplified logic
  */
 
+import {
+  SYSTEM_NOT_RUNNING_ERROR,
+  SYSTEM_NOT_RUNNING_MESSAGE,
+} from '@/lib/system/system-running-contract';
+
 // ============================================================================
 // Error Markers
 // ============================================================================
@@ -156,6 +161,24 @@ function tryParseErrorEnvelope(
   }
 }
 
+/**
+ * 시스템 실행 창이 닫힌 상태의 409를 식별한다.
+ * 이 판정이 없으면 아래 sanitize의 envelope 분기가 가드 안내를
+ * 일반 오류 문구로 덮어써, 사용자가 "시스템을 시작하라"는 안내를 못 본다.
+ */
+export function isSystemNotRunningError(errorMessage: string): boolean {
+  if (!errorMessage?.trim()) return false;
+
+  const envelope = tryParseErrorEnvelope(errorMessage);
+  const candidates = [errorMessage, envelope?.error, envelope?.message].filter(
+    (value): value is string => typeof value === 'string'
+  );
+
+  return candidates.some((candidate) =>
+    candidate.toLowerCase().includes(SYSTEM_NOT_RUNNING_ERROR.toLowerCase())
+  );
+}
+
 export function isBlockedInputError(errorMessage: string): boolean {
   if (!errorMessage?.trim()) return false;
 
@@ -177,6 +200,10 @@ export function isBlockedInputError(errorMessage: string): boolean {
 export function sanitizeDisplayedErrorMessage(errorMessage: string): string {
   if (!errorMessage?.trim()) {
     return 'AI 응답 중 오류가 발생했습니다.';
+  }
+
+  if (isSystemNotRunningError(errorMessage)) {
+    return SYSTEM_NOT_RUNNING_MESSAGE;
   }
 
   if (isBlockedInputError(errorMessage)) {

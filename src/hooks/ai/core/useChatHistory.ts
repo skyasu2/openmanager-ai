@@ -21,19 +21,18 @@ interface RestoredMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  metadata?: { createdAt: string };
   parts: Array<{ type: 'text'; text: string }>;
 }
 
-interface UseChatHistoryProps<
-  TMessage extends RestoredMessage = RestoredMessage,
-> {
+interface UseChatHistoryProps {
   sessionId: string;
   isMessagesEmpty: boolean;
   enhancedMessages: EnhancedChatMessage[];
   seedMessages?: EnhancedChatMessage[];
   seedSessionId?: string;
   /** setMessages that accepts our restored message format */
-  setMessages: (messages: TMessage[]) => void;
+  setMessages: (messages: RestoredMessage[]) => void;
   isLoading: boolean;
   onSessionRestore?: (sessionId: string) => void;
   /** 복원된 메시지의 메타데이터를 deferred state에 주입하는 콜백 */
@@ -42,7 +41,7 @@ interface UseChatHistoryProps<
   ) => void;
 }
 
-export function useChatHistory<TMessage extends RestoredMessage>({
+export function useChatHistory({
   sessionId,
   isMessagesEmpty,
   enhancedMessages,
@@ -52,7 +51,7 @@ export function useChatHistory<TMessage extends RestoredMessage>({
   isLoading,
   onSessionRestore,
   onMetadataRestore,
-}: UseChatHistoryProps<TMessage>) {
+}: UseChatHistoryProps) {
   const isHistoryLoaded = useRef(false);
 
   const buildMetadataFromEnhancedMessage = useCallback(
@@ -154,7 +153,7 @@ export function useChatHistory<TMessage extends RestoredMessage>({
     []
   );
 
-  // 로컬 스토리지에서 히스토리 복원
+  // 같은 탭 sessionStorage에서 히스토리 복원
   useEffect(() => {
     if (isHistoryLoaded.current || !isMessagesEmpty) return;
     isHistoryLoaded.current = true;
@@ -179,10 +178,11 @@ export function useChatHistory<TMessage extends RestoredMessage>({
       id: m.id,
       role: m.role as 'user' | 'assistant',
       content: m.content,
+      metadata: { createdAt: new Date(m.timestamp).toISOString() },
       parts: [{ type: 'text' as const, text: m.content }],
     }));
 
-    setMessages(restoredMessages as TMessage[]);
+    setMessages(restoredMessages);
 
     // analysisBasis 메타데이터 복원 — deferred state에 주입
     if (onMetadataRestore) {
@@ -221,7 +221,7 @@ export function useChatHistory<TMessage extends RestoredMessage>({
     setMessages,
   ]);
 
-  // 메시지 변경 시 localStorage 자동 저장
+  // 메시지 변경 시 같은 탭 sessionStorage에 저장
   useEffect(() => {
     if (!isLoading && enhancedMessages.length > 0) {
       saveChatHistory(sessionId, enhancedMessages);

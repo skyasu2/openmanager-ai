@@ -34,7 +34,8 @@ import {
   validateProcessConfigs,
 } from '@/lib/core/system/process-configs';
 import { systemLogger } from '@/lib/logger';
-import { getSystemRunningFlag, setSystemRunningFlag } from '@/lib/redis';
+import { getSystemRunningWindow, setSystemRunningFlag } from '@/lib/redis';
+import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 
@@ -240,7 +241,8 @@ export const GET = withAuth(async (request: NextRequest) => {
         // useSystemStatus 훅이 기대하는 형식으로 응답
         const status = manager.getSystemStatus();
         const { metrics } = status;
-        const redisSystemRunning = await getSystemRunningFlag();
+        const runningWindow = await getSystemRunningWindow();
+        const redisSystemRunning = runningWindow.running;
 
         // 시스템 실행 상태 판단: 프로세스가 있고 running 프로세스가 50% 이상
         const processBasedRunning =
@@ -272,6 +274,9 @@ export const GET = withAuth(async (request: NextRequest) => {
           version: APP_VERSION,
           environment: process.env.NODE_ENV || 'development',
           uptime: metrics.systemUptime || 0,
+          remainingMs: isSystemRunning
+            ? (runningWindow.remainingMs ?? null)
+            : 0,
           services: {
             database: true,
             cache: true,
@@ -313,223 +318,231 @@ export const GET = withAuth(async (request: NextRequest) => {
 // POST Handler
 // ============================================================================
 
-export const POST = withAuth(async (request: NextRequest) => {
-  try {
-    const body = await request.json();
-    const { action, options } = body;
+export const POST = withAuth(
+  withRateLimit(rateLimiters.systemControl, async (request: NextRequest) => {
+    try {
+      const body = await request.json();
+      const { action, options } = body;
 
-    debug.log('🔧 System POST action:', action);
+      debug.log('🔧 System POST action:', action);
 
-    switch (action) {
-      // System Control Actions (from unified)
-      case 'start': {
-        systemLogger.system('🚀 통합 시스템 시작 요청');
-        if (isServerlessSystemRuntime()) {
-          const synced = await syncSystemRunningFlag(true, 'start-serverless');
-          return buildServerlessSystemActionResponse('start', synced);
-        }
+      switch (action) {
+        // System Control Actions (from unified)
+        case 'start': {
+          systemLogger.system('🚀 통합 시스템 시작 요청');
+          if (isServerlessSystemRuntime()) {
+            const synced = await syncSystemRunningFlag(
+              true,
+              'start-serverless'
+            );
+            return buildServerlessSystemActionResponse('start', synced);
+          }
 
-        const manager = getProcessManager();
-        const result = await manager.startSystem(options);
-        if (result.success) {
-          await syncSystemRunningFlag(true, 'start');
-        }
+          const manager = getProcessManager();
+          const result = await manager.startSystem(options);
+          if (result.success) {
+            await syncSystemRunningFlag(true, 'start');
+          }
 
-        return NextResponse.json({
-          success: result.success,
-          action: 'start',
-          message: result.message,
-          errors: result.errors,
-          warnings: result.warnings,
-          timestamp: new Date().toISOString(),
-        });
-      }
-
-      case 'stop': {
-        systemLogger.system('🛑 통합 시스템 중지 요청');
-        if (isServerlessSystemRuntime()) {
-          const synced = await syncSystemRunningFlag(false, 'stop-serverless');
-          return buildServerlessSystemActionResponse('stop', synced);
-        }
-
-        const manager = getProcessManager();
-        const result = await manager.stopSystem();
-        if (result.success) {
-          await syncSystemRunningFlag(false, 'stop');
-        }
-
-        return NextResponse.json({
-          success: result.success,
-          action: 'stop',
-          message: result.message,
-          errors: result.errors,
-          timestamp: new Date().toISOString(),
-        });
-      }
-
-      case 'restart': {
-        systemLogger.system('🔄 통합 시스템 재시작 요청');
-        if (isServerlessSystemRuntime()) {
-          await syncSystemRunningFlag(false, 'restart-stop-serverless');
-          const synced = await syncSystemRunningFlag(
-            true,
-            'restart-start-serverless'
-          );
           return NextResponse.json({
-            success: synced,
-            action: 'restart',
-            message: synced
-              ? '서버리스 시스템 실행 상태 재시작 완료'
-              : '서버리스 시스템 실행 상태 재시작 실패',
-            errors: synced ? [] : ['REDIS_SYNC_FAILED'],
-            warnings: ['SERVERLESS_VIRTUAL_SYSTEM_STATE'],
+            success: result.success,
+            action: 'start',
+            message: result.message,
+            errors: result.errors,
+            warnings: result.warnings,
             timestamp: new Date().toISOString(),
           });
         }
 
-        const manager = getProcessManager();
-        const stopResult = await manager.stopSystem();
-        if (!stopResult.success) {
-          return NextResponse.json(
-            {
-              success: false,
-              action: 'restart',
-              message: '시스템 중지 실패로 재시작 중단',
-              errors: stopResult.errors,
-              timestamp: new Date().toISOString(),
-            },
-            { status: 500 }
-          );
-        }
-        await syncSystemRunningFlag(false, 'restart-stop');
+        case 'stop': {
+          systemLogger.system('🛑 통합 시스템 중지 요청');
+          if (isServerlessSystemRuntime()) {
+            const synced = await syncSystemRunningFlag(
+              false,
+              'stop-serverless'
+            );
+            return buildServerlessSystemActionResponse('stop', synced);
+          }
 
-        await new Promise((resolve) => setTimeout(resolve, 3000));
-        const startResult = await manager.startSystem(options);
-        if (startResult.success) {
-          await syncSystemRunningFlag(true, 'restart-start');
-        }
+          const manager = getProcessManager();
+          const result = await manager.stopSystem();
+          if (result.success) {
+            await syncSystemRunningFlag(false, 'stop');
+          }
 
-        return NextResponse.json({
-          success: startResult.success,
-          action: 'restart',
-          message: `재시작 완료: ${startResult.message}`,
-          errors: [...stopResult.errors, ...startResult.errors],
-          warnings: startResult.warnings,
-          timestamp: new Date().toISOString(),
-        });
-      }
-
-      // Initialize Action (from initialize)
-      case 'initialize': {
-        if (isInitializing) {
-          return NextResponse.json(
-            {
-              success: false,
-              action: 'initialize',
-              message: '시스템이 이미 초기화 중입니다.',
-            },
-            { status: 429 }
-          );
-        }
-
-        if (isInitialized) {
           return NextResponse.json({
-            success: true,
-            action: 'initialize',
-            message: '시스템이 이미 초기화되었습니다.',
-            logs: ['👍 시스템은 이미 준비되었습니다.'],
+            success: result.success,
+            action: 'stop',
+            message: result.message,
+            errors: result.errors,
+            timestamp: new Date().toISOString(),
           });
         }
 
-        systemLogger.info('🚀 시스템 초기화 시작...');
-        const logs = await runInitialization();
-        systemLogger.info('🎉 시스템 초기화 완료');
+        case 'restart': {
+          systemLogger.system('🔄 통합 시스템 재시작 요청');
+          if (isServerlessSystemRuntime()) {
+            await syncSystemRunningFlag(false, 'restart-stop-serverless');
+            const synced = await syncSystemRunningFlag(
+              true,
+              'restart-start-serverless'
+            );
+            return NextResponse.json({
+              success: synced,
+              action: 'restart',
+              message: synced
+                ? '서버리스 시스템 실행 상태 재시작 완료'
+                : '서버리스 시스템 실행 상태 재시작 실패',
+              errors: synced ? [] : ['REDIS_SYNC_FAILED'],
+              warnings: ['SERVERLESS_VIRTUAL_SYSTEM_STATE'],
+              timestamp: new Date().toISOString(),
+            });
+          }
 
-        return NextResponse.json({
-          success: true,
-          action: 'initialize',
-          message: '시스템 초기화 성공',
-          logs,
-        });
-      }
+          const manager = getProcessManager();
+          const stopResult = await manager.stopSystem();
+          if (!stopResult.success) {
+            return NextResponse.json(
+              {
+                success: false,
+                action: 'restart',
+                message: '시스템 중지 실패로 재시작 중단',
+                errors: stopResult.errors,
+                timestamp: new Date().toISOString(),
+              },
+              { status: 500 }
+            );
+          }
+          await syncSystemRunningFlag(false, 'restart-stop');
 
-      // Memory Optimize Action (serverless - platform managed)
-      case 'optimize': {
-        debug.log('🧠 메모리 최적화 API 호출 (서버리스)');
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          const startResult = await manager.startSystem(options);
+          if (startResult.success) {
+            await syncSystemRunningFlag(true, 'restart-start');
+          }
 
-        const mem = process.memoryUsage();
-        const usagePercent = Math.round((mem.heapUsed / mem.heapTotal) * 100);
+          return NextResponse.json({
+            success: startResult.success,
+            action: 'restart',
+            message: `재시작 완료: ${startResult.message}`,
+            errors: [...stopResult.errors, ...startResult.errors],
+            warnings: startResult.warnings,
+            timestamp: new Date().toISOString(),
+          });
+        }
 
-        return NextResponse.json({
-          success: true,
-          action: 'optimize',
-          message: `서버리스 환경 - Vercel이 자동 관리 (현재 ${usagePercent}%)`,
-          data: {
-            level: '서버리스 (자동 관리)',
-            duration: 0,
-            targetAchieved: true,
-            memory: {
-              before: { usagePercent, heapUsed: mem.heapUsed },
-              after: { usagePercent, heapUsed: mem.heapUsed },
-              freedMB: 0,
+        // Initialize Action (from initialize)
+        case 'initialize': {
+          if (isInitializing) {
+            return NextResponse.json(
+              {
+                success: false,
+                action: 'initialize',
+                message: '시스템이 이미 초기화 중입니다.',
+              },
+              { status: 429 }
+            );
+          }
+
+          if (isInitialized) {
+            return NextResponse.json({
+              success: true,
+              action: 'initialize',
+              message: '시스템이 이미 초기화되었습니다.',
+              logs: ['👍 시스템은 이미 준비되었습니다.'],
+            });
+          }
+
+          systemLogger.info('🚀 시스템 초기화 시작...');
+          const logs = await runInitialization();
+          systemLogger.info('🎉 시스템 초기화 완료');
+
+          return NextResponse.json({
+            success: true,
+            action: 'initialize',
+            message: '시스템 초기화 성공',
+            logs,
+          });
+        }
+
+        // Memory Optimize Action (serverless - platform managed)
+        case 'optimize': {
+          debug.log('🧠 메모리 최적화 API 호출 (서버리스)');
+
+          const mem = process.memoryUsage();
+          const usagePercent = Math.round((mem.heapUsed / mem.heapTotal) * 100);
+
+          return NextResponse.json({
+            success: true,
+            action: 'optimize',
+            message: `서버리스 환경 - Vercel이 자동 관리 (현재 ${usagePercent}%)`,
+            data: {
+              level: '서버리스 (자동 관리)',
+              duration: 0,
+              targetAchieved: true,
+              memory: {
+                before: { usagePercent, heapUsed: mem.heapUsed },
+                after: { usagePercent, heapUsed: mem.heapUsed },
+                freedMB: 0,
+              },
+              serverless: true,
             },
-            serverless: true,
-          },
+            timestamp: new Date().toISOString(),
+          });
+        }
+
+        // Sync Data Action (from sync-data)
+        case 'sync-data': {
+          systemLogger.info('🔄 데이터 동기화 API 호출됨');
+
+          const syncResult = {
+            backupChecked: true,
+            cacheValidated: true,
+            dataRestored: false,
+            syncTime: new Date().toISOString(),
+          };
+
+          await new Promise((resolve) => setTimeout(resolve, 100));
+          systemLogger.info('✅ 데이터 동기화 완료:', syncResult);
+
+          return NextResponse.json({
+            success: true,
+            action: 'sync-data',
+            message: '데이터 동기화 완료',
+            data: syncResult,
+          });
+        }
+
+        default:
+          return NextResponse.json(
+            {
+              success: false,
+              error: `Unknown action: ${action}`,
+              availableActions: [
+                'start',
+                'stop',
+                'restart',
+                'initialize',
+                'optimize',
+                'sync-data',
+              ],
+            },
+            { status: 400 }
+          );
+      }
+    } catch (error) {
+      const errorMessage = getErrorMessage(error);
+      systemLogger.error('System POST 오류:', error);
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: '시스템 제어 실패',
+          message: errorMessage,
           timestamp: new Date().toISOString(),
-        });
-      }
-
-      // Sync Data Action (from sync-data)
-      case 'sync-data': {
-        systemLogger.info('🔄 데이터 동기화 API 호출됨');
-
-        const syncResult = {
-          backupChecked: true,
-          cacheValidated: true,
-          dataRestored: false,
-          syncTime: new Date().toISOString(),
-        };
-
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        systemLogger.info('✅ 데이터 동기화 완료:', syncResult);
-
-        return NextResponse.json({
-          success: true,
-          action: 'sync-data',
-          message: '데이터 동기화 완료',
-          data: syncResult,
-        });
-      }
-
-      default:
-        return NextResponse.json(
-          {
-            success: false,
-            error: `Unknown action: ${action}`,
-            availableActions: [
-              'start',
-              'stop',
-              'restart',
-              'initialize',
-              'optimize',
-              'sync-data',
-            ],
-          },
-          { status: 400 }
-        );
+        },
+        { status: 500 }
+      );
     }
-  } catch (error) {
-    const errorMessage = getErrorMessage(error);
-    systemLogger.error('System POST 오류:', error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: '시스템 제어 실패',
-        message: errorMessage,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 }
-    );
-  }
-});
+  })
+);

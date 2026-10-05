@@ -19,10 +19,20 @@ export interface DiagramLayer {
   nodes: DiagramNode[];
 }
 
+export interface ArchitectureDiagramView {
+  id: string;
+  label: string;
+  title?: string;
+  description?: string;
+  layers: DiagramLayer[];
+  connections?: DiagramConnection[];
+}
+
 export interface ArchitectureDiagram {
   id: string;
   title: string;
   description: string;
   layers: DiagramLayer[];
   connections?: DiagramConnection[];
+  views?: ArchitectureDiagramView[];
 }

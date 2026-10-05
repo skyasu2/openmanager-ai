@@ -106,10 +106,12 @@ function selectAffectedServers(
   servers: ApiServerMetrics[],
   metric: OpsProcedureMetric,
   threshold: number
-): ApiServerMetrics[] {
+): { servers: ApiServerMetrics[]; isFallback: boolean } {
   const sorted = sortByMetric(servers, metric);
   const breached = sorted.filter((server) => server[metric] >= threshold);
-  return (breached.length > 0 ? breached : sorted).slice(0, 5);
+  return breached.length > 0
+    ? { servers: breached.slice(0, 5), isFallback: false }
+    : { servers: sorted.slice(0, 5), isFallback: true };
 }
 
 function buildMetricEvidence(
@@ -166,11 +168,13 @@ function buildRunbook({
   metric,
   threshold,
   affectedServers,
+  usesSlack,
 }: {
   procedureType: OpsProcedureType;
   metric: OpsProcedureMetric;
   threshold: number;
   affectedServers: ApiServerMetrics[];
+  usesSlack: boolean;
 }): OpsProcedureArtifact['runbook'] {
   const metricLabel = METRIC_LABELS[metric];
   const affectedSummary =
@@ -202,21 +206,27 @@ function buildRunbook({
           ]
         : [
             `${metricLabel} ${threshold}% 이상 서버를 알림 대상으로 선별합니다.`,
-            'Slack webhook은 환경변수로 주입하고, 알림 폭주 방지를 위해 수동 검토 후 적용합니다.',
+            usesSlack
+              ? 'Slack webhook은 환경변수로 주입하고, 알림 폭주 방지를 위해 수동 검토 후 적용합니다.'
+              : '외부 알림 전송 없이 현재 snapshot 결과를 로컬에서 검토합니다.',
             '알림 후 동일 기준으로 메트릭을 재확인합니다.',
           ],
     validationSteps: [
-      `OpenManager에서 ${metricLabel} 사용률을 재확인합니다.`,
+      `Opsivane에서 ${metricLabel} 사용률을 재확인합니다.`,
       'journalctl 또는 서비스 로그에서 warning/error 재발 여부를 확인합니다.',
       '알림 또는 runbook 적용 후 10분 간격으로 같은 조건이 해소됐는지 재검증합니다.',
     ],
     rollbackOrStopConditions: [
-      'Slack webhook URL이 검증되지 않았거나 알림 폭주가 발생하면 즉시 중단합니다.',
+      usesSlack
+        ? 'Slack webhook URL이 검증되지 않았거나 알림 폭주가 발생하면 즉시 중단합니다.'
+        : 'snapshot 시각이나 대상 서버가 현재 운영 상태와 다르면 적용을 중단합니다.',
       '서비스 재시작, 삭제, 정리 같은 mutating 명령은 별도 승인 전 실행하지 않습니다.',
     ],
     limitations: [
       '이 산출물은 현재 OTel snapshot 기반 템플릿이며 원격 명령을 자동 실행하지 않습니다.',
-      'Webhook URL, 운영 API endpoint, 배포 위치는 사용자가 안전하게 주입해야 합니다.',
+      usesSlack
+        ? 'Webhook URL, 운영 API endpoint, 배포 위치는 사용자가 안전하게 주입해야 합니다.'
+        : '외부 알림 채널은 연결하지 않으며 현재 상태는 Opsivane에서 다시 확인해야 합니다.',
     ],
   };
 }
@@ -230,13 +240,51 @@ function buildScriptBlock({
   metric,
   threshold,
   affectedServers,
+  isFallback,
+  usesSlack,
 }: {
   metric: OpsProcedureMetric;
   threshold: number;
   affectedServers: ApiServerMetrics[];
+  isFallback: boolean;
+  usesSlack: boolean;
 }): OpsProcedureArtifact['codeBlocks'][number] {
   const serverIds = affectedServers.map((server) => server.serverId);
   const metricLabel = METRIC_LABELS[metric];
+  // fallback(임계 초과 서버 0대)일 때는 변수명을 AFFECTED(영향받은)가 아니라
+  // WATCHLIST(참고 관찰 대상)로 달리해 "지금 기준을 넘었다"는 오해를 막는다.
+  const serverVarName = isFallback ? 'WATCHLIST_SERVERS' : 'AFFECTED_SERVERS';
+  const notificationText = isFallback
+    ? `Opsivane watchlist: no servers reached ${metricLabel} threshold %s%% in the source snapshot. Review only: %s`
+    : `Opsivane snapshot alert: ${metricLabel} threshold %s%% reached on %s. Verify current metrics before action.`;
+
+  if (!usesSlack) {
+    const statusText = isFallback
+      ? `No servers reached ${metricLabel} threshold ${threshold}% in the source snapshot.`
+      : `${metricLabel} threshold ${threshold}% reached in the source snapshot.`;
+    return {
+      id: `ops-${metric}-snapshot-review-script`,
+      title: `${metricLabel} snapshot review script`,
+      language: 'bash',
+      content: [
+        '#!/usr/bin/env bash',
+        'set -euo pipefail',
+        '',
+        `THRESHOLD=${threshold}`,
+        `${serverVarName}=${shellArray(serverIds)}`,
+        `printf '%s\\n' '${statusText}'`,
+        `printf 'Review target: %s\\n' "\${${serverVarName}[@]}"`,
+        "printf '%s\\n' 'Verify current metrics in Opsivane before action.'",
+      ].join('\n'),
+      executable: false,
+      requiredEnv: [],
+      safetyLevel: 'read-only',
+      notes: [
+        '외부 알림이나 원격 명령 없이 현재 snapshot의 대상만 출력합니다.',
+        '실행 전 Opsivane에서 현재 메트릭과 snapshot 시각을 다시 확인하세요.',
+      ],
+    };
+  }
 
   return {
     id: `ops-${metric}-slack-script`,
@@ -248,15 +296,15 @@ function buildScriptBlock({
       '',
       `THRESHOLD=${threshold}`,
       `SLACK_WEBHOOK_URL="\${SLACK_WEBHOOK_URL:-}"`,
-      `AFFECTED_SERVERS=${shellArray(serverIds)}`,
+      `${serverVarName}=${shellArray(serverIds)}`,
       '',
       'if [[ -z "$SLACK_WEBHOOK_URL" ]]; then',
       '  echo "SLACK_WEBHOOK_URL is required" >&2',
       '  exit 1',
       'fi',
       '',
-      `server_list=$(printf "%s, " "\${AFFECTED_SERVERS[@]}")`,
-      `payload=$(printf '{"text":"OpenManager alert: ${metricLabel} threshold %s%% exceeded on %s"}' "$THRESHOLD" "\${server_list%, }")`,
+      `server_list=$(printf "%s, " "\${${serverVarName}[@]}")`,
+      `payload=$(printf '{"text":"${notificationText}"}' "$THRESHOLD" "\${server_list%, }")`,
       'curl -fsS -X POST -H "Content-Type: application/json" --data "$payload" "$SLACK_WEBHOOK_URL"',
     ].join('\n'),
     executable: false,
@@ -265,6 +313,11 @@ function buildScriptBlock({
     notes: [
       '현재 snapshot 기반 템플릿이라 배포 전 데이터 소스 연결을 검토해야 합니다.',
       'Slack webhook URL은 secret으로 주입하고 코드/아티팩트에 저장하지 않습니다.',
+      ...(isFallback
+        ? [
+            `현재 기준(${threshold}%)을 초과한 서버가 없어 참고용으로 ${metricLabel} 상위 서버를 담았습니다. 배포 전 실제 초과 여부를 다시 확인하세요.`,
+          ]
+        : []),
     ],
   };
 }
@@ -272,9 +325,11 @@ function buildScriptBlock({
 function buildAlertRuleBlocks({
   metric,
   threshold,
+  usesSlack,
 }: {
   metric: OpsProcedureMetric;
   threshold: number;
+  usesSlack: boolean;
 }): OpsProcedureArtifact['codeBlocks'] {
   const metricLabel = METRIC_LABELS[metric];
   const metricName = metricLabel.charAt(0) + metricLabel.slice(1).toLowerCase();
@@ -284,49 +339,53 @@ function buildAlertRuleBlocks({
       ? `100 * (1 - avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m]))) > ${threshold}`
       : `openmanager_${metric}_usage_percent > ${threshold}`;
 
-  return [
-    {
-      id: `ops-${metric}-promql`,
-      title: `${metricLabel} threshold PromQL`,
-      language: 'promql',
-      content: promql,
-      executable: false,
-      requiredEnv: [],
-      safetyLevel: 'read-only',
-      notes: [
-        'Prometheus metric 이름은 실제 운영 exporter에 맞춰 확인해야 합니다.',
-      ],
-    },
-    {
-      id: `ops-${metric}-alertmanager-yaml`,
-      title: `${metricLabel} Prometheus rule and Alertmanager receiver`,
-      language: 'yaml',
-      content: [
-        'groups:',
-        '  - name: openmanager-ops-procedure',
-        '    rules:',
-        `      - alert: ${alertName}`,
-        `        expr: ${promql}`,
-        '        for: 5m',
-        '        labels:',
-        '          severity: warning',
-        '        annotations:',
-        `          summary: "${metricLabel} usage is above ${threshold}%"`,
-        'receivers:',
-        '  - name: slack-webhook',
-        '    slack_configs:',
-        '      - api_url: SLACK_WEBHOOK_URL',
-        '        send_resolved: true',
-      ].join('\n'),
-      executable: false,
-      requiredEnv: ['SLACK_WEBHOOK_URL'],
-      safetyLevel: 'notification-only',
-      notes: [
-        'Alertmanager 설정에는 실제 webhook URL 대신 secret placeholder만 둡니다.',
-        'Prometheus rule과 Alertmanager receiver/routing은 분리 적용해야 합니다.',
-      ],
-    },
-  ];
+  const blocks: OpsProcedureArtifact['codeBlocks'] = [];
+  if (usesSlack) {
+    blocks.push(
+      {
+        id: `ops-${metric}-promql`,
+        title: `${metricLabel} threshold PromQL`,
+        language: 'promql',
+        content: promql,
+        executable: false,
+        requiredEnv: [],
+        safetyLevel: 'read-only',
+        notes: [
+          'Prometheus metric 이름은 실제 운영 exporter에 맞춰 확인해야 합니다.',
+        ],
+      },
+      {
+        id: `ops-${metric}-alertmanager-yaml`,
+        title: `${metricLabel} Prometheus rule and Alertmanager receiver`,
+        language: 'yaml',
+        content: [
+          'groups:',
+          '  - name: openmanager-ops-procedure',
+          '    rules:',
+          `      - alert: ${alertName}`,
+          `        expr: ${promql}`,
+          '        for: 5m',
+          '        labels:',
+          '          severity: warning',
+          '        annotations:',
+          `          summary: "${metricLabel} usage is above ${threshold}%"`,
+          'receivers:',
+          '  - name: slack-webhook',
+          '    slack_configs:',
+          '      - api_url: SLACK_WEBHOOK_URL',
+          '        send_resolved: true',
+        ].join('\n'),
+        executable: false,
+        requiredEnv: ['SLACK_WEBHOOK_URL'],
+        safetyLevel: 'notification-only',
+        notes: [
+          'Alertmanager 설정에는 실제 webhook URL 대신 secret placeholder만 둡니다.',
+          'Prometheus rule과 Alertmanager receiver/routing은 분리 적용해야 합니다.',
+        ],
+      }
+    );
+  }
+  return blocks;
 }
 
 function buildRunbookBlock(
@@ -383,6 +442,7 @@ export async function generateOpsProcedureArtifact({
   const metric = readMetric(query);
   const threshold = readThreshold(query);
   const procedureType = readProcedureType(query);
+  const usesSlack = /slack|슬랙|webhook/i.test(query);
   const [servers, summary] = await Promise.all([
     metricsProvider.getAllServerMetrics(),
     metricsProvider.getSystemSummary(),
@@ -390,7 +450,8 @@ export async function generateOpsProcedureArtifact({
 
   signal?.throwIfAborted();
 
-  const affectedServers = selectAffectedServers(servers, metric, threshold);
+  const { servers: affectedServers, isFallback: isAffectedServersFallback } =
+    selectAffectedServers(servers, metric, threshold);
   const metricEvidence = buildMetricEvidence(
     affectedServers,
     metric,
@@ -406,20 +467,31 @@ export async function generateOpsProcedureArtifact({
     metric,
     threshold,
     affectedServers,
+    usesSlack,
   });
   const codeBlocks =
     procedureType === 'alert-rule'
-      ? buildAlertRuleBlocks({ metric, threshold })
+      ? buildAlertRuleBlocks({ metric, threshold, usesSlack })
       : procedureType === 'runbook'
         ? [buildRunbookBlock(runbook)]
-        : [buildScriptBlock({ metric, threshold, affectedServers })];
+        : [
+            buildScriptBlock({
+              metric,
+              threshold,
+              affectedServers,
+              isFallback: isAffectedServersFallback,
+              usesSlack,
+            }),
+          ];
   const validation = validateOpsProcedureArtifact({ codeBlocks });
   const metricLabel = METRIC_LABELS[metric];
   const generatedAt = new Date().toISOString();
   const baseSummary =
     procedureType === 'runbook'
       ? 'warning/error 로그와 현재 메트릭을 근거로 원인 후보, 대응 순서, 검증 절차를 정리했습니다.'
-      : `${metricLabel} ${threshold}% 이상 조건을 기준으로 알림 산출물을 생성했습니다.`;
+      : isAffectedServersFallback
+        ? `현재 기준(${metricLabel} ${threshold}%)을 초과한 서버는 없습니다. 참고용으로 ${metricLabel} 상위 서버 기준 ${usesSlack ? 'Slack 알림' : '로컬 점검'} 산출물을 생성했습니다.`
+        : `${metricLabel} ${threshold}% 이상 조건을 기준으로 ${usesSlack ? 'Slack 알림' : '로컬 점검'} 산출물을 생성했습니다.`;
   const summaryText = requestsDirectExecutionControl(query)
     ? `${EXECUTION_CONTROL_NOTICE}\n\n${baseSummary}`
     : baseSummary;
@@ -430,10 +502,10 @@ export async function generateOpsProcedureArtifact({
       generatedAt,
       title:
         procedureType === 'alert-rule'
-          ? `${metricLabel} ${threshold}% Slack 알림 규칙`
+          ? `${metricLabel} ${threshold}% ${usesSlack ? 'Slack 연동 ' : ''}알림 규칙`
           : procedureType === 'runbook'
             ? '로그 기반 원인/대응 runbook'
-            : `${metricLabel} ${threshold}% Slack 알림 운영 절차`,
+            : `${metricLabel} ${threshold}% ${usesSlack ? 'Slack 알림' : '로컬 점검'} 운영 절차`,
       summary: summaryText,
       procedureType,
       source: 'otel-static',
@@ -443,8 +515,7 @@ export async function generateOpsProcedureArtifact({
         threshold,
         serverScope: 'all',
         timeWindowMinutes: 10,
-        notificationTarget:
-          procedureType === 'runbook' ? 'none' : 'slack-webhook',
+        notificationTarget: usesSlack ? 'slack-webhook' : 'none',
       },
       evidence,
       runbook,

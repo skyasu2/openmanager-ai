@@ -31,6 +31,7 @@ import type {
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 
 export type MessageMetadata = {
+  createdAt?: string;
   traceId?: string;
   evidenceCards?: EvidenceCard[];
   retrieval?: RetrievalMetadata;

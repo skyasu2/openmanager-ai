@@ -61,10 +61,9 @@ export function useSystemStart(options: UseSystemStartOptions) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const { isSystemStarted, startSystem } = useUnifiedAdminStore(
+  const { isSystemStarted } = useUnifiedAdminStore(
     useShallow((s) => ({
       isSystemStarted: s.isSystemStarted,
-      startSystem: s.startSystem,
     }))
   );
 
@@ -285,7 +284,6 @@ export function useSystemStart(options: UseSystemStartOptions) {
               setIsSystemStarting(false);
               return;
             }
-            await startSystem();
             markSystemBootIntent();
             setPendingNavigation(SYSTEM_BOOT_PATH);
           } catch (error) {
@@ -311,7 +309,6 @@ export function useSystemStart(options: UseSystemStartOptions) {
     isGuestUser,
     router,
     startMultiUserSystem,
-    startSystem,
   ]);
 
   // 버튼 설정 계산

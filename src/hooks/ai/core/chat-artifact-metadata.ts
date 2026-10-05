@@ -12,6 +12,7 @@ import {
   type RouteDecisionDecider,
 } from '@/lib/ai/route-decision';
 import type { JobDataSlot } from '@/types/ai-jobs';
+import { formatServerStatusLabel } from '@/types/server-enums';
 
 type ChatArtifact = MonitoringChatArtifact;
 
@@ -189,7 +190,7 @@ export function getArtifactSuccessText(artifact: ChatArtifact): string {
     `- 위험 신호: ${artifact.riskSignalCount}건`,
     ...(queryFocusServerLine ? [queryFocusServerLine] : []),
     '',
-    '아래 카드에서 MD/JSON 파일로 내려받거나 이상감지/추세 화면에서 확인할 수 있습니다.',
+    '아래 카드에서 MD/JSON 파일로 내려받을 수 있습니다.',
   ].join('\n');
 }
 
@@ -204,18 +205,7 @@ function formatMonitoringQueryFocusServerLine(
 }
 
 function formatMonitoringStatusLabel(status: string): string {
-  switch (status) {
-    case 'online':
-      return '정상';
-    case 'warning':
-      return '주의';
-    case 'critical':
-      return '위험';
-    case 'offline':
-      return '오프라인';
-    default:
-      return status;
-  }
+  return formatServerStatusLabel(status);
 }
 
 export function isAbortError(error: unknown): boolean {

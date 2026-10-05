@@ -92,6 +92,9 @@ interface EnhancedAIChatProps {
   }>;
   removeQueuedQuery?: (index: number) => void;
   showInternalHeader?: boolean;
+  systemWindowClosed?: boolean;
+  isStartingSystem?: boolean;
+  onStartSystem?: () => void;
 }
 
 /**
@@ -138,6 +141,9 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   queuedQueries,
   removeQueuedQuery,
   showInternalHeader = true,
+  systemWindowClosed = false,
+  isStartingSystem = false,
+  onStartSystem,
 }: EnhancedAIChatProps) {
   const {
     scrollContainerRef,
@@ -159,7 +165,6 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
     closePreviewModal,
     handlePaste,
   } = useChatActions({
-    setInputValue,
     handleSendInput,
     isGenerating,
     isLimitReached: sessionState?.isLimitReached,
@@ -305,6 +310,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
           errorDetails={errorDetails}
           onRetry={onRetry}
           onClearError={onClearError}
+          onStartSystem={onStartSystem}
         />
       )}
 
@@ -437,6 +443,9 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
         onStopGeneration={onStopGeneration}
         webSearchEnabled={webSearchEnabled}
         onToggleWebSearch={onToggleWebSearch}
+        systemWindowClosed={systemWindowClosed}
+        isStartingSystem={isStartingSystem}
+        onStartSystem={onStartSystem}
       />
     </div>
   );

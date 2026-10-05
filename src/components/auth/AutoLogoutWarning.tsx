@@ -121,7 +121,7 @@ export function AutoLogoutWarning({
         {/* 추가 정보 */}
         <div className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
           <p className="text-center text-xs text-gray-400 dark:text-gray-500">
-            💡 베르셀 무료티어 보호를 위한 자동 시스템입니다
+            💡 서버리스 사용량 최적화를 위한 자동 시스템입니다
           </p>
         </div>
       </div>

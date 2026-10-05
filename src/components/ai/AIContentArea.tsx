@@ -15,9 +15,6 @@ import type { JobDataSlot } from '@/types/ai-jobs';
 const AutoReportPage = lazy(
   () => import('@/components/ai/pages/AutoReportPage')
 );
-const IntelligentMonitoringPage = lazy(
-  () => import('@/components/ai/pages/IntelligentMonitoringPage')
-);
 
 // 🔄 Loading Spinner
 const LoadingSpinner = () => (
@@ -50,9 +47,6 @@ export default function AIContentArea({
 
   const shouldRenderAutoReport =
     selectedFunction === 'auto-report' || mountedTabs.has('auto-report');
-  const shouldRenderIntelligentMonitoring =
-    selectedFunction === 'intelligent-monitoring' ||
-    mountedTabs.has('intelligent-monitoring');
 
   useEffect(() => {
     if (selectedFunction === 'chat') return;
@@ -72,25 +66,6 @@ export default function AIContentArea({
             <Suspense fallback={<LoadingSpinner />}>
               <AutoReportPage
                 artifactWorkspaceId={artifactWorkspaceId}
-                queryAsOfDataSlot={queryAsOfDataSlot}
-              />
-            </Suspense>
-          </div>
-        </Activity>
-      )}
-      {shouldRenderIntelligentMonitoring && (
-        <Activity
-          mode={
-            selectedFunction === 'intelligent-monitoring' ? 'visible' : 'hidden'
-          }
-        >
-          <div className="h-full" data-testid="intelligent-monitoring-page">
-            <Suspense fallback={<LoadingSpinner />}>
-              <IntelligentMonitoringPage
-                artifactWorkspaceId={artifactWorkspaceId}
-                autoAnalyzeOnVisible={
-                  selectedFunction === 'intelligent-monitoring'
-                }
                 queryAsOfDataSlot={queryAsOfDataSlot}
               />
             </Suspense>

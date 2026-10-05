@@ -216,6 +216,9 @@ export function parseSystemRunningFlag(value: unknown): boolean | null {
 
 /**
  * 시스템 실행 상태 플래그 저장 (SSOT)
+ *
+ * running=true: 첫 시작만 TTL 창을 연다. 이미 실행 중이면 기존 TTL을 연장하지 않는다.
+ * running=false: 내부/테스트용. 사용자 UI에서는 호출하지 않는다.
  */
 export async function setSystemRunningFlag(
   isRunning: boolean,
@@ -227,12 +230,31 @@ export async function setSystemRunningFlag(
   try {
     await runRedisWithTimeout(
       'SET system running flag',
-      () =>
-        isRunning
-          ? client.set(SYSTEM_RUNNING_KEY, '1', {
-              ex: SYSTEM_RUNNING_TTL_SECONDS,
-            })
-          : client.set(SYSTEM_RUNNING_KEY, '0'),
+      async () => {
+        if (!isRunning) {
+          await client.set(SYSTEM_RUNNING_KEY, '0');
+          return;
+        }
+
+        const claimed = await client.set(SYSTEM_RUNNING_KEY, '1', {
+          ex: SYSTEM_RUNNING_TTL_SECONDS,
+          nx: true,
+        });
+        if (claimed) {
+          return;
+        }
+
+        const current = parseSystemRunningFlag(
+          await client.get<unknown>(SYSTEM_RUNNING_KEY)
+        );
+        if (current === true) {
+          return;
+        }
+
+        await client.set(SYSTEM_RUNNING_KEY, '1', {
+          ex: SYSTEM_RUNNING_TTL_SECONDS,
+        });
+      },
       options
     );
     return true;
@@ -244,8 +266,9 @@ export async function setSystemRunningFlag(
 
 /**
  * 시스템 실행 상태 플래그 조회 (SSOT)
- * - true/false: Redis에서 명시적으로 확인됨
- * - null: Redis 사용 불가 또는 값 미존재/파싱 실패 (unknown)
+ * - true: Redis에 실행 중 플래그가 있음
+ * - false: 키가 없음(TTL 만료/미시작) 또는 명시적 정지
+ * - null: Redis 사용 불가·타임아웃·조회 실패 (unknown, fail-open)
  */
 export async function getSystemRunningFlag(
   options?: RedisTimeoutOptions
@@ -259,10 +282,63 @@ export async function getSystemRunningFlag(
       () => client.get<unknown>(SYSTEM_RUNNING_KEY),
       options
     );
+    if (raw === null || raw === undefined) {
+      return false;
+    }
     return parseSystemRunningFlag(raw);
   } catch (e) {
     logger.warn('[Redis] Failed to read system running flag:', e);
     return null;
+  }
+}
+
+export type SystemRunningWindow = {
+  running: boolean | null;
+  remainingMs: number | null;
+};
+
+/**
+ * 공용 시스템 창의 실행 여부와 남은 TTL.
+ * AI 가드(매 요청 GET)에는 쓰지 않고 /api/system 상태 조회에만 쓴다.
+ */
+export async function getSystemRunningWindow(
+  options?: RedisTimeoutOptions
+): Promise<SystemRunningWindow> {
+  const running = await getSystemRunningFlag(options);
+  if (running !== true) {
+    return {
+      running,
+      remainingMs: running === false ? 0 : null,
+    };
+  }
+
+  const client = getRedisClient();
+  if (!client || !isRedisAvailable) {
+    return { running: true, remainingMs: null };
+  }
+
+  try {
+    const ttlSeconds = await runRedisWithTimeout(
+      'TTL system running flag',
+      () => client.ttl(SYSTEM_RUNNING_KEY),
+      options
+    );
+
+    if (typeof ttlSeconds !== 'number' || !Number.isFinite(ttlSeconds)) {
+      return { running: true, remainingMs: null };
+    }
+    // -1: 키는 있으나 expire 없음. 닫힌 것으로 보면 UI는 만료인데 가드는 통과한다.
+    if (ttlSeconds === -1) {
+      return { running: true, remainingMs: null };
+    }
+    if (ttlSeconds <= 0) {
+      return { running: false, remainingMs: 0 };
+    }
+
+    return { running: true, remainingMs: ttlSeconds * 1000 };
+  } catch (e) {
+    logger.warn('[Redis] Failed to read system running TTL:', e);
+    return { running: true, remainingMs: null };
   }
 }
 

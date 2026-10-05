@@ -4,6 +4,7 @@ import { Bot, Zap } from 'lucide-react';
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { getDiagramByCardId } from '@/data/architecture-diagrams.data';
+import { resolveDiagramView } from '@/data/architecture-diagrams.utils';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { FeatureCardModalProps } from '@/types/feature-card.types';
 import { parseMarkdownLinks } from '@/utils/markdown-parser';
@@ -12,6 +13,7 @@ import {
   buildCategorizedTechData,
   getSafeCardData,
   sanitizeModalText,
+  subSectionGridClass,
 } from './FeatureCardModal.utils';
 import {
   FeatureCardModalHeader,
@@ -25,16 +27,24 @@ import { VibeHistorySection } from './VibeHistorySection';
 
 type VibeView = 'current' | 'history' | 'cicd';
 
+const getDiagramTabId = (viewId: string) =>
+  `feature-card-diagram-tab-${viewId}`;
+
+const getDiagramPanelId = (viewId: string) =>
+  `feature-card-diagram-panel-${viewId}`;
+
 type ModalViewState = {
   cardId: string | null;
   showDiagram: boolean;
   vibeView: VibeView;
+  diagramViewId: string | null;
 };
 
 const DEFAULT_MODAL_VIEW_STATE: ModalViewState = {
   cardId: null,
   showDiagram: false,
   vibeView: 'current',
+  diagramViewId: null,
 };
 
 export default function FeatureCardModal({
@@ -53,7 +63,10 @@ export default function FeatureCardModal({
     isVisible && selectedCardId !== null && viewState.cardId === selectedCardId;
   const showDiagram = isViewStateCurrent ? viewState.showDiagram : false;
   const vibeView = isViewStateCurrent ? viewState.vibeView : 'current';
-  const modalViewMode = showDiagram ? 'diagram' : vibeView;
+  const diagramViewId = isViewStateCurrent ? viewState.diagramViewId : null;
+  const modalViewMode = showDiagram
+    ? `diagram:${diagramViewId ?? 'default'}`
+    : vibeView;
   const modalScrollResetKey = `${selectedCardId ?? 'none'}:${modalViewMode}`;
 
   // AI 상태 확인 (AI 제한 처리용)
@@ -82,6 +95,7 @@ export default function FeatureCardModal({
         cardId: selectedCardId,
         showDiagram: false,
         vibeView: 'current',
+        diagramViewId: null,
       };
     });
   }, [isVisible, selectedCardId]);
@@ -99,16 +113,36 @@ export default function FeatureCardModal({
 
   const toggleDiagram = React.useCallback(() => {
     if (!selectedCardId) return;
+    const firstViewId =
+      getDiagramByCardId(selectedCardId)?.views?.[0]?.id ?? null;
 
-    setViewState((previousState) => ({
-      cardId: selectedCardId,
-      showDiagram:
+    setViewState((previousState) => {
+      const nextShowDiagram =
         previousState.cardId === selectedCardId
           ? !previousState.showDiagram
-          : true,
-      vibeView: 'current',
-    }));
+          : true;
+
+      return {
+        cardId: selectedCardId,
+        showDiagram: nextShowDiagram,
+        vibeView: 'current',
+        diagramViewId: nextShowDiagram ? firstViewId : null,
+      };
+    });
   }, [selectedCardId]);
+
+  const setDiagramView = React.useCallback(
+    (nextViewId: string) => {
+      if (!selectedCardId) return;
+      setViewState({
+        cardId: selectedCardId,
+        showDiagram: true,
+        vibeView: 'current',
+        diagramViewId: nextViewId,
+      });
+    },
+    [selectedCardId]
+  );
 
   const setScopedVibeView = React.useCallback(
     (nextView: VibeView) => {
@@ -118,6 +152,7 @@ export default function FeatureCardModal({
         cardId: selectedCardId,
         showDiagram: false,
         vibeView: nextView,
+        diagramViewId: null,
       });
     },
     [selectedCardId]
@@ -203,6 +238,49 @@ export default function FeatureCardModal({
     return getDiagramByCardId(cardData.id);
   }, [cardData.id]);
 
+  const activeDiagram = React.useMemo(() => {
+    if (!diagramData) return null;
+    return resolveDiagramView(diagramData, diagramViewId);
+  }, [diagramData, diagramViewId]);
+
+  const diagramViews = diagramData?.views;
+  const activeViewId = diagramViewId ?? diagramViews?.[0]?.id ?? null;
+
+  const handleDiagramTabKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (!diagramViews || diagramViews.length < 2 || !activeViewId) return;
+
+      const currentIndex = diagramViews.findIndex(
+        (view) => view.id === activeViewId
+      );
+      if (currentIndex === -1) return;
+
+      let nextIndex: number | null = null;
+      if (event.key === 'ArrowLeft') {
+        nextIndex =
+          (currentIndex - 1 + diagramViews.length) % diagramViews.length;
+      } else if (event.key === 'ArrowRight') {
+        nextIndex = (currentIndex + 1) % diagramViews.length;
+      } else if (event.key === 'Home') {
+        nextIndex = 0;
+      } else if (event.key === 'End') {
+        nextIndex = diagramViews.length - 1;
+      }
+
+      if (nextIndex === null) return;
+
+      event.preventDefault();
+      const nextView = diagramViews[nextIndex];
+      if (!nextView) return;
+
+      setDiagramView(nextView.id);
+      window.requestAnimationFrame(() => {
+        document.getElementById(getDiagramTabId(nextView.id))?.focus();
+      });
+    },
+    [activeViewId, diagramViews, setDiagramView]
+  );
+
   const vibePanelProps =
     cardData.id === 'vibe-coding' && !showDiagram
       ? {
@@ -229,15 +307,68 @@ export default function FeatureCardModal({
   // 바이브 히스토리 스테이지 추출
   const vibeHistoryStages = categorizedTechData.historyStages;
 
+  const diagramCanvas = activeDiagram ? (
+    <>
+      <FeatureCardDiagramSummary diagram={activeDiagram} />
+      <p className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-3 text-sm leading-relaxed text-slate-300 md:hidden">
+        아키텍처 흐름은 레이어와 연결이 많아 넓은 화면에서만 표시합니다.
+      </p>
+      <div className="hidden md:block">
+        <StaticArchitectureDiagram diagram={activeDiagram} />
+      </div>
+    </>
+  ) : null;
+
   const mainContent = (
     <div
       className={showDiagram ? 'p-3 text-white sm:p-4' : 'p-6 text-white'}
       {...vibePanelProps}
     >
-      {showDiagram && diagramData ? (
+      {showDiagram && activeDiagram ? (
         <div className="space-y-3">
-          <FeatureCardDiagramSummary diagram={diagramData} />
-          <StaticArchitectureDiagram diagram={diagramData} />
+          {diagramViews && diagramViews.length > 1 ? (
+            <div
+              className="hidden flex-wrap items-center justify-center gap-1 rounded-xl border border-white/10 bg-black/20 p-1 md:flex"
+              role="tablist"
+              aria-label="아키텍처 경로"
+              onKeyDown={handleDiagramTabKeyDown}
+            >
+              {diagramViews.map((view) => {
+                const isActive = activeViewId === view.id;
+                return (
+                  <button
+                    key={view.id}
+                    type="button"
+                    role="tab"
+                    id={getDiagramTabId(view.id)}
+                    aria-selected={isActive}
+                    aria-controls={getDiagramPanelId(view.id)}
+                    tabIndex={isActive ? 0 : -1}
+                    className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-linear-to-r from-indigo-600 to-purple-600 text-white'
+                        : 'text-white/70 hover:bg-white/10 hover:text-white'
+                    }`}
+                    onClick={() => setDiagramView(view.id)}
+                  >
+                    {view.label}
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
+          {diagramViews && diagramViews.length > 1 && activeViewId ? (
+            <div
+              role="tabpanel"
+              id={getDiagramPanelId(activeViewId)}
+              aria-labelledby={getDiagramTabId(activeViewId)}
+              className="space-y-3"
+            >
+              {diagramCanvas}
+            </div>
+          ) : (
+            diagramCanvas
+          )}
         </div>
       ) : (
         <>
@@ -252,12 +383,12 @@ export default function FeatureCardModal({
               <h3 className="text-lg font-bold">
                 {renderTextWithAIGradient(title)}
                 <span className="ml-2 text-base font-medium text-amber-400">
-                  • CI/CD
+                  {' • CI/CD'}
                 </span>
               </h3>
               <p id="modal-description" className="sr-only">
-                로컬 검증 뒤에 GitLab CI가 검사와 배포를 나눠 실행하고,
-                production 배포를 한 번에 하나씩만 진행하는 흐름을 보여줍니다.
+                로컬 훅과 GitLab main 검증 뒤에, production 배포는 semver 태그
+                파이프라인에서만 한 번에 하나씩 진행하는 흐름을 보여줍니다.
               </p>
             </div>
           ) : (
@@ -273,8 +404,8 @@ export default function FeatureCardModal({
                 {cardData.id === 'vibe-coding' && (
                   <span className="ml-2 text-lg font-medium text-amber-400">
                     {vibeView === 'history'
-                      ? '• 개발 환경 변화'
-                      : '• 현재 도구'}
+                      ? ' • 개발 환경 변화'
+                      : ' • 현재 도구'}
                   </span>
                 )}
               </h3>
@@ -284,7 +415,7 @@ export default function FeatureCardModal({
               >
                 {cardData.id === 'vibe-coding'
                   ? vibeView === 'history'
-                    ? '바이브 코딩 여정: 초기(ChatGPT 개별 페이지) → 중기(Cursor + Vercel + Supabase) → 후기(Claude Code + WSL)로 이어진 개발 환경의 변화를 시간 순서대로 보여줍니다.'
+                    ? '바이브 코딩 여정: 초기(ChatGPT 개별 페이지) → 중기(Cursor + Vercel + Supabase) → 후기(Claude Code + WSL) → 현재(GitLab canonical + 멀티 AI CLI)로 이어진 개발 환경의 변화를 시간 순서대로 보여줍니다.'
                     : sanitizeModalText(detailedContent.overview)
                   : sanitizeModalText(detailedContent.overview)}
               </p>
@@ -294,12 +425,9 @@ export default function FeatureCardModal({
           {/* AI Sub-Sections (Grid Layout) */}
           {cardData.subSections && (
             <div
-              className={`mb-10 grid grid-cols-1 gap-4 ${
-                // 열 수를 항목 수에 맞춘다. 고정 3열이면 2개일 때 빈 칸이 남는다.
-                cardData.subSections.length >= 3
-                  ? 'md:grid-cols-3'
-                  : 'md:grid-cols-2'
-              }`}
+              className={`mb-10 grid grid-cols-1 gap-4 ${subSectionGridClass(
+                cardData.subSections.length
+              )}`}
             >
               {cardData.subSections.map((section) => (
                 <div
@@ -355,7 +483,7 @@ export default function FeatureCardModal({
                   </h4>
                   <p className="text-sm leading-relaxed text-orange-200/90">
                     이 기능을 사용하려면 AI 어시스턴트 모드를 활성화해야 합니다.
-                    메인 페이지로 돌아가서 AI 모드를 켜주세요.
+                    대시보드에서 AI 모드를 켜주세요.
                   </p>
                   <div className="mt-3 flex items-center gap-2 text-xs text-orange-300/80">
                     <Zap className="h-4 w-4" />

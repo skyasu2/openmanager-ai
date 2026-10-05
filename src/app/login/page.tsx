@@ -14,7 +14,7 @@ import LoginClient from './LoginClient';
 
 export const metadata: Metadata = {
   title: 'Login',
-  description: 'OpenManager AI 로그인',
+  description: 'Opsivane AI 로그인',
 };
 
 // 🎯 로그인 페이지 - 서버 컴포넌트

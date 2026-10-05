@@ -143,8 +143,8 @@
     }
   ],
   "metadata": {
-    "description": "OpenManager AI 시스템 모니터링 규칙 설정",
-    "maintainer": "OpenManager Team",
+    "description": "Opsivane AI 시스템 모니터링 규칙 설정",
+    "maintainer": "Opsivane Team",
     "aiInstructions": "이 규칙 파일은 서버 모니터링의 Single Source of Truth입니다. 임계값 관련 질문 시 이 설정을 참조하여 정확한 수치로 답변하세요. recovery 임계값은 해당 값 이하로 떨어져야 정상(online) 복귀로 판정합니다 (히스테리시스). baseline drift는 6시간 윈도우의 전반/후반 평균 비교로 감지합니다."
   }
 }

@@ -56,9 +56,6 @@ export interface EnhancedServerMetrics {
   name: string;
   network_usage?: number;
   timestamp?: string;
-  pattern_info?: unknown;
-  correlation_metrics?: unknown;
-  patternsEnabled?: boolean;
   currentLoad?: number;
   activeFailures?: number;
 

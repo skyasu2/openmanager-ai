@@ -1,5 +1,8 @@
 import { create } from 'zustand';
-import { SYSTEM_AUTO_SHUTDOWN_TIME } from '@/config/system-constants';
+import {
+  SYSTEM_AUTO_SHUTDOWN_TIME,
+  SYSTEM_WINDOW_SHUTDOWN_REASON,
+} from '@/config/system-constants';
 import { logger } from '@/lib/logging';
 
 interface UnifiedAdminState {
@@ -7,6 +10,8 @@ interface UnifiedAdminState {
   isSystemStarted: boolean;
   systemStartTime: number | null;
   systemShutdownTimer: NodeJS.Timeout | null;
+  /** 로컬 타이머 또는 원격 상태로 공용 창이 닫혔는지 */
+  systemWindowExpired: boolean;
 
   // AI 에이전트 상태 (기본 활성화)
   aiAgent: {
@@ -20,125 +25,134 @@ interface UnifiedAdminState {
   };
 
   // 액션 메소드
-  startSystem: () => void;
+  startSystem: (remainingMs?: number) => void;
+  hydrateSystemWindow: (remainingMs: number) => void;
   stopSystem: () => void;
   getSystemRemainingTime: () => number;
   logout: () => void;
   setSettingsPanelOpen: (isOpen: boolean) => void;
 }
 
-export const useUnifiedAdminStore = create<UnifiedAdminState>()((set, get) => ({
-  // 초기 상태
-  isSystemStarted: false,
-  systemStartTime: null,
-  systemShutdownTimer: null,
+function remainingMsToStartTime(remainingMs: number, now = Date.now()): number {
+  return now - (SYSTEM_AUTO_SHUTDOWN_TIME - remainingMs);
+}
 
-  // AI 에이전트 기본 활성화 (인증 불필요)
-  aiAgent: {
-    isEnabled: true, // 기본 활성화 - 누구나 사용 가능
-    state: 'enabled',
-  },
-
-  // UI 상태
-  ui: {
-    isSettingsPanelOpen: false,
-  },
-
-  // 시스템 시작
-  startSystem: () => {
-    try {
-      const now = Date.now();
-
-      // 기존 타이머가 있다면 정리
-      const currentTimer = get().systemShutdownTimer;
-      if (currentTimer) {
-        clearTimeout(currentTimer);
-      }
-
-      // 30분 후 자동 종료 타이머 설정
-      const shutdownTimer = setTimeout(() => {
-        logger.info('⏰ [System] 30분 자동 종료 타이머 실행');
-
-        // 🔔 30분 자동 종료 알림 발송
-        void import('@/services/notifications/BrowserNotificationService')
-          .then(({ browserNotificationService }) => {
-            browserNotificationService.sendSystemShutdownNotification(
-              '30분 자동 종료'
-            );
-          })
-          .catch((error: unknown) => {
-            logger.warn('⚠️ [System] 브라우저 종료 알림 전송 실패:', error);
-          });
-
-        get().stopSystem();
-      }, SYSTEM_AUTO_SHUTDOWN_TIME);
-
-      set((state) => ({
-        ...state,
-        isSystemStarted: true,
-        systemStartTime: now,
-        systemShutdownTimer: shutdownTimer,
-      }));
-
-      logger.info('🚀 [System] 시스템 시작 완료');
-      logger.info('🤖 [AI] AI 에이전트는 항상 활성화 상태 유지');
-    } catch (error) {
-      logger.error('❌ [System] 시스템 시작 실패:', error);
+export const useUnifiedAdminStore = create<UnifiedAdminState>()((set, get) => {
+  const clearLocalSystemWindow = (expired: boolean) => {
+    const currentTimer = get().systemShutdownTimer;
+    if (currentTimer) {
+      clearTimeout(currentTimer);
     }
-  },
-
-  stopSystem: () => {
-    try {
-      // 자동 종료 타이머 정리
-      const currentTimer = get().systemShutdownTimer;
-      if (currentTimer) {
-        clearTimeout(currentTimer);
-      }
-
-      // 상태 초기화 (AI 에이전트는 계속 활성화 유지)
-      set((state) => ({
-        ...state,
-        isSystemStarted: false,
-        systemStartTime: null,
-        systemShutdownTimer: null,
-        // AI 에이전트는 항상 활성화 상태 유지
-        // 관리자 모드는 선택적으로 유지
-      }));
-
-      logger.info('⏹️ [System] 시스템 정지됨 - AI 에이전트는 계속 활성화 상태');
-    } catch (error) {
-      logger.error('❌ [System] 시스템 정지 실패:', error);
-    }
-  },
-
-  // 시스템 남은 시간
-  getSystemRemainingTime: () => {
-    const { systemStartTime } = get();
-    if (systemStartTime) {
-      const elapsed = Date.now() - systemStartTime;
-      return Math.max(0, SYSTEM_AUTO_SHUTDOWN_TIME - elapsed);
-    }
-    return 0;
-  },
-
-  // 전체 로그아웃 (시스템 + 관리자)
-  logout: () => {
-    try {
-      get().stopSystem();
-      logger.info('🔐 [System] 전체 로그아웃 완료');
-    } catch (error) {
-      logger.error('❌ [System] 전체 로그아웃 실패:', error);
-    }
-  },
-
-  // 설정 패널 상태 관리
-  setSettingsPanelOpen: (isOpen: boolean) => {
     set((state) => ({
       ...state,
-      ui: {
-        ...state.ui,
-        isSettingsPanelOpen: isOpen,
-      },
+      isSystemStarted: false,
+      systemStartTime: null,
+      systemShutdownTimer: null,
+      systemWindowExpired: expired,
     }));
-  },
-}));
+  };
+
+  return {
+    isSystemStarted: false,
+    systemStartTime: null,
+    systemShutdownTimer: null,
+    systemWindowExpired: false,
+
+    aiAgent: {
+      isEnabled: true,
+      state: 'enabled',
+    },
+
+    ui: {
+      isSettingsPanelOpen: false,
+    },
+
+    hydrateSystemWindow: (remainingMs: number) => {
+      try {
+        const currentTimer = get().systemShutdownTimer;
+        if (currentTimer) {
+          clearTimeout(currentTimer);
+        }
+
+        if (remainingMs <= 0) {
+          clearLocalSystemWindow(true);
+          return;
+        }
+
+        const now = Date.now();
+        const shutdownTimer = setTimeout(() => {
+          logger.info('⏰ [System] 공용 창 TTL 만료');
+
+          void import('@/services/notifications/BrowserNotificationService')
+            .then(({ browserNotificationService }) => {
+              browserNotificationService.sendSystemShutdownNotification(
+                SYSTEM_WINDOW_SHUTDOWN_REASON
+              );
+            })
+            .catch((error: unknown) => {
+              logger.warn('⚠️ [System] 브라우저 종료 알림 전송 실패:', error);
+            });
+
+          get().hydrateSystemWindow(0);
+        }, remainingMs);
+
+        set((state) => ({
+          ...state,
+          isSystemStarted: true,
+          systemStartTime: remainingMsToStartTime(remainingMs, now),
+          systemShutdownTimer: shutdownTimer,
+          systemWindowExpired: false,
+        }));
+      } catch (error) {
+        logger.error('❌ [System] 시스템 창 hydrate 실패:', error);
+      }
+    },
+
+    startSystem: (remainingMs?: number) => {
+      get().hydrateSystemWindow(remainingMs ?? SYSTEM_AUTO_SHUTDOWN_TIME);
+      logger.info('🚀 [System] 시스템 시작 완료');
+      logger.info('🤖 [AI] AI 에이전트는 항상 활성화 상태 유지');
+    },
+
+    stopSystem: () => {
+      try {
+        clearLocalSystemWindow(true);
+        logger.info(
+          '⏹️ [System] 시스템 정지됨 - AI 에이전트는 계속 활성화 상태'
+        );
+      } catch (error) {
+        logger.error('❌ [System] 시스템 정지 실패:', error);
+      }
+    },
+
+    getSystemRemainingTime: () => {
+      const { systemStartTime } = get();
+      if (systemStartTime) {
+        const elapsed = Date.now() - systemStartTime;
+        return Math.max(0, SYSTEM_AUTO_SHUTDOWN_TIME - elapsed);
+      }
+      return 0;
+    },
+
+    logout: () => {
+      try {
+        // 로컬 세션만 비운다. 공용 Redis 창을 만료로 표시하면
+        // 재로그인 직후 채팅이 막힌다.
+        clearLocalSystemWindow(false);
+        logger.info('🔐 [System] 전체 로그아웃 완료');
+      } catch (error) {
+        logger.error('❌ [System] 전체 로그아웃 실패:', error);
+      }
+    },
+
+    setSettingsPanelOpen: (isOpen: boolean) => {
+      set((state) => ({
+        ...state,
+        ui: {
+          ...state.ui,
+          isSettingsPanelOpen: isOpen,
+        },
+      }));
+    },
+  };
+});

@@ -5,12 +5,12 @@ import { useEffect, useRef } from 'react';
 const DESKTOP_PARTICLE_COUNT = 120;
 const TABLET_PARTICLE_COUNT = 72;
 const MOBILE_PARTICLE_COUNT = 56;
-const DESKTOP_CONNECTION_DIST = 130;
-const TABLET_CONNECTION_DIST = 92;
-const MOBILE_CONNECTION_DIST = 76;
+const DESKTOP_CONNECTION_DIST = 100;
+const TABLET_CONNECTION_DIST = 72;
+const MOBILE_CONNECTION_DIST = 56;
 const MOUSE_RADIUS = 200;
 const MAX_REPEL_OFFSET = 52;
-const IDLE_DRIFT_RADIUS = 2.4;
+const IDLE_DRIFT_RADIUS = 3.2;
 const PARTICLE_FIELD_HEIGHT_RATIO = 0.72;
 const SPRING = 0.042;
 const DAMPING = 0.88;
@@ -52,7 +52,7 @@ function resolveParticleConfig(width: number): ParticleConfig {
     return {
       count: MOBILE_PARTICLE_COUNT,
       connectionDist: MOBILE_CONNECTION_DIST,
-      maxConnectionAlpha: 0.1,
+      maxConnectionAlpha: 0.06,
       avoidHeroCore: true,
       particleOpacityScale: 0.82,
     };
@@ -62,7 +62,7 @@ function resolveParticleConfig(width: number): ParticleConfig {
     return {
       count: TABLET_PARTICLE_COUNT,
       connectionDist: TABLET_CONNECTION_DIST,
-      maxConnectionAlpha: 0.14,
+      maxConnectionAlpha: 0.09,
       avoidHeroCore: true,
       particleOpacityScale: 0.9,
     };
@@ -71,7 +71,7 @@ function resolveParticleConfig(width: number): ParticleConfig {
   return {
     count: DESKTOP_PARTICLE_COUNT,
     connectionDist: DESKTOP_CONNECTION_DIST,
-    maxConnectionAlpha: 0.24,
+    maxConnectionAlpha: 0.14,
     avoidHeroCore: false,
     particleOpacityScale: 1,
   };
@@ -284,7 +284,7 @@ export function MouseSpotlight() {
         Array.from({ length: CONNECTION_ALPHA_BUCKETS }, () => [] as number[])
       );
 
-      ctx.lineWidth = width < 640 ? 0.35 : 0.5;
+      ctx.lineWidth = width < 640 ? 0.28 : 0.38;
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const a = particles[i]!;

@@ -240,7 +240,7 @@ export default function LoginClient() {
               <div className="mb-8 text-center">
                 <div className="mx-auto mb-5 h-12 w-12 rounded-xl bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-[0_0_32px_rgba(129,92,255,0.45)]" />
                 <h1 className="mb-1.5 text-xl font-semibold tracking-tight text-white">
-                  <span>OpenManager </span>
+                  <span>Opsivane </span>
                   {renderAIGradientWithAnimation('AI')}
                   <span>에 로그인</span>
                 </h1>
@@ -392,9 +392,7 @@ export default function LoginClient() {
 
           {/* Footer */}
           <div className="mt-6 text-center">
-            <p className="text-xs text-white/60">
-              OpenManager AI v{APP_VERSION}
-            </p>
+            <p className="text-xs text-white/60">Opsivane AI v{APP_VERSION}</p>
             <a
               href="/privacy"
               className="mt-1.5 inline-flex min-h-8 items-center justify-center px-2 text-xs text-white/60 transition-colors hover:text-white/85"

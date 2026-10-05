@@ -43,8 +43,6 @@ export const AI_SIDEBAR_WIDTH_LIMITS = {
   MAX: 960,
 } as const;
 
-export const AI_SIDEBAR_PERSISTED_MESSAGE_LIMIT = 20;
-
 export type AISidebarTab =
   | 'chat'
   | 'presets'
@@ -228,6 +226,12 @@ export interface EnhancedChatMessage extends ChatMessage {
   isStreaming?: boolean;
   isCompleted?: boolean;
   parentMessageId?: string; // thinking 메시지가 속한 원본 메시지 ID
+  /**
+   * Analyst self-refine이 낸 이전 초안들 (최종 draft 제외, 순서대로).
+   * `message.parts`에서 매 렌더마다 로컬 계산되며 서버 metadata를 거치지
+   * 않는다 (QA-20260818-1084/1085 progressive disclosure).
+   */
+  draftSegments?: string[];
 }
 
 /** Store 상태용 AI 응답 (최소 구조) */
@@ -244,7 +248,7 @@ export interface ChatHookOptions {
 
 export type AIEntryTarget = 'sidebar' | 'fullscreen' | 'any';
 
-export type AIEntryFunction = 'chat' | 'auto-report' | 'intelligent-monitoring';
+export type AIEntryFunction = 'chat' | 'auto-report';
 
 export interface PendingAIEntryState {
   draft?: string;
@@ -299,12 +303,9 @@ function normalizeRehydratedState(state: AISidebarState): void {
   state.activeTab = normalizeActiveTab(persisted.activeTab);
   state.sidebarWidth = normalizeAISidebarWidth(persisted.sidebarWidth);
   state.webSearchEnabled = persisted.webSearchEnabled === true;
-  state.restoreBannerDismissed = persisted.restoreBannerDismissed === true;
-  state.messages = normalizeMessageSnapshot(
-    persisted.messages,
-    AI_SIDEBAR_PERSISTED_MESSAGE_LIMIT
-  );
-  state.sessionId = normalizeSessionId(persisted.sessionId);
+  state.restoreBannerDismissed = false;
+  state.messages = [];
+  state.sessionId = createSessionId();
   state.pendingPrefillMessage = null;
   state.pendingEntryState = null;
 }
@@ -596,18 +597,11 @@ export const useAISidebarStore = create<AISidebarState>()(
       {
         name: 'ai-sidebar-storage',
         partialize: (state) => ({
-          // 중요한 상태만 영속화
+          // UI 선호만 localStorage에 남긴다. 대화/sessionId는 탭 수명 sessionStorage.
           isMinimized: state.isMinimized,
           activeTab: normalizeActiveTab(state.activeTab),
           sidebarWidth: normalizeAISidebarWidth(state.sidebarWidth),
           webSearchEnabled: state.webSearchEnabled,
-          restoreBannerDismissed: state.restoreBannerDismissed,
-          messages: normalizeMessageSnapshot(
-            state.messages,
-            AI_SIDEBAR_PERSISTED_MESSAGE_LIMIT
-          ),
-          // currentEngine 제거 - v4.0: localStorage 마이그레이션으로 자동 정리됨
-          sessionId: normalizeSessionId(state.sessionId),
         }),
         // SSR 안전성을 위한 완전한 hydration 제어
         skipHydration: true,

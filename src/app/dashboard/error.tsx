@@ -201,14 +201,7 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
             {/* 추가 도움말 */}
             <div className="border-t pt-4 text-center">
               <p className="text-xs text-gray-500">
-                문제가 계속 발생하면{' '}
-                <a
-                  href="mailto:support@openmanager.com"
-                  className="text-blue-600 hover:underline"
-                >
-                  기술 지원팀
-                </a>
-                에 문의하세요.
+                문제가 계속 발생하면 잠시 후 다시 시도해 주세요.
               </p>
             </div>
           </CardContent>

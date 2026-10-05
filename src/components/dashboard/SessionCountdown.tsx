@@ -46,7 +46,7 @@ const getTimerTone = (remainingTime: number): TimerTone => {
  * 🕐 세션 카운트다운 컴포넌트
  *
  * @description
- * - 시스템 시작 후 30분 자동 종료까지 남은 시간 표시
+ * - 시스템 시작 후 공용 창이 끝날 때까지 남은 시간 표시
  * - 1초마다 업데이트
  * - 5분 이하: 노란색 경고
  * - 30초 이하: 빨간색 만료 임박 경고

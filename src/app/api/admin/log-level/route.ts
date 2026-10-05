@@ -3,6 +3,7 @@
  *
  * GET  /api/admin/log-level → Current log level status (Vercel + Cloud Run)
  * PUT  /api/admin/log-level → Change log level at runtime with optional TTL.
+ * 운영자 제어용 API (일반 사용자 UI 직접 노출 대상 아님)
  * `expiresAt` is computed locally for Vercel changes and aligned with Cloud Run
  * response when target includes `cloud-run`.
  */

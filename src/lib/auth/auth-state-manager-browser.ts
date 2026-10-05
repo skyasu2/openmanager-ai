@@ -1,4 +1,5 @@
 import { logger } from '@/lib/logging';
+import { EPHEMERAL_CHAT_STORAGE_KEYS } from '@/types/session';
 import type { AuthProvider, AuthState } from './auth-state-manager-types';
 import {
   AUTH_CREATED_AT_KEY,
@@ -188,6 +189,15 @@ export function clearBrowserAuthStorage(
     localStorage.removeItem(key);
     logger.info(`🧹 localStorage 정리: ${key}`);
   });
+
+  try {
+    localStorage.removeItem(EPHEMERAL_CHAT_STORAGE_KEYS.HISTORY);
+    localStorage.removeItem(EPHEMERAL_CHAT_STORAGE_KEYS.SESSION_ID);
+    sessionStorage.removeItem(EPHEMERAL_CHAT_STORAGE_KEYS.HISTORY);
+    sessionStorage.removeItem(EPHEMERAL_CHAT_STORAGE_KEYS.SESSION_ID);
+  } catch (error) {
+    logger.warn('⚠️ 대화 세션 저장소 정리 실패:', error);
+  }
 
   if (
     typeof sessionStorage !== 'undefined' &&

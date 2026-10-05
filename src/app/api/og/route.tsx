@@ -16,7 +16,7 @@ import { getSiteUrl } from '@/lib/site-url';
 
 // 기본값 상수
 const DEFAULTS = {
-  title: 'OpenManager AI',
+  title: 'Opsivane AI',
   description: 'Operational Decision Support AI Assistant',
   tags: ['Next.js 16', 'React 19', 'Vercel AI SDK', 'Tool-calling AI'],
 } as const;
@@ -194,7 +194,7 @@ export async function GET(request: NextRequest) {
       >
         <span style={{ fontSize: '48px', marginBottom: '16px' }}>🚀</span>
         <h1 style={{ color: '#60a5fa', fontSize: '48px', margin: 0 }}>
-          OpenManager AI
+          Opsivane AI
         </h1>
         <p style={{ color: '#94a3b8', fontSize: '24px' }}>
           Operational Decision Support AI

@@ -9,7 +9,7 @@ import {
   Upload,
 } from 'lucide-react';
 import type { ChangeEvent } from 'react';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ArtifactReplayPack } from '@/lib/ai/chat-artifacts/artifact-workspace-registry';
 import {
   type ArtifactReplayPackComparisonSummary,
@@ -24,6 +24,8 @@ import { cn } from '@/lib/utils';
 
 interface ArtifactWorkspacePanelProps {
   className?: string;
+  /** 카드에서 넘어온 replay pack. 존재하면 이 pack을 선택한 상태로 연다. */
+  focusReplayPackId?: string;
   messages: ArtifactWorkspaceHistoryMessage[];
   store?: ArtifactWorkspaceStore;
   workspaceId: string;
@@ -31,6 +33,20 @@ interface ArtifactWorkspacePanelProps {
 
 function firstReplayPackId(packs: ArtifactReplayPack[]): string {
   return packs[0]?.workspaceId ?? '';
+}
+
+function focusedOrFirstReplayPackId(
+  packs: ArtifactReplayPack[],
+  focusReplayPackId: string | undefined
+): string {
+  if (
+    focusReplayPackId &&
+    packs.some((pack) => pack.workspaceId === focusReplayPackId)
+  ) {
+    return focusReplayPackId;
+  }
+
+  return firstReplayPackId(packs);
 }
 
 function secondReplayPackId(packs: ArtifactReplayPack[]): string {
@@ -75,6 +91,7 @@ function triggerDownload(exportPayload: {
 
 export function ArtifactWorkspacePanel({
   className,
+  focusReplayPackId,
   messages,
   store,
   workspaceId,
@@ -88,10 +105,10 @@ export function ArtifactWorkspacePanel({
     workspaceStore.listReplayPacks()
   );
   const [selectedExportId, setSelectedExportId] = useState(() =>
-    firstReplayPackId(replayPacks)
+    focusedOrFirstReplayPackId(replayPacks, focusReplayPackId)
   );
   const [leftCompareId, setLeftCompareId] = useState(() =>
-    firstReplayPackId(replayPacks)
+    focusedOrFirstReplayPackId(replayPacks, focusReplayPackId)
   );
   const [rightCompareId, setRightCompareId] = useState(() =>
     secondReplayPackId(replayPacks)
@@ -100,6 +117,18 @@ export function ArtifactWorkspacePanel({
   const [errorMessage, setErrorMessage] = useState('');
   const [comparison, setComparison] =
     useState<ArtifactReplayPackComparisonSummary | null>(null);
+
+  useEffect(() => {
+    if (
+      !focusReplayPackId ||
+      !replayPacks.some((pack) => pack.workspaceId === focusReplayPackId)
+    ) {
+      return;
+    }
+
+    setSelectedExportId(focusReplayPackId);
+    setLeftCompareId(focusReplayPackId);
+  }, [focusReplayPackId, replayPacks]);
 
   const currentReplayPack = useMemo(
     () =>
@@ -325,7 +354,16 @@ export function ArtifactWorkspacePanel({
             {replayPacks.map((pack) => (
               <div
                 key={pack.workspaceId}
-                className="flex items-center justify-between gap-2 text-xs"
+                data-testid={
+                  pack.workspaceId === focusReplayPackId
+                    ? 'artifact-replay-pack-focused'
+                    : undefined
+                }
+                className={cn(
+                  'flex items-center justify-between gap-2 text-xs',
+                  pack.workspaceId === focusReplayPackId &&
+                    'rounded bg-cyan-50 px-1 py-0.5'
+                )}
               >
                 <span className="truncate font-medium text-slate-700">
                   {pack.workspaceId}

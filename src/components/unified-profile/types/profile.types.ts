@@ -39,7 +39,6 @@ export interface MenuItem {
  */
 export interface UnifiedProfileHeaderProps {
   className?: string;
-  onSystemStop?: (() => void) | undefined;
   parentSystemActive?: boolean;
 }
 
@@ -66,7 +65,6 @@ export interface ProfileDropdownMenuProps {
   isSystemStarted: boolean;
   isSystemStarting?: boolean;
   onSystemStart: () => void;
-  onSystemStop: () => void;
   systemVersion?: string;
   systemEnvironment?: string;
 }

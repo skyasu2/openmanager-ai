@@ -17,8 +17,9 @@ export const maxDuration = 60;
 import type { NextRequest } from 'next/server';
 import { checkAPIAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
-import { getRedisClient, getSystemRunningFlag, redisGet } from '@/lib/redis';
+import { getRedisClient, redisGet } from '@/lib/redis';
 import { runRedisWithTimeout } from '@/lib/redis/client';
+import { rejectIfSystemNotRunning } from '@/lib/system/system-running-guard';
 import type { RedisJobProgress } from '@/types/ai-jobs';
 import { sanitizeJobMetadataForClient } from '../../job-metadata';
 import { isJobOwnedByRequester } from '../../job-ownership';
@@ -87,18 +88,9 @@ export async function GET(
   }
 
   // 시스템 정지 상태에서는 신규/진행 중 Job의 SSE 폴링을 시작하지 않음.
-  const running = await getSystemRunningFlag();
-  if (running === false && !isTerminalStatus(initialCheck.status)) {
-    return new Response(
-      JSON.stringify({
-        error: 'System is not running',
-        message: '시스템 시작 후 다시 시도해주세요.',
-      }),
-      {
-        status: 409,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+  if (!isTerminalStatus(initialCheck.status)) {
+    const notRunning = await rejectIfSystemNotRunning();
+    if (notRunning) return notRunning;
   }
 
   // SSE 스트림 생성

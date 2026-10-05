@@ -1,6 +1,6 @@
 'use client';
 
-import { Play, Power } from 'lucide-react';
+import { Play } from 'lucide-react';
 import {
   type KeyboardEvent,
   memo,
@@ -26,7 +26,6 @@ export const ProfileDropdownMenu = memo(function ProfileDropdownMenu({
   isSystemStarted,
   isSystemStarting,
   onSystemStart,
-  onSystemStop,
   systemVersion,
   systemEnvironment,
 }: ProfileDropdownMenuProps) {
@@ -191,24 +190,8 @@ export const ProfileDropdownMenu = memo(function ProfileDropdownMenu({
                 {isSystemStarted && <SessionCountdown />}
               </div>
 
-              {/* 시스템 시작/종료 버튼 */}
-              <div className="mt-2.5">
-                {isSystemStarted ? (
-                  <button
-                    type="button"
-                    data-testid="system-stop-button"
-                    onClick={() => {
-                      onClose();
-                      onSystemStop();
-                    }}
-                    className="flex w-full items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-100"
-                    role="menuitem"
-                    tabIndex={0}
-                  >
-                    <Power className="h-4 w-4" />
-                    시스템 종료
-                  </button>
-                ) : (
+              {!isSystemStarted && (
+                <div className="mt-2.5">
                   <button
                     type="button"
                     data-testid="system-start-button"
@@ -224,8 +207,8 @@ export const ProfileDropdownMenu = memo(function ProfileDropdownMenu({
                     <Play className="h-4 w-4" />
                     {isSystemStarting ? '시작 중...' : '시스템 시작'}
                   </button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
             {/* 메뉴 아이템들 */}

@@ -92,13 +92,28 @@ const DEFAULT_MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 const DEFAULT_MAX_DOC_SIZE = 5 * 1024 * 1024; // 5MB
 const DRAG_INACTIVITY_RESET_MS = 2_000;
 
-const ALLOWED_IMAGE_TYPES = [
+export const ALLOWED_IMAGE_MIME_TYPES = [
   'image/png',
   'image/jpeg',
   'image/jpg',
   'image/gif',
   'image/webp',
-];
+] as const;
+
+export const CHAT_ATTACHMENT_FORMAT_HINT = 'PNG, JPEG, GIF, WebP, PDF, MD';
+
+export const CHAT_ATTACHMENT_ACCEPT = [
+  'image/png',
+  'image/jpeg',
+  'image/gif',
+  'image/webp',
+  '.pdf',
+  '.md',
+  'text/markdown',
+  'text/plain',
+].join(',');
+
+const ALLOWED_IMAGE_TYPES: readonly string[] = ALLOWED_IMAGE_MIME_TYPES;
 
 // ============================================================================
 // Utilities
@@ -204,7 +219,7 @@ export function useFileAttachments(
         return {
           file,
           reason: 'type',
-          message: `지원하지 않는 파일 형식입니다: ${file.name}`,
+          message: `지원하지 않는 파일 형식입니다: ${file.name} (${CHAT_ATTACHMENT_FORMAT_HINT}만 가능)`,
         };
       }
 

@@ -11,13 +11,22 @@
  * @extracted-from EnhancedAIChat.tsx
  */
 
-import { AlertCircle, Clock, LogIn, RefreshCw, X, Zap } from 'lucide-react';
+import {
+  AlertCircle,
+  Clock,
+  LogIn,
+  Play,
+  RefreshCw,
+  X,
+  Zap,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import {
   isAuthRelatedError,
   isColdStartRelatedError,
   isModelConfigRelatedError,
+  isSystemNotRunningError,
   sanitizeDisplayedErrorMessage,
 } from '@/lib/ai/constants/stream-errors';
 import {
@@ -36,6 +45,7 @@ export interface ColdStartErrorBannerProps {
   errorDetails?: AIErrorDetails | null;
   onRetry?: () => void;
   onClearError?: () => void;
+  onStartSystem?: () => void;
 }
 
 /**
@@ -47,6 +57,7 @@ export function ColdStartErrorBanner({
   errorDetails,
   onRetry,
   onClearError,
+  onStartSystem,
 }: ColdStartErrorBannerProps) {
   const resolvedErrorDetails =
     errorDetails ?? inferAIErrorDetailsFromMessage(error);
@@ -167,6 +178,46 @@ export function ColdStartErrorBanner({
               type="button"
               onClick={onClearError}
               className="rounded-lg p-1.5 text-blue-500 transition-colors hover:bg-blue-100 hover:text-blue-700"
+              aria-label="닫기"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (isSystemNotRunningError(error)) {
+    return (
+      <div className="border-t border-amber-200 bg-linear-to-r from-amber-50 to-orange-50 p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100">
+            <Play className="h-5 w-5 text-amber-700" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-amber-900">
+              공용 시스템 창이 닫혔습니다
+            </p>
+            <p className="mt-1 text-xs text-amber-700">{displayError}</p>
+          </div>
+          {onStartSystem && (
+            <button
+              type="button"
+              onClick={onStartSystem}
+              aria-label="채팅에서 시스템 시작"
+              data-spotlight-anchor="chat-system-start"
+              className="flex shrink-0 items-center gap-1.5 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-amber-700"
+            >
+              <Play className="h-4 w-4" />
+              <span>시스템 시작</span>
+            </button>
+          )}
+          {onClearError && (
+            <button
+              type="button"
+              onClick={onClearError}
+              className="rounded-lg p-1.5 text-amber-500 transition-colors hover:bg-amber-100 hover:text-amber-700"
               aria-label="닫기"
             >
               <X className="h-4 w-4" />

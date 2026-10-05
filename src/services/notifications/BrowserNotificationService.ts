@@ -5,13 +5,17 @@
  * - 서버 데이터 생성기의 심각/경고 상태 알림만 처리
  * - 통합 상태 판별 기준 사용
  * - 과도한 타이머 제거, 단순한 로직
- * - 30분 세션 기반 전역 상태 관리와 연동
+ * - 공용 시스템 창 기반 전역 상태 관리와 연동
  */
 
 'use client';
 
 import toast from 'react-hot-toast';
 import { shouldSendWebNotification } from '@/config/rules/loader';
+import {
+  SYSTEM_AUTO_SHUTDOWN_MINUTES,
+  SYSTEM_WINDOW_SHUTDOWN_REASON,
+} from '@/config/system-constants';
 import { logger } from '@/lib/logging';
 
 interface NotificationOptions {
@@ -140,7 +144,7 @@ class BrowserNotificationService {
 
   /**
    * 🔔 웹 알림 발송 (System Alert Only)
-   * 이제 서버 알림에는 사용되지 않고, 시스템 알림(예: 30분 종료)에만 사용됨
+   * 이제 서버 알림에는 사용되지 않고, 시스템 창 종료 알림에만 사용됨
    */
   private sendNotification(
     message: string,
@@ -155,7 +159,7 @@ class BrowserNotificationService {
     if (!this.isEnabled) return;
 
     try {
-      const notification = new Notification('OpenManager 시스템 알림', {
+      const notification = new Notification('Opsivane 시스템 알림', {
         body: message,
         icon: '/favicon.ico',
         badge: '/favicon.ico',
@@ -211,7 +215,9 @@ class BrowserNotificationService {
   /**
    * 🛑 시스템 중지 알림 (새로 추가)
    */
-  sendSystemShutdownNotification(reason: string = '30분 자동 종료'): void {
+  sendSystemShutdownNotification(
+    reason: string = SYSTEM_WINDOW_SHUTDOWN_REASON
+  ): void {
     if (!this.isEnabled) return;
 
     const message = `시스템이 중지되었습니다. (${reason})`;
@@ -219,7 +225,10 @@ class BrowserNotificationService {
     this.sendNotification(message, 'warning', 'system-shutdown');
 
     // 추가: 브라우저 확인 팝업 (선택사항)
-    if (typeof window !== 'undefined' && reason === '30분 자동 종료') {
+    if (
+      typeof window !== 'undefined' &&
+      reason === SYSTEM_WINDOW_SHUTDOWN_REASON
+    ) {
       if (this.pendingShutdownPromptTimer) {
         clearTimeout(this.pendingShutdownPromptTimer);
       }
@@ -227,7 +236,7 @@ class BrowserNotificationService {
       this.pendingShutdownPromptTimer = setTimeout(() => {
         this.pendingShutdownPromptTimer = null;
         const userConfirm = confirm(
-          '⏰ 30분 세션이 종료되었습니다.\n\n새로운 세션을 시작하시겠습니까?'
+          `⏰ ${SYSTEM_AUTO_SHUTDOWN_MINUTES}분 세션이 종료되었습니다.\n\n새로운 세션을 시작하시겠습니까?`
         );
         if (userConfirm) {
           // 페이지 새로고침으로 새 세션 준비

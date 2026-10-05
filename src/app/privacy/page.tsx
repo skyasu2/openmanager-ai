@@ -9,7 +9,7 @@ import { APP_VERSION } from '@/config/app-meta';
 
 export const metadata: Metadata = {
   title: '개인정보 처리방침',
-  description: 'OpenManager AI 개인정보 처리방침',
+  description: 'Opsivane AI 개인정보 처리방침',
 };
 
 export default function PrivacyPage() {
@@ -81,7 +81,7 @@ export default function PrivacyPage() {
 
         {/* Footer */}
         <div className="mt-12 pt-6 border-t border-white/10 text-center">
-          <p className="text-xs text-white/40">OpenManager AI v{APP_VERSION}</p>
+          <p className="text-xs text-white/40">Opsivane AI v{APP_VERSION}</p>
         </div>
       </div>
     </div>

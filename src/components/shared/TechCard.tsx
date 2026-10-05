@@ -50,9 +50,9 @@ export const TechCard = memo(function TechCard({ tech }: TechCardProps) {
         <div className="flex items-center gap-3">
           <span className="text-2xl">{tech.icon}</span>
           <div>
-            <h4 className="text-sm font-semibold text-white">
+            <p className="text-sm font-semibold text-white">
               {sanitizeText(tech.name)}
-            </h4>
+            </p>
             {tech.version && (
               <span className="text-xs text-gray-400">
                 {formatVersionLabel(sanitizeText(tech.version))}

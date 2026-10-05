@@ -8,7 +8,7 @@ export const TECH_STACK_ITEMS: TechItem[] = [
     description: 'Meta의 UI 라이브러리',
     implementation:
       '→ 화면 전체. 대시보드·AI 화면은 상호작용이 많아 대부분 Client Component',
-    version: '19.2.6',
+    version: '19.2.7',
     status: 'active',
     icon: '⚛️',
     tags: ['프레임워크', '오픈소스', 'React'],
@@ -21,7 +21,7 @@ export const TECH_STACK_ITEMS: TechItem[] = [
     description: 'Vercel의 React 풀스택 프레임워크',
     implementation:
       '→ App Router + Server Actions. API Routes로 데이터 제공, 캐싱은 cacheComponents',
-    version: '16.2.9',
+    version: '16.3.3',
     status: 'active',
     icon: '▲',
     tags: ['프레임워크', '오픈소스', 'SSR'],

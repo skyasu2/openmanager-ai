@@ -4,7 +4,7 @@ import { TimestampSchema } from '../common.schema';
 /**
  * 📡 서버 상세 정보 API 스키마
  *
- * `/api/servers/[id]` route의 legacy/enhanced 응답 구조를 정의합니다.
+ * `/api/servers/[id]` route의 응답 구조를 정의합니다.
  */
 
 const ServiceStatusSchema = z.enum([
@@ -47,9 +47,7 @@ export const ServerSpecsSchema = z.object({
 export const ServerDetailQuerySchema = z.object({
   history: z.enum(['true', 'false']).optional(),
   range: z.string().optional().default('24h'),
-  format: z.enum(['enhanced', 'legacy']).optional().default('enhanced'),
-  include_metrics: z.enum(['true', 'false']).optional(),
-  include_patterns: z.enum(['true', 'false']).optional(),
+  format: z.enum(['enhanced']).optional().default('enhanced'),
 });
 
 // ===== 서버 히스토리 =====
@@ -74,59 +72,13 @@ export const ServerHistorySchema = z.object({
   data_points: z.array(ServerHistoryDataPointSchema),
 });
 
-// ===== 레거시 서버 응답 =====
-
-const LegacyServerResponseSchema = z.object({
-  success: z.literal(true),
-  server: z.object({
-    id: z.string(),
-    hostname: z.string(),
-    name: z.string(),
-    type: z.string(),
-    environment: z.string(),
-    location: z.string(),
-    provider: z.string(),
-    status: RuntimeServerStatusSchema,
-    cpu: z.number(),
-    memory: z.number(),
-    disk: z.number(),
-    uptime: z.string(),
-    lastUpdate: TimestampSchema,
-    alerts: z.number(),
-    services: z.array(ServerServiceSchema),
-    specs: ServerSpecsSchema.optional(),
-    os: z.string(),
-    ip: z.string().optional(),
-    metrics: z.object({
-      cpu: z.number(),
-      memory: z.number(),
-      disk: z.number(),
-      network_in: z.number(),
-      network_out: z.number(),
-      response_time: z.number(),
-    }),
-  }),
-  history: ServerHistorySchema.nullable(),
-  meta: z.object({
-    format: z.literal('legacy'),
-    include_history: z.boolean(),
-    range: z.string(),
-    timestamp: TimestampSchema,
-    processing_time_ms: z.number(),
-  }),
-});
-
-// ===== 향상된 서버 응답 =====
-
 const EnhancedServerResponseSchema = z.object({
   success: z.literal(true),
   meta: z.object({
     request_info: z.object({
       server_id: z.string(),
-      format: z.string(),
+      format: z.literal('enhanced'),
       include_history: z.boolean(),
-      include_metrics: z.boolean(),
-      include_patterns: z.boolean(),
       range: z.string(),
       processing_time_ms: z.number(),
       timestamp: TimestampSchema,
@@ -160,16 +112,11 @@ const EnhancedServerResponseSchema = z.object({
     }),
     alerts: z.array(z.unknown()),
     services: z.array(ServerServiceSchema),
-    pattern_info: z.unknown().nullable().optional(),
-    correlation_metrics: z.unknown().nullable().optional(),
     history: ServerHistorySchema.optional(),
   }),
 });
 
-// ===== 타입 내보내기 (사용 중인 것만 유지) =====
-
 export type ServerHistory = z.infer<typeof ServerHistorySchema>;
-export type LegacyServerResponse = z.infer<typeof LegacyServerResponseSchema>;
 export type EnhancedServerResponse = z.infer<
   typeof EnhancedServerResponseSchema
 >;

@@ -21,6 +21,7 @@ import {
   getRateLimitIdentity,
 } from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import { rejectIfSystemNotRunning } from '@/lib/system/system-running-guard';
 import type { AIJob, TriggerStatus } from '@/types/ai-jobs';
 import { withCSRFProtection } from '@/utils/security/csrf';
 import {
@@ -87,6 +88,9 @@ export const POST = withAuth(
       { params }: { params: Promise<{ id: string }> }
     ) {
       try {
+        const notRunning = await rejectIfSystemNotRunning();
+        if (notRunning) return notRunning;
+
         const { id: jobId } = await params;
 
         const job = await redisGet<AIJob>(`job:${jobId}`);

@@ -101,7 +101,7 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
             compactOnMobile ? 'text-base sm:text-xl' : 'text-xl'
           } ${titleColor}`}
         >
-          OpenManager <span style={AI_TEXT_GRADIENT_ANIMATED_STYLE}>AI</span>
+          Opsivane <span style={AI_TEXT_GRADIENT_ANIMATED_STYLE}>AI</span>
         </TitleTag>
         {(() => {
           const subtitleText =
@@ -129,7 +129,7 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
       <Link
         href={href}
         prefetch={prefetch}
-        aria-label={hideTitleOnMobile ? 'OpenManager AI 홈' : undefined}
+        aria-label={hideTitleOnMobile ? 'Opsivane AI 홈' : undefined}
         className="min-w-0 transition-opacity hover:opacity-80"
       >
         {content}

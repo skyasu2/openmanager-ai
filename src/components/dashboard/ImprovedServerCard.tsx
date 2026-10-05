@@ -9,6 +9,7 @@ import {
   SERVER_CARD_STATUS_ACCENT_BORDER_CLASSES,
 } from '@/styles/design-constants';
 import type { Server as ServerType } from '@/types/server';
+import { SERVER_STATUS_LABELS } from '@/types/server-enums';
 import ServerCardErrorBoundary from '../error/ServerCardErrorBoundary';
 import { withCurrentMetricPoint } from './dashboard-metric-points';
 import {
@@ -38,15 +39,6 @@ export interface ImprovedServerCardProps {
   enableProgressiveDisclosure?: boolean;
   metricsTimeRange?: DashboardTimeRange;
 }
-
-const statusLabels: Record<string, string> = {
-  critical: '위험',
-  warning: '경고',
-  online: '정상',
-  offline: '오프라인',
-  maintenance: '점검',
-  unknown: '미확인',
-};
 
 const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
   ({
@@ -158,9 +150,10 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       <span
         data-testid="metric-status-badge"
         className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${statusTheme.badge}`}
-        title={`서버 상태: ${statusLabels[safeServer.status] ?? statusLabels.unknown}`}
+        title={`서버 상태: ${SERVER_STATUS_LABELS[safeServer.status] ?? SERVER_STATUS_LABELS.unknown}`}
       >
-        {statusLabels[safeServer.status] ?? statusLabels.unknown}
+        {SERVER_STATUS_LABELS[safeServer.status] ??
+          SERVER_STATUS_LABELS.unknown}
       </span>
     );
 

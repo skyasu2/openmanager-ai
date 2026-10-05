@@ -57,6 +57,7 @@ export type StreamEventType =
   | 'tool_call'
   | 'tool_result'
   | 'step_finish'
+  | 'draft_boundary'
   | 'handoff'
   | 'agent_status'
   | 'agent_step'

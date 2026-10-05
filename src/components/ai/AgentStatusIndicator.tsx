@@ -41,7 +41,7 @@ export interface AgentStatusIndicatorProps {
 // Agent name to icon mapping
 const AGENT_ICONS: Record<string, typeof Bot> = {
   Orchestrator: Bot,
-  'OpenManager Orchestrator': Bot,
+  'Opsivane Orchestrator': Bot,
   [METRICS_QUERY_AGENT_NAME]: Search,
   'Analyst Agent': Cpu,
   'Reporter Agent': FileText,
@@ -54,7 +54,7 @@ const AGENT_ICONS: Record<string, typeof Bot> = {
 // Agent Korean descriptions
 const AGENT_DESCRIPTIONS: Record<string, string> = {
   Orchestrator: '최적 에이전트를 선택하고 있습니다',
-  'OpenManager Orchestrator': '최적 에이전트를 선택하고 있습니다',
+  'Opsivane Orchestrator': '최적 에이전트를 선택하고 있습니다',
   [METRICS_QUERY_AGENT_NAME]: '서버 데이터를 조회하고 있습니다',
   'Analyst Agent': '패턴을 분석하고 있습니다',
   'Reporter Agent': '보고서를 작성하고 있습니다',

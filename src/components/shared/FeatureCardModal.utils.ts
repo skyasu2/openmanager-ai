@@ -51,6 +51,13 @@ export const sanitizeModalText = (text: string): string => {
   return text.replace(/<script[^>]*>.*?<\/script>/gi, '').substring(0, 1000);
 };
 
+export function subSectionGridClass(count: number): string {
+  if (count === 4) return 'md:grid-cols-2';
+  if (count >= 3) return 'md:grid-cols-3';
+  if (count === 2) return 'md:grid-cols-2';
+  return '';
+}
+
 export function getSafeCardData(selectedCard: unknown) {
   if (!isValidCard(selectedCard)) {
     return {

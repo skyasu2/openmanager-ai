@@ -71,7 +71,6 @@ function Home() {
     shouldShowSystemStart,
     showGuestRestriction,
     statusInfo,
-    stopSystem,
   } = useLandingPageState();
 
   if (shouldShowLoading) {
@@ -112,7 +111,7 @@ function Home() {
       >
         <div className="landing-hero-copy mx-auto mb-12 max-w-5xl text-center sm:mb-14">
           <h1 className="mb-4 text-5xl font-black leading-none tracking-normal text-white sm:text-6xl md:text-7xl lg:text-8xl">
-            <span className="landing-title-main">OpenManager</span>{' '}
+            <span className="landing-title-main">Opsivane</span>{' '}
             <span
               className="landing-title-ai"
               style={AI_TEXT_GRADIENT_CRISP_STYLE}
@@ -141,7 +140,6 @@ function Home() {
             <DashboardSection
               canAccessDashboard={canAccessDashboard}
               onNavigateDashboard={navigateToDashboard}
-              onStopSystem={canAccessDashboard ? stopSystem : undefined}
             />
           )}
         </div>
@@ -156,7 +154,7 @@ function Home() {
         <footer className="mt-8 border-t border-white/20 pt-6">
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
             <p className="text-sm text-white/60">
-              &copy; 2025-2026 OpenManager AI. Licensed under GPL-3.0.
+              &copy; 2025-2026 Opsivane AI. Licensed under GPL-3.0.
             </p>
             <div className="flex items-center gap-4 text-xs text-white/70">
               <span className="flex items-center gap-1.5">

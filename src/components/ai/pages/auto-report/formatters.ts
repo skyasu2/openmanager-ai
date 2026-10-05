@@ -230,12 +230,12 @@ ${systemSummarySection}${logPatternsSection}${timelineSection}${anomaliesSection
 
 | 항목 | 내용 |
 |------|------|
-| **보고서 생성** | OpenManager AI Engine |
+| **보고서 생성** | Opsivane AI Engine |
 | **분석 기준** | 실시간 메트릭 + AI 패턴 분석 |
 | **참조 표준** | ITIL v4 Major Incident Management |
 
 ---
-*자동 생성 — OpenManager AI*
+*자동 생성 — Opsivane AI*
 *${timestamp}*
 `;
 }
@@ -345,7 +345,7 @@ ${report.affectedServers.length > 0 ? report.affectedServers.join(', ') : '없�
 ${systemSummaryTxt}${logPatternsTxt}${timelineTxt}${anomaliesTxt}${buildDetectionSectionText(report)}${patternTxt}
 ${recommendationsTxt}${postmortemTxt}${buildResolutionSectionText(report)}${buildTopologyImpactSectionText(report)}
 ---
-자동 생성된 장애 보고서 - OpenManager AI v${APP_VERSION}
+자동 생성된 장애 보고서 - Opsivane AI v${APP_VERSION}
 문서 형식: ITIL Major Incident Report Template
 `;
 }

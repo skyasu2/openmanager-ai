@@ -82,7 +82,7 @@ function SystemSummarySection({
         <div className="text-lg font-bold text-yellow-600">
           {systemSummary.warningServers}
         </div>
-        <div className="text-xs text-gray-500">주의</div>
+        <div className="text-xs text-gray-500">경고</div>
       </div>
       <div className="text-center">
         <div className="text-lg font-bold text-red-600">
@@ -97,7 +97,7 @@ function SystemSummarySection({
 function ReportQuickSummary({ report }: { report: IncidentReport }) {
   const nextAction = report.recommendations?.[0]?.action;
   const impact = report.systemSummary
-    ? `임계값 초과: 주의 ${report.systemSummary.warningServers}대 · 위험 ${report.systemSummary.criticalServers}대`
+    ? `임계값 초과: 경고 ${report.systemSummary.warningServers}대 · 위험 ${report.systemSummary.criticalServers}대`
     : null;
 
   if (!nextAction && !impact) return null;

@@ -41,7 +41,20 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     type: 'commercial',
   },
   {
-    name: 'Gemini 3.1 Flash-Lite',
+    name: 'Z.AI',
+    category: 'ai',
+    importance: 'high',
+    description: 'GLM Flash 계열 무료 텍스트 추론',
+    implementation:
+      '→ 일반 답변과 분석 pool. 선택적 두 번째 키는 분석 쿼터 버킷으로만 추적하고 Vision은 Gemini 전용',
+    version: 'glm-4.7-flash',
+    status: 'active',
+    icon: '✨',
+    tags: ['Text Pool', 'Free-tier', 'GLM Flash'],
+    type: 'commercial',
+  },
+  {
+    name: 'Gemini 3.5 Flash-Lite',
     category: 'ai',
     importance: 'high',
     description: 'Google의 경량 멀티모달 모델',
@@ -91,21 +104,21 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     version: 'In-house',
     status: 'active',
     icon: '🔍',
-    tags: ['BM25', 'Metadata Boost', 'Knowledge Retrieval'],
+    tags: ['Postgres FTS', 'ts_rank', 'Metadata Boost'],
     type: 'custom',
   },
-  // ========== ML Engine ==========
+  // ========== Deterministic monitoring signals ==========
   {
-    name: 'Custom Monitoring ML (TypeScript)',
+    name: 'Threshold & Trend Signal (TypeScript)',
     category: 'ai',
-    importance: 'high',
-    description: '직접 만든 통계 기반 이상 탐지',
+    importance: 'low',
+    description: '임계값·통계 밴드·단기 선형 추세 신호',
     implementation:
-      '→ 이동평균과 표준편차로 이상 신호를 감지. Analyst Agent가 보고서 생성 전에 사용',
+      '→ 이동평균/표준편차와 임계 거리로 이상 신호를 만들고, 선형 투영으로 임계 도달 ETA를 계산. 학습형 ML·GCP 모델 서빙은 Free Tier 용량 때문에 쓰지 않음',
     version: 'In-house',
     status: 'active',
     icon: '🧪',
-    tags: ['Custom-ML', '이상탐지', '저지연', '설명가능성'],
+    tags: ['임계값', '통계밴드', '선형추세', '설명가능성'],
     type: 'custom',
   },
   {

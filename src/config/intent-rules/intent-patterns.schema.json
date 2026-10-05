@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openmanager.local/schemas/intent-patterns.schema.json",
-  "title": "OpenManager Artifact Intent Patterns",
+  "title": "Opsivane Artifact Intent Patterns",
   "type": "object",
   "additionalProperties": false,
   "required": [

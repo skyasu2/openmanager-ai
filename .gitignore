@@ -46,12 +46,17 @@ tests/e2e/visual-regression.spec.ts-snapshots/
 
 # Playwright MCP / Chrome DevTools MCP text snapshots (루트 유출 방지)
 # browser_snapshot 도구가 CWD에 생성하는 accessibility tree .md 덤프
+# 커스텀 filename은 --output-dir를 우회해 cwd/루트에 떨어질 수 있다 (playwright-mcp#1390).
 *-snapshot.md
+*-ai-log.md
 qa-*.md
 # 단, 추적해야 할 문서 예외
 !docs/**/*.md
 !reports/**/*.md
 !.claude/**/*.md
+# Claude Code가 near-limit 시 생성하는 세션 재개용 체크포인트 (프로젝트 산출물 아님).
+# 위 !.claude/**/*.md 예외에 걸려 추적 대상이 되면 release:publish의 clean-tree 검사를 막는다.
+.claude/RESUME.md
 
 # Temporary files
 *.log
@@ -478,6 +483,10 @@ eslint-result.json
 [0-9][0-9][a-z]-*.png
 # Playwright/dev verification screenshots (root level)
 /*.png
+/page-*.jpeg
+/page-*.jpg
+/page-*.webp
+/*.csv
 
 # 🔒 보안: 디버그 로그 파일 Git 추적 제외
 *.debug.log

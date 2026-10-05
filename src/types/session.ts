@@ -31,3 +31,12 @@ export const SESSION_LIMITS = {
   MESSAGE_LIMIT: 50,
   WARNING_THRESHOLD: 40,
 } as const;
+
+/**
+ * 대화 이어가기는 같은 브라우저 탭의 인증 세션 동안만 유지한다.
+ * 탭 종료·로그아웃 시 리셋. localStorage/DB 장기 기억은 쓰지 않는다.
+ */
+export const EPHEMERAL_CHAT_STORAGE_KEYS = {
+  HISTORY: 'openmanager-chat-history',
+  SESSION_ID: 'openmanager-ai-session-id',
+} as const;

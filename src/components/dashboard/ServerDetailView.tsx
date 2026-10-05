@@ -4,7 +4,9 @@ import { Activity, ArrowLeft, BarChart3, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useServerMetrics } from '@/hooks/dashboard/useServerMetrics';
+import { buildDetailAlertLogs } from '@/lib/dashboard/metric-threshold-alerts';
 import type { Server } from '@/types/server';
+import { SERVER_STATUS_LABELS } from '@/types/server-enums';
 import { withCurrentMetricPoint } from './dashboard-metric-points';
 import { LogsTab } from './EnhancedServerModal.LogsTab';
 import { MetricsTab } from './EnhancedServerModal.MetricsTab';
@@ -51,33 +53,33 @@ const SERVER_STATUS_BADGES: Record<
   { label: string; className: string; dotClassName: string }
 > = {
   critical: {
-    label: '위험',
+    label: SERVER_STATUS_LABELS.critical,
     className: 'border-red-200 bg-red-50 text-red-700',
     dotClassName: 'bg-red-500',
   },
   warning: {
-    label: '주의',
+    label: SERVER_STATUS_LABELS.warning,
     className: 'border-amber-200 bg-amber-50 text-amber-700',
     dotClassName: 'bg-amber-500',
   },
   online: {
-    label: '정상',
+    label: SERVER_STATUS_LABELS.online,
     className: 'border-emerald-200 bg-emerald-50 text-emerald-700',
     dotClassName: 'bg-emerald-500',
   },
   offline: {
-    label: '오프라인',
+    label: SERVER_STATUS_LABELS.offline,
     className: 'border-slate-200 bg-slate-50 text-slate-600',
     dotClassName: 'bg-slate-400',
   },
   maintenance: {
-    label: '점검',
+    label: SERVER_STATUS_LABELS.maintenance,
     className: 'border-blue-200 bg-blue-50 text-blue-700',
     dotClassName: 'bg-blue-500',
   },
 };
 const DEFAULT_STATUS_BADGE = {
-  label: '정상',
+  label: SERVER_STATUS_LABELS.online,
   className: 'border-emerald-200 bg-emerald-50 text-emerald-700',
   dotClassName: 'bg-emerald-500',
 };
@@ -134,6 +136,17 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
     [server]
   );
   const logTimestamp = useMemo(() => new Date().toISOString(), []);
+  const alertLogs = useMemo(
+    () =>
+      safeServer
+        ? buildDetailAlertLogs({
+            metrics: safeServer,
+            serverLogs: server?.logs,
+            timestamp: logTimestamp,
+          })
+        : [],
+    [logTimestamp, safeServer, server?.logs]
+  );
 
   const realtimeData: RealtimeData = useMemo(() => {
     if (!safeServer) {
@@ -159,32 +172,9 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
         ),
         safeServer.network
       ),
-      logs: (() => {
-        const serverLogs = server?.logs;
-        if (serverLogs && serverLogs.length > 0) {
-          const alerts = serverLogs
-            .filter((log) => log.level === 'WARN' || log.level === 'ERROR')
-            .map((log) => ({
-              timestamp: log.timestamp || logTimestamp,
-              level: log.level.toLowerCase() as 'warn' | 'error',
-              message: log.message,
-              source: 'syslog',
-            }));
-
-          if (alerts.length > 0) return alerts;
-        }
-
-        return [
-          {
-            timestamp: logTimestamp,
-            level: 'info' as const,
-            message: '모든 시스템 지표가 정상 범위 내에 있습니다.',
-            source: 'system',
-          },
-        ];
-      })(),
+      logs: alertLogs,
     };
-  }, [logTimestamp, metricsHistory, safeServer, server?.logs]);
+  }, [alertLogs, metricsHistory, safeServer]);
 
   if (!safeServer) {
     return (
@@ -211,10 +201,7 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
   const runningServiceCount = safeServer.services.filter(
     (service) => service.status === 'running'
   ).length;
-  const warningLogCount =
-    server?.logs?.filter((log) => log.level === 'WARN' || log.level === 'ERROR')
-      .length ?? 0;
-  const alertLogCount = safeServer.alerts + warningLogCount;
+  const alertLogCount = alertLogs.length;
   const networkStatusLabel =
     NETWORK_STATUS_LABELS[safeServer.networkStatus ?? 'good'] ??
     NETWORK_STATUS_LABELS.good;

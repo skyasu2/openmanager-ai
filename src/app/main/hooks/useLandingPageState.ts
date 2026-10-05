@@ -1,14 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { isGuestSystemStartEnabled } from '@/config/guestMode';
 import { isVercel } from '@/env-client';
 import { useInitialAuth } from '@/hooks/auth/useInitialAuth';
+import { useSyncSystemWindow } from '@/hooks/system/useSyncSystemWindow';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import debug from '@/utils/debug';
 import {
   authRetryDelay,
   debugWithEnv,
   mountDelay,
-  syncDebounce,
 } from '@/utils/vercel-env-utils';
 import {
   performanceTracker,
@@ -66,11 +66,10 @@ export function useLandingPageState() {
   });
   const shouldShowSystemStart = !isSystemStarted || !isAuthenticated;
 
-  const { startSystem, stopSystem, getSystemRemainingTime } =
-    useUnifiedAdminStore();
-  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const prevRunningRef = useRef<boolean | null>(null);
+  const { getSystemRemainingTime } = useUnifiedAdminStore();
   const [_systemTimeRemaining, setSystemTimeRemaining] = useState(0);
+
+  useSyncSystemWindow(authReady ? multiUserStatus : null);
 
   useEffect(() => {
     if (isVercel) performanceTracker.start('page-mount');
@@ -86,30 +85,6 @@ export function useLandingPageState() {
 
     return () => clearTimeout(mountTimer);
   }, []);
-
-  useEffect(() => {
-    if (!authReady || !multiUserStatus) return;
-    const currentRunning = multiUserStatus.isRunning;
-    if (prevRunningRef.current !== currentRunning) {
-      prevRunningRef.current = currentRunning;
-      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
-      syncTimeoutRef.current = setTimeout(() => {
-        const needsStart = multiUserStatus.isRunning && !isSystemStarted;
-        const needsStop = !multiUserStatus.isRunning && isSystemStarted;
-        if (needsStart) {
-          debug.log(debugWithEnv('🔄 시스템이 다른 사용자에 의해 시작됨'));
-          startSystem();
-        } else if (needsStop) {
-          debug.log(debugWithEnv('🔄 시스템이 다른 사용자에 의해 정지됨'));
-          stopSystem();
-        }
-      }, syncDebounce);
-    }
-
-    return () => {
-      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
-    };
-  }, [authReady, multiUserStatus, isSystemStarted, startSystem, stopSystem]);
 
   useEffect(() => {
     if (!authError || !authReady) return;
@@ -157,7 +132,6 @@ export function useLandingPageState() {
     shouldShowSystemStart,
     showGuestRestriction,
     statusInfo,
-    stopSystem,
     systemStartCountdown,
   };
 }
